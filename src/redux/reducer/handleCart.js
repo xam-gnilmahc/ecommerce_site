@@ -1,7 +1,7 @@
 // Retrieve initial state from localStorage if available
 const getInitialCart = () => {
-  const storedCart = localStorage.getItem("cart");
-  return storedCart ? JSON.parse(storedCart) : [];
+  const storedCart = "max";
+  return storedCart;
 };
 
 const handleCart = (state = getInitialCart(), action) => {
