@@ -3,8 +3,8 @@ import React from "react";
 const Home = () => {
   return (
     <>
-      <div className="hero border pb-3">
-        <div className="card bg-dark border-0 mx-3">
+      <div className="hero  pb-3">
+        <div className="card bg-dark border-0 m-3">
           <img
             src="./assets/mmmm.jpg"
             className="card-img img-fluid"

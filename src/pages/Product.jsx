@@ -17,9 +17,9 @@ const Product = () => {
   const [similarProducts, setSimilarProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loading2, setLoading2] = useState(false);
-  const { user} = useAuth(); // get user from context
+  const { user } = useAuth(); // get user from context
   const navigate = useNavigate();
-  
+
   const dispatch = useDispatch();
 
   const addProduct = (product) => {
@@ -126,67 +126,47 @@ const Product = () => {
         <div className="container my-5 py-2">
           <div className="row">
             {/* Product Image + Thumbnails */}
-            <div className="col-md-4 col-12 py-5 d-flex flex-md-row flex-column">
-              {/* Main Image */}
-              <div
-                style={{
-                  flex: "1 1 75%",
-                  maxWidth: "75%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
+            <div className="col-md-6 col-12 py-5">
+              <div className="w-full text-center">
                 <img
-                  className="img-fluid"
+                  className="img-fluid rounded "
                   src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${activeImage}`}
                   alt={product.title}
-                  style={{
-                    width: "auto",
-                    maxHeight: "250px",
-                    objectFit: "contain",
-                  }}
+                  style={{ maxHeight: "400px", objectFit: "contain" }}
                 />
               </div>
-              {/* Thumbnails */}
-              <div
-                className="d-flex flex-md-column flex-row ms-md-3 mt-3 mt-md-0"
-                style={{ flex: "0 0 25%", maxWidth: "25%" }}
-              >
-                {product.product_images &&
-                  product.product_images.map((img) => (
-                    <img
-                      key={img.id}
-                      src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${img.image_url}`}
-                      alt="Thumbnail"
-                      onClick={() => setActiveImage(img.image_url)}
-                      style={{
-                        width: "60px",
-                        height: "60px",
-                        objectFit: "contain",
-                        marginRight: "10px",
-                        marginBottom: "10px",
-                        border:
-                          activeImage === img.image_url ? "2px solid #000" : "1px solid #ccc",
-                        cursor: "pointer",
-                        borderRadius: "4px",
-                      }}
-                    />
-                  ))}
+              <div className="d-flex flex-wrap justify-content-center mt-3">
+                {product.product_images?.map((img) => (
+                  <img
+                    key={img.id}
+                    onClick={() => setActiveImage(img.image_url)}
+                    src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${img.image_url}`}
+                    alt="thumb"
+                    style={{ width: 80, height: 80, margin: 5, border: activeImage === img.image_url ? "2px solid black" : "1px solid gray", borderRadius: 4, cursor: "pointer", objectFit: "contain" }}
+                  />
+                ))}
               </div>
             </div>
 
             {/* Product Details */}
             <div className="col-md-6 col-12 py-5 text-center text-md-start">
-              <h4 className="text-uppercase text-muted">{product.name}</h4>
-              <h1 className="display-5">{product.title}</h1>
-              <p className="lead">
-                {product.rating && product.rating.rate} <i className="fa fa-star"></i><i className="fa fa-star"></i><i className="fa fa-star"></i>
+              <h4 className="text-muted mb-2">{product.name}</h4>
+              <p className="lead mb-3 d-flex align-items-center justify-content-center justify-content-md-start gap-1">
+                {Array.from({ length: 5 }, (_, i) => {
+                  const rating = product?.rating || 0;
+                  if (rating >= i + 1) {
+                    return <i key={i} className="fa fa-star text-warning"></i>; // full star
+                  } else if (rating >= i + 0.5) {
+                    return <i key={i} className="fa fa-star-half-o text-warning"></i>; // half star
+                  } else {
+                    return <i key={i} className="fa fa-star-o text-warning"></i>; // empty star
+                  }
+                })}
+                <span className="ms-2 text-muted">({product?.rating || 0} / 5)</span>
               </p>
-              <h3 className="display-6 my-4">${product.amount}</h3>
-              <p className="card-text">
-                {product.description?.substring(0, 200) || ''}
-              </p>
+              <h2 className="text-success">${product.amount}</h2>
+              <p className="text-muted my-3">{product.description?.substring(0, 200)}</p>
+
               <button
                 className="btn btn-outline-dark"
                 onClick={() => addProduct(product)}
@@ -233,7 +213,7 @@ const Product = () => {
       <>
         <div className="py-4 my-4">
           <div className="d-flex">
-            {similarProducts.map((item) => {
+          {similarProducts.map((item) => {
               return (
                 <div key={item.id} className="m-4 text-center">
                   <img
@@ -246,16 +226,30 @@ const Product = () => {
                       objectFit: "contain",
                     }}
                   />
-                   <h5 className="text-lg font-semibold mb-1">
-                      {item.name.substring(0, 20)}
-                    </h5>
-                    <p className="text-yellow-500 flex items-center justify-center text-sm">
-                      {item.rating} <i className="fa fa-star ml-1"></i>
-                    </p>
-                    <p className="text-xl font-bold my-2 text-gray-800">
-                      ${item.amount}
-                    </p>
-                          <div className="card-body">
+                  <h5 className="text-lg font-semibold mb-1">
+                    {item.name.substring(0, 20)}
+                  </h5>
+                  
+                  {/* Centered Rating */}
+                  <p className="mb-1 lead mb-3 d-flex align-items-center justify-content-center gap-1">
+                    {Array.from({ length: 5 }, (_, i) => {
+                      const rating = item?.rating || 0;
+                      if (rating >= i + 1) {
+                        return <i key={i} className="fa fa-star text-warning"></i>; // full star
+                      } else if (rating >= i + 0.5) {
+                        return <i key={i} className="fa fa-star-half-o text-warning"></i>; // half star
+                      } else {
+                        return <i key={i} className="fa fa-star-o text-warning"></i>; // empty star
+                      }
+                    })}
+                    <span className="ms-2 text-muted">({item?.rating || 0} / 5)</span>
+                  </p>
+
+                  <p className="text-xl font-bold my-2 text-gray-800">
+                    ${item.amount}
+                  </p>
+
+                  <div className="card-body">
                     <Link
                       to={"/product/" + item.id}
                       className="btn btn-dark m-1"
@@ -272,6 +266,7 @@ const Product = () => {
                 </div>
               );
             })}
+
           </div>
         </div>
       </>
@@ -286,58 +281,73 @@ const Product = () => {
           <div className="d-none d-md-block">
             <h2 className="">You may also Like</h2>
             {similarProducts.length > 2 ? (
-            <Marquee
-              pauseOnHover={true}
-              pauseOnClick={true}
-              speed={100}
-            >
-              {loading2 ? <Loading2 /> : <ShowSimilarProduct />}
-            </Marquee>
-            ):(
+              <Marquee
+                pauseOnHover={true}
+                pauseOnClick={true}
+                speed={100}
+              >
+                {loading2 ? <Loading2 /> : <ShowSimilarProduct />}
+              </Marquee>
+            ) : (
               <>
-               <div className="py-4 my-4">
-          <div className="d-flex">
-            {similarProducts.map((item) => {
-              return (
-                <div key={item.id} className="m-4 text-center">
-                  <img
-                    className="card-img-top p-3"
-                    src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.banner_url}`}
-                    alt="Card"
-                    style={{
-                      width: "auto",
-                      maxHeight: "250px",
-                      objectFit: "contain",
-                    }}
-                  />
-                   <h5 className="text-lg font-semibold mb-1">
-                      {item.name.substring(0, 20)}
-                    </h5>
-                    <p className="text-yellow-500 flex items-center justify-center text-sm">
-                      {item.rating} <i className="fa fa-star ml-1"></i>
-                    </p>
-                    <p className="text-xl font-bold my-2 text-gray-800">
-                      ${item.amount}
-                    </p>
-                          <div className="card-body">
-                    <Link
-                      to={"/product/" + item.id}
-                      className="btn btn-dark m-1"
-                    >
-                      Buy Now
-                    </Link>
-                    <button
-                      className="btn btn-dark m-1"
-                      onClick={() => addProduct(item)}
-                    >
-                      Add to Cart
-                    </button>
+                <div className="py-4 my-4">
+                  <div className="d-flex">
+                  {similarProducts.map((item) => {
+                    return (
+                      <div key={item.id} className="m-4 text-center">
+                        <img
+                          className="card-img-top p-3"
+                          src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.banner_url}`}
+                          alt="Card"
+                          style={{
+                            width: "auto",
+                            maxHeight: "250px",
+                            objectFit: "contain",
+                          }}
+                        />
+                        <h5 className="text-lg font-semibold mb-1">
+                          {item.name.substring(0, 20)}
+                        </h5>
+                        
+                        {/* Centered Rating */}
+                        <p className="mb-1 lead mb-3 d-flex align-items-center justify-content-center gap-1">
+                          {Array.from({ length: 5 }, (_, i) => {
+                            const rating = item?.rating || 0;
+                            if (rating >= i + 1) {
+                              return <i key={i} className="fa fa-star text-warning"></i>; // full star
+                            } else if (rating >= i + 0.5) {
+                              return <i key={i} className="fa fa-star-half-o text-warning"></i>; // half star
+                            } else {
+                              return <i key={i} className="fa fa-star-o text-warning"></i>; // empty star
+                            }
+                          })}
+                          <span className="ms-2 text-muted">({item?.rating || 0} / 5)</span>
+                        </p>
+
+                        <p className="text-xl font-bold my-2 text-gray-800">
+                          ${item.amount}
+                        </p>
+
+                        <div className="card-body">
+                          <Link
+                            to={"/product/" + item.id}
+                            className="btn btn-dark m-1"
+                          >
+                            Buy Now
+                          </Link>
+                          <button
+                            className="btn btn-dark m-1"
+                            onClick={() => addProduct(item)}
+                          >
+                            Add to Cart
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        </div>
               </>
 
             )}
