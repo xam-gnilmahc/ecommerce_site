@@ -128,19 +128,26 @@ const Product = () => {
             {/* Product Image + Thumbnails */}
             <div className="col-md-4 col-12 py-5 d-flex flex-md-row flex-column">
               {/* Main Image */}
-              <div style={{ flex: "1 1 75%", maxWidth: "75%" }}>
+              <div
+                style={{
+                  flex: "1 1 75%",
+                  maxWidth: "75%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
                 <img
                   className="img-fluid"
                   src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${activeImage}`}
                   alt={product.title}
                   style={{
-                    width: "100%",
-                    height: "auto",
+                    width: "auto",
+                    maxHeight: "250px",
                     objectFit: "contain",
                   }}
                 />
               </div>
-
               {/* Thumbnails */}
               <div
                 className="d-flex flex-md-column flex-row ms-md-3 mt-3 mt-md-0"
@@ -171,13 +178,15 @@ const Product = () => {
 
             {/* Product Details */}
             <div className="col-md-6 col-12 py-5 text-center text-md-start">
-              <h4 className="text-uppercase text-muted">{product.category}</h4>
+              <h4 className="text-uppercase text-muted">{product.name}</h4>
               <h1 className="display-5">{product.title}</h1>
               <p className="lead">
-                {product.rating && product.rating.rate} <i className="fa fa-star"></i>
+                {product.rating && product.rating.rate} <i className="fa fa-star"></i><i className="fa fa-star"></i><i className="fa fa-star"></i>
               </p>
               <h3 className="display-6 my-4">${product.amount}</h3>
-              <p className="lead">{product.description}</p>
+              <p className="card-text">
+                {product.description?.substring(0, 200) || ''}
+              </p>
               <button
                 className="btn btn-outline-dark"
                 onClick={() => addProduct(product)}
@@ -226,23 +235,27 @@ const Product = () => {
           <div className="d-flex">
             {similarProducts.map((item) => {
               return (
-                <div key={item.id} className="card mx-4 text-center">
+                <div key={item.id} className="m-4 text-center">
                   <img
                     className="card-img-top p-3"
                     src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.banner_url}`}
                     alt="Card"
-                    height={200}
-                    width={200}
+                    style={{
+                      width: "auto",
+                      maxHeight: "250px",
+                      objectFit: "contain",
+                    }}
                   />
-                  <div className="card-body">
-                    <h5 className="card-title">
-                      {item.name.substring(0, 15)}
+                   <h5 className="text-lg font-semibold mb-1">
+                      {item.name.substring(0, 20)}
                     </h5>
-                  </div>
-                  {/* <ul className="list-group list-group-flush">
-                    <li className="list-group-item lead">${product.price}</li>
-                  </ul> */}
-                  <div className="card-body">
+                    <p className="text-yellow-500 flex items-center justify-center text-sm">
+                      {item.rating} <i className="fa fa-star ml-1"></i>
+                    </p>
+                    <p className="text-xl font-bold my-2 text-gray-800">
+                      ${item.amount}
+                    </p>
+                          <div className="card-body">
                     <Link
                       to={"/product/" + item.id}
                       className="btn btn-dark m-1"
@@ -272,7 +285,7 @@ const Product = () => {
         <div className="row my-5 py-5">
           <div className="d-none d-md-block">
             <h2 className="">You may also Like</h2>
-            {similarProducts.length > 3 ? (
+            {similarProducts.length > 2 ? (
             <Marquee
               pauseOnHover={true}
               pauseOnClick={true}
@@ -282,26 +295,31 @@ const Product = () => {
             </Marquee>
             ):(
               <>
-             <div className="d-flex flex-wrap justify-content-start">
-             {similarProducts.map((item) => {
+               <div className="py-4 my-4">
+          <div className="d-flex">
+            {similarProducts.map((item) => {
               return (
-                <div key={item.id} className="card mx-4 text-center">
+                <div key={item.id} className="m-4 text-center">
                   <img
                     className="card-img-top p-3"
                     src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.banner_url}`}
                     alt="Card"
-                    height={200}
-                    width={200}
+                    style={{
+                      width: "auto",
+                      maxHeight: "250px",
+                      objectFit: "contain",
+                    }}
                   />
-                  <div className="card-body">
-                    <h5 className="card-title">
-                      {item.name.substring(0, 15)}
+                   <h5 className="text-lg font-semibold mb-1">
+                      {item.name.substring(0, 20)}
                     </h5>
-                  </div>
-                  {/* <ul className="list-group list-group-flush">
-                    <li className="list-group-item lead">${product.price}</li>
-                  </ul> */}
-                  <div className="card-body">
+                    <p className="text-yellow-500 flex items-center justify-center text-sm">
+                      {item.rating} <i className="fa fa-star ml-1"></i>
+                    </p>
+                    <p className="text-xl font-bold my-2 text-gray-800">
+                      ${item.amount}
+                    </p>
+                          <div className="card-body">
                     <Link
                       to={"/product/" + item.id}
                       className="btn btn-dark m-1"
@@ -310,24 +328,16 @@ const Product = () => {
                     </Link>
                     <button
                       className="btn btn-dark m-1"
-                      onClick={() => {
-                        if (!user) {
-                          toast.error("Please login to add products to cart.");
-                          navigate("/login");
-                          return;
-                        }
-                        toast.success("Added to cart");
-                        addProduct(item)
-                      }}
+                      onClick={() => addProduct(item)}
                     >
                       Add to Cart
                     </button>
                   </div>
                 </div>
               );
-           
             })}
-            </div>
+          </div>
+        </div>
               </>
 
             )}

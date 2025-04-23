@@ -14,14 +14,14 @@ const Products = () => {
   const [filter, setFilter] = useState(data);
   const [loading, setLoading] = useState(false);
   let componentMounted = true;
-  const { user} = useAuth(); // get user from context
+  const { user, addToCart} = useAuth(); // get user from context
   const navigate = useNavigate();
   
 
   const dispatch = useDispatch();
 
-  const addProduct = (product) => {
-    dispatch(addCart(product));
+  const addProduct = async (product) => {
+    await addToCart(product);
   };
 
   useEffect(() => {
@@ -121,8 +121,8 @@ const Products = () => {
                   src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${product.banner_url}`}
                   alt="Product"
                   style={{
-                    maxWidth: "250px",
-                    height: "auto",
+                    width:"auto",
+                    maxHeight: "250px",
                     objectFit: "contain",
                     transition: "transform 0.3s ease",
                   }}

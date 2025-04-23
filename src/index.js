@@ -21,24 +21,41 @@ import {
 
 import ScrollToTop from "./components/ScrollToTop";
 import { Toaster } from "react-hot-toast";
-import { AuthProvider } from "./context/authContext"; // <- import context
-
+import { AuthProvider } from "./context/authContext";
+import ProtectedRoute from "./components/ProtectedRoute"; // ✅ fixed import
+import PublicRoute from "./components/PublicRoute";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <BrowserRouter>
     <ScrollToTop>
       <Provider store={store}>
-        <AuthProvider> {/* Wrap inside AuthProvider */}
+        <AuthProvider>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/product" element={<Products />} />
             <Route path="/product/:id" element={<Product />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/login" element={<Login />} />
+            <Route
+              path="/cart"
+              element={
+                <ProtectedRoute>
+                  <Cart />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/login" element={<PublicRoute>
+              <Login />
+            </PublicRoute>} />
             <Route path="/register" element={<Register />} />
-            <Route path="/checkout" element={<Checkout />} />
+            <Route
+              path="/checkout"
+              element={
+                <ProtectedRoute>
+                  <Checkout />
+                </ProtectedRoute>
+              }
+            />
             <Route path="*" element={<PageNotFound />} />
             <Route path="/product/*" element={<PageNotFound />} />
           </Routes>

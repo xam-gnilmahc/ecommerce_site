@@ -6,19 +6,20 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import toast from "react-hot-toast";
+import { FaCarTunnel } from "react-icons/fa6";
 const Cart = () => {
   const state = useSelector((state) => state.handleCart);
   const dispatch = useDispatch();
-  const { user } = useAuth();
+  const { cart , addToCart, removeFromCart, user} = useAuth();
   const navigate = useNavigate();
 
 
-  const addItem = (product) => {
-    dispatch(addCart(product));
+  const addItem = async (product) => {
+    await addToCart(product);
   };
 
-  const removeItem = (product) => {
-    dispatch(delCart(product));
+  const removeItem = async(product) => {
+    await removeFromCart(product);
   };
 
   const EmptyCart = () => (
@@ -29,24 +30,15 @@ const Cart = () => {
       </Link>
     </div>
   );
-
-
-  useEffect(() => {
-    if (!user) {
-      toast.error("Please login to access your cart.");
-      navigate("/login");
-    }
-  }, [user, navigate]);
   
-
   const ShowCart = () => {
     let subtotal = 0;
     let shipping = 30.0;
     let totalItems = 0;
 
-    state.forEach((item) => {
-      subtotal += item.amount * item.qty;
-      totalItems += item.qty;
+    cart.forEach((item) => {
+      subtotal += item.amount * item.quantity;
+      totalItems += item.quantity;
     });
 
     return (
@@ -59,13 +51,13 @@ const Cart = () => {
                   <h5 className="mb-0 ">Shopping Cart</h5>
                 </div>
                 <div className="card-body">
-                  {state.map((item) => (
+                  {cart.map((item) => (
                     <div key={item.id} className="mb-4">
                       <div className="row align-items-center">
                         <div className="col-3">
                           <img
-                            src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.banner_url}`}
-                            alt={item.name}
+                            src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.products.banner_url}`}
+                            alt={item.products.name}
                             className="img-fluid rounded"
                             style={{
                               width:"200px",
@@ -75,26 +67,26 @@ const Cart = () => {
                           />
                         </div>
                         <div className="col-5">
-                          <h6 className="mb-0">{item.name}</h6>
-                          <small className="text-muted">Product ID: {item.id}</small>
+                          <h6 className="mb-0">{item.products.name}</h6>
+                          <small className="text-muted">Product ID: {item.products.id}</small>
                         </div>
                         <div className="col-4 text-end">
                           <div className="d-flex justify-content-end align-items-center mb-2">
                             <button
                               className="btn btn-outline-dark btn-sm"
-                              onClick={() => removeItem(item)}
+                              onClick={() => removeItem(item.products)}
                             >
                               <i className="fas fa-minus"></i>
                             </button>
-                            <span className="mx-3">{item.qty}</span>
+                            <span className="mx-3">{item.quantity}</span>
                             <button
                               className="btn btn-outline-dark btn-sm"
-                              onClick={() => addItem(item)}
+                              onClick={() => addItem(item.products)}
                             >
                               <i className="fas fa-plus"></i>
                             </button>
                           </div>
-                          <strong>${item.amount * item.qty}</strong>
+                          <strong>${item.amount * item.quantity}</strong>
                         </div>
                       </div>
                       <hr />
@@ -139,7 +131,7 @@ const Cart = () => {
       <Navbar />
       <div className="container py-4">
         <h1 className="text-center mb-4">Your Shopping Cart</h1>
-        {state.length > 0 ? <ShowCart /> : <EmptyCart />}
+        {cart.length > 0 ? <ShowCart /> : <EmptyCart />}
       </div>
       <Footer />
     </>

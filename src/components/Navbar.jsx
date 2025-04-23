@@ -5,7 +5,7 @@ import { useAuth } from '../context/authContext'; // adjust path if needed
 
 const Navbar = () => {
   const state = useSelector(state => state.handleCart);
-  const { user, logout } = useAuth(); // get user and logout from context
+  const { user, logout, cart } = useAuth(); // get user and logout from context
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light py-3 sticky-top">
@@ -60,7 +60,7 @@ const Navbar = () => {
                   <i className="fa fa-sign-out-alt mr-1"></i> Logout
                 </button>
                 <NavLink to="/cart" className="btn btn-outline-dark m-2">
-                  <i className="fa fa-cart-shopping mr-1"></i> Cart ({state.length})
+                  <i className="fa fa-cart-shopping mr-1"></i> Cart ({cart.length})
                 </NavLink>
               </>
             )}

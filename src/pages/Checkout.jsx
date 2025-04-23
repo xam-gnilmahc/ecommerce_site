@@ -1,9 +1,98 @@
-import React from "react";
+import { useState, useEffect } from "react";
 import { Footer, Navbar } from "../components";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { Country, State } from "country-state-city";
+import { useStripe, useElements, CardElement, Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { useAuth } from '../context/authContext'; // adjust path if needed
+import sendOrderEmail from "../service/emailService";
+
+// Stripe Publishable Key (this key should be used in the frontend only)
+const stripePromise = loadStripe("pk_test_51PGec42K0njal9PzJzzxwBOVszXOkqMCBcovRYFChW727EsjLGJ9sWMvztGAGnnmVAtquHDgSllxMryuvfgnv87D00nc9a1Yp7");
+
 const Checkout = () => {
+  const { user , removeFromCartAfterOrder, cart} = useAuth(); // get user and logout from context
+
   const state = useSelector((state) => state.handleCart);
+  const elements = useElements();
+  const stripe = useStripe();
+
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [states, setStates] = useState([]);
+  const [paymentError, setPaymentError] = useState("");
+  const [loading, setLoading] = useState(false); // Add loading state
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!stripe || !elements) {
+      console.log("Stripe.js hasn't loaded yet.");
+      return;
+    }
+
+    const cardElement = elements.getElement(CardElement);
+
+    if (!cardElement) {
+      setPaymentError("Card element is not mounted properly. Please reload and try again.");
+      toast.error("Card element not found.");
+      return;
+    }
+
+    const { token, error } = await stripe.createToken(cardElement);
+
+    if (error) {
+      setPaymentError(error.message);
+      toast.error(`Payment failed: ${error.message}`);
+    } else {
+      let subtotal = 0;
+      let shipping = 30.0;
+      let totalItems = 0;
+      cart.map((item) => {
+        subtotal += item.amount * item.quantity;
+        totalItems += item.quantity;
+      });
+
+      const totalAmount = Math.round((subtotal + shipping));
+      const data = {
+        payment_method_id: token.id,
+        amount: totalAmount, // Dynamically set this as needed
+        member_name: user.full_name,
+        member_email: user.email,
+        comment: 'Payment for order #12345'
+      };
+
+      setLoading(true); // Set loading to true when payment is being processed
+
+      try {
+        const response = await axios.post('http://127.0.0.1:8000/api/payments/process', data, {
+          headers: {
+            'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL3JlZ2lzdGVyIiwiaWF0IjoxNzQ1Mzk3NjYxLCJleHAiOjE3NDU0MDEyNjEsIm5iZiI6MTc0NTM5NzY2MSwianRpIjoidnV1R1VkaUh1MmU2VlVhZSIsInN1YiI6IjExNiIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjciLCJzdG9yZV9pZCI6NDQ2NjY4NCwiZW1haWwiOiJzdGVfcmFyZV82ODA1ZTY4ZmI5YmEyQHZveG1nLmNvbSJ9.2XypPdj6zQ6p11ilMxhsZrpKG2FrbBbtlQ5OUn_qAyA',
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.status === 200) {
+          await sendOrderEmail(user.full_name, user.email, cart, totalAmount);
+          localStorage.removeItem('cart');
+          toast.success("Payment processed successfully!");
+          await removeFromCartAfterOrder();
+        } else {
+          toast.error("Payment processing failed.");
+        }
+      } catch (err) {
+        console.log(err);
+        const errorMessage = err.response?.data?.errors?.error_message || err.response?.data?.message || 'Payment failed';
+        setPaymentError(errorMessage);
+        toast.error(`Payment error: ${errorMessage}`);
+      } finally {
+        setLoading(false); // Set loading to false once payment processing is done
+      }
+    }
+  };
+
 
   const EmptyCart = () => {
     return (
@@ -18,281 +107,87 @@ const Checkout = () => {
         </div>
       </div>
     );
-  };
+  }
 
   const ShowCheckout = () => {
     let subtotal = 0;
     let shipping = 30.0;
     let totalItems = 0;
-    state.map((item) => {
-      return (subtotal += item.price * item.qty);
+    cart.map((item) => {
+
+      return (subtotal += item.amount * item.quantity);
     });
 
-    state.map((item) => {
-      return (totalItems += item.qty);
+    cart.map((item) => {
+      return (totalItems += item.quantity);
     });
+
+
     return (
-      <>
-        <div className="container py-5">
-          <div className="row my-4">
-            <div className="col-md-5 col-lg-4 order-md-last">
-              <div className="card mb-4">
-                <div className="card-header py-3 bg-light">
-                  <h5 className="mb-0">Order Summary</h5>
-                </div>
-                <div className="card-body">
-                  <ul className="list-group list-group-flush">
-                    <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
-                      Products ({totalItems})<span>${Math.round(subtotal)}</span>
-                    </li>
-                    <li className="list-group-item d-flex justify-content-between align-items-center px-0">
-                      Shipping
-                      <span>${shipping}</span>
-                    </li>
-                    <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
-                      <div>
-                        <strong>Total amount</strong>
-                      </div>
-                      <span>
-                        <strong>${Math.round(subtotal + shipping)}</strong>
-                      </span>
-                    </li>
-                  </ul>
-                </div>
+      <div className="container py-5">
+        <div className="row my-4">
+          <div className="col-md-5 col-lg-4 order-md-last">
+            <div className="card mb-4">
+              <div className="card-header py-3 bg-primary text-white">
+                <h5 className="mb-0">Order Summary</h5>
+              </div>
+              <div className="card-body">
+                <ul className="list-group list-group-flush">
+                  <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
+                    Products ({totalItems})<span>${Math.round(subtotal)}</span>
+                  </li>
+                  <li className="list-group-item d-flex justify-content-between align-items-center px-0">
+                    Shipping
+                    <span>${shipping}</span>
+                  </li>
+                  <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
+                    <div>
+                      <strong>Total amount</strong>
+                    </div>
+                    <span>
+                      <strong>${Math.round(subtotal + shipping)}</strong>
+                    </span>
+                  </li>
+                </ul>
               </div>
             </div>
-            <div className="col-md-7 col-lg-8">
-              <div className="card mb-4">
-                <div className="card-header py-3">
-                  <h4 className="mb-0">Billing address</h4>
-                </div>
-                <div className="card-body">
-                  <form className="needs-validation" novalidate>
-                    <div className="row g-3">
-                      <div className="col-sm-6 my-1">
-                        <label for="firstName" className="form-label">
-                          First name
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="firstName"
-                          placeholder=""
-                          required
-                        />
-                        <div className="invalid-feedback">
-                          Valid first name is required.
-                        </div>
-                      </div>
-
-                      <div className="col-sm-6 my-1">
-                        <label for="lastName" className="form-label">
-                          Last name
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="lastName"
-                          placeholder=""
-                          required
-                        />
-                        <div className="invalid-feedback">
-                          Valid last name is required.
-                        </div>
-                      </div>
-
-                      <div className="col-12 my-1">
-                        <label for="email" className="form-label">
-                          Email
-                        </label>
-                        <input
-                          type="email"
-                          className="form-control"
-                          id="email"
-                          placeholder="you@example.com"
-                          required
-                        />
-                        <div className="invalid-feedback">
-                          Please enter a valid email address for shipping
-                          updates.
-                        </div>
-                      </div>
-
-                      <div className="col-12 my-1">
-                        <label for="address" className="form-label">
-                          Address
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="address"
-                          placeholder="1234 Main St"
-                          required
-                        />
-                        <div className="invalid-feedback">
-                          Please enter your shipping address.
-                        </div>
-                      </div>
-
-                      <div className="col-12">
-                        <label for="address2" className="form-label">
-                          Address 2{" "}
-                          <span className="text-muted">(Optional)</span>
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="address2"
-                          placeholder="Apartment or suite"
-                        />
-                      </div>
-
-                      <div className="col-md-5 my-1">
-                        <label for="country" className="form-label">
-                          Country
-                        </label>
-                        <br />
-                        <select className="form-select" id="country" required>
-                          <option value="">Choose...</option>
-                          <option>India</option>
-                        </select>
-                        <div className="invalid-feedback">
-                          Please select a valid country.
-                        </div>
-                      </div>
-
-                      <div className="col-md-4 my-1">
-                        <label for="state" className="form-label">
-                          State
-                        </label>
-                        <br />
-                        <select className="form-select" id="state" required>
-                          <option value="">Choose...</option>
-                          <option>Punjab</option>
-                        </select>
-                        <div className="invalid-feedback">
-                          Please provide a valid state.
-                        </div>
-                      </div>
-
-                      <div className="col-md-3 my-1">
-                        <label for="zip" className="form-label">
-                          Zip
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="zip"
-                          placeholder=""
-                          required
-                        />
-                        <div className="invalid-feedback">
-                          Zip code required.
-                        </div>
-                      </div>
-                    </div>
-
-                    <hr className="my-4" />
-
-                    <h4 className="mb-3">Payment</h4>
-
-                    <div className="row gy-3">
-                      <div className="col-md-6">
-                        <label for="cc-name" className="form-label">
-                          Name on card
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="cc-name"
-                          placeholder=""
-                          required
-                        />
-                        <small className="text-muted">
-                          Full name as displayed on card
-                        </small>
-                        <div className="invalid-feedback">
-                          Name on card is required
-                        </div>
-                      </div>
-
-                      <div className="col-md-6">
-                        <label for="cc-number" className="form-label">
-                          Credit card number
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="cc-number"
-                          placeholder=""
-                          required
-                        />
-                        <div className="invalid-feedback">
-                          Credit card number is required
-                        </div>
-                      </div>
-
-                      <div className="col-md-3">
-                        <label for="cc-expiration" className="form-label">
-                          Expiration
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="cc-expiration"
-                          placeholder=""
-                          required
-                        />
-                        <div className="invalid-feedback">
-                          Expiration date required
-                        </div>
-                      </div>
-
-                      <div className="col-md-3">
-                        <label for="cc-cvv" className="form-label">
-                          CVV
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="cc-cvv"
-                          placeholder=""
-                          required
-                        />
-                        <div className="invalid-feedback">
-                          Security code required
-                        </div>
-                      </div>
-                    </div>
-
-                    <hr className="my-4" />
-
-                    <button
-                      className="w-100 btn btn-primary "
-                      type="submit" disabled
-                    >
-                      Continue to checkout
-                    </button>
-                  </form>
-                </div>
+          </div>
+          <div className="col-md-7 col-lg-8">
+            <div className="card mb-4">
+              <div className="card-header py-3 bg-light">
+                <h4 className="mb-0">Payment</h4>
+              </div>
+              <div className="card-body">
+                <form onSubmit={handleSubmit}>
+                  <CardElement />
+                  <button type="submit" className="btn btn-primary w-100 mt-4" disabled={loading || !stripe}>
+                    {loading ? 'Submitting Payment...' : 'Submit Payment'}
+                  </button>
+                </form>
               </div>
             </div>
           </div>
         </div>
-      </>
+      </div>
     );
   };
+
   return (
     <>
       <Navbar />
       <div className="container my-3 py-3">
-        <h1 className="text-center">Checkout</h1>
+        <h1 className="text-center mb-4">Checkout</h1>
         <hr />
-        {state.length ? <ShowCheckout /> : <EmptyCart />}
+        {cart.length ? <ShowCheckout /> : <EmptyCart />}
       </div>
       <Footer />
     </>
   );
 };
 
-export default Checkout;
+// Wrap Checkout component with Elements provider
+export default () => (
+  <Elements stripe={stripePromise}>
+    <Checkout />
+  </Elements>
+);
