@@ -3,16 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { Footer, Navbar } from "../components";
 import { supabase } from "../supaBaseClient";
 import toast from "react-hot-toast";
-import { useAuth } from "../context/authContext"; // <- import context
+import { useAuth } from "../context/authContext";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login } = useAuth(); // <- get login method from context
+  const { login } = useAuth();
 
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -27,10 +24,7 @@ const Login = () => {
 
     const { email, password } = formData;
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
       toast.error(error.message);
@@ -38,25 +32,35 @@ const Login = () => {
       return;
     }
 
-    // Save logged in user in context
-    login(data.user.id , data.user.user_metadata, data.session);
-    console.log(data);
-
     toast.success("Login successful!");
     navigate("/");
+  };
+
+  const loginWithGoogle = async () => {
+    console.log('google');
+    const { data, error } = await supabase.auth.signInWithOAuth({ provider: "google" });
+    if (error) {
+      toast.error("Facebook sign-in failed: " + error.message);
+      return; 
+    }
+  };
+
+  const loginWithFacebook = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({ provider: "facebook" });
+    if (error) toast.error("Facebook sign-in failed: " + error.message);
   };
 
   return (
     <>
       <Navbar />
-      <div className="container my-3 py-3">
-        <h1 className="text-center">Login</h1>
+      <div className="container my-4">
+        <h2 className="text-center mb-3">Login</h2>
         <hr />
-        <div className="row my-4 h-100">
-          <div className="col-md-4 col-lg-4 col-sm-8 mx-auto">
+        <div className="row justify-content-center">
+          <div className="col-md-5">
             <form onSubmit={handleSubmit}>
-              <div className="my-3">
-                <label htmlFor="email">Email address</label>
+              <div className="mb-3">
+                <label htmlFor="email" className="form-label">Email address</label>
                 <input
                   type="email"
                   className="form-control"
@@ -68,8 +72,8 @@ const Login = () => {
                   required
                 />
               </div>
-              <div className="my-3">
-                <label htmlFor="password">Password</label>
+              <div className="mb-3">
+                <label htmlFor="password" className="form-label">Password</label>
                 <input
                   type="password"
                   className="form-control"
@@ -82,30 +86,32 @@ const Login = () => {
                 />
               </div>
 
-              {error && (
-                <div className="alert alert-danger my-2">{error}</div>
-              )}
+              {error && <div className="alert alert-danger">{error}</div>}
 
-              <div className="my-3">
-                <p>
-                  New Here?{" "}
-                  <Link
-                    to="/register"
-                    className="text-decoration-underline text-info"
-                  >
-                    Register
-                  </Link>
-                </p>
-              </div>
-              <div className="text-center">
-                <button
-                  className="my-2 mx-auto btn btn-dark"
-                  type="submit"
-                  disabled={loading}
-                >
-                  {loading ? "Logging in..." : "Login"}
-                </button>
-              </div>
+              <button className="btn btn-dark w-100 mb-2" type="submit" disabled={loading}>
+                {loading ? "Logging in..." : "Login"}
+              </button>
+
+              <Link to="/forgot-password" className="d-block text-center text-info mb-3 text-decoration-underline">
+                Forgot Password?
+              </Link>
+
+              <div className="text-center mb-3 text-muted">or continue with</div>
+
+              <button onClick={loginWithGoogle} type="button" className="btn btn-outline-danger w-100 mb-2">
+                <i className="fab fa-google me-2"></i> Continue with Google
+              </button>
+
+              <button onClick={loginWithFacebook} type="button" className="btn btn-outline-primary w-100 mb-2">
+                <i className="fab fa-facebook-f me-2"></i> Continue with Facebook
+              </button>
+
+              <p className="text-center mt-4">
+                New here?{" "}
+                <Link to="/register" className="text-decoration-underline text-info">
+                  Register
+                </Link>
+              </p>
             </form>
           </div>
         </div>

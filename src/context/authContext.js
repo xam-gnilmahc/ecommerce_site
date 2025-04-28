@@ -16,15 +16,18 @@ export const useAuth = () => {
 // Provider component
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
+  const [access_token, setToken] = useState(null);
   const [cart, setCart] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [processed, setProcessed] = useState(false);
 
   const memoizedUser = useMemo(() => user, [user]);
-
+  const memoizedProcessed = useMemo(() => processed, [processed]);
 
   // Check if user exists in Supabase or create/update
-  const handleUserInSupabase = async (userId, authenticatedUser) => {
+  const handleUserInSupabase = useMemo(() => async (authenticatedUser) => {
     try {
+      setLoading(true);
       const { data, error } = await supabase
         .from("users")
         .select("*")
@@ -32,13 +35,12 @@ export const AuthProvider = ({ children }) => {
         .single();
 
       if (!data) {
-        console.log("User does not exist, creating a new user.");
         const { data: insertData, error: insertError } = await supabase
           .from("users")
           .insert([{
-            id: userId,
-            email: authenticatedUser.email,
-            name: authenticatedUser.full_name || "Unnamed",
+            id: authenticatedUser.id,
+            email: authenticatedUser.email || "ashimasharma742@gmail.com",
+            name: authenticatedUser.full_name || "ashima sharma",
             created_at: new Date(),
           }])
           .select();
@@ -52,9 +54,8 @@ export const AuthProvider = ({ children }) => {
         const { data: updateData, error: updateError } = await supabase
           .from("users")
           .update({
-            email: authenticatedUser.email,
-            name: authenticatedUser.full_name,
-            id: userId,
+            email: authenticatedUser.email || "ashimasharma742@gmail.com",
+            name: authenticatedUser.full_name || "ashima sharma"
           })
           .eq("email", authenticatedUser.email);
 
@@ -64,16 +65,20 @@ export const AuthProvider = ({ children }) => {
           console.log("User updated:", updateData);
         }
       }
+      setLoading(false);
+      setProcessed(true);
     } catch (error) {
       console.error("Error handling user in Supabase:", error.message);
+      setLoading(false);
     }
-  };
+  }, []);
 
   // Auth state listener
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (session) {
+          console.log(session);
           setUser({ ...session.user.user_metadata, id: session.user.id });
         } else {
           setUser(null);
@@ -88,17 +93,17 @@ export const AuthProvider = ({ children }) => {
 
   // Fetch cart items when user is set
   useEffect(() => {
-    if (user && user.id) {
-      fetchCartItems(user.id);
-    }
-  }, [user]);
+    const updateUserData = async () => {
+      if (user && user.id) {
+        if (!memoizedProcessed) {
+          await handleUserInSupabase(user);
+        }
+        await fetchCartItems(user.id);
+      }
+    };
 
-  const login = async (userId, userData, accessToken) => {
-    setUser({ ...userData, id: userId });
-    setToken(accessToken);
-    await fetchCartItems(userId);
-    await handleUserInSupabase(userId, userData);
-  };
+    updateUserData();
+  }, [user, handleUserInSupabase, memoizedProcessed]);
 
   const logout = () => {
     supabase.auth.signOut();
@@ -106,8 +111,8 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
   };
 
-  // Fetch cart items
-  const fetchCartItems = async (userId) => {
+  // Fetch cart items with loading state
+  const fetchCartItems = useMemo(() => async (userId) => {
     const { data, error } = await supabase
       .from("cart")
       .select(
@@ -116,7 +121,8 @@ export const AuthProvider = ({ children }) => {
           name,
           banner_url,
           amount,
-          description
+          description,
+          rating
         )`
       )
       .eq("user_id", userId)
@@ -126,49 +132,46 @@ export const AuthProvider = ({ children }) => {
     } else {
       console.error("Fetch cart error:", error.message);
     }
-  };
+    setLoading(false);
+  }, []);
 
   const addToCart = async (product) => {
-    try {
-      if (!memoizedUser) return;
+    if (!memoizedUser) return;
 
-      const { data: existingItem, error: selectError } = await supabase
-        .from("cart")
-        .select("id, quantity")
-        .eq("user_id", memoizedUser.id)
-        .eq("product_id", product.id)
-        .single();
+    const { data: existingItem, error: selectError } = await supabase
+      .from("cart")
+      .select("id, quantity")
+      .eq("user_id", memoizedUser.id)
+      .eq("product_id", product.id)
+      .single();
 
-      if (selectError && selectError.code !== "PGRST116") {
-        console.error("Error checking existing cart item:", selectError.message);
-        return;
-      }
-
-      if (!existingItem) {
-        const { error: insertError } = await supabase.from("cart").insert([{
-          product_id: product.id,
-          user_id: memoizedUser.id,
-          amount: product.amount,
-          quantity: 1,
-        }]);
-
-        if (insertError) {
-          console.error("Error inserting cart item:", insertError.message);
-        }
-      } else {
-        const { error: updateError } = await supabase.from("cart")
-          .update({ quantity: existingItem.quantity + 1 })
-          .eq("id", existingItem.id);
-
-        if (updateError) {
-          console.error("Error updating cart quantity:", updateError.message);
-        }
-      }
-
-      await fetchCartItems(memoizedUser.id);
-    } catch (err) {
-      console.error("Unexpected error in addToCart:", err);
+    if (selectError && selectError.code !== "PGRST116") {
+      console.error("Error checking existing cart item:", selectError.message);
+      return;
     }
+
+    if (!existingItem) {
+      const { error: insertError } = await supabase.from("cart").insert([{
+        product_id: product.id,
+        user_id: memoizedUser.id,
+        amount: product.amount,
+        quantity: 1,
+      }]);
+
+      if (insertError) {
+        console.error("Error inserting cart item:", insertError.message);
+      }
+    } else {
+      const { error: updateError } = await supabase.from("cart")
+        .update({ quantity: existingItem.quantity + 1 })
+        .eq("id", existingItem.id);
+
+      if (updateError) {
+        console.error("Error updating cart quantity:", updateError.message);
+      }
+    }
+
+    await fetchCartItems(memoizedUser.id);
   };
 
   const removeFromCart = async (product) => {
@@ -200,18 +203,16 @@ export const AuthProvider = ({ children }) => {
 
   const removeFromCartAfterOrder = async () => {
     if (!memoizedUser) return;
-    console.log('max');
 
-      await supabase.from("cart")
-        .delete()
-        .eq("user_id", memoizedUser.id);
-      
-      await fetchCartItems(memoizedUser.id);
+    await supabase.from("cart")
+      .delete()
+      .eq("user_id", memoizedUser.id);
+
+    await fetchCartItems(memoizedUser.id);
   };
 
-
   return (
-    <AuthContext.Provider value={{ user, login, logout, addToCart, removeFromCart, cart, setUser, removeFromCartAfterOrder}}>
+    <AuthContext.Provider value={{ user, logout, addToCart, removeFromCart, cart, setUser, removeFromCartAfterOrder, setToken, access_token, loading, setLoading }}>
       {children}
     </AuthContext.Provider>
   );

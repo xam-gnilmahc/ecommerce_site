@@ -6,13 +6,14 @@ import { supabase } from "../supaBaseClient";
 
 const ProtectedRoute = ({ children }) => {
   const [loading, setLoading] = useState(true); // Start as true while checking
-  const { user, setUser } = useAuth();
+  const { user, setUser,setToken } = useAuth();
 
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (session) {
           setUser({ ...session.user.user_metadata, id: session.user.id });
+          setToken(session?.access_token);
         } else {
           setUser(null);
         }
@@ -24,6 +25,7 @@ const ProtectedRoute = ({ children }) => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         setUser({ ...session.user.user_metadata, id: session.user.id });
+        setToken(session?.access_token);
       } else {
         setUser(null);
       }
@@ -35,6 +37,7 @@ const ProtectedRoute = ({ children }) => {
       authListener.subscription.unsubscribe();
     };
   }, [setUser]);
+  
 
   if (loading) return null; // Optionally show a spinner
 

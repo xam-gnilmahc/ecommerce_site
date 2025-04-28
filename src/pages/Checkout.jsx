@@ -9,12 +9,14 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { useAuth } from '../context/authContext'; // adjust path if needed
 import sendOrderEmail from "../service/emailService";
+import LottieLoader from "../components/LottieLoader";
+import { supabase } from "../supaBaseClient";
 
 // Stripe Publishable Key (this key should be used in the frontend only)
 const stripePromise = loadStripe("pk_test_51PGec42K0njal9PzJzzxwBOVszXOkqMCBcovRYFChW727EsjLGJ9sWMvztGAGnnmVAtquHDgSllxMryuvfgnv87D00nc9a1Yp7");
 
 const Checkout = () => {
-  const { user , removeFromCartAfterOrder, cart} = useAuth(); // get user and logout from context
+  const { user , removeFromCartAfterOrder, cart, loading} = useAuth(); // get user and logout from context
 
   const state = useSelector((state) => state.handleCart);
   const elements = useElements();
@@ -23,7 +25,7 @@ const Checkout = () => {
   const [selectedCountry, setSelectedCountry] = useState("");
   const [states, setStates] = useState([]);
   const [paymentError, setPaymentError] = useState("");
-  const [loading, setLoading] = useState(false); // Add loading state
+  const [paymentLoading, setLoading] = useState(false); // Add loading state
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -56,27 +58,31 @@ const Checkout = () => {
       });
 
       const totalAmount = Math.round((subtotal + shipping));
-      const data = {
-        payment_method_id: token.id,
+      const paymentData = {
+        paymentMethodId: token.id,
         amount: totalAmount, // Dynamically set this as needed
         member_name: user.full_name,
-        member_email: user.email,
+        // member_email: user.email,
         comment: 'Payment for order #12345'
       };
 
       setLoading(true); // Set loading to true when payment is being processed
 
       try {
-        const response = await axios.post('http://127.0.0.1:8000/api/payments/process', data, {
+        const response = await fetch('https://fzliiwigydluhgbuvnmr.supabase.co/functions/v1/smart-handler', {
+          method: 'POST',
           headers: {
-            'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL3JlZ2lzdGVyIiwiaWF0IjoxNzQ1Mzk3NjYxLCJleHAiOjE3NDU0MDEyNjEsIm5iZiI6MTc0NTM5NzY2MSwianRpIjoidnV1R1VkaUh1MmU2VlVhZSIsInN1YiI6IjExNiIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjciLCJzdG9yZV9pZCI6NDQ2NjY4NCwiZW1haWwiOiJzdGVfcmFyZV82ODA1ZTY4ZmI5YmEyQHZveG1nLmNvbSJ9.2XypPdj6zQ6p11ilMxhsZrpKG2FrbBbtlQ5OUn_qAyA',
-            'Content-Type': 'application/json'
-          }
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6bGlpd2lneWRsdWhnYnV2bm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE5MjkxNTMsImV4cCI6MjA1NzUwNTE1M30.w3Y7W14lmnD-gu2U4dRjqIhy7JZpV9RUmv8-1ybQ92w', // Your Bearer Token
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(paymentData), // Include your payment data here
         });
+    
+        const result = await response.json();
+        
 
-        if (response.status === 200) {
+        if (result.message === 'Payment successful') {
           await sendOrderEmail(user.full_name, user.email, cart, totalAmount);
-          localStorage.removeItem('cart');
           toast.success("Payment processed successfully!");
           await removeFromCartAfterOrder();
         } else {
@@ -161,7 +167,7 @@ const Checkout = () => {
                 <form onSubmit={handleSubmit}>
                   <CardElement />
                   <button type="submit" className="btn btn-primary w-100 mt-4" disabled={loading || !stripe}>
-                    {loading ? 'Submitting Payment...' : 'Submit Payment'}
+                    {paymentLoading ? 'Submitting Payment...' : 'Submit Payment'}
                   </button>
                 </form>
               </div>
@@ -178,7 +184,7 @@ const Checkout = () => {
       <div className="container my-3 py-3">
         <h1 className="text-center mb-4">Checkout</h1>
         <hr />
-        {cart.length ? <ShowCheckout /> : <EmptyCart />}
+         {loading ?  <LottieLoader /> : cart.length ? <ShowCheckout /> : <EmptyCart />}
       </div>
       <Footer />
     </>

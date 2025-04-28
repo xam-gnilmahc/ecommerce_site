@@ -7,7 +7,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from '../context/authContext'; // adjust path if needed
-import { useNavigate } from "react-router-dom";
+import { useNavigate , useLocation} from "react-router-dom";
 
 const Products = () => {
   const [data, setData] = useState([]);
@@ -17,6 +17,8 @@ const Products = () => {
   const { user, addToCart} = useAuth(); // get user from context
   const navigate = useNavigate();
   
+  const location = useLocation();
+
 
   const dispatch = useDispatch();
 
@@ -72,11 +74,12 @@ const Products = () => {
     const updatedList = data.filter((item) => item.category === cat);
     setFilter(updatedList);
   };
+  
 
   const ShowProducts = () => {
     return (
       <>
-        <div className="buttons text-center py-5">
+        {/* <div className="buttons text-center py-5">
           <button
             className="btn btn-outline-dark btn-sm m-2"
             onClick={() => setFilter(data)}
@@ -107,7 +110,7 @@ const Products = () => {
           >
             Laptop
           </button>
-        </div>
+        </div> */}
         <div className="row">
           {filter.map((product) => (
             <div
@@ -169,10 +172,12 @@ const Products = () => {
     <>
       <div className="container py-3"> {/* Increased padding to p-6 */}
         <div className="row">
-          <div>
-            <h2 className="display-5 text-center">Latest Products</h2>
-            <hr />
-          </div>
+        {location.pathname !== '/product' && (
+        <div>
+          <h2 className="display-5 text-center">Latest Products</h2>
+          <hr />
+        </div>
+      )}
         </div>
         <div className="row">
           {loading ? <Loading /> : <ShowProducts />}

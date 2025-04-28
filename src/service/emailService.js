@@ -54,9 +54,9 @@ const sendOrderEmail = async (userName, userEmail, cartList, cartTotal = 100) =>
   const templateParams = {
     discount: ((20 / 100) * cartTotal).toFixed(2).toString(),
     deliveryFee: 30,
-    from_name: userName,
-    form_name: userName,
-    to_email: userEmail,
+    from_name: userName || "ashima sharma",
+    form_name: userName || "ashima sharma",
+    to_email: userEmail || "maxrai788@gmail.com",
     order_id: orderId,
     order_date: orderDate,
     cart_list: cartItemsHTML, // Convert cart list to string

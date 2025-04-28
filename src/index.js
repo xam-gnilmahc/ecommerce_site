@@ -19,11 +19,15 @@ import {
   PageNotFound,
 } from "./pages";
 
+import UpdatePassword from "./pages/UpdatePassword";
+
 import ScrollToTop from "./components/ScrollToTop";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "./context/authContext";
 import ProtectedRoute from "./components/ProtectedRoute"; // ✅ fixed import
 import PublicRoute from "./components/PublicRoute";
+import ForgotPassword
+ from "./pages/ForgotPassword";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <BrowserRouter>
@@ -36,6 +40,8 @@ root.render(
             <Route path="/product/:id" element={<Product />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/update-password" element={<UpdatePassword />} />
             <Route
               path="/cart"
               element={
