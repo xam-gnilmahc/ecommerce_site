@@ -159,12 +159,6 @@ const Checkout = () => {
   cart.map((item) => {
     return (totalItems += item.quantity);
   });
-
-  const [basicModal, setBasicModal] = useState(false);
-
-  const toggleShow = () => setBasicModal(!basicModal);
-
-
   return (
     <>
       <Navbar />
