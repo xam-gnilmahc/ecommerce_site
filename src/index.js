@@ -20,6 +20,7 @@ import {
 } from "./pages";
 
 import UpdatePassword from "./pages/UpdatePassword";
+import OrderDetailsSheet from "./pages/OrderDetailsSheet";
 
 import ScrollToTop from "./components/ScrollToTop";
 import { Toaster } from "react-hot-toast";
@@ -42,6 +43,7 @@ root.render(
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/update-password" element={<UpdatePassword />} />
+            <Route path="/order-details" element={<OrderDetailsSheet />} />
             <Route
               path="/cart"
               element={

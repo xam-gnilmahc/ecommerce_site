@@ -4,6 +4,8 @@ import { Footer, Navbar } from "../components";
 import { supabase } from "../supaBaseClient";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/authContext";
+import FacebookLogin from 'react-facebook-login';
+
 
 const Login = () => {
   const navigate = useNavigate();
@@ -45,10 +47,21 @@ const Login = () => {
     }
   };
 
-  const loginWithFacebook = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({ provider: "facebook" });
-    if (error) toast.error("Facebook sign-in failed: " + error.message);
+  // const loginWithFacebook = async () => {
+  //   const { error } = await supabase.auth.signInWithOAuth({ provider: "facebook" });
+  //   if (error) toast.error("Facebook sign-in failed: " + error.message);
+  // };
+  const responseFacebook = (response) => {
+    if (response && response.name && response.email) {
+      toast.success(
+        `Welcome ${response.name}!\nEmail: ${response.email}\n\nNote: Facebook login is under development and not fully functional for end users.`
+      );
+    } else {
+      toast.error("Facebook login failed or is incomplete.");
+    }
   };
+  
+  
 
   return (
     <>
@@ -100,12 +113,16 @@ const Login = () => {
 
               <button onClick={loginWithGoogle} type="button" className="btn btn-outline-danger w-100 mb-2">
                 <i className="fab fa-google me-2"></i> Continue with Google
-              </button>
-
-              <button onClick={loginWithFacebook} type="button" className="btn btn-outline-primary w-100 mb-2">
-                <i className="fab fa-facebook-f me-2"></i> Continue with Facebook
-              </button>
-
+              </button>     
+              <FacebookLogin
+                appId="1206302750908024"
+                autoLoad={false}
+                fields="name,email,picture"
+                callback={responseFacebook}
+                icon="fa-facebook me-2"
+                textButton="Continue with Facebook"
+                cssClass="btn btn-outline-primary w-100 mb-2 d-flex align-items-center justify-content-center"
+              />
               <p className="text-center mt-4">
                 New here?{" "}
                 <Link to="/register" className="text-decoration-underline text-info">

@@ -55,7 +55,7 @@ const Products = () => {
     };
   }, []);
 
-  const Loading = () => {toast
+  const Loading = () => {
     return (
       <>
         <div className="col-12 py-5 text-center">

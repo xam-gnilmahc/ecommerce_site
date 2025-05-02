@@ -18,17 +18,19 @@ const Cart = () => {
   const updateItemQuantity = (product, action) => {
     // Find the item in the cart and update its quantity locally
     const updatedCart = [...cart];
-    const itemIndex = updatedCart.findIndex((item) => item.products.id === product.id);
+    const itemIndex = updatedCart.findIndex(
+      (item) => item.products.id === product.id
+    );
     if (itemIndex !== -1) {
       const updatedItem = updatedCart[itemIndex];
       if (action === "increase") {
-        updatedItem.quantity += 1;  // Increase quantity
+        updatedItem.quantity += 1; // Increase quantity
       } else if (action === "decrease" && updatedItem.quantity > 1) {
-        updatedItem.quantity -= 1;  // Decrease quantity but don't go below 1
+        updatedItem.quantity -= 1; // Decrease quantity but don't go below 1
       }
 
       // Update the cart state with the new quantity
-      dispatch(addCart(updatedCart));  // Using redux action to update cart (you can manage state this way)
+      dispatch(addCart(updatedCart)); // Using redux action to update cart (you can manage state this way)
 
       // Also update on the backend
       if (action === "increase") {
@@ -47,8 +49,6 @@ const Cart = () => {
       </Link>
     </div>
   );
-  
-
 
   const ShowCart = () => {
     let subtotal = 0;
@@ -61,98 +61,89 @@ const Cart = () => {
     });
 
     return (
-      <section className="py-5">
-        <div className="container">
-          <div className="row g-4">
-            <div className="col-lg-8">
-              <div className="card shadow-sm border-0">
-                <div className="card-header bg-dark text-white">
-                  <h5 className="mb-0">Shopping Cart</h5>
+      <section className="py-5 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+  <div className="container">
+    <div className="row g-4">
+      {/* Cart Items Section */}
+      <div className="col-lg-8">
+        <div className="bg-white border border-gray-200 rounded-3 p-4">
+          <h5 className="mb-4 text-xl font-semibold text-gray-800">🛒 Shopping Cart</h5>
+          {cart.map((item) => (
+            <div key={item.id} className="d-flex flex-column gap-3 mb-4 p-3 bg-gray-50 border rounded-2">
+              <div className="row align-items-center">
+                <div className="col-md-3 mb-2 mb-md-0">
+                  <img
+                    src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.products.banner_url}`}
+                    alt={item.products.name}
+                    className="img-fluid rounded bg-white p-2"
+                    style={{
+                      width: "100%",
+                      height: "80px",
+                      objectFit: "contain",
+                    }}
+                  />
                 </div>
-                <div className="card-body">
-                  {cart.map((item) => (
-                    <div key={item.id} className="mb-4">
-                      <div className="row align-items-center">
-                        <div className="col-3">
-                          <img
-                            src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.products.banner_url}`}
-                            alt={item.products.name}
-                            className="img-fluid rounded"
-                            style={{
-                              width: "200px",
-                              height: "80px",
-                              objectFit: "contain",
-                            }}
-                          />
-                        </div>
-                        <div className="col-5">
-                          <h6 className="mb-0">{item.products.name}</h6>
-                          <p className="lead mt-1 d-flex align-items-center justify-content-center justify-content-md-start gap-1">
-                          {Array.from({ length: 5 }, (_, i) => {
-                            const rating = item.products?.rating || 0;
-                            if (rating >= i + 1) {
-                              return <i key={i} className="fa fa-star text-warning"></i>; // full star
-                            } else if (rating >= i + 0.5) {
-                              return <i key={i} className="fa fa-star-half-o text-warning"></i>; // half star
-                            } else {
-                              return <i key={i} className="fa fa-star-o text-warning"></i>; // empty star
-                            }
-                          })}
-                        </p>
-                        </div>
-                        <div className="col-4 text-end">
-                          <div className="d-flex justify-content-end align-items-center mb-2">
-                            <button
-                              className="btn btn-outline-dark btn-sm"
-                              onClick={() => updateItemQuantity(item.products, "decrease")}
-                            >
-                              <i className="fas fa-minus"></i>
-                            </button>
-                            <span className="mx-3">{item.quantity}</span>
-                            <button
-                              className="btn btn-outline-dark btn-sm"
-                              onClick={() => updateItemQuantity(item.products, "increase")}
-                            >
-                              <i className="fas fa-plus"></i>
-                            </button>
-                          </div>
-                          <strong>${item.amount * item.quantity}</strong>
-                        </div>
-                      </div>
-                      <hr />
-                    </div>
-                  ))}
+                <div className="col-md-5">
+                  <h6 className="mb-1 text-gray-800">{item.products.name}</h6>
+                  <p className="text-sm text-muted">Product ID: #{item.products.id}</p>
+                  <p className="mt-2 d-flex align-items-center gap-1">
+                    {Array.from({ length: 5 }, (_, i) => {
+                      const rating = item.products?.rating || 0;
+                      if (rating >= i + 1) return <i key={i} className="fa fa-star text-warning"></i>;
+                      else if (rating >= i + 0.5) return <i key={i} className="fa fa-star-half-o text-warning"></i>;
+                      return <i key={i} className="fa fa-star-o text-warning"></i>;
+                    })}
+                  </p>
+                </div>
+                <div className="col-md-4 text-end">
+                  <div className="d-flex justify-content-end align-items-center gap-2 mb-2">
+                    <button
+                      className="btn btn-sm btn-outline-secondary rounded-circle"
+                      onClick={() => updateItemQuantity(item.products, "decrease")}
+                    >
+                      <i className="fas fa-minus"></i>
+                    </button>
+                    <span className="px-2">{item.quantity}</span>
+                    <button
+                      className="btn btn-sm btn-outline-secondary rounded-circle"
+                      onClick={() => updateItemQuantity(item.products, "increase")}
+                    >
+                      <i className="fas fa-plus"></i>
+                    </button>
+                  </div>
+                  <strong className="text-success">${item.amount * item.quantity}</strong>
                 </div>
               </div>
             </div>
-
-            <div className="col-lg-4">
-              <div className="card shadow-sm border-0">
-                <div className="card-header bg-light">
-                  <h5 className="mb-0">Order Summary</h5>
-                </div>
-                <div className="card-body">
-                  <ul className="list-group list-group-flush mb-3">
-                    <li className="list-group-item d-flex justify-content-between">
-                      Products ({totalItems}) <strong>${Math.round(subtotal)}</strong>
-                    </li>
-                    <li className="list-group-item d-flex justify-content-between">
-                      Shipping <strong>${shipping}</strong>
-                    </li>
-                    <li className="list-group-item d-flex justify-content-between">
-                      <strong>Total</strong>
-                      <strong>${Math.round(subtotal + shipping)}</strong>
-                    </li>
-                  </ul>
-                  <Link to="/checkout" className="btn btn-dark btn-lg w-100">
-                    Proceed to Checkout
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
-      </section>
+      </div>
+
+      {/* Order Summary */}
+      <div className="col-lg-4">
+        <div className="bg-white border border-gray-200 rounded-3 p-4">
+          <h5 className="mb-4 text-lg font-semibold text-gray-800">📦 Order Summary</h5>
+          <ul className="list-group list-group-flush mb-3">
+            <li className="list-group-item d-flex justify-content-between">
+              Products ({totalItems}) <strong>${Math.round(subtotal)}</strong>
+            </li>
+            <li className="list-group-item d-flex justify-content-between">
+              Shipping <strong>${shipping}</strong>
+            </li>
+            <li className="list-group-item d-flex justify-content-between">
+              <strong>Total</strong>
+              <strong>${Math.round(subtotal + shipping)}</strong>
+            </li>
+          </ul>
+          <Link to="/checkout" className="btn btn-success btn-lg w-100 mt-3">
+            Proceed to Checkout
+          </Link>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
     );
   };
 
@@ -160,7 +151,13 @@ const Cart = () => {
     <>
       <Navbar />
       <div className="container py-4">
-        {loading ? <LottieLoader /> : cart.length ? <ShowCart /> : <EmptyCart />}
+        {loading ? (
+          <LottieLoader />
+        ) : cart.length ? (
+          <ShowCart />
+        ) : (
+          <EmptyCart />
+        )}
       </div>
       <Footer />
     </>
