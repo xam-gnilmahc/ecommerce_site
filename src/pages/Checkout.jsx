@@ -16,6 +16,7 @@ import { useAuth } from "../context/authContext"; // adjust path if needed
 import { sendOrderEmail } from "../service/emailService";
 import LottieLoader from "../components/LottieLoader";
 import { supabase } from "../supaBaseClient";
+import "./Animation.css";
 
 // Stripe Publishable Key
 const stripePromise = loadStripe(
@@ -41,6 +42,7 @@ const Checkout = () => {
   const [paymentError, setPaymentError] = useState("");
   const [paymentLoading, setLoading] = useState(false); // Add loading state
   const [paymentMethod, setPaymentMethod] = useState("card");
+  const [show, setShow] = useState(false);
 
   // Handle Country Change
   const handleCountryChange = (country) => {
@@ -130,7 +132,8 @@ const Checkout = () => {
             address,
             totalAmount
           );
-          toast.success("Payment processed successfully!");
+          // toast.success("Payment processed successfully!");
+          setShow(true);
           await removeFromCartAfterOrder();
         } else {
           toast.error("Payment processing failed.");
@@ -159,6 +162,9 @@ const Checkout = () => {
   cart.map((item) => {
     return (totalItems += item.quantity);
   });
+
+  const closeModal = () => setShow(false);
+
   return (
     <>
       <Navbar />
@@ -233,6 +239,7 @@ const Checkout = () => {
                               type="text"
                               className="form-control"
                               value={addressLine1}
+                              style={{ color: "#6c757d" }}
                               onChange={(e) => setAddressLine1(e.target.value)}
                               required
                             />
@@ -247,6 +254,7 @@ const Checkout = () => {
                             <input
                               type="text"
                               className="form-control"
+                              style={{ color: "#6c757d" }}
                               value={addressLine2}
                               onChange={(e) => setAddressLine2(e.target.value)}
                             />
@@ -261,6 +269,7 @@ const Checkout = () => {
                             <input
                               type="text"
                               className="form-control"
+                              style={{ color: "#6c757d" }}
                               value={zipCode}
                               onChange={(e) => setZipCode(e.target.value)}
                               required
@@ -339,7 +348,7 @@ const Checkout = () => {
                           <div className="d-flex justify-content-between mb-3">
                             <button
                               className={`btn btn-light p-2 border d-flex align-items-center justify-content-center ${
-                                paymentMethod === "card" ? "border-primary" : ""
+                                paymentMethod === "card" ? "border-secondary" : ""
                               }`}
                               onClick={() => setPaymentMethod("card")}
                               style={{ width: "30%" }}
@@ -358,7 +367,7 @@ const Checkout = () => {
                             <button
                               className={`btn btn-light p-2 border d-flex align-items-center justify-content-center ${
                                 paymentMethod === "googlePay"
-                                  ? "border-primary"
+                                  ? "border-secondary"
                                   : ""
                               }`}
                               onClick={() => setPaymentMethod("googlePay")}
@@ -378,7 +387,7 @@ const Checkout = () => {
                             <button
                               className={`btn btn-light p-2 border d-flex align-items-center justify-content-center ${
                                 paymentMethod === "applePay"
-                                  ? "border-primary"
+                                  ? "border-secondary"
                                   : ""
                               }`}
                               onClick={() => setPaymentMethod("applePay")}
@@ -453,7 +462,7 @@ const Checkout = () => {
                           paddingBottom: "10px",
                         }}
                       >
-                        {/* Product Image */}
+                      {/* Product Image */}
                         <div style={{ width: "25%", flexShrink: 0 }}>
                           <img
                             src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.products.banner_url}`}
@@ -534,6 +543,103 @@ const Checkout = () => {
             </div>
           )}
         </div>
+        {show && (
+          <div
+            className="modal fade show d-block"
+            tabIndex="-1"
+            role="dialog"
+            style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
+          >
+            <div className="modal-dialog modal-dialog-centered" role="document">
+              <div
+                className="modal-content animate-fade-in border-0 position-relative"
+                style={{
+                  borderRadius: "1rem",
+                  boxShadow: "0 0.75rem 1.5rem rgba(0, 0, 0, 0.15)",
+                  overflow: "hidden",
+                }}
+              >
+                {/* 🔥 Lottie animation as overlay */}
+                <div
+                  className="position-absolute top-0 start-50 translate-middle-x"
+                  style={{
+                    width: "1000px",
+                    height: "100px",
+                    zIndex: 1, // Ensure the loader is below the button
+                    marginTop: "-50px",
+                  }}
+                >
+                  <LottieLoader useAlt={true}/>
+                </div>
+
+                {/* Modal header with close button */}
+                <div
+                  className="modal-header border-0 d-flex justify-content-between align-items-center"
+                  style={{ zIndex: 2 }}
+                >
+                  <h5 className="modal-title text-dark fw-semibold m-0">
+                    Thank You, {user.full_name || name}!
+                  </h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={closeModal}
+                    style={{ zIndex: 3 }} // Ensure the close button is above the animation
+                  ></button>
+                </div>
+
+                <div className="modal-body px-4">
+                  <h6 className="text-success mb-3">
+                    Your payment was successful.
+                  </h6>
+                  <hr
+                    className="mt-2 mb-4"
+                    style={{
+                      height: "0",
+                      backgroundColor: "transparent",
+                      opacity: ".75",
+                      borderTop: "2px dashed #9e9e9e",
+                    }}
+                  />
+                  <ul className="list-group list-group-flush mt-3">
+                    <li
+                      className="list-group-item d-flex justify-content-between"
+                      style={{ color: "#6c757d" }}
+                    >
+                      order
+                      <span>#12343556</span>
+                    </li>
+                    <li
+                      className="list-group-item d-flex justify-content-between"
+                      style={{ color: "#6c757d" }}
+                    >
+                      Estimated Delivery <span>3–5 business days</span>
+                    </li>
+                    {/* <li
+                      className="list-group-item d-flex justify-content-between fw-bold"
+                      style={{ color: "#000" }}
+                    >
+                      Total <span>${Math.round(subtotal + shipping)}</span>
+                    </li> */}
+                  </ul>
+                </div>
+
+                <div className="modal-footer border-0 d-flex justify-content-center pb-4">
+                  <button
+                    className="btn bg-success"
+                    style={{
+                      color: "#fff",
+                      borderRadius: "2rem",
+                      padding: "0.6rem 1.5rem",
+                    }}
+                  >
+                    Track Your Order
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       <Footer />
     </>

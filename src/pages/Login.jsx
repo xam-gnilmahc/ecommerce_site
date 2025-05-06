@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Footer, Navbar } from "../components";
+import { Footer } from "../components";
 import { supabase } from "../supaBaseClient";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/authContext";
-import FacebookLogin from 'react-facebook-login';
-
+import FacebookLogin from "react-facebook-login";
+import PublicNavbar from "../components/PublicNavbar";
+import "./Login.css";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -26,7 +27,10 @@ const Login = () => {
 
     const { email, password } = formData;
 
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
     if (error) {
       toast.error(error.message);
@@ -39,11 +43,13 @@ const Login = () => {
   };
 
   const loginWithGoogle = async () => {
-    console.log('google');
-    const { data, error } = await supabase.auth.signInWithOAuth({ provider: "google" });
+    console.log("google");
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+    });
     if (error) {
       toast.error("Facebook sign-in failed: " + error.message);
-      return; 
+      return;
     }
   };
 
@@ -60,60 +66,72 @@ const Login = () => {
       toast.error("Facebook login failed or is incomplete.");
     }
   };
-  
-  
 
   return (
     <>
-      <Navbar />
-      <div className="container my-4">
-        <h2 className="text-center mb-3">Login</h2>
-        <hr />
-        <div className="row justify-content-center">
-          <div className="col-md-5">
+      <PublicNavbar />
+      <div className="loginSignUpSection">
+        <div className="loginSignUpContainer">
+          <div className="loginSignUpTabsContentLogin">
             <form onSubmit={handleSubmit}>
-              <div className="mb-3">
-                <label htmlFor="email" className="form-label">Email address</label>
+              <input
+                type="email"
+                className="form-control"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Email address *"
+                required
+              />
+
+              <input
+                type="password"
+                className="form-control"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Password *"
+                required
+              />
+
+              <div className="loginSignUpForgetPass">
+              <div className="form-check d-flex align-items-center">
                 <input
-                  type="email"
-                  className="form-control"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="name@example.com"
-                  required
+                  type="checkbox"
+                  className="form-check-input me-2 brandRadio"
+                  id="rememberMe"
+                  style={{ transform: "scale(0.85)", cursor: "pointer" }}
                 />
-              </div>
-              <div className="mb-3">
-                <label htmlFor="password" className="form-label">Password</label>
-                <input
-                  type="password"
-                  className="form-control"
-                  id="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="Password"
-                  required
-                />
+                <label className="form-check-label mb-0" htmlFor="rememberMe" style={{ fontSize: "0.9rem" }}>
+                  Remember me
+                </label>
               </div>
 
-              {error && <div className="alert alert-danger">{error}</div>}
+                <p>
+                  <Link to="/forgot-password">Lost password?</Link>
+                </p>
+              </div>
 
-              <button className="btn btn-dark w-100 mb-2" type="submit" disabled={loading}>
+              <button
+                type="submit"
+                disabled={loading}
+              >
                 {loading ? "Logging in..." : "Login"}
               </button>
 
-              <Link to="/forgot-password" className="d-block text-center text-info mb-3 text-decoration-underline">
-                Forgot Password?
-              </Link>
+              <div className="text-center mb-3 text-muted">
+                or continue with
+              </div>
 
-              <div className="text-center mb-3 text-muted">or continue with</div>
-
-              <button onClick={loginWithGoogle} type="button" className="btn btn-outline-danger w-100 mb-2">
+              <button
+                onClick={loginWithGoogle}
+                type="button"
+                className="btn btn-outline-danger w-100 "
+              >
                 <i className="fab fa-google me-2"></i> Continue with Google
-              </button>     
+              </button>
               <FacebookLogin
                 appId="1206302750908024"
                 autoLoad={false}
@@ -123,12 +141,18 @@ const Login = () => {
                 textButton="Continue with Facebook"
                 cssClass="btn btn-outline-primary w-100 mb-2 d-flex align-items-center justify-content-center"
               />
-              <p className="text-center mt-4">
-                New here?{" "}
-                <Link to="/register" className="text-decoration-underline text-info">
-                  Register
-                </Link>
-              </p>
+
+              <div className="loginSignUpTabsContentLoginText">
+                <p>
+                  No account yet?{" "}
+                  <Link
+                    to="/register"
+                    className="text-decoration-underline text-info"
+                  >
+                    Create Account
+                  </Link>
+                </p>
+              </div>
             </form>
           </div>
         </div>

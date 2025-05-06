@@ -2,6 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/authContext';
 import './Navbar.css';
+import logo from './assets/logo.png';
+import { RiShoppingBagLine } from "react-icons/ri";
+import Badge from "@mui/material/Badge";
 
 const Navbar = () => {
   const { user, logout, cart } = useAuth();
@@ -29,8 +32,8 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="navbar navbar-light  py-3 sticky-top" style={{ position: 'relative' }}>
-        <div className="container d-flex justify-content-between align-items-center">
+      <nav className="navBar">
+        
 
           {/* Hamburger */}
           <div
@@ -44,15 +47,14 @@ const Navbar = () => {
           {/* Logo */}
           <NavLink to="/" className="text-decoration-none d-flex align-items-center gap-2">
             <img
-              src="https://cdn.iconscout.com/icon/free/png-256/free-amazon-icon-download-in-svg-png-gif-file-formats--logo-a-load-shopping-marketplace-font-awesome-pack-user-interface-icons-44447.png"
+              src={logo}
               alt="Logo"
-              style={{ width: '40px', height: '40px', objectFit: 'contain' }}
+              style={{ width: '100px', height: '60px', objectFit: 'contain' }}
             />
-            <h5 className="m-0 fw-bold text-dark">ShopZone</h5>
           </NavLink>
 
           {/* Right Auth/Cart */}
-          <div className="d-flex align-items-center gap-2">
+          <div className="d-flex align-items-center gap-3">
             {!user ? (
               <>
                 <NavLink to="/login" className="btn btn-outline-dark btn-sm">
@@ -65,13 +67,17 @@ const Navbar = () => {
             ) : (
               <>
                 <span className="text-muted small">Hi, <strong>{user.full_name}</strong></span>
-                <NavLink to="/cart" className="btn btn-outline-dark btn-sm position-relative">
-                  <i className="fa fa-shopping-cart me-1"></i> Cart
-                  {cart.length > 0 && (
-                    <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                      {cart.length}
-                    </span>
-                  )}
+                <NavLink to="/cart">
+                <Badge
+              badgeContent={cart.length === 0 ? "0" : cart.length}
+              color="primary"
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
+              }}
+            >
+               <RiShoppingBagLine size={22} color="black" />
+               </Badge>
                 </NavLink>
                 <button onClick={logout} className="btn btn-outline-dark btn-sm">
                   <i className="fa fa-sign-out-alt me-1"></i> Logout
@@ -79,11 +85,11 @@ const Navbar = () => {
               </>
             )}
           </div>
-        </div>
+        
 
         {/* Animated Menu (with ref) */}
-        {isModalOpen && (
-          <div ref={modalRef} className="custom-modal animate-slide-down">
+        {isModalOpen &&(
+          <div ref={modalRef} className="custom-modal animate-slide-down p-3">
             <h5 className="text-dark mb-3">Menu</h5>
             <NavLink to="/" className="nav-item-link" onClick={toggleModal} style={{ textDecoration: 'none' }}>Home</NavLink>
             <NavLink to="/product" className="nav-item-link" onClick={toggleModal} style={{ textDecoration: 'none' }}>Products</NavLink>

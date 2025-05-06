@@ -1,13 +1,14 @@
 // LottieLoader.js
 import React from 'react';
 import Lottie from 'react-lottie';
-import animationData from '../lottie.json'; // Path to your Lottie JSON file
+import animationData from '../lottie.json'; 
+import altAnimation from '../animation.json';
 
-const LottieLoader = () => {
+const LottieLoader = ({ useAlt }) => {
   const defaultOptions = {
     loop: true,
-    autoplay: true, // Animation plays automatically
-    animationData: animationData, // Your Lottie JSON
+    autoplay: true,
+    animationData: useAlt ? altAnimation : animationData,
     rendererSettings: {
       preserveAspectRatio: 'xMidYMid slice',
     },

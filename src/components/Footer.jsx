@@ -1,95 +1,178 @@
 import React from "react";
+import "./Footer.css";
+import logo from "./assets/logo.png";
+import paymentIcon from "./assets/paymentIcon.png";
+import { FaFacebookF } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
+import { FaInstagram } from "react-icons/fa";
+import { FaYoutube } from "react-icons/fa";
+import { FaPinterest } from "react-icons/fa";
+
+import { Link } from "react-router-dom";
 
 const Footer = () => {
+  const handleSubscribe = (e) => {
+    e.preventDefault();
+    alert("Subscribed Successfully");
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
+  const getCurrentYear = () => new Date().getFullYear();
+
   return (
-    <footer className="bg-dark text-light pt-5">
-      {/* Newsletter */}
-      <div className="container text-center text-md-start">
-        <div className="row py-4 border-bottom border-secondary">
-          <div className="col-md-6 mb-3 mb-md-0">
-            <h5 className="mb-3">Subscribe to our Ecommerce site</h5>
-            <form className="d-flex">
-              <input
-                type="email"
-                className="form-control me-2"
-                placeholder="Enter your email"
-              />
-              <button className="btn btn-warning">Subscribe</button>
-            </form>
+    <>
+      <footer className="footer">
+        <div className="footer__container">
+          <div className="footer_left">
+            <div className="footer_logo_container">
+              <img src={logo} alt="" Z />
+            </div>
+
+            <p>1418 River Drive, Suite 35 Cottonhall, CA 9622 United States</p>
+
+            <div className="footer_address">
+              <strong> sale@uomo.com </strong>
+              <strong> +1 246-345-0695 </strong>
+            </div>
+
+            <div className="social_links">
+              <FaFacebookF />
+              <FaXTwitter />
+              <FaInstagram />
+              <FaYoutube />
+              <FaPinterest />
+            </div>
           </div>
-          <div className="col-md-6 d-flex justify-content-md-end align-items-center">
-            <div>
-              <h6 className="mb-3">Follow us</h6>
-              <a href="#" className="text-light me-3 fs-5">
-                <i className="fab fa-facebook-f"></i>
-              </a>
-              <a href="#" className="text-light me-3 fs-5">
-                <i className="fab fa-twitter"></i>
-              </a>
-              <a href="#" className="text-light me-3 fs-5">
-                <i className="fab fa-instagram"></i>
-              </a>
-              <a href="#" className="text-light me-3 fs-5">
-                <i className="fab fa-linkedin"></i>
-              </a>
+
+          <div className="footer_content">
+            <h5>Company</h5>
+            <div className="links_container">
+              <ul onClick={scrollToTop}>
+                <li>
+                  <Link to="/about">About Us</Link>
+                </li>
+                <li>
+                  <Link to="/about">Career</Link>
+                </li>
+                <li>
+                  <Link to="*">Affilates</Link>
+                </li>
+                <li>
+                  <Link to="/blog">Blog</Link>
+                </li>
+                <li>
+                  <Link to="/contact">Contact Us</Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="footer_content">
+            <h5>Shop</h5>
+            <div className="links_container">
+              <ul onClick={scrollToTop}>
+                <li>
+                  <Link to="/shop">New Arrivals</Link>
+                </li>
+                <li>
+                  <Link to="/shop">Accessories</Link>
+                </li>
+                <li>
+                  <Link to="/shop">Men</Link>
+                </li>
+                <li>
+                  <Link to="/shop">Women</Link>
+                </li>
+                <li>
+                  <Link to="/shop">Shop All</Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="footer_content">
+            <h5>Help</h5>
+            <div className="links_container">
+              <ul onClick={scrollToTop}>
+                <li>
+                  <Link to="/contact">Customer Service</Link>
+                </li>
+                <li>
+                  <Link to="/loginSignUp">My Account</Link>
+                </li>
+                <li>
+                  <Link to="/contact">Find a Store</Link>
+                </li>
+                <li>
+                  <Link to="/terms">Legal & Privacy</Link>
+                </li>
+                <li>
+                  <Link to="/contact">Contact</Link>
+                </li>
+                <li>
+                  <Link to="/">Gift Card</Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="footer_right">
+            <h5>Subscribe</h5>
+            <p>
+              Be the first to get the latest news about trends, promotions, and
+              much more!
+            </p>
+
+            <form onSubmit={handleSubscribe}>
+              <input type="email" placeholder="Your email address" required />
+              <button type="submit">Join</button>
+            </form>
+
+            <h6>Secure Payments</h6>
+            <div className="paymentIconContainer">
+              <img src={paymentIcon} alt="" />
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Main Footer */}
-      <div className="container text-center text-md-start mt-5">
-        <div className="row mt-3">
-          {/* Shop */}
-          <div className="col-md-3 col-lg-3 col-xl-3 mx-auto mb-4">
-            <h6 className="text-uppercase fw-bold mb-4">Shop</h6>
-            <p><a href="#" className="text-reset text-decoration-none">Men's Fashion</a></p>
-            <p><a href="#" className="text-reset text-decoration-none">Women's Fashion</a></p>
-            <p><a href="#" className="text-reset text-decoration-none">Accessories</a></p>
-            <p><a href="#" className="text-reset text-decoration-none">New Arrivals</a></p>
-          </div>
-
-          {/* Company */}
-          <div className="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
-            <h6 className="text-uppercase fw-bold mb-4">Company</h6>
-            <p><a href="#" className="text-reset text-decoration-none">About Us</a></p>
-            <p><a href="#" className="text-reset text-decoration-none">Careers</a></p>
-            <p><a href="#" className="text-reset text-decoration-none">Blog</a></p>
-            <p><a href="#" className="text-reset text-decoration-none">Privacy Policy</a></p>
-          </div>
-
-          {/* Customer Service */}
-          <div className="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">
-            <h6 className="text-uppercase fw-bold mb-4">Support</h6>
-            <p><a href="#" className="text-reset text-decoration-none">Contact Us</a></p>
-            <p><a href="#" className="text-reset text-decoration-none">Order Tracking</a></p>
-            <p><a href="#" className="text-reset text-decoration-none">Returns</a></p>
-            <p><a href="#" className="text-reset text-decoration-none">FAQs</a></p>
-          </div>
-
-          {/* Contact */}
-          <div className="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
-            <h6 className="text-uppercase fw-bold mb-4">Contact</h6>
-            <p><i className="fas fa-home me-3"></i> 123 Market St, New York, NY 10012</p>
-            <p><i className="fas fa-envelope me-3"></i> support@shopifyclone.com</p>
-            <p><i className="fas fa-phone me-3"></i> +1 234 567 890</p>
-            <p><i className="fas fa-print me-3"></i> +1 234 567 891</p>
+        <div className="footer_bottom">
+          <p>
+            © {getCurrentYear()} Uomo. All Rights Reserved | Made By{" "}
+            <a
+              href="https://github.com/shakti177"
+              target="_blank"
+              rel="noreferrer"
+              style={{ color: "#C22928", textDecoration: "none" }}
+            >
+              Shakti Tamrakar
+            </a>{" "}
+            with ❤️
+          </p>
+          <div className="footerLangCurrency">
+            <div className="footerLang">
+              <p>Language</p>
+              <select name="language" id="language">
+                <option value="english">United States | English</option>
+                <option value="Hindi">Hindi</option>
+                <option value="Germany">Germany</option>
+                <option value="French">French</option>
+              </select>
+            </div>
+            <div className="footerCurrency">
+              <p>Currency</p>
+              <select name="currency" id="currency">
+                <option value="USD">$ USD</option>
+                <option value="INR">₹ INR</option>
+                <option value="EUR">€ EUR</option>
+                <option value="GBP">£ GBP</option>
+              </select>
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* Bottom Footer */}
-      <div className="text-center p-4 border-top border-secondary mt-4">
-        <div className="d-flex justify-content-center align-items-center">
-          <span className="me-2">© 2024 ShopifyClone. All rights reserved.</span>
-          <div className="ms-3">
-            <i className="fab fa-cc-visa fs-4 me-2"></i>
-            <i className="fab fa-cc-mastercard fs-4 me-2"></i>
-            <i className="fab fa-cc-paypal fs-4"></i>
-          </div>
-        </div>
-      </div>
-    </footer>
+      </footer>
+    </>
   );
 };
 

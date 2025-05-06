@@ -197,7 +197,7 @@ export const AuthProvider = ({ children }) => {
           .eq("id", existingItem.id);
       }
 
-      await fetchCartItems(memoizedUser.id);
+     // await fetchCartItems(memoizedUser.id);
     }
   };
 
