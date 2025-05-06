@@ -96,38 +96,6 @@ const Products = () => {
   const ShowProducts = () => {
     return (
       <>
-        {/* <div className="buttons text-center py-5">
-          <button
-            className="btn btn-outline-dark btn-sm m-2"
-            onClick={() => setFilter(data)}
-          >
-            All
-          </button>
-          <button
-            className="btn btn-outline-dark btn-sm m-2"
-            onClick={() => filterProduct("Mobile")}
-          >
-            Mobile
-          </button>
-          <button
-            className="btn btn-outline-dark btn-sm m-2"
-            onClick={() => filterProduct("Tablet")}
-          >
-            Tablet
-          </button>
-          <button
-            className="btn btn-outline-dark btn-sm m-2"
-            onClick={() => filterProduct("Watch")}
-          >
-            Watch
-          </button>
-          <button
-            className="btn btn-outline-dark btn-sm m-2"
-            onClick={() => filterProduct("Laptop")}
-          >
-            Laptop
-          </button>
-        </div> */}
          <div className="shopDetailsProductsContainer">
           {filter.map((product) => (
               <div className="sdProductContainer">
