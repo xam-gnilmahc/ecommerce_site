@@ -6,19 +6,23 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import { useAuth } from '../context/authContext'; // adjust path if needed
-import { useNavigate , useLocation} from "react-router-dom";
-
+import { useAuth } from "../context/authContext"; // adjust path if needed
+import { useNavigate, useLocation } from "react-router-dom";
+import Filters from "./Filter";
+import { IoFilterSharp, IoClose } from "react-icons/io5";
+import { FaStar } from "react-icons/fa";
+import "./Products.css";
 const Products = () => {
   const [data, setData] = useState([]);
   const [filter, setFilter] = useState(data);
   const [loading, setLoading] = useState(false);
   let componentMounted = true;
-  const { user, addToCart} = useAuth(); // get user from context
+  const { user, addToCart } = useAuth(); // get user from context
   const navigate = useNavigate();
-  
+
   const location = useLocation();
 
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -55,6 +59,20 @@ const Products = () => {
     };
   }, []);
 
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+  const toggleDrawer = () => {
+    setIsDrawerOpen(!isDrawerOpen);
+  };
+
+  const closeDrawer = () => {
+    setIsDrawerOpen(false);
+  };
+
   const Loading = () => {
     return (
       <>
@@ -74,7 +92,6 @@ const Products = () => {
     const updatedList = data.filter((item) => item.category === cat);
     setFilter(updatedList);
   };
-  
 
   const ShowProducts = () => {
     return (
@@ -111,41 +128,38 @@ const Products = () => {
             Laptop
           </button>
         </div> */}
-        <div className="row">
+         <div className="shopDetailsProductsContainer">
           {filter.map((product) => (
-            <div
-              id={product.id}
-              key={product.id}
-              className="col-lg-4 col-md-6 col-sm-12 mb-4"
-            >
-              <div className=" text-center h-100">
+              <div className="sdProductContainer">
+                    <div className="sdProductImages">
+                    <Link to={"/product/" + product.id}>
                 <img
-                  className="card-img-top p-3 mx-auto d-block img-fluid"
+                   className="sdProduct_front"
                   src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${product.banner_url}`}
                   alt="Product"
                   style={{
-                    width:"auto",
+                    width: "250px",
                     maxHeight: "250px",
                     objectFit: "contain",
                     transition: "transform 0.3s ease",
                   }}
-                  onMouseOver={(e) => (e.target.style.transform = "scale(1.10)")}
-                  onMouseOut={(e) => (e.target.style.transform = "scale(1)")}
+
                 />
-                <div className="card-body">
-                  <h5 className="card-title">{product.name.substring(0, 12)}</h5>
-                  <p className="card-text">{product.description.substring(0, 90)}...</p>
-                </div>
-                <ul className="list-group list-group-flush">
-                  <li className="list-group-item lead">$ {product.amount}</li>
-                </ul>
-                <div className="card-body">
-                  <Link to={"/product/" + product.id} className="btn btn-dark m-1">
-                    Buy Now
-                  </Link>
-                  <button
-                    className="btn btn-dark m-1"
-                    onClick={() => {
+                    
+                <img
+                   className="sdProduct_back"
+                  src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${product.banner_url}`}
+                  alt="Product"
+                  style={{
+                    width: "250",
+                    maxHeight: "250px",
+                    objectFit: "contain",
+                    transition: "transform 0.3s ease",
+                  }}
+
+                />
+                </Link>
+                 <h4  onClick={() => {
                       if (!user) {
                         toast.error("Please login to add products to cart.");
                         navigate("/login");
@@ -153,34 +167,79 @@ const Products = () => {
                       }
                       toast.success("Added to cart");
                       addProduct(product);
-                    }}
-                  >
-                    Add to Cart
-                  </button>
+                    }}>
+                        Add to Cart
+                      </h4>
                 </div>
-              </div>
+                <div className="sdProductNameInfo">
+                  <h5 >
+                    {product.name.substring(0, 12)}
+                  </h5>
+                </div>
+                
+                  <p >$ {product.amount}</p>
+                  <div className="sdProductRatingReviews">
+                          <div className="sdProductRatingStar">
+                            <FaStar color="#FEC78A" size={10} />
+                            <FaStar color="#FEC78A" size={10} />
+                            <FaStar color="#FEC78A" size={10} />
+                            <FaStar color="#FEC78A" size={10} />
+                            <FaStar color="#FEC78A" size={10} />
+                          </div>
+                          <span>{product.reviews_count}</span>
+                        </div>
             </div>
           ))}
         </div>
-
-
       </>
     );
   };
 
   return (
     <>
-      <div className="container py-3"> {/* Increased padding to p-6 */}
-        <div className="row">
-        {location.pathname !== '/product' && (
-        <div>
-          <h2 className="display-5 text-center">Latest Products</h2>
-          <hr />
-        </div>
-      )}
-        </div>
-        <div className="row">
-          {loading ? <Loading /> : <ShowProducts />}
+      <div className=" shopDetails">
+        {" "}
+        {/* Increased padding to p-6 */}
+        <div className="shopDetailMain">
+          <div className="shopDetails__left">
+            <Filters />
+          </div>
+          <div className="shopDetails__right">
+            <div className="shopDetailsSorting">
+              <div className="shopDetailsBreadcrumbLink">
+                <Link to="/" onClick={scrollToTop}>
+                  Home
+                </Link>
+                &nbsp;/&nbsp;
+                <Link to="/shop">The Shop</Link>
+              </div>
+              <div className="filterLeft" onClick={toggleDrawer}>
+                <IoFilterSharp />
+                <p>Filter</p>
+              </div>
+              <div className="shopDetailsSort">
+                <select name="sort" id="sort">
+                  <option value="default">Default Sorting</option>
+                  <option value="Featured">Featured</option>
+                  <option value="bestSelling">Best Selling</option>
+                  <option value="a-z">Alphabetically, A-Z</option>
+                  <option value="z-a">Alphabetically, Z-A</option>
+                  <option value="lowToHigh">Price, Low to high</option>
+                  <option value="highToLow">Price, high to low</option>
+                  <option value="oldToNew">Date, old to new</option>
+                  <option value="newToOld">Date, new to old</option>
+                </select>
+                <div className="filterRight" onClick={toggleDrawer}>
+                  <div className="filterSeprator"></div>
+                  <IoFilterSharp />
+                  <p>Filter</p>
+                </div>
+              </div>
+            </div>
+            <div className="row">
+              {loading ? <Loading /> : <ShowProducts />}
+            </div>
+          </div>
         </div>
       </div>
     </>

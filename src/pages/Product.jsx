@@ -7,23 +7,29 @@ import { addCart } from "../redux/action";
 import { supabase } from "../supaBaseClient";
 import { Footer, Navbar } from "../components";
 import toast from "react-hot-toast";
-import { useAuth } from '../context/authContext'; // adjust path if needed
+import { useAuth } from "../context/authContext"; // adjust path if needed
 import { useNavigate } from "react-router-dom";
-
-
+import "./Product.css";
+import { GoChevronLeft } from "react-icons/go";
+import { GoChevronRight } from "react-icons/go";
+import Tooltip from "@mui/material/Tooltip";
+import Zoom from "@mui/material/Zoom";
+import { FiHeart } from "react-icons/fi";
+import { PiShareNetworkLight } from "react-icons/pi";
+import AdditionalInfo from "../components/AdditionalInfo";
 const Product = () => {
   const { id } = useParams();
   const [product, setProduct] = useState([]);
   const [similarProducts, setSimilarProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loading2, setLoading2] = useState(false);
-  const { user } = useAuth(); // get user from context
+  const { user, addToCart } = useAuth(); // get user from context
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
 
-  const addProduct = (product) => {
-    dispatch(addCart(product));
+  const addProduct = async (product) => {
+    await addToCart(product);
   };
 
   useEffect(() => {
@@ -97,6 +103,45 @@ const Product = () => {
     }
   }, [product]);
 
+  const sizes = ["XS", "S", "M", "L", "XL"];
+  const sizesFullName = [
+    "Extra Small",
+    "Small",
+    "Medium",
+    "Large",
+    "Extra Large",
+  ];
+  const [selectSize, setSelectSize] = useState("S");
+
+  const [highlightedColor, setHighlightedColor] = useState("#C8393D");
+  const colors = ["#222222", "#C8393D", "#E4E4E4"];
+  const colorsName = ["Black", "Red", "Grey"];
+
+  const [quantity, setQuantity] = useState(1);
+
+  const increment = () => {
+    setQuantity(quantity + 1);
+  };
+
+  const decrement = () => {
+    if (quantity > 1) {
+      setQuantity(quantity - 1);
+    }
+  };
+
+  const handleInputChange = (event) => {
+    const value = parseInt(event.target.value);
+    if (!isNaN(value) && value > 0) {
+      setQuantity(value);
+    }
+  };
+
+  const [clicked, setClicked] = useState(false);
+
+  const handleWishClick = () => {
+    setClicked(!clicked);
+  };
+
   const Loading = () => {
     return (
       <>
@@ -123,64 +168,195 @@ const Product = () => {
   const ShowProduct = () => {
     return (
       <>
-        <div className="container my-5 py-2">
-          <div className="row">
+     
             {/* Product Image + Thumbnails */}
-            <div className="col-md-6 col-12 py-5">
-              <div className="w-full text-center">
-                <img
-                  className="img-fluid rounded "
-                  src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${activeImage}`}
-                  alt={product.title}
-                  style={{ maxHeight: "400px", objectFit: "contain" }}
-                />
-              </div>
-              <div className="d-flex flex-wrap justify-content-center mt-3">
+            <div className="productGallery">
+              <div className="productThumb">
                 {product.product_images?.map((img) => (
                   <img
                     key={img.id}
                     onClick={() => setActiveImage(img.image_url)}
                     src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${img.image_url}`}
                     alt="thumb"
-                    style={{ width: 80, height: 80, margin: 5, border: activeImage === img.image_url ? "2px solid black" : "1px solid gray", borderRadius: 4, cursor: "pointer", objectFit: "contain" }}
+                    style={{
+                      width: 80,
+                      height: 80,
+                      margin: 5,
+                      padding: 3,
+                      border:
+                        activeImage === img.image_url
+                          ? "2px solid black"
+                          : "1px solid gray",
+                      borderRadius: 4,
+                      cursor: "pointer",
+                      objectFit: "contain",
+                    }}
                   />
                 ))}
+              </div>
+              <div className="productFullImg">
+                <img
+                  src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${activeImage}`}
+                  alt={product.title}
+                  style={{ maxHeight: "350px", objectFit: "contain" }}
+                />
               </div>
             </div>
 
             {/* Product Details */}
-            <div className="col-md-6 col-12 py-5 text-center text-md-start">
-              <h4 className="text-muted mb-2">{product.name}</h4>
-              <p className="lead mb-3 d-flex align-items-center justify-content-center justify-content-md-start gap-1">
+            <div className="productDetails">
+              <div className="productBreadcrumb">
+                <div className="breadcrumbLink">
+                  <Link to="/">Home</Link>&nbsp;/&nbsp;
+                  <Link to="/shop">The Shop</Link>
+                </div>
+                <div className="prevNextLink">
+                  <Link to="/product">
+                    <GoChevronLeft />
+                    <p>Prev</p>
+                  </Link>
+                  <Link to="/product">
+                    <p>Next</p>
+                    <GoChevronRight />
+                  </Link>
+                </div>
+              </div>
+              <div className="productName">
+                <h1>{product.name}</h1>
+              </div>
+
+              <p className="productRating">
                 {Array.from({ length: 5 }, (_, i) => {
                   const rating = product?.rating || 0;
                   if (rating >= i + 1) {
                     return <i key={i} className="fa fa-star text-warning"></i>; // full star
                   } else if (rating >= i + 0.5) {
-                    return <i key={i} className="fa fa-star-half-o text-warning"></i>; // half star
+                    return (
+                      <i key={i} className="fa fa-star-half-o text-warning"></i>
+                    ); // half star
                   } else {
-                    return <i key={i} className="fa fa-star-o text-warning"></i>; // empty star
+                    return (
+                      <i key={i} className="fa fa-star-o text-warning"></i>
+                    ); // empty star
                   }
                 })}
-                <span className="ms-2 text-muted">({product?.rating || 0} / 5)</span>
+                <p>({product?.rating || 0} / 5)</p>
               </p>
-              <h2 className="text-success">${product.amount}</h2>
-              <p className="text-muted my-3">{product.description?.substring(0, 200)}</p>
+              <h2 className="productPrice">${product.amount}</h2>
+              <p className="productDescription">
+                {product.description?.substring(0, 200)}
+              </p>
 
-              <button
-                className="btn btn-outline-dark"
-                onClick={() => addProduct(product)}
-              >
-                Add to Cart
-              </button>
-              <Link to="/cart" className="btn btn-dark mx-3">
-                Go to Cart
-              </Link>
+              <div className="productSizeColor">
+                <div className="productSize">
+                  <p>Sizes</p>
+                  <div className="sizeBtn">
+                    {sizes.map((size, index) => (
+                      <Tooltip
+                        key={size}
+                        title={sizesFullName[index]}
+                        placement="top"
+                        TransitionComponent={Zoom}
+                        enterTouchDelay={0}
+                        arrow
+                      >
+                        <button
+                          style={{
+                            borderColor:
+                              selectSize === size ? "#000" : "#e0e0e0",
+                          }}
+                          onClick={() => setSelectSize(size)}
+                        >
+                          {size}
+                        </button>
+                      </Tooltip>
+                    ))}
+                  </div>
+                </div>
+                <div className="productColor">
+                  <p>Color</p>
+                  <div className="colorBtn">
+                    {colors.map((color, index) => (
+                      <Tooltip
+                        key={color}
+                        title={colorsName[index]}
+                        placement="top"
+                        enterTouchDelay={0}
+                        TransitionComponent={Zoom}
+                        arrow
+                      >
+                        <button
+                          className={
+                            highlightedColor === color ? "highlighted" : ""
+                          }
+                          style={{
+                            backgroundColor: color.toLowerCase(),
+                            border:
+                              highlightedColor === color
+                                ? "0px solid #000"
+                                : "0px solid white",
+                            padding: "8px",
+                            margin: "5px",
+                            cursor: "pointer",
+                          }}
+                          onClick={() => setHighlightedColor(color)}
+                        />
+                      </Tooltip>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="productCartQuantity">
+                <div className="productQuantity">
+                  <button onClick={decrement}>-</button>
+                  <input
+                    type="text"
+                    value={quantity}
+                    onChange={handleInputChange}
+                  />
+                  <button onClick={increment}>+</button>
+                </div>
+                <div className="productCartBtn">
+                  <button
+                    onClick={() => {
+                      if (!user) {
+                        toast.error("Please login to add products to cart.");
+                        navigate("/login");
+                        return;
+                      }
+                      toast.success("Added to cart");
+                      addProduct(product);
+                    }}
+                  >
+                    Add to Cart
+                  </button>
+                </div>
+              </div>
+              <div className="productWishShare">
+                <div className="productWishList">
+                  <button onClick={handleWishClick}>
+                    <FiHeart color={clicked ? "red" : ""} size={17} />
+                    <p>Add to Wishlist</p>
+                  </button>
+                </div>
+                <div className="productShare">
+                  <PiShareNetworkLight size={22} />
+                  <p>Share</p>
+                </div>
+              </div>
+              <div className="productTags">
+                <p>
+                  <span>SKU: </span>N/A
+                </p>
+                <p>
+                  <span>CATEGORIES: </span>Casual & Urban Wear, Jackets, Men
+                </p>
+                <p>
+                  <span>TAGS: </span>biker, black, bomber, leather
+                </p>
+              </div>
             </div>
-          </div>
-        </div>
-
-
+        
       </>
     );
   };
@@ -211,62 +387,85 @@ const Product = () => {
   const ShowSimilarProduct = () => {
     return (
       <>
-        <div className="py-4 my-4">
-          <div className="d-flex">
-          {similarProducts.map((item) => {
+        <div className="">
+          <div className="d-flex gap-5 ">
+            {similarProducts.map((item) => {
               return (
-                <div key={item.id} className="m-4 text-center">
+                <div key={item.id} className="rpContainer">
+                     <div className="rpImages" >
                   <img
-                    className="card-img-top p-3"
+                    
                     src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.banner_url}`}
                     alt="Card"
-                    style={{
-                      width: "auto",
-                      maxHeight: "250px",
+                     className="rpFrontImg"
+                     style={{
+                      width: "250px",
+                      maxHeight: "300px",
                       objectFit: "contain",
+                      transition: "transform 0.3s ease",
                     }}
                   />
-                  <h5 className="text-lg font-semibold mb-1">
+                   <img
+                    
+                    src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.banner_url}`}
+                    alt="Card"
+                     className="rpBackImg"
+                     style={{
+                      width: "250px",
+                      maxHeight: "300px",
+                      objectFit: "contain",
+                      transition: "transform 0.3s ease",
+                    }}
+                  />
+                  
+                    <h4  onClick={() => {
+                      if (!user) {
+                        toast.error("Please login to add products to cart.");
+                        navigate("/login");
+                        return;
+                      }
+                      toast.success("Added to cart");
+                      addProduct(product);
+                    }}>Add to Cart</h4>
+                    </div>
+                    <div className="relatedProductInfo">
+                  <h5 >
                     {item.name.substring(0, 20)}
                   </h5>
-                  
+
                   {/* Centered Rating */}
-                  <p className="mb-1 lead mb-3 d-flex align-items-center justify-content-center gap-1">
+                  <p className="productRatingReviews">
                     {Array.from({ length: 5 }, (_, i) => {
                       const rating = item?.rating || 0;
                       if (rating >= i + 1) {
-                        return <i key={i} className="fa fa-star text-warning"></i>; // full star
+                        return (
+                          <i key={i} className="fa fa-star text-warning"></i>
+                        ); // full star
                       } else if (rating >= i + 0.5) {
-                        return <i key={i} className="fa fa-star-half-o text-warning"></i>; // half star
+                        return (
+                          <i
+                            key={i}
+                            className="fa fa-star-half-o text-warning"
+                          ></i>
+                        ); // half star
                       } else {
-                        return <i key={i} className="fa fa-star-o text-warning"></i>; // empty star
+                        return (
+                          <i key={i} className="fa fa-star-o text-warning"></i>
+                        ); // empty star
                       }
                     })}
-                    <span className="ms-2 text-muted">({item?.rating || 0} / 5)</span>
+                    <span>
+                      ({item?.rating || 0} / 5)
+                    </span>
                   </p>
 
-                  <p className="text-xl font-bold my-2 text-gray-800">
+                  <p>
                     ${item.amount}
                   </p>
-
-                  <div className="card-body">
-                    <Link
-                      to={"/product/" + item.id}
-                      className="btn btn-dark m-1"
-                    >
-                      Buy Now
-                    </Link>
-                    <button
-                      className="btn btn-dark m-1"
-                      onClick={() => addProduct(item)}
-                    >
-                      Add to Cart
-                    </button>
                   </div>
                 </div>
               );
             })}
-
           </div>
         </div>
       </>
@@ -275,81 +474,98 @@ const Product = () => {
   return (
     <>
       <Navbar />
-      <div className="container">
-        <div className="row">{loading ? <Loading /> : <ShowProduct />}</div>
+      <div className="productSection">
+        <div className="productShowCase">{loading ? <Loading /> : <ShowProduct />}</div>
         <div className="row my-5 py-5">
           <div className="d-none d-md-block">
-            <h2 className="">You may also Like</h2>
-            {similarProducts.length > 2 ? (
-              <Marquee
-                pauseOnHover={true}
-                pauseOnClick={true}
-                speed={100}
-              >
+            <AdditionalInfo/>
+            <div className="relatedProducts">
+          <h2>
+            RELATED <span>PRODUCTS</span>
+          </h2>
+        </div>
+            {similarProducts.length > 0 ? (
+          <>
                 {loading2 ? <Loading2 /> : <ShowSimilarProduct />}
-              </Marquee>
+                </>
+              
             ) : (
               <>
                 <div className="py-4 my-4">
                   <div className="d-flex">
-                  {similarProducts.map((item) => {
-                    return (
-                      <div key={item.id} className="m-4 text-center">
-                        <img
-                          className="card-img-top p-3"
-                          src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.banner_url}`}
-                          alt="Card"
-                          style={{
-                            width: "auto",
-                            maxHeight: "250px",
-                            objectFit: "contain",
-                          }}
-                        />
-                        <h5 className="text-lg font-semibold mb-1">
-                          {item.name.substring(0, 20)}
-                        </h5>
-                        
-                        {/* Centered Rating */}
-                        <p className="mb-1 lead mb-3 d-flex align-items-center justify-content-center gap-1">
-                          {Array.from({ length: 5 }, (_, i) => {
-                            const rating = item?.rating || 0;
-                            if (rating >= i + 1) {
-                              return <i key={i} className="fa fa-star text-warning"></i>; // full star
-                            } else if (rating >= i + 0.5) {
-                              return <i key={i} className="fa fa-star-half-o text-warning"></i>; // half star
-                            } else {
-                              return <i key={i} className="fa fa-star-o text-warning"></i>; // empty star
-                            }
-                          })}
-                          <span className="ms-2 text-muted">({item?.rating || 0} / 5)</span>
-                        </p>
+                    {similarProducts.map((item) => {
+                      return (
+                        <div key={item.id} className="m-4 text-center">
+                          <img
+                            className="card-img-top p-3"
+                            src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.banner_url}`}
+                            alt="Card"
+                            style={{
+                              width: "auto",
+                              maxHeight: "250px",
+                              objectFit: "contain",
+                            }}
+                          />
+                          <h5 className="text-lg font-semibold mb-1">
+                            {item.name.substring(0, 20)}
+                          </h5>
 
-                        <p className="text-xl font-bold my-2 text-gray-800">
-                          ${item.amount}
-                        </p>
+                          {/* Centered Rating */}
+                          <p className="mb-1 lead mb-3 d-flex align-items-center justify-content-center gap-1">
+                            {Array.from({ length: 5 }, (_, i) => {
+                              const rating = item?.rating || 0;
+                              if (rating >= i + 1) {
+                                return (
+                                  <i
+                                    key={i}
+                                    className="fa fa-star text-warning"
+                                  ></i>
+                                ); // full star
+                              } else if (rating >= i + 0.5) {
+                                return (
+                                  <i
+                                    key={i}
+                                    className="fa fa-star-half-o text-warning"
+                                  ></i>
+                                ); // half star
+                              } else {
+                                return (
+                                  <i
+                                    key={i}
+                                    className="fa fa-star-o text-warning"
+                                  ></i>
+                                ); // empty star
+                              }
+                            })}
+                            <span className="ms-2 text-muted">
+                              ({item?.rating || 0} / 5)
+                            </span>
+                          </p>
 
-                        <div className="card-body">
-                          <Link
-                            to={"/product/" + item.id}
-                            className="btn btn-dark m-1"
-                          >
-                            Buy Now
-                          </Link>
-                          <button
-                            className="btn btn-dark m-1"
-                            onClick={() => addProduct(item)}
-                          >
-                            Add to Cart
-                          </button>
+                          <p className="text-xl font-bold my-2 text-gray-800">
+                            ${item.amount}
+                          </p>
+
+                          <div className="card-body">
+                            <Link
+                              to={"/product/" + item.id}
+                              className="btn btn-dark m-1"
+                            >
+                              Buy Now
+                            </Link>
+                            <button
+                              className="btn btn-dark m-1"
+                              onClick={() => addProduct(item)}
+                            >
+                              Add to Cart
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
-
+                      );
+                    })}
                   </div>
                 </div>
               </>
-
             )}
           </div>
         </div>

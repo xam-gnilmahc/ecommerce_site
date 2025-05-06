@@ -1,4 +1,14 @@
-/* Navbar.css */
+.navBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 160px;
+  position: relative;
+  z-index: 10;
+  background-color: white;
+  position: sticky;
+  top: 0;
+}
 
 .menu-toggle-icon.rotate {
     transform: rotate(90deg);
@@ -29,7 +39,7 @@
     border-radius: 10px;
     box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.1);
     z-index: 1050;
-    padding: 1.5rem;
+    padding:;
   }
   
   /* Link style */
