@@ -21,7 +21,7 @@ import {
 
 import UpdatePassword from "./pages/UpdatePassword";
 import OrderDetailsSheet from "./pages/OrderDetailsSheet";
-
+import TermsandConditions from "./pages/TermsandConditions";
 import ScrollToTop from "./components/ScrollToTop";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "./context/authContext";
@@ -29,8 +29,11 @@ import ProtectedRoute from "./components/ProtectedRoute"; // ✅ fixed import
 import PublicRoute from "./components/PublicRoute";
 import ForgotPassword
  from "./pages/ForgotPassword";
+ import Popup from "./pages/Popup";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
+  <>
+  <Popup/>
   <BrowserRouter>
     <ScrollToTop>
       <Provider store={store}>
@@ -44,6 +47,7 @@ root.render(
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/update-password" element={<UpdatePassword />} />
             <Route path="/order-details" element={<OrderDetailsSheet />} />
+            <Route path="/terms" element={<TermsandConditions/>} />
             <Route
               path="/cart"
               element={
@@ -72,4 +76,5 @@ root.render(
       </Provider>
     </ScrollToTop>
   </BrowserRouter>
+  </>
 );

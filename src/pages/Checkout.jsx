@@ -348,7 +348,7 @@ const Checkout = () => {
                           <div className="d-flex justify-content-between mb-3">
                             <button
                               className={`btn btn-light p-2 border d-flex align-items-center justify-content-center ${
-                                paymentMethod === "card" ? "border-primary" : ""
+                                paymentMethod === "card" ? "border-secondary" : ""
                               }`}
                               onClick={() => setPaymentMethod("card")}
                               style={{ width: "30%" }}
@@ -367,7 +367,7 @@ const Checkout = () => {
                             <button
                               className={`btn btn-light p-2 border d-flex align-items-center justify-content-center ${
                                 paymentMethod === "googlePay"
-                                  ? "border-primary"
+                                  ? "border-secondary"
                                   : ""
                               }`}
                               onClick={() => setPaymentMethod("googlePay")}
@@ -387,7 +387,7 @@ const Checkout = () => {
                             <button
                               className={`btn btn-light p-2 border d-flex align-items-center justify-content-center ${
                                 paymentMethod === "applePay"
-                                  ? "border-primary"
+                                  ? "border-secondary"
                                   : ""
                               }`}
                               onClick={() => setPaymentMethod("applePay")}
