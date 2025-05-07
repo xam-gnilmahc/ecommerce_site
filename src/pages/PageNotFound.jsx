@@ -6,16 +6,35 @@ const PageNotFound = () => {
   return (
     <>
       <Navbar />
-      <div className="container my-3 py-3">
-        <div className="container">
-          <div className="row">
-            <div className="col-md-12 py-5 bg-light text-center">
-              <h4 className="p-3 display-5">404: Page Not Found</h4>
-              <Link to="/" className="btn  btn-outline-dark mx-4">
-                <i className="fa fa-arrow-left"></i> Go Back to Home
-              </Link>
-            </div>
-          </div>
+      <div
+        className="container-fluid d-flex flex-column justify-content-center align-items-center"
+        style={{ minHeight: "80vh", backgroundColor: "#f8f9fa" }}
+      >
+        <div className="text-center px-4">
+          <h1
+            style={{
+              fontSize: "96px",
+              fontWeight: "700",
+              color: "#343a40",
+              marginBottom: "20px",
+            }}
+          >
+            404
+          </h1>
+          <h2 style={{ fontWeight: "500", color: "#495057" }}>
+            Page Not Found
+          </h2>
+          <p className="mt-3" style={{ color: "#6c757d", maxWidth: "500px" }}>
+            Sorry, the page you're looking for doesn’t exist or may have been
+            moved. Please check the URL or return to the homepage.
+          </p>
+          <Link
+            to="/"
+            className="btn btn-outline-dark mt-4 px-4 py-2"
+            style={{ borderRadius: "30px" }}
+          >
+            Go Home
+          </Link>
         </div>
       </div>
     </>
