@@ -25,6 +25,25 @@ const Popup = () => {
             <img src={popupImg} alt="Newsletter" />
           </div>
           <div className="popup-right">
+            <div
+              className="dev-mode-banner"
+              style={{
+                backgroundColor: "#fff8db",
+                borderLeft: "4px solid #facc15",
+                color: "#92400e",
+                padding: "8px 12px",
+                marginBottom: "12px",
+                fontSize: "0.95rem",
+                borderRadius: "4px",
+                fontWeight: "500",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                width: "380px",
+              }}
+            >
+              🚧 This site is running in <strong>development mode</strong>.
+            </div>
             <h2>Get the Best Deals on Mobile & Tablet Devices</h2>
             <p>
               Stay ahead with exclusive offers and latest arrivals in
