@@ -164,7 +164,7 @@ const Products = () => {
                         />
                       </div>
               <div className="sdProductNameInfo">
-                <h5>{product.name.substring(0, 12)}</h5>
+                <h5>{product.name.substring(0, 22)}</h5>
               </div>
 
               <p>$ {product.amount}</p>

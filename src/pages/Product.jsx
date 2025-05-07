@@ -97,8 +97,8 @@ const Product = () => {
       const primary = product.product_images.find((img) => img.is_primary);
       if (primary) {
         setActiveImage(primary.image_url);
-      } else if (product.product_images.length > 0) {
-        setActiveImage(product.product_images[0].image_url);
+      } else {
+        setActiveImage(product.banner_url);
       }
     }
   }, [product]);
@@ -197,7 +197,7 @@ const Product = () => {
               <div className="productFullImg">
                 <img
                   src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${activeImage}`}
-                  alt={product.title}
+                  alt={activeImage}
                   style={{ maxHeight: "350px", objectFit: "contain" }}
                 />
               </div>
