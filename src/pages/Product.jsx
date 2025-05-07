@@ -29,7 +29,7 @@ const Product = () => {
   const dispatch = useDispatch();
 
   const addProduct = async (product) => {
-    await addToCart(product);
+    await addToCart({...product, qty:quantity});
   };
 
   useEffect(() => {
@@ -208,15 +208,15 @@ const Product = () => {
               <div className="productBreadcrumb">
                 <div className="breadcrumbLink">
                   <Link to="/">Home</Link>&nbsp;/&nbsp;
-                  <Link to="/shop">The Shop</Link>
+                  <Link to="/product">The Shop</Link>
                 </div>
                 <div className="prevNextLink">
                   <Link to="/product">
                     <GoChevronLeft />
-                    <p>Prev</p>
+                    <p style={{ margin: 0 }}>Prev</p>
                   </Link>
                   <Link to="/product">
-                    <p>Next</p>
+                    <p style={{ margin: 0 }}>Next</p>
                     <GoChevronRight />
                   </Link>
                 </div>
@@ -249,7 +249,7 @@ const Product = () => {
 
               <div className="productSizeColor">
                 <div className="productSize">
-                  <p>Sizes</p>
+                  <p style={{ margin: 0 }}>Sizes</p>
                   <div className="sizeBtn">
                     {sizes.map((size, index) => (
                       <Tooltip
@@ -274,7 +274,7 @@ const Product = () => {
                   </div>
                 </div>
                 <div className="productColor">
-                  <p>Color</p>
+                  <p style={{ margin: 0 }}>Color</p>
                   <div className="colorBtn">
                     {colors.map((color, index) => (
                       <Tooltip
@@ -336,12 +336,12 @@ const Product = () => {
                 <div className="productWishList">
                   <button onClick={handleWishClick}>
                     <FiHeart color={clicked ? "red" : ""} size={17} />
-                    <p>Add to Wishlist</p>
+                    <p style={{ margin: 0 }}>Add to Wishlist</p>
                   </button>
                 </div>
                 <div className="productShare">
                   <PiShareNetworkLight size={22} />
-                  <p>Share</p>
+                  <p style={{ margin: 0 }}>Share</p>
                 </div>
               </div>
               <div className="productTags">
@@ -349,10 +349,10 @@ const Product = () => {
                   <span>SKU: </span>N/A
                 </p>
                 <p>
-                  <span>CATEGORIES: </span>Casual & Urban Wear, Jackets, Men
+                  <span>CATEGORIES: </span>Mobile , Tablet , Laptop
                 </p>
                 <p>
-                  <span>TAGS: </span>biker, black, bomber, leather
+                  <span>TAGS: </span>Electronics, Gadgets, Smartphone
                 </p>
               </div>
             </div>

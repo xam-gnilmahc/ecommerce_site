@@ -72,7 +72,15 @@ const Login = () => {
       <PublicNavbar />
       <div className="loginSignUpSection">
         <div className="loginSignUpContainer">
+        <div className="loginSignUpTabs">
+            <p          
+            >
+              Login
+            </p>
+           
+          </div>
           <div className="loginSignUpTabsContentLogin">
+            
             <form onSubmit={handleSubmit}>
               <input
                 type="email"
@@ -109,7 +117,7 @@ const Login = () => {
                 </label>
               </div>
 
-                <p>
+                <p style={{ margin : 0}}>
                   <Link to="/forgot-password">Lost password?</Link>
                 </p>
               </div>

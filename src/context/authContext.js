@@ -155,7 +155,7 @@ export const AuthProvider = ({ children }) => {
         product_id: product.id,
         user_id: memoizedUser.id,
         amount: product.amount,
-        quantity: 1,
+        quantity: product.qty ? product.qty : 1,
       }]);
 
       if (insertError) {
@@ -163,7 +163,7 @@ export const AuthProvider = ({ children }) => {
       }
     } else {
       const { error: updateError } = await supabase.from("cart")
-        .update({ quantity: existingItem.quantity + 1 })
+        .update({ quantity: existingItem.quantity + (product.qty ?? 1) })
         .eq("id", existingItem.id);
 
       if (updateError) {

@@ -11,11 +11,13 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Filters from "./Filter";
 import { IoFilterSharp, IoClose } from "react-icons/io5";
 import { FaStar } from "react-icons/fa";
+import { FiHeart } from "react-icons/fi";
 import "./Products.css";
 const Products = () => {
   const [data, setData] = useState([]);
   const [filter, setFilter] = useState(data);
   const [loading, setLoading] = useState(false);
+  const [wishList, setWishList] = useState({});
   let componentMounted = true;
   const { user, addToCart } = useAuth(); // get user from context
   const navigate = useNavigate();
@@ -28,6 +30,12 @@ const Products = () => {
 
   const addProduct = async (product) => {
     await addToCart(product);
+  };
+  const handleWishlistClick = (productID) => {
+    setWishList((prevWishlist) => ({
+      ...prevWishlist,
+      [productID]: !prevWishlist[productID],
+    }));
   };
 
   useEffect(() => {
@@ -96,25 +104,25 @@ const Products = () => {
   const ShowProducts = () => {
     return (
       <>
-         <div className="shopDetailsProductsContainer">
+        <div className="shopDetailsProducts">
+        <div className="shopDetailsProductsContainer">
           {filter.map((product) => (
-              <div className="sdProductContainer">
-                    <div className="sdProductImages">
-                    <Link to={"/product/" + product.id}>
-                <img
-                   className="sdProduct_front"
-                  src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${product.banner_url}`}
-                  alt="Product"
-                  style={{
-                    width: "250px",
-                    maxHeight: "250px",
-                    objectFit: "contain",
-                    transition: "transform 0.3s ease",
-                  }}
+            <div className="sdProductContainer">
+              <div className="sdProductImages">
+                <Link to={"/product/" + product.id}>
+                  <img
+                    className=""
+                    src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${product.banner_url}`}
+                    alt="Product"
+                    style={{
+                      width: "250px",
+                      maxHeight: "250px",
+                      objectFit: "contain",
+                      transition: "transform 0.3s ease",
+                    }}
+                  />
 
-                />
-                    
-                <img
+                  {/* <img
                    className="sdProduct_back"
                   src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${product.banner_url}`}
                   alt="Product"
@@ -125,39 +133,55 @@ const Products = () => {
                     transition: "transform 0.3s ease",
                   }}
 
-                />
+                /> */}
                 </Link>
-                 <h4  onClick={() => {
-                      if (!user) {
-                        toast.error("Please login to add products to cart.");
-                        navigate("/login");
-                        return;
-                      }
-                      toast.success("Added to cart");
-                      addProduct(product);
-                    }}>
-                        Add to Cart
-                      </h4>
+                <h4
+                className="bg-light"
+                  onClick={() => {
+                    if (!user) {
+                      toast.error("Please login to add products to cart.");
+                      navigate("/login");
+                      return;
+                    }
+                    toast.success("Added to cart");
+                    addProduct(product);
+                  }}
+                >
+                  Add to Cart
+                </h4>
+              </div>
+              <div className="sdProductInfo">
+                      <div className="sdProductCategoryWishlist">
+                        <p>{product.category}</p>
+                        <FiHeart
+                          onClick={() => handleWishlistClick(product.id)}
+                          style={{
+                            color: wishList[product.id]
+                              ? "red"
+                              : "#767676",
+                            cursor: "pointer",
+                          }}
+                        />
+                      </div>
+              <div className="sdProductNameInfo">
+                <h5>{product.name.substring(0, 12)}</h5>
+              </div>
+
+              <p>$ {product.amount}</p>
+              <div className="sdProductRatingReviews">
+                <div className="sdProductRatingStar">
+                  <FaStar color="#FEC78A" size={10} />
+                  <FaStar color="#FEC78A" size={10} />
+                  <FaStar color="#FEC78A" size={10} />
+                  <FaStar color="#FEC78A" size={10} />
+                  <FaStar color="#FEC78A" size={10} />
                 </div>
-                <div className="sdProductNameInfo">
-                  <h5 >
-                    {product.name.substring(0, 12)}
-                  </h5>
-                </div>
-                
-                  <p >$ {product.amount}</p>
-                  <div className="sdProductRatingReviews">
-                          <div className="sdProductRatingStar">
-                            <FaStar color="#FEC78A" size={10} />
-                            <FaStar color="#FEC78A" size={10} />
-                            <FaStar color="#FEC78A" size={10} />
-                            <FaStar color="#FEC78A" size={10} />
-                            <FaStar color="#FEC78A" size={10} />
-                          </div>
-                          <span>{product.reviews_count}</span>
-                        </div>
+                <span>{product.reviews_count}</span>
+              </div>
+              </div>
             </div>
           ))}
+          </div>
         </div>
       </>
     );

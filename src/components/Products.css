@@ -169,7 +169,6 @@
 .sdProductInfo {
   display: flex;
   flex-direction: column;
-  gap: 10px;
 }
 
 .sdProductCategoryWishlist {
@@ -346,7 +345,7 @@
 
   .sdProductImages {
     width: 100%;
-    height: 250px;
+    height: 200px;
   }
 
   .sdProductContainer h4 {
