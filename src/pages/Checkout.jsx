@@ -348,7 +348,9 @@ const Checkout = () => {
                           <div className="d-flex justify-content-between mb-3">
                             <button
                               className={`btn btn-light p-2 border d-flex align-items-center justify-content-center ${
-                                paymentMethod === "card" ? "border-secondary" : ""
+                                paymentMethod === "card"
+                                  ? "border-secondary"
+                                  : ""
                               }`}
                               onClick={() => setPaymentMethod("card")}
                               style={{ width: "30%" }}
@@ -410,6 +412,16 @@ const Checkout = () => {
                           {paymentMethod === "card" && (
                             <div className="mt-4 p-3 border rounded">
                               <CardElement />
+                              <p
+                                className="mt-2"
+                                style={{ fontSize: "0.9rem", color: "#6c757d" }}
+                              >
+                                Test Card Numbers: Use one of these for testing:
+                                <br />
+                                - 4242 4242 4242 4242 (Visa) <br />
+                                - 5555 5555 5555 4444 (Mastercard) <br />- 3782
+                                8224 6310 005 (American Express)
+                              </p>
                             </div>
                           )}
 
@@ -426,6 +438,27 @@ const Checkout = () => {
                               <p>Apple Pay button will be here.</p>
                             </div>
                           )}
+
+                          {/* Development Mode Warning */}
+                          <div
+                            className="dev-mode-warning mt-3"
+                            style={{
+                              backgroundColor: "#fff8db",
+                              borderLeft: "4px solid #facc15",
+                              color: "#92400e",
+                              padding: "8px 12px",
+                              fontSize: "0.95rem",
+                              fontWeight: "500",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "6px",
+                              borderRadius: "4px",
+                            }}
+                          >
+                            🚧 This feature is currently in{" "}
+                            <strong>development mode</strong>. No real payment
+                            details required. Use the test cards above! 🛠️
+                          </div>
                         </div>
                       </div>
 
@@ -462,7 +495,7 @@ const Checkout = () => {
                           paddingBottom: "10px",
                         }}
                       >
-                      {/* Product Image */}
+                        {/* Product Image */}
                         <div style={{ width: "25%", flexShrink: 0 }}>
                           <img
                             src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.products.banner_url}`}
@@ -569,7 +602,7 @@ const Checkout = () => {
                     marginTop: "-50px",
                   }}
                 >
-                  <LottieLoader useAlt={true}/>
+                  <LottieLoader useAlt={true} />
                 </div>
 
                 {/* Modal header with close button */}
