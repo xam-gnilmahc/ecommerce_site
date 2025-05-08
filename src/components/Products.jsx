@@ -14,6 +14,8 @@ import { FaStar } from "react-icons/fa";
 import { FiHeart } from "react-icons/fi";
 import Pagination from "./Pagination";
 import "./Products.css";
+import SearchBar from "./SearchBar";
+
 const Products = () => {
   const [data, setData] = useState([]);
   const [filter, setFilter] = useState(data);
@@ -229,6 +231,24 @@ const Products = () => {
     setCurrentPage(1); // Reset to first page after filtering
   };
   
+  const handleSearch = (searchValue) => {
+    const search = searchValue.toLowerCase().trim();
+  
+    if (search === '') {
+      setFilter(data); // reset to original list if input is empty
+    } else {
+      const filtered = data.filter((item) =>
+        item.name.toLowerCase().includes(search) ||
+        item.brand?.toLowerCase().includes(search) ||
+        item.type?.toLowerCase().includes(search) ||
+        item.category?.toLowerCase().includes(search)
+      );
+      setFilter(filtered);
+    }
+  
+    setCurrentPage(1); // Reset pagination
+  };
+  
   return (
     <>
       <div className=" shopDetails">
@@ -247,15 +267,10 @@ const Products = () => {
                 &nbsp;/&nbsp;
                 <Link to="/shop">The Shop</Link>
               </div>
-
               <div className="shopDetailsBreadcrumbLink">
-                <Link to="/" onClick={scrollToTop}>
-                  Home
-                </Link>
-                &nbsp;/&nbsp;
-                <Link to="/shop">The Shop</Link>
+               <SearchBar onSearch={handleSearch}/>
               </div>
-              
+
               <div className="filterLeft" onClick={toggleDrawer}>
                 <IoFilterSharp />
                 <p>Filter</p>
