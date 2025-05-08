@@ -20,7 +20,7 @@ const Products = () => {
   const [loading, setLoading] = useState(false);
   const [wishList, setWishList] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
-  const [postsPerPage] = useState(11);
+  const [postsPerPage] = useState(12);
 
   let componentMounted = true;
   const { user, addToCart } = useAuth(); // get user from context
@@ -128,18 +128,13 @@ const Products = () => {
   ) : (
           currentPosts.map((product) => (
             <div className="sdProductContainer">
-              <div className="sdProductImages">
+              <div className="sdProductImages ">
                 <Link to={"/product/" + product.id}>
                   <img
                     className=""
                     src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${product.banner_url}`}
                     alt="Product"
-                    style={{
-                      width: "250px",
-                      maxHeight: "250px",
-                      objectFit: "contain",
-                      transition: "transform 0.3s ease",
-                    }}
+                   
                   />
 
                   {/* <img
@@ -212,9 +207,14 @@ const Products = () => {
     let updatedList = [...data];
   
     if (filters.brands && filters.brands.length > 0) {
-      console.log('max');
       updatedList = updatedList.filter((item) =>
         filters.brands.includes(item.brand)
+      );
+    }
+
+    if (filters.category && filters.category.length > 0) {
+      updatedList = updatedList.filter((item) =>
+        filters.category.includes(item.category)
       );
     }
   
@@ -247,6 +247,15 @@ const Products = () => {
                 &nbsp;/&nbsp;
                 <Link to="/shop">The Shop</Link>
               </div>
+
+              <div className="shopDetailsBreadcrumbLink">
+                <Link to="/" onClick={scrollToTop}>
+                  Home
+                </Link>
+                &nbsp;/&nbsp;
+                <Link to="/shop">The Shop</Link>
+              </div>
+              
               <div className="filterLeft" onClick={toggleDrawer}>
                 <IoFilterSharp />
                 <p>Filter</p>

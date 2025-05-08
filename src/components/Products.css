@@ -107,8 +107,8 @@
 
 .sdProductImages {
   position: relative;
-  width: 258px;
-  height: 320px;
+  width: 250px;
+  height: 250px;
   overflow: hidden;
   -webkit-transition: all 0.2s cubic-bezier(0.99, 0.99, 0, 0.61);
   transition: 0.3s linear;
@@ -123,7 +123,7 @@
   top: 0;
   left: 0;
   overflow: hidden;
-  object-fit: cover;
+  object-fit: contain;
   transition: opacity 0.3s linear;
 }
 
@@ -163,7 +163,7 @@
 }
 
 .sdProductContainer:hover h4 {
-  top: 270px;
+  top: 200px;
 }
 
 .sdProductInfo {

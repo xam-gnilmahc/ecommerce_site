@@ -12,7 +12,7 @@ const Filter = ({onApplyFilters}) => {
   const [value, setValue] = useState([0, 2000]);
 
   const [selectedColors, setSelectedColors] = useState([]);
-  const [selectedSizes, setSelectedSizes] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedBrands, setSelectedBrands] = useState([]);
   const [brandsData] = useState([
@@ -40,8 +40,8 @@ const Filter = ({onApplyFilters}) => {
     );
   };
 
-  const handleSizeChange = (size) => {
-    setSelectedSizes((prevSizes) =>
+  const handleCategoryChange = (size) => {
+    setSelectedCategory((prevSizes) =>
       prevSizes.includes(size)
         ? prevSizes.filter((s) => s !== size)
         : [...prevSizes, size]
@@ -60,7 +60,8 @@ const Filter = ({onApplyFilters}) => {
     "Mobile",
     "Laptop",
     "Earbuds",
-    "Watch"
+    "Watch",
+    "Tablet"
   ];
 
   const filterColors = [
@@ -84,6 +85,7 @@ const Filter = ({onApplyFilters}) => {
     const filters = {
       brands: selectedBrands,
       priceRange: value,
+      category:selectedCategory
     };
 
     console.log(filters);
@@ -94,7 +96,7 @@ const Filter = ({onApplyFilters}) => {
   return (
     <div>
       <div className="filterSection">
-        <div className="filterCategories">
+        {/* <div className="filterCategories">
           <Accordion defaultExpanded disableGutters elevation={0}>
             <AccordionSummary
               expandIcon={<IoIosArrowDown size={20} />}
@@ -110,7 +112,7 @@ const Filter = ({onApplyFilters}) => {
               ))}
             </AccordionDetails>
           </Accordion>
-        </div>
+        </div> */}
         <div className="filterColors">
           <Accordion defaultExpanded disableGutters elevation={0}>
             <AccordionSummary
@@ -149,17 +151,17 @@ const Filter = ({onApplyFilters}) => {
               id="panel1-header"
               sx={{ padding: 0, marginBottom: 2 }}
             >
-              <h5 className="filterHeading">Sizes</h5>
+              <h5 className="filterHeading">Category</h5>
             </AccordionSummary>
             <AccordionDetails sx={{ padding: 0 }}>
               <div className="sizeButtons">
-                {filterSizes.map((size, index) => (
+                {filterCategories.map((size, index) => (
                   <button
                     key={index}
                     className={`sizeButton ${
-                      selectedSizes.includes(size) ? "selected" : ""
+                      selectedCategory.includes(size) ? "selected" : ""
                     }`}
-                    onClick={() => handleSizeChange(size)}
+                    onClick={() => handleCategoryChange(size)}
                   >
                     {size}
                   </button>
