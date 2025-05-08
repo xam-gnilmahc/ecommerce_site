@@ -8,17 +8,20 @@ import { IoIosArrowDown } from "react-icons/io";
 import { BiSearch } from "react-icons/bi";
 import Slider from "@mui/material/Slider";
 
-const Filter = () => {
-  const [value, setValue] = useState([20, 69]);
+const Filter = ({onApplyFilters}) => {
+  const [value, setValue] = useState([0, 2000]);
 
   const [selectedColors, setSelectedColors] = useState([]);
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedBrands, setSelectedBrands] = useState([]);
   const [brandsData] = useState([
-    { name: "Apple", count: 9 },
+    { name: "Apple", count: 24},
     { name: "Google", count: 3 },
     { name: "Vivo", count: 1 },
-    { name: "Samsung", count: 4 }
+    { name: "Samsung", count: 12},
+    { name: "Redmi", count: 14},
+    { name: "Huawei", count: 5}
   ]);
 
   const handleColorChange = (color) => {
@@ -26,6 +29,14 @@ const Filter = () => {
       prevColors.includes(color)
         ? prevColors.filter((c) => c !== color)
         : [...prevColors, color]
+    );
+  };
+
+  const handleBrandChange = (brand) => {
+    setSelectedBrands((prevBrands) =>
+      prevBrands.includes(brand)
+        ? prevBrands.filter((b) => b !== brand)
+        : [...prevBrands, brand]
     );
   };
 
@@ -66,6 +77,19 @@ const Filter = () => {
   ];
 
   const filterSizes = ["XS", "S", "M", "L", "XL", "XXL"];
+  
+
+  const handleApplyFilters = () => {
+    // Output selected filters to console
+    const filters = {
+      brands: selectedBrands,
+      priceRange: value,
+    };
+
+    console.log(filters);
+   
+    onApplyFilters(filters); // Send filters to parent
+  };
 
   return (
     <div>
@@ -177,6 +201,7 @@ const Filter = () => {
                         name="brand"
                         id={`brand-${index}`}
                         className="brandRadio"
+                            onChange={() => handleBrandChange(brand.name)}
                       />
                       {/* Brand name */}
                       <label htmlFor={`brand-${index}`} className="brandLabel">
@@ -204,23 +229,24 @@ const Filter = () => {
               <h5 className="filterHeading">Price</h5>
             </AccordionSummary>
             <AccordionDetails sx={{ padding: 0 }}>
-              <Slider
-                getAriaLabel={() => "Temperature range"}
-                value={value}
-                onChange={handleChange}
-                valueLabelDisplay="auto"
-                valueLabelFormat={(value) => `$${value}`}
-                sx={{
-                  color: "black",
-                  "& .MuiSlider-thumb": {
-                    backgroundColor: "white",
-                    border: "2px solid black",
-                    width: 18,
-                    height: 18,
-                  },
-                }}
-              />
-
+            <Slider
+              getAriaLabel={() => "Price range"}
+              value={value}
+              onChange={handleChange}
+              min={0}             // Optional, defaults to 0
+              max={10000}         // Set your desired max price
+              valueLabelDisplay="auto"
+              valueLabelFormat={(value) => `$${value}`}
+              sx={{
+                color: "black",
+                "& .MuiSlider-thumb": {
+                  backgroundColor: "white",
+                  border: "2px solid black",
+                  width: 18,
+                  height: 18,
+                },
+              }}
+            />
               <div className="filterSliderPrice">
                 <div className="priceRange">
                   <p>
@@ -234,6 +260,12 @@ const Filter = () => {
             </AccordionDetails>
           </Accordion>
         </div>
+        <button
+          onClick={handleApplyFilters}
+          className="applyFilterBtn"
+        >
+          Apply Filters
+        </button>
       </div>
     </div>
   );

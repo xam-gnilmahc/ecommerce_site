@@ -12,12 +12,16 @@ import Filters from "./Filter";
 import { IoFilterSharp, IoClose } from "react-icons/io5";
 import { FaStar } from "react-icons/fa";
 import { FiHeart } from "react-icons/fi";
+import Pagination from "./Pagination";
 import "./Products.css";
 const Products = () => {
   const [data, setData] = useState([]);
   const [filter, setFilter] = useState(data);
   const [loading, setLoading] = useState(false);
   const [wishList, setWishList] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const [postsPerPage] = useState(11);
+
   let componentMounted = true;
   const { user, addToCart } = useAuth(); // get user from context
   const navigate = useNavigate();
@@ -46,8 +50,7 @@ const Products = () => {
       const { data, error } = await supabase
         .from("products")
         .select("*")
-        .eq("is_active", true)
-        .range(0, 20);
+        .eq("is_active", true);
 
       if (error) {
         console.error("Error fetching products:", error.message);
@@ -80,6 +83,12 @@ const Products = () => {
   const closeDrawer = () => {
     setIsDrawerOpen(false);
   };
+  
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = filter.slice(indexOfFirstPost, indexOfLastPost);
+
+  const paginate = pageNumber => setCurrentPage(pageNumber);
 
   const Loading = () => {
     return (
@@ -106,7 +115,18 @@ const Products = () => {
       <>
         <div className="shopDetailsProducts">
         <div className="shopDetailsProductsContainer">
-          {filter.map((product) => (
+  {currentPosts.length === 0 ? (
+     <div className="text-center "
+    >
+  <h3 style={{ color: "#333", fontSize: "1.5rem", marginBottom: "10px" }}>
+        No products found
+      </h3>
+     <p style={{ color: "#666", fontSize: "1rem" }}>
+        Try changing your filters or search criteria.
+      </p>
+   </div>
+  ) : (
+          currentPosts.map((product) => (
             <div className="sdProductContainer">
               <div className="sdProductImages">
                 <Link to={"/product/" + product.id}>
@@ -180,13 +200,35 @@ const Products = () => {
               </div>
               </div>
             </div>
-          ))}
+          ))
+        )}
           </div>
         </div>
       </>
     );
   };
-
+  
+  const handleFilterChange = (filters) => {
+    let updatedList = [...data];
+  
+    if (filters.brands && filters.brands.length > 0) {
+      console.log('max');
+      updatedList = updatedList.filter((item) =>
+        filters.brands.includes(item.brand)
+      );
+    }
+  
+    if (filters.priceRange && filters.priceRange.length === 2) {
+      const [min, max] = filters.priceRange;
+      updatedList = updatedList.filter(
+        (item) => item.amount >= min && item.amount <= max
+      );
+    }
+  
+    setFilter(updatedList);
+    setCurrentPage(1); // Reset to first page after filtering
+  };
+  
   return (
     <>
       <div className=" shopDetails">
@@ -194,7 +236,7 @@ const Products = () => {
         {/* Increased padding to p-6 */}
         <div className="shopDetailMain">
           <div className="shopDetails__left">
-            <Filters />
+            <Filters  onApplyFilters={handleFilterChange} />
           </div>
           <div className="shopDetails__right">
             <div className="shopDetailsSorting">
@@ -231,6 +273,12 @@ const Products = () => {
             <div className="row">
               {loading ? <Loading /> : <ShowProducts />}
             </div>
+            <Pagination
+             postsPerPage={postsPerPage}
+             totalPosts={filter.length}
+             paginate={paginate}
+             currentPage={currentPage}
+             />
           </div>
         </div>
       </div>

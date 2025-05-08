@@ -15,12 +15,22 @@
     text-transform: uppercase;
   }
   
+  .applyFilterBtn{
+    padding: 15px;
+    background-color: black;
+    color: white;
+    border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
   .filterCategories p {
     font-size: 14px;
     padding-bottom: 10px;
     cursor: pointer;
   }
-  
+
+
   /* Filter Color */
   
   .filterColorBtn {
