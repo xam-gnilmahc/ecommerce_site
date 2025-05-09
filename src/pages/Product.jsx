@@ -209,6 +209,7 @@ const Product = () => {
                 <div className="breadcrumbLink">
                   <Link to="/">Home</Link>&nbsp;/&nbsp;
                   <Link to="/product">The Shop</Link>
+
                 </div>
                 <div className="prevNextLink">
                   <Link to="/product">
@@ -389,7 +390,7 @@ const Product = () => {
       <>
         <div className="">
           <div className="d-flex gap-5 ">
-            {similarProducts.map((item) => {
+            {similarProducts.slice(0, 4).map((item) => {
               return (
                 <div key={item.id} className="rpContainer">
                      <div className="rpImages" >
