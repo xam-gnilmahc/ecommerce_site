@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import "./Navbar.css";
@@ -8,70 +8,71 @@ import Badge from "@mui/material/Badge";
 
 const Navbar = () => {
   const { user, logout, cart } = useAuth();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const modalRef = useRef(null);
-
-  const toggleModal = () => setIsModalOpen((prev) => !prev);
-
-  // Close modal when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (modalRef.current && !modalRef.current.contains(event.target)) {
-        setIsModalOpen(false);
-      }
-    };
-
-    if (isModalOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isModalOpen]);
 
   return (
-    <>
-      <nav className="navBar">
-        {/* Hamburger */}
-        <div
-          onClick={toggleModal}
-          className={`menu-toggle-icon ${isModalOpen ? "rotate" : ""}`}
-          style={{ cursor: "pointer", transition: "transform 0.3s ease" }}
+    <nav className="navbar navBar navbar-expand-lg bg-light px-3">
+      {/* Logo */}
+      <NavLink to="/" className="navbar-brand d-flex align-items-center gap-2">
+        <img
+          src={logo}
+          alt="Logo"
+          style={{ width: "100px", height: "60px", objectFit: "contain" }}
+        />
+        <span
+          className="dev-badge"
+          style={{
+            background: "linear-gradient(135deg, #0d6efd, #6610f2)",
+            color: "#fff",
+            fontSize: "12px",
+            padding: "3px 10px",
+            borderRadius: "20px",
+            marginLeft: "12px",
+            fontWeight: "600",
+            boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+            letterSpacing: "0.5px",
+          }}
         >
-          <i className="fa-solid fa-bars-staggered fs-4 text-dark"></i>
-        </div>
+          DEV MODE
+        </span>
+      </NavLink>
 
-        {/* Logo */}
-        <NavLink
-          to="/"
-          className="text-decoration-none d-flex align-items-center gap-2"
-        >
-          <img
-            src={logo}
-            alt="Logo"
-            style={{ width: "100px", height: "60px", objectFit: "contain" }}
-          />
-          <span
-            className="dev-badge"
-            style={{
-              background: "linear-gradient(135deg, #0d6efd, #6610f2)",
-              color: "#fff",
-              fontSize: "12px",
-              padding: "3px 10px",
-              borderRadius: "20px",
-              marginLeft: "12px",
-              fontWeight: "600",
-              boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
-              letterSpacing: "0.5px",
-            }}
-          >
-            DEV MODE
-          </span>
-        </NavLink>
+      {/* Toggler */}
+      <button
+        className="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarContent"
+      >
+        <span className="navbar-toggler-icon"></span>
+      </button>
 
-        {/* Right Auth/Cart */}
-        <div className="d-flex align-items-center gap-3">
+      {/* Collapsible Links */}
+      <div className="collapse navbar-collapse" id="navbarContent">
+        <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+          <li className="nav-item">
+            <NavLink to="/" className="nav-link" end>
+              Home
+            </NavLink>
+          </li>
+          <li className="nav-item">
+            <NavLink to="/product" className="nav-link">
+              Shop
+            </NavLink>
+          </li>
+          <li className="nav-item">
+            <NavLink to="/about" className="nav-link">
+              About
+            </NavLink>
+          </li>
+          <li className="nav-item">
+            <NavLink to="/contact" className="nav-link">
+              Contact
+            </NavLink>
+          </li>
+        </ul>
+
+        {/* Auth / Cart Section */}
+        <div className="d-flex align-items-center gap-2">
           {!user ? (
             <>
               <NavLink to="/login" className="btn btn-outline-dark btn-sm">
@@ -83,12 +84,12 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              <span className="text-muted small">
+              <span className="text-muted small me-2">
                 Hi, <strong>{user.full_name}</strong>
               </span>
-              <NavLink to="/cart">
+              <NavLink to="/cart" className="me-2">
                 <Badge
-                  badgeContent={cart.length === 0 ? "0" : cart.length}
+                  badgeContent={cart.length || "0"}
                   color="primary"
                   anchorOrigin={{
                     vertical: "bottom",
@@ -104,47 +105,8 @@ const Navbar = () => {
             </>
           )}
         </div>
-
-        {/* Animated Menu (with ref) */}
-        {isModalOpen && (
-          <div ref={modalRef} className="custom-modal animate-slide-down p-3">
-            <h5 className="text-dark mb-3">Menu</h5>
-            <NavLink
-              to="/"
-              className="nav-item-link"
-              onClick={toggleModal}
-              style={{ textDecoration: "none" }}
-            >
-              Home
-            </NavLink>
-            <NavLink
-              to="/product"
-              className="nav-item-link"
-              onClick={toggleModal}
-              style={{ textDecoration: "none" }}
-            >
-              Products
-            </NavLink>
-            <NavLink
-              to="/about"
-              className="nav-item-link"
-              onClick={toggleModal}
-              style={{ textDecoration: "none" }}
-            >
-              About
-            </NavLink>
-            <NavLink
-              to="/contact"
-              className="nav-item-link"
-              onClick={toggleModal}
-              style={{ textDecoration: "none" }}
-            >
-              Contact
-            </NavLink>
-          </div>
-        )}
-      </nav>
-    </>
+      </div>
+    </nav>
   );
 };
 

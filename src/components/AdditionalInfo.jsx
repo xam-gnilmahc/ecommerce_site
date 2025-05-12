@@ -125,7 +125,7 @@ const AdditionalInfo = () => {
                       <div className="userReviewContent">
                         <div className="userReviewTopContent">
                           <div className="userNameRating">
-                            <h6>Janice Miller</h6>
+                            <h6>Max chamling</h6>
                             <div className="userRating">
                               {[...Array(5)].map((_, i) => (
                                 <FaStar key={i} color="#FEC78A" size={10} />

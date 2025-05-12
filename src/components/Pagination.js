@@ -29,13 +29,14 @@ const Pagination = ({ postsPerPage, totalPosts, paginate, currentPage }) => {
   };
 
   return (
-    <nav aria-label="Page navigation" style={{ marginTop: '20px' }}>
-      <ul className="pagination justify-content-center" style={{ gap: '6px', padding: 0 }}>
+    <nav aria-label="Page navigation" className="mt-3">
+      <ul className="pagination justify-content-center flex-wrap" style={{ gap: '6px', padding: 0 }}>
         {/* Previous Button */}
         {currentPage > 1 && (
           <li className="page-item">
             <button
               onClick={() => paginate(currentPage - 1)}
+              className="btn"
               style={baseButtonStyle}
             >
               {'<'}
@@ -48,6 +49,7 @@ const Pagination = ({ postsPerPage, totalPosts, paginate, currentPage }) => {
           <li key={number} className="page-item">
             <button
               onClick={() => paginate(number)}
+              className="btn"
               style={number === currentPage ? activeButtonStyle : baseButtonStyle}
             >
               {number}
@@ -60,6 +62,7 @@ const Pagination = ({ postsPerPage, totalPosts, paginate, currentPage }) => {
           <li className="page-item">
             <button
               onClick={() => paginate(currentPage + 1)}
+              className="btn"
               style={baseButtonStyle}
             >
               {'>'}

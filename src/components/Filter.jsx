@@ -61,7 +61,9 @@ const Filter = ({onApplyFilters}) => {
     "Laptop",
     "Earbuds",
     "Watch",
-    "Tablet"
+    "Tablet",
+    "Monitor",
+    "Keyboard"
   ];
 
   const filterColors = [
