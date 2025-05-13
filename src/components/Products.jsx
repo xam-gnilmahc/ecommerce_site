@@ -229,6 +229,7 @@ const Products = () => {
   
     setFilter(updatedList);
     setCurrentPage(1); // Reset to first page after filtering
+    closeDrawer(true);
   };
   
   const handleSearch = (searchValue) => {
@@ -303,6 +304,15 @@ const Products = () => {
              paginate={paginate}
              currentPage={currentPage}
              />
+              <div className={`filterDrawer ${isDrawerOpen ? "open" : ""}`}>
+        <div className="drawerHeader">
+          <p>Filter By</p>
+          <IoClose onClick={closeDrawer} className="closeButton" size={26} />
+        </div>
+        <div className="drawerContent">
+          <Filters onApplyFilters={handleFilterChange}/>
+        </div>
+      </div>
           </div>
         </div>
       </div>
