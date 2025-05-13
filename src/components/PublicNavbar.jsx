@@ -21,6 +21,7 @@ const PublicNavbar = () => {
           </span>
         </NavLink>
       </nav>
+      
     </>
   );
 };

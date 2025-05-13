@@ -5,7 +5,7 @@ import { supabase } from "../supaBaseClient";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/authContext";
 import FacebookLogin from "react-facebook-login";
-import PublicNavbar from "../components/PublicNavbar";
+import Navbar from "../components/Navbar";
 import "./Login.css";
 
 const Login = () => {
@@ -69,7 +69,7 @@ const Login = () => {
 
   return (
     <>
-      <PublicNavbar />
+      <Navbar />
       <div className="loginSignUpSection">
         <div className="loginSignUpContainer">
         <div className="loginSignUpTabs">

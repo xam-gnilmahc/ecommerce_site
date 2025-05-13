@@ -1,18 +1,39 @@
-import React from "react";
+import React , {useState} from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import "./Navbar.css";
+import { Link } from "react-router-dom";
 import logo from "./assets/logo.png";
 import { RiShoppingBagLine } from "react-icons/ri";
 import Badge from "@mui/material/Badge";
+import { RiMenu2Line } from "react-icons/ri";
+import { FiSearch } from "react-icons/fi";
+import { FaRegUser } from "react-icons/fa6";
+import { MdOutlineClose } from "react-icons/md";
+import { FiHeart } from "react-icons/fi";
+import { FaFacebookF } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
+import { FaInstagram } from "react-icons/fa";
+import { FaYoutube } from "react-icons/fa";
+import { FaPinterest } from "react-icons/fa";
 
 const Navbar = () => {
   const { user, logout, cart } = useAuth();
 
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+    document.body.style.overflow = mobileMenuOpen ? "auto" : "hidden";
+  };
+
   return (
-    <nav className="navbar navBar navbar-expand-lg bg-light px-3">
+    <>
+    <div className="navBar">
       {/* Logo */}
-      <NavLink to="/" className="navbar-brand d-flex align-items-center gap-2">
+      <div className="logoLinkContainer">
+      <div className="logoContainer">
+      <NavLink to="/" className=" d-flex align-items-center gap-2">
         <img
           src={logo}
           alt="Logo"
@@ -35,37 +56,38 @@ const Navbar = () => {
           DEV MODE
         </span>
       </NavLink>
+      </div>
 
       {/* Toggler */}
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+      
 
 
       {/* Collapsible Links */}
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul className="navbar-nav mr-auto mb-2 mb-lg-0">
-          <li className="nav-item">
-            <NavLink to="/" className="nav-link" end>
+      <div class="linkContainer" >
+        <ul className="mb-2">
+          <li>
+            <NavLink to="/"  end>
               Home
             </NavLink>
           </li>
           <li className="nav-item">
-            <NavLink to="/product" className="nav-link">
+            <NavLink to="/product">
               Shop
             </NavLink>
           </li>
           <li className="nav-item">
-            <NavLink to="/about" className="nav-link">
+            <NavLink to="/about">
               About
             </NavLink>
           </li>
           <li className="nav-item">
-            <NavLink to="/contact" className="nav-link">
+            <NavLink to="/contact">
               Contact
             </NavLink>
           </li>
         </ul>
+        </div>
+        </div>
 
         {/* Auth / Cart Section */}
         <div className="d-flex align-items-center gap-2">
@@ -100,9 +122,86 @@ const Navbar = () => {
               </button>
             </>
           )}
+          </div>
+      
+      
+    </div>
+    <nav>
+        <div className="mobile-nav">
+          {mobileMenuOpen ? (
+            <MdOutlineClose size={22} onClick={toggleMobileMenu} />
+          ) : (
+            <RiMenu2Line size={22} onClick={toggleMobileMenu} />
+          )}
+          <div className="logoContainer">
+            <Link to="/">
+              <img src={logo} alt="Logo" />
+            </Link>
+          </div>
+          <Link to="/cart">
+            <Badge
+              badgeContent={cart.length === 0 ? "0" : cart.length}
+              color="primary"
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
+              }}
+            >
+              <RiShoppingBagLine size={22} color="black" />
+            </Badge>
+          </Link>
         </div>
-      </div>
-    </nav>
+        <div className={`mobile-menu ${mobileMenuOpen ? "open" : ""}`}>
+          <div className="mobile-menuTop">
+            <div className="mobile-menuSearchBar">
+              <div className="mobile-menuSearchBarContainer">
+                <input type="text" placeholder="Search products" />
+                <Link to="/shop">
+                  <FiSearch size={22} onClick={toggleMobileMenu} />
+                </Link>
+              </div>
+            </div>
+            <div className="mobile-menuList">
+              <ul>
+                <li>
+                  <Link to="/" onClick={toggleMobileMenu}>
+                    HOME
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/product" onClick={toggleMobileMenu}>
+                    SHOP
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/about" onClick={toggleMobileMenu}>
+                    ABOUT
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/contact" onClick={toggleMobileMenu}>
+                    CONTACT
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="mobile-menuFooter">
+            <div className="mobile-menuFooterLogin">
+              <Link to="/loginSignUp" onClick={toggleMobileMenu}>
+                <FaRegUser style={{ margin: 0 }} />
+                <p style={{ margin: 0 }}>My Account</p>
+              </Link>
+            </div>
+           
+            <div className="mobile-menuSocial_links">
+             
+            </div>
+          </div>
+        </div>
+      </nav>
+    </>
   );
 };
 
