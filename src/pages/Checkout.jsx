@@ -177,307 +177,228 @@ const Checkout = () => {
           ) : cart.length ? (
             <>
               {/* Main form section */}
-              <div className="col-md-8">
-                <div className="card  bg-white border border-gray-200 rounded-3 p-4">
-                  <form onSubmit={handleSubmit}>
-                    <div className="row g-4">
-                      {/* 1. Contact Information */}
-                      <div className="col-12">
-                        <h5 className="mb-3" style={{ color: "#000" }}>
-                          1. Contact Information
-                        </h5>
-                        <div className="row g-3">
-                          <div className="col-md-6">
-                            <label
-                              className="form-label"
-                              style={{ color: "#6c757d" }}
-                            >
-                              Email{" "}
-                            </label>
-                            <input
-                              type="email"
-                              className="form-control"
-                              value={email}
-                              style={{ color: "#6c757d" }}
-                              onChange={(e) => setEmail(e.target.value)}
-                              required
-                            />
-                          </div>
-                          <div className="col-md-6">
-                            <label
-                              className="form-label"
-                              style={{ color: "#6c757d" }}
-                            >
-                              Name{" "}
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              value={name}
-                              style={{ color: "#6c757d" }}
-                              onChange={(e) => setName(e.target.value)}
-                              required
-                            />
-                          </div>
-                        </div>
-                      </div>
+              <div className="col-12 col-lg-8">
+  <div className="card bg-white border border-gray-200 rounded-3 p-4">
+    <form onSubmit={handleSubmit}>
+      <div className="row g-4">
 
-                      {/* 2. Delivery Method */}
-                      <div className="col-12 pt-4">
-                        <h5 className="mb-3" style={{ color: "#000" }}>
-                          2. Delivery Method
-                        </h5>
-                        <div className="row g-3">
-                          <div className="col-md-6">
-                            <label
-                              className="form-label"
-                              style={{ color: "#6c757d" }}
-                            >
-                              Address Line 1{" "}
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              value={addressLine1}
-                              style={{ color: "#6c757d" }}
-                              onChange={(e) => setAddressLine1(e.target.value)}
-                              required
-                            />
-                          </div>
-                          <div className="col-md-6">
-                            <label
-                              className="form-label"
-                              style={{ color: "#6c757d" }}
-                            >
-                              Address Line 2
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              style={{ color: "#6c757d" }}
-                              value={addressLine2}
-                              onChange={(e) => setAddressLine2(e.target.value)}
-                            />
-                          </div>
-                          <div className="col-md-6">
-                            <label
-                              className="form-label"
-                              style={{ color: "#6c757d" }}
-                            >
-                              Zip Code{" "}
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              style={{ color: "#6c757d" }}
-                              value={zipCode}
-                              onChange={(e) => setZipCode(e.target.value)}
-                              required
-                            />
-                          </div>
-                          <div className="col-md-6">
-                            <label
-                              className="form-label"
-                              style={{ color: "#6c757d" }}
-                            >
-                              Country{" "}
-                            </label>
-                            <select
-                              className="form-select"
-                              style={{ color: "#6c757d" }}
-                              value={selectedCountry}
-                              onChange={(e) =>
-                                handleCountryChange(e.target.value)
-                              }
-                              required
-                            >
-                              <option value="">Select Country</option>
-                              {Country.getAllCountries().map((country) => (
-                                <option
-                                  key={country.isoCode}
-                                  value={country.isoCode}
-                                >
-                                  {country.name}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-                          <div className="col-md-6">
-                            <label
-                              className="form-label"
-                              style={{ color: "#6c757d" }}
-                            >
-                              State{" "}
-                            </label>
-                            <select
-                              className="form-select"
-                              value={selectedState}
-                              onChange={(e) =>
-                                handleStateChange(e.target.value)
-                              }
-                              required
-                            >
-                              <option value="">Select State</option>
-                              {states.map((state) => (
-                                <option
-                                  key={state.isoCode}
-                                  value={state.isoCode}
-                                >
-                                  {state.name}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-                        </div>
-                      </div>
+        {/* 1. Contact Information */}
+        <div className="col-12">
+          <h5 className="mb-3" style={{ color: "#000" }}>
+            1. Contact Information
+          </h5>
+          <div className="row g-3">
+            <div className="col-12 col-md-6">
+              <label className="form-label" style={{ color: "#6c757d" }}>
+                Email
+              </label>
+              <input
+                type="email"
+                className="form-control"
+                value={email}
+                style={{ color: "#6c757d" }}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div className="col-12 col-md-6">
+              <label className="form-label" style={{ color: "#6c757d" }}>
+                Name
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                value={name}
+                style={{ color: "#6c757d" }}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </div>
+          </div>
+        </div>
 
-                      {/* 3. Payment Method */}
-                      <div className="col-12 pt-4">
-                        <h5 className="mb-3" style={{ color: "#000" }}>
-                          3. Payment Method
-                        </h5>
-                        <div className="p-3 border bg-white rounded">
-                          <label
-                            className="form-label"
-                            style={{ color: "#6c757d" }}
-                          >
-                            Payment Methods
-                          </label>
+        {/* 2. Delivery Method */}
+        <div className="col-12 pt-4">
+          <h5 className="mb-3" style={{ color: "#000" }}>
+            2. Delivery Method
+          </h5>
+          <div className="row g-3">
+            <div className="col-12 col-md-6">
+              <label className="form-label" style={{ color: "#6c757d" }}>
+                Address Line 1
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                value={addressLine1}
+                style={{ color: "#6c757d" }}
+                onChange={(e) => setAddressLine1(e.target.value)}
+                required
+              />
+            </div>
+            <div className="col-12 col-md-6">
+              <label className="form-label" style={{ color: "#6c757d" }}>
+                Address Line 2
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                style={{ color: "#6c757d" }}
+                value={addressLine2}
+                onChange={(e) => setAddressLine2(e.target.value)}
+              />
+            </div>
+            <div className="col-12 col-md-6">
+              <label className="form-label" style={{ color: "#6c757d" }}>
+                Zip Code
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                style={{ color: "#6c757d" }}
+                value={zipCode}
+                onChange={(e) => setZipCode(e.target.value)}
+                required
+              />
+            </div>
+            <div className="col-12 col-md-6">
+              <label className="form-label" style={{ color: "#6c757d" }}>
+                Country
+              </label>
+              <select
+                className="form-select"
+                style={{ color: "#6c757d" }}
+                value={selectedCountry}
+                onChange={(e) => handleCountryChange(e.target.value)}
+                required
+              >
+                <option value="">Select Country</option>
+                {Country.getAllCountries().map((country) => (
+                  <option key={country.isoCode} value={country.isoCode}>
+                    {country.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="col-12 col-md-6">
+              <label className="form-label" style={{ color: "#6c757d" }}>
+                State
+              </label>
+              <select
+                className="form-select"
+                value={selectedState}
+                onChange={(e) => handleStateChange(e.target.value)}
+                required
+              >
+                <option value="">Select State</option>
+                {states.map((state) => (
+                  <option key={state.isoCode} value={state.isoCode}>
+                    {state.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
 
-                          {/* Display Payment Icons */}
-                          <div className="d-flex justify-content-between mb-3">
-                            <button
-                              className={`btn btn-light p-2 border d-flex align-items-center justify-content-center ${
-                                paymentMethod === "card"
-                                  ? "border-secondary"
-                                  : ""
-                              }`}
-                              onClick={() => setPaymentMethod("card")}
-                              style={{ width: "30%" }}
-                            >
-                              <i
-                                className="fa fa-credit-card"
-                                style={{ fontSize: "24px" }}
-                              ></i>
-                              <span
-                                className="ms-2"
-                                style={{ color: "#6c757d" }}
-                              >
-                                Card
-                              </span>
-                            </button>
-                            <button
-                              className={`btn btn-light p-2 border d-flex align-items-center justify-content-center ${
-                                paymentMethod === "googlePay"
-                                  ? "border-secondary"
-                                  : ""
-                              }`}
-                              onClick={() => setPaymentMethod("googlePay")}
-                              style={{ width: "30%" }}
-                            >
-                              <i
-                                className="fa fa-google"
-                                style={{ fontSize: "24px" }}
-                              ></i>
-                              <span
-                                className="ms-2"
-                                style={{ color: "#6c757d" }}
-                              >
-                                Google Pay
-                              </span>
-                            </button>
-                            <button
-                              className={`btn btn-light p-2 border d-flex align-items-center justify-content-center ${
-                                paymentMethod === "applePay"
-                                  ? "border-secondary"
-                                  : ""
-                              }`}
-                              onClick={() => setPaymentMethod("applePay")}
-                              style={{ width: "30%" }}
-                            >
-                              <i
-                                className="fa fa-apple"
-                                style={{ fontSize: "24px" }}
-                              ></i>
-                              <span
-                                className="ms-2"
-                                style={{ color: "#6c757d" }}
-                              >
-                                Apple Pay
-                              </span>
-                            </button>
-                          </div>
+        {/* 3. Payment Method */}
+        <div className="col-12 pt-4">
+          <h5 className="mb-3" style={{ color: "#000" }}>
+            3. Payment Method
+          </h5>
+          <div className="p-3 border bg-white rounded">
+            <label className="form-label" style={{ color: "#6c757d" }}>
+              Payment Methods
+            </label>
 
-                          {/* Conditionally render Card Input or Payment Buttons */}
-                          {paymentMethod === "card" && (
-                            <div className="mt-4 p-3 border rounded">
-                              <CardElement />
-                              <p
-                                className="mt-2"
-                                style={{ fontSize: "0.9rem", color: "#6c757d" }}
-                              >
-                                Test Card Numbers: Use one of these for testing:
-                                <br />
-                                - 4242 4242 4242 4242 (Visa) <br />
-                                - 5555 5555 5555 4444 (Mastercard) <br />- 3782
-                                8224 6310 005 (American Express)
-                              </p>
-                            </div>
-                          )}
-
-                          {paymentMethod === "googlePay" && (
-                            <div>
-                              {/* Placeholder for Google Pay */}
-                              <p>Google Pay button will be here.</p>
-                            </div>
-                          )}
-
-                          {paymentMethod === "applePay" && (
-                            <div>
-                              {/* Placeholder for Apple Pay */}
-                              <p>Apple Pay button will be here.</p>
-                            </div>
-                          )}
-
-                          {/* Development Mode Warning */}
-                          <div
-                            className="dev-mode-warning mt-3"
-                            style={{
-                              backgroundColor: "#fff8db",
-                              borderLeft: "4px solid #facc15",
-                              color: "#92400e",
-                              padding: "8px 12px",
-                              fontSize: "0.95rem",
-                              fontWeight: "500",
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "6px",
-                              borderRadius: "4px",
-                            }}
-                          >
-                            🚧 This feature is currently in{" "}
-                            <strong>development mode</strong>. No real payment
-                            details required. Use the test cards above! 🛠️
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Submit */}
-                      <div className="col-12 pt-4">
-                        <button
-                          type="submit"
-                          className="btn btn-success  w-100"
-                          disabled={loading || !stripe}
-                        >
-                          {paymentLoading
-                            ? "Submitting Payment..."
-                            : "Submit Payment"}
-                        </button>
-                      </div>
-                    </div>
-                  </form>
-                </div>
+            <div className="d-flex flex-wrap gap-3">
+    <button
+      type="button"
+      className={`btn btn-light p-2 flex-grow-1 border d-flex align-items-center justify-content-center ${
+        paymentMethod === "card" ? "border-secondary" : ""
+      }`}
+      onClick={() => setPaymentMethod("card")}
+    >
+      <i className="fa fa-credit-card" style={{ fontSize: "24px" }}></i>
+      <span className="ms-2" style={{ color: "#6c757d" }}>
+        Card
+      </span>
+    </button>
+    <button
+      type="button"
+      className={`btn btn-light p-2 flex-grow-1 border d-flex align-items-center justify-content-center ${
+        paymentMethod === "googlePay" ? "border-secondary" : ""
+      }`}
+      onClick={() => setPaymentMethod("googlePay")}
+    >
+      <i className="fa fa-google" style={{ fontSize: "24px" }}></i>
+      <span className="ms-2" style={{ color: "#6c757d" }}>
+        Google Pay
+      </span>
+    </button>
+    <button
+      type="button"
+      className={`btn btn-light p-2 flex-grow-1 border d-flex align-items-center justify-content-center ${
+        paymentMethod === "applePay" ? "border-secondary" : ""
+      }`}
+      onClick={() => setPaymentMethod("applePay")}
+    >
+      <i className="fa fa-apple" style={{ fontSize: "24px" }}></i>
+      <span className="ms-2" style={{ color: "#6c757d" }}>
+        Apple Pay
+      </span>
+    </button>
+  </div>
+            {paymentMethod === "card" && (
+              <div className="mt-4 p-3 border rounded">
+                <CardElement />
+                <p className="mt-2" style={{ fontSize: "0.9rem", color: "#6c757d" }}>
+                  Test Card Numbers: <br />
+                  - 4242 4242 4242 4242 (Visa) <br />
+                  - 5555 5555 5555 4444 (Mastercard) <br />
+                  - 3782 8224 6310 005 (American Express)
+                </p>
               </div>
+            )}
+
+            {paymentMethod === "googlePay" && <p>Google Pay button will be here.</p>}
+            {paymentMethod === "applePay" && <p>Apple Pay button will be here.</p>}
+
+            <div
+              className="dev-mode-warning mt-3"
+              style={{
+                backgroundColor: "#fff8db",
+                borderLeft: "4px solid #facc15",
+                color: "#92400e",
+                padding: "8px 12px",
+                fontSize: "0.95rem",
+                fontWeight: "500",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                borderRadius: "4px",
+              }}
+            >
+              🚧 This feature is currently in <strong>development mode</strong>. Use test cards only. 🛠️
+            </div>
+          </div>
+        </div>
+
+        {/* Submit */}
+        <div className="col-12 pt-4">
+          <button
+            type="submit"
+            className="btn btn-success w-100"
+            disabled={loading || !stripe}
+          >
+            {paymentLoading ? "Submitting Payment..." : "Submit Payment"}
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
 
               {/* Order Summary on Right */}
               <div className="col-md-4">

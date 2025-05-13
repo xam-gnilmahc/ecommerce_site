@@ -273,8 +273,8 @@ const Products = () => {
               </div>
 
               <div className="filterLeft" onClick={toggleDrawer}>
-                <IoFilterSharp />
-                <p>Filter</p>
+                <IoFilterSharp style={{ margin: 0 }} />
+                <p style={{ margin: 0 }}>Filter</p>
               </div>
               <div className="shopDetailsSort">
                 <select name="sort" id="sort">

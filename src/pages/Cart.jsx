@@ -62,87 +62,94 @@ const Cart = () => {
 
     return (
       <section className="py-5 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
-  <div className="container">
-    <div className="row g-4">
-      {/* Cart Items Section */}
-      <div className="col-lg-8">
-        <div className="bg-white border border-gray-200 rounded-3 p-4">
-          <h5 className="mb-4 text-xl font-semibold text-gray-800">🛒 Shopping Cart</h5>
-          {cart.map((item) => (
-            <div key={item.id} className="d-flex flex-column gap-3 mb-4 p-3 bg-gray-50 border rounded-2">
-              <div className="row align-items-center">
-                <div className="col-md-3 mb-2 mb-md-0">
-                  <img
-                    src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.products.banner_url}`}
-                    alt={item.products.name}
-                    className="img-fluid rounded bg-white p-2"
-                    style={{
-                      width: "100%",
-                      height: "80px",
-                      objectFit: "contain",
-                    }}
-                  />
-                </div>
-                <div className="col-md-5">
-                  <h6 className="mb-1 text-gray-800">{item.products.name}</h6>
-                  <p className="text-sm text-muted">Product ID: #{item.products.id}</p>
-                  <p className="mt-2 d-flex align-items-center gap-1">
-                    {Array.from({ length: 5 }, (_, i) => {
-                      const rating = item.products?.rating || 0;
-                      if (rating >= i + 1) return <i key={i} className="fa fa-star text-warning"></i>;
-                      else if (rating >= i + 0.5) return <i key={i} className="fa fa-star-half-o text-warning"></i>;
-                      return <i key={i} className="fa fa-star-o text-warning"></i>;
-                    })}
-                  </p>
-                </div>
-                <div className="col-md-4 text-end">
-                  <div className="d-flex justify-content-end align-items-center gap-2 mb-2">
-                    <button
-                      className="btn btn-sm btn-outline-secondary rounded-circle"
-                      onClick={() => updateItemQuantity(item.products, "decrease")}
-                    >
-                      <i className="fas fa-minus"></i>
-                    </button>
-                    <span className="px-2">{item.quantity}</span>
-                    <button
-                      className="btn btn-sm btn-outline-secondary rounded-circle"
-                      onClick={() => updateItemQuantity(item.products, "increase")}
-                    >
-                      <i className="fas fa-plus"></i>
-                    </button>
+      <div className="container">
+        <div className="row g-4">
+          {/* Cart Items Section */}
+          <div className="col-12 col-lg-8">
+            <div className="bg-white border border-gray-200 rounded-3 p-4">
+              <h5 className="mb-4 text-xl font-semibold text-gray-800">🛒 Shopping Cart</h5>
+              {cart.map((item) => (
+                <div key={item.id} className="mb-4 p-3 bg-gray-50 border rounded-2">
+                  <div className="d-flex flex-wrap flex-md-nowrap align-items-center gap-3">
+                    {/* Product Image */}
+                    <div style={{ flex: "0 0 80px" }}>
+                      <img
+                        src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.products.banner_url}`}
+                        alt={item.products.name}
+                        className="img-fluid rounded bg-white p-2"
+                        style={{
+                          width: "80px",
+                          height: "80px",
+                          objectFit: "contain",
+                        }}
+                      />
+                    </div>
+    
+                    {/* Product Info */}
+                    <div className="flex-grow-1">
+                      <h6 className="mb-1 text-gray-800">{item.products.name}</h6>
+                      <p className="text-sm text-muted">Product ID: #{item.products.id}</p>
+                      <div className="d-flex gap-1 mt-1">
+                        {Array.from({ length: 5 }, (_, i) => {
+                          const rating = item.products?.rating || 0;
+                          if (rating >= i + 1) return <i key={i} className="fa fa-star text-warning"></i>;
+                          else if (rating >= i + 0.5) return <i key={i} className="fa fa-star-half-o text-warning"></i>;
+                          return <i key={i} className="fa fa-star-o text-warning"></i>;
+                        })}
+                      </div>
+                    </div>
+    
+                    {/* Quantity & Price */}
+                    <div className="text-end">
+                      <div className="d-flex align-items-center gap-2 justify-content-end mb-2">
+                        <button
+                          className="btn btn-sm btn-outline-secondary rounded-circle"
+                          onClick={() => updateItemQuantity(item.products, "decrease")}
+                        >
+                          <i className="fas fa-minus"></i>
+                        </button>
+                        <span>{item.quantity}</span>
+                        <button
+                          className="btn btn-sm btn-outline-secondary rounded-circle"
+                          onClick={() => updateItemQuantity(item.products, "increase")}
+                        >
+                          <i className="fas fa-plus"></i>
+                        </button>
+                      </div>
+                      <strong className="text-success">${item.amount * item.quantity}</strong>
+                    </div>
                   </div>
-                  <strong className="text-success">${item.amount * item.quantity}</strong>
                 </div>
-              </div>
+              ))}
             </div>
-          ))}
+          </div>
+    
+          {/* Order Summary */}
+          <div className="col-12 col-lg-4">
+            <div className="bg-white border border-gray-200 rounded-3 p-4">
+              <h5 className="mb-4 text-lg font-semibold text-gray-800">📦 Order Summary</h5>
+              <ul className="list-group list-group-flush mb-3">
+                <li className="list-group-item d-flex justify-content-between">
+                  Products ({totalItems}) <strong>${Math.round(subtotal)}</strong>
+                </li>
+                <li className="list-group-item d-flex justify-content-between">
+                  Shipping <strong>${shipping}</strong>
+                </li>
+                <li className="list-group-item d-flex justify-content-between">
+                  <strong>Total</strong>
+                  <strong>${Math.round(subtotal + shipping)}</strong>
+                </li>
+              </ul>
+              <Link to="/checkout" className="btn btn-success btn-lg w-100 mt-3">
+                Proceed to Checkout
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
-
-      {/* Order Summary */}
-      <div className="col-lg-4">
-        <div className="bg-white border border-gray-200 rounded-3 p-4">
-          <h5 className="mb-4 text-lg font-semibold text-gray-800">📦 Order Summary</h5>
-          <ul className="list-group list-group-flush mb-3">
-            <li className="list-group-item d-flex justify-content-between">
-              Products ({totalItems}) <strong>${Math.round(subtotal)}</strong>
-            </li>
-            <li className="list-group-item d-flex justify-content-between">
-              Shipping <strong>${shipping}</strong>
-            </li>
-            <li className="list-group-item d-flex justify-content-between">
-              <strong>Total</strong>
-              <strong>${Math.round(subtotal + shipping)}</strong>
-            </li>
-          </ul>
-          <Link to="/checkout" className="btn btn-success btn-lg w-100 mt-3">
-            Proceed to Checkout
-          </Link>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+    </section>
+    
+    
 
     );
   };
