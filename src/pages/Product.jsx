@@ -388,87 +388,73 @@ const Product = () => {
   const ShowSimilarProduct = () => {
     return (
       <>
-        <div className="">
-          <div className="d-flex gap-5 ">
-            {similarProducts.slice(0, 4).map((item) => {
-              return (
-                <div key={item.id} className="rpContainer">
-                     <div className="rpImages" >
-                  <img
-                    
-                    src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.banner_url}`}
-                    alt="Card"
-                     className="rpFrontImg"
-                     style={{
-                      width: "250px",
-                      maxHeight: "300px",
-                      objectFit: "contain",
-                      transition: "transform 0.3s ease",
-                    }}
-                  />
-                   <img
-                    
-                    src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.banner_url}`}
-                    alt="Card"
-                     className="rpBackImg"
-                     style={{
-                      width: "250px",
-                      maxHeight: "300px",
-                      objectFit: "contain",
-                      transition: "transform 0.3s ease",
-                    }}
-                  />
-                  
-                    <h4  onClick={() => {
-                      if (!user) {
-                        toast.error("Please login to add products to cart.");
-                        navigate("/login");
-                        return;
-                      }
-                      toast.success("Added to cart");
-                      addProduct(product);
-                    }}>Add to Cart</h4>
-                    </div>
-                    <div className="relatedProductInfo">
-                  <h5 >
-                    {item.name.substring(0, 20)}
-                  </h5>
-
-                  {/* Centered Rating */}
-                  <p className="productRatingReviews">
-                    {Array.from({ length: 5 }, (_, i) => {
-                      const rating = item?.rating || 0;
-                      if (rating >= i + 1) {
-                        return (
-                          <i key={i} className="fa fa-star text-warning"></i>
-                        ); // full star
-                      } else if (rating >= i + 0.5) {
-                        return (
-                          <i
-                            key={i}
-                            className="fa fa-star-half-o text-warning"
-                          ></i>
-                        ); // half star
-                      } else {
-                        return (
-                          <i key={i} className="fa fa-star-o text-warning"></i>
-                        ); // empty star
-                      }
-                    })}
-                    <span>
-                      ({item?.rating || 0} / 5)
-                    </span>
-                  </p>
-
-                  <p>
-                    ${item.amount}
-                  </p>
-                  </div>
-                </div>
-              );
-            })}
+        <div className="related-products-wrapper">
+  <div className="related-products-grid">
+    {similarProducts.slice(0, 4).map((item) => {
+      return (
+        <div key={item.id} className="rpContainer">
+          <div className="rpImages">
+            <img
+              src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.banner_url}`}
+              alt="Card"
+              className="rpFrontImg"
+              style={{
+                width: "100%",
+                maxHeight: "300px",
+                objectFit: "contain",
+                transition: "transform 0.3s ease",
+              }}
+            />
+            <img
+              src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.banner_url}`}
+              alt="Card"
+              className="rpBackImg"
+              style={{
+                width: "100%",
+                maxHeight: "300px",
+                objectFit: "contain",
+                transition: "transform 0.3s ease",
+              }}
+            />
+            <h4
+              onClick={() => {
+                if (!user) {
+                  toast.error("Please login to add products to cart.");
+                  navigate("/login");
+                  return;
+                }
+                toast.success("Added to cart");
+                addProduct(product);
+              }}
+            >
+              Add to Cart
+            </h4>
+          </div>
+          <div className="relatedProductInfo">
+            <h5>{item.name.substring(0, 20)}</h5>
+            <p className="productRatingReviews">
+              {Array.from({ length: 5 }, (_, i) => {
+                const rating = item?.rating || 0;
+                if (rating >= i + 1) {
+                  return <i key={i} className="fa fa-star text-warning"></i>;
+                } else if (rating >= i + 0.5) {
+                  return (
+                    <i key={i} className="fa fa-star-half-o text-warning"></i>
+                  );
+                } else {
+                  return <i key={i} className="fa fa-star-o text-warning"></i>;
+                }
+              })}
+              <span> ({item?.rating || 0} / 5)</span>
+            </p>
+            <p>${item.amount}</p>
           </div>
         </div>
+      );
+    })}
+  </div>
+</div>
+
       </>
     );
   };
@@ -478,7 +464,7 @@ const Product = () => {
       <div className="productSection">
         <div className="productShowCase">{loading ? <Loading /> : <ShowProduct />}</div>
         <div className="row my-5 py-5">
-          <div className="d-none d-md-block">
+          <div className="d-md-block">
             <AdditionalInfo/>
             <div className="relatedProducts">
           <h2>

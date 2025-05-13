@@ -210,6 +210,64 @@ export const AuthProvider = ({ children }) => {
 
     await fetchCartItems(memoizedUser.id);
   };
+  const insertReviewWithAttachments = async ({  productId , rating, reviewText, files }) => {
+    try {
+      // 1. Insert the review
+      const { data: review, error: reviewError } = await supabase
+      .from('reviews')
+      .insert([
+        {
+          user_id: user.id,
+          product_id: productId,
+          rating,
+          review: reviewText,
+        },
+      ])
+      .select()
+      .single();
+
+    if (reviewError) throw reviewError;
+
+    const attachments = [];
+
+    for (const file of files) {
+      const filePath = `${Date.now()}-${file.name}`;
+
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('attachments')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL from Supabase
+      const { data: publicUrlData } = supabase.storage
+        .from('attachments')
+        .getPublicUrl(filePath);
+
+      const publicUrl = publicUrlData.publicUrl;
+
+      attachments.push({
+        review_id: review.id,
+        file_url: publicUrl,
+        file_name: file.name,
+      });
+      
+    }
+      // 3. Insert attachments metadata into the attachments table
+      if (attachments.length > 0) {
+        const { error: attachInsertError } = await supabase
+          .from('review_attachments')
+          .insert(attachments);
+  
+        if (attachInsertError) throw attachInsertError;
+      }
+  
+      return true;
+    } catch (error) {
+      console.error('Error inserting review with attachments:', error.message);
+      throw error;
+    }
+  };
 
   return (
     <AuthContext.Provider value={{ user, logout, addToCart, removeFromCart, cart, setUser, removeFromCartAfterOrder, setToken, access_token, loading, setLoading }}>

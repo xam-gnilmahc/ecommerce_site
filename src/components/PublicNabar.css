@@ -1,0 +1,45 @@
+
+  
+  .navbar-logo {
+    width: 100px;
+    height: 60px;
+    object-fit: contain;
+  }
+  
+  .dev-mode-badge {
+    background: linear-gradient(135deg, #0d6efd, #6610f2);
+    color: #fff;
+    font-size: 12px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-left: 12px;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    letter-spacing: 0.5px;
+  }
+  
+ 
+  .navBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 160px;
+    position: relative;
+    z-index: 10;
+    background-color: white;
+    position: sticky;
+    top: 0;
+    box-shadow: 0 10px 33px rgba(0, 0, 0, 0.1);
+  }
+  .navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    position: relative;
+    z-index: 10;
+    background-color: white;
+    position: sticky;
+    top: 0;
+  }
+  

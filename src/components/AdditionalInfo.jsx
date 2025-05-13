@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import "./AdditionalInfo.css";
 
 import user1 from "../components/assets/user-1.jpg";
@@ -6,14 +6,64 @@ import user2 from "../components/assets/user-2.jpg";
 
 import { FaStar } from "react-icons/fa";
 import Rating from "@mui/material/Rating";
+import DeleteIcon from "@mui/icons-material/Delete"; // Import Delete icon
+import IconButton from "@mui/material/IconButton";
 
 const AdditionalInfo = () => {
   const [activeTab, setActiveTab] = useState("aiTab1");
+  const [rating, setRating] = useState(0);
+  const [review, setReview] = useState("");
+  const [mediaFiles, setMediaFiles] = useState([]);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [dragActive, setDragActive] = useState(false);
+  const videoRefs = useRef([]);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
 
+  const handleFileChange = (files) => {
+    const fileArray = Array.from(files);
+    const updatedFiles = fileArray.map((file) => ({
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+    setMediaFiles((prev) => [...prev, ...updatedFiles]);
+  };
+
+  const handleDeleteFile = (index) => {
+    const updatedFiles = mediaFiles.filter((_, i) => i !== index);
+    setMediaFiles(updatedFiles);
+  };
+
+  
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleFileChange(e.dataTransfer.files);
+    }
+  };
+  
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('max');
+    console.log("Submitted Review:", {
+      rating,
+      review,
+      mediaFiles,
+    });
+  };
   return (
     <>
       <div className="productAdditionalInfo">
@@ -176,7 +226,7 @@ const AdditionalInfo = () => {
                   </div>
                   <div className="userNewReview">
                     <div className="userNewReviewMessage">
-                      <h5>Be the first to review “SuperPhone X Pro”</h5>
+                      <h5>Be the first to review</h5>
                       <p>
                         Your email address will not be published. Required
                         fields are marked *
@@ -184,36 +234,124 @@ const AdditionalInfo = () => {
                     </div>
                     <div className="userNewReviewRating">
                       <label>Your rating *</label>
-                      <Rating name="simple-controlled" size="small" />
+                      <Rating
+                        name="rating"
+                        size="small"
+                        value={rating}
+                        onChange={(event, newValue) => setRating(newValue)}
+                      />
                     </div>
                     <div className="userNewReviewForm">
-                      <form>
+                      <form onSubmit={handleSubmit}>
                         <textarea
                           cols={30}
                           rows={8}
-                          placeholder="Your Review"
+                          placeholder="Your Review *"
+                          value={review}
+                          onChange={(e) => setReview(e.target.value)}
                         />
+                        <div
+                          onDragEnter={handleDrag}
+                          onDragLeave={handleDrag}
+                          onDragOver={handleDrag}
+                          onDrop={handleDrop}
+                          style={{
+                            border: dragActive
+                              ? "2px dashed #4f46e5"
+                              : "2px dashed #ccc",
+                            borderRadius: "10px",
+                            padding: "20px",
+                            textAlign: "center",
+                            backgroundColor: dragActive ? "#f0f4ff" : "#fafafa",
+                            marginTop: "10px",
+                            position: "relative",
+                            transition: "0.3s ease",
+                          }}
+                        >
                         <input
-                          type="text"
-                          placeholder="Name *"
-                          required
-                          className="userNewReviewFormInput"
+                          type="file"
+                          accept="image/*,video/*"
+                          id="uploadInput"
+                          multiple
+                          style={{ display: "none" }}
+                          onChange={(e) => handleFileChange(e.target.files)}
                         />
-                        <input
-                          type="email"
-                          placeholder="Email address *"
-                          required
-                          className="userNewReviewFormInput"
-                        />
-                        <div className="userNewReviewFormCheck">
-                          <label>
-                            <input type="checkbox" />
-                            Save my name, email, and website in this browser for
-                            the next time I comment.
+
+                          <label
+                            htmlFor="uploadInput"
+                            style={{ cursor: "pointer" }}
+                          >
+                            <p
+                              style={{
+                                margin: 0,
+                                color: "#555",
+                                fontSize: "14px",
+                              }}
+                            >
+                              Drag & drop an image or video here, or{" "}
+                              <span
+                                style={{ color: "#4f46e5", fontWeight: 500 }}
+                              >
+                                click to browse
+                              </span>
+                            </p>
                           </label>
                         </div>
+                        {mediaFiles.length > 0 && (
+  <div
+    style={{
+      display: "flex",
+      gap: "10px",
+      flexWrap: "wrap",
+      marginTop: "15px",
+    }}
+  >
+    {mediaFiles.map((media, index) => (
+    <div
+    key={index}
+    style={{
+      
+      position: "relative",
+      borderRadius: "10px",
+      overflow: "hidden",
+    }}
+  >
+    <div
+      onClick={() => handleDeleteFile(index)}
+      style={{
+        position: "absolute",
+        top: "5px",
+        right: "0px",
+        cursor: "pointer",
+      }}
+    >
+      <DeleteIcon fontSize="small" />
+    </div>
+        {media.file.type.startsWith("image/") ? (
+          <img
+            src={media.preview}
+            alt="preview"
+            style={{
+              maxWidth: "150px",
+              maxHeight: "150px",
+              borderRadius: "8px",
+              objectFit: "contain",
+            }}
+          />
+        ) : (
+          <video
+           ref={(el) => (videoRefs.current[index] = el)}
+           
+            src={media.preview}
+            style={{ maxWidth: "150px", maxHeight: "150px" }}
+          />
+        )}
+      </div>
+    ))}
+  </div>
+)}
 
-                        <button type="submit">Submit</button>
+                        <button type="submit" >Submit</button>
                       </form>
                     </div>
                   </div>
