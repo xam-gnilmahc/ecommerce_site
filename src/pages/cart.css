@@ -1,0 +1,7 @@
+@media (max-width: 767.98px) {
+    .mobile-no-border {
+      border: none !important;
+      padding: 0 !important;
+    }
+  }
+  

@@ -1,0 +1,11 @@
+@media (max-width: 767.98px) {
+    .order-summary {
+      margin-top: 1rem;
+    }
+    
+    .payment-method {
+        border: none !important;
+        padding: 0 !important;
+      }
+  }
+  

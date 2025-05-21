@@ -17,6 +17,7 @@ import { sendOrderEmail } from "../service/emailService";
 import LottieLoader from "../components/LottieLoader";
 import { supabase } from "../supaBaseClient";
 import "./Animation.css";
+import "./checkout.css";
 
 // Stripe Publishable Key
 const stripePromise = loadStripe(
@@ -285,6 +286,7 @@ const Checkout = () => {
                 State
               </label>
               <select
+                style={{ color: "#6c757d" }}
                 className="form-select"
                 value={selectedState}
                 onChange={(e) => handleStateChange(e.target.value)}
@@ -306,7 +308,7 @@ const Checkout = () => {
           <h5 className="mb-3" style={{ color: "#000" }}>
             3. Payment Method
           </h5>
-          <div className="p-3 border bg-white rounded">
+          <div className="p-3 border bg-white rounded payment-method">
             <label className="form-label" style={{ color: "#6c757d" }}>
               Payment Methods
             </label>
@@ -351,7 +353,25 @@ const Checkout = () => {
   </div>
             {paymentMethod === "card" && (
               <div className="mt-4 p-3 border rounded">
-                <CardElement />
+                <CardElement
+                  options={{
+                    style: {
+                      base: {
+                        fontSize: '18px',       // bigger font
+                        lineHeight: '30px',     // taller input
+                        padding: '12px 14px',   // spacing inside
+                        color: '#424770',
+                        '::placeholder': {
+                          color: '#aab7c4',
+                        },
+                      },
+                      invalid: {
+                        color: '#9e2146',
+                      },
+                    },
+                  }}
+                />
+
                 <p className="mt-2" style={{ fontSize: "0.9rem", color: "#6c757d" }}>
                   Test Card Numbers: <br />
                   - 4242 4242 4242 4242 (Visa) <br />
@@ -401,7 +421,7 @@ const Checkout = () => {
 
 
               {/* Order Summary on Right */}
-              <div className="col-md-4">
+              <div className="col-md-4 order-summary">
                 <div className="bg-white border border-gray-200 rounded-3 p-4">
                   <h5 className="mb-4 text-lg font-semibold text-gray-800">
                     📦 Order Summary

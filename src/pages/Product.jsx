@@ -194,11 +194,12 @@ const Product = () => {
                   />
                 ))}
               </div>
-              <div className="productFullImg">
+              <div className="w-full" style={{ maxHeight: "350px" }}>
                 <img
                   src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${activeImage}`}
                   alt={activeImage}
-                  style={{ maxHeight: "350px", objectFit: "contain" }}
+                  className="img-fluid d-block mx-auto"
+                  style={{ maxHeight: "200px", objectFit: "contain" }}
                 />
               </div>
             </div>
@@ -466,11 +467,12 @@ const Product = () => {
         <div className="row my-5 py-5">
           <div className="d-md-block">
             <AdditionalInfo/>
-            <div className="relatedProducts">
+            <div className="relatedProducts d-none d-md-block">
           <h2>
             RELATED <span>PRODUCTS</span>
           </h2>
         </div>
+        <div className=" d-none d-md-block">
             {similarProducts.length > 0 ? (
           <>
                 {loading2 ? <Loading2 /> : <ShowSimilarProduct />}
@@ -554,6 +556,7 @@ const Product = () => {
                 </div>
               </>
             )}
+            </div>
           </div>
         </div>
       </div>

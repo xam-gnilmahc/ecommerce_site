@@ -244,6 +244,7 @@ const AdditionalInfo = () => {
                     <div className="userNewReviewForm">
                       <form onSubmit={handleSubmit}>
                         <textarea
+                        class="form-control"
                           cols={30}
                           rows={8}
                           placeholder="Your Review *"
@@ -307,49 +308,64 @@ const AdditionalInfo = () => {
     }}
   >
     {mediaFiles.map((media, index) => (
-    <div
-    key={index}
-    style={{
-      
-      position: "relative",
-      borderRadius: "10px",
-      overflow: "hidden",
-    }}
-  >
-    <div
-      onClick={() => handleDeleteFile(index)}
-      style={{
-        position: "absolute",
-        top: "5px",
-        right: "0px",
-        cursor: "pointer",
-      }}
-    >
-      <DeleteIcon fontSize="small" />
-    </div>
+      <div
+        key={index}
+        style={{
+          position: "relative",
+          width: "150px",
+          height: "150px",
+          borderRadius: "10px",
+          overflow: "hidden",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "#f8f8f8", // optional: subtle bg so empty spaces don't show white
+        }}
+      >
+        <div
+          onClick={() => handleDeleteFile(index)}
+          style={{
+            position: "absolute",
+            top: "5px",
+            right: "5px",
+            cursor: "pointer",
+            zIndex: 10,
+            backgroundColor: "rgba(255,255,255,0.7)",
+            borderRadius: "50%",
+            padding: "2px",
+          }}
+        >
+          <DeleteIcon fontSize="small" />
+        </div>
         {media.file.type.startsWith("image/") ? (
           <img
             src={media.preview}
             alt="preview"
             style={{
-              maxWidth: "150px",
-              maxHeight: "150px",
+              width: "100%",
+              height: "100%",
               borderRadius: "8px",
               objectFit: "contain",
             }}
           />
         ) : (
           <video
-           ref={(el) => (videoRefs.current[index] = el)}
-           
+            ref={(el) => (videoRefs.current[index] = el)}
             src={media.preview}
-            style={{ maxWidth: "150px", maxHeight: "150px" }}
+            style={{
+              width: "100%",
+              height: "100%",
+              borderRadius: "8px",
+              objectFit: "contain",
+            }}
+            controls
           />
         )}
       </div>
     ))}
   </div>
 )}
+
 
                         <button type="submit" >Submit</button>
                       </form>

@@ -8,6 +8,7 @@ import { useAuth } from "../context/authContext";
 import toast from "react-hot-toast";
 import { FaCarTunnel } from "react-icons/fa6";
 import LottieLoader from "../components/LottieLoader";
+import "./cart.css";
 
 const Cart = () => {
   const state = useSelector((state) => state.handleCart);
@@ -61,16 +62,16 @@ const Cart = () => {
     });
 
     return (
-      <section className="py-5 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+      <section className="py-3 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
       <div className="container">
-        <div className="row g-4">
+        <div className="row g-">
           {/* Cart Items Section */}
           <div className="col-12 col-lg-8">
-            <div className="bg-white border border-gray-200 rounded-3 p-4">
+            <div className="bg-white border border-gray-200 rounded-3 p-4 mobile-no-border">
               <h5 className="mb-4 text-xl font-semibold text-gray-800">🛒 Shopping Cart</h5>
               {cart.map((item) => (
                 <div key={item.id} className="mb-4 p-3 bg-gray-50 border rounded-2">
-                  <div className="d-flex flex-wrap flex-md-nowrap align-items-center gap-3">
+                  <div className="d-flex flex-wrap flex-md-nowrap align-items-center gap-4">
                     {/* Product Image */}
                     <div style={{ flex: "0 0 80px" }}>
                       <img
@@ -87,9 +88,9 @@ const Cart = () => {
     
                     {/* Product Info */}
                     <div className="flex-grow-1">
-                      <h6 className="mb-1 text-gray-800">{item.products.name}</h6>
-                      <p className="text-sm text-muted">Product ID: #{item.products.id}</p>
-                      <div className="d-flex gap-1 mt-1">
+                      <h6 className="mb-1 text-gray-800 d-none d-md-block ">{item.products.name}</h6>
+                      <p className="text-sm text-muted d-none d-md-block">Product ID: #{item.products.id}</p>
+                      <div className="d-flex gap-1 mt-1 d-none d-md-block">
                         {Array.from({ length: 5 }, (_, i) => {
                           const rating = item.products?.rating || 0;
                           if (rating >= i + 1) return <i key={i} className="fa fa-star text-warning"></i>;
@@ -116,8 +117,8 @@ const Cart = () => {
                           <i className="fas fa-plus"></i>
                         </button>
                       </div>
-                      <strong className="text-success">${item.amount * item.quantity}</strong>
                     </div>
+                    <strong className="text-success">${item.amount * item.quantity}</strong>
                   </div>
                 </div>
               ))}
