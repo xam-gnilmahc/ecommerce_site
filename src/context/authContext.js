@@ -109,6 +109,7 @@ export const AuthProvider = ({ children }) => {
     supabase.auth.signOut();
     setUser(null);
     setToken(null);
+    setCart([]);
   };
 
   // Fetch cart items with loading state

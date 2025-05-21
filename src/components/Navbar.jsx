@@ -16,6 +16,7 @@ import { FaXTwitter } from "react-icons/fa6";
 import { FaInstagram } from "react-icons/fa";
 import { FaYoutube } from "react-icons/fa";
 import { FaPinterest } from "react-icons/fa";
+import SearchBar from "./SearchBar";
 
 const Navbar = () => {
   const { user, logout, cart } = useAuth();
@@ -26,6 +27,25 @@ const Navbar = () => {
     setMobileMenuOpen(!mobileMenuOpen);
     document.body.style.overflow = mobileMenuOpen ? "auto" : "hidden";
   };
+
+  const handleSearch = (searchValue) => {
+    const search = searchValue.toLowerCase().trim();
+    console.log(search);
+  
+  //   if (search === '') {
+  //     setFilter(data); // reset to original list if input is empty
+  //   } else {
+  //     const filtered = data.filter((item) =>
+  //       item.name.toLowerCase().includes(search) ||
+  //       item.brand?.toLowerCase().includes(search) ||
+  //       item.type?.toLowerCase().includes(search) ||
+  //       item.category?.toLowerCase().includes(search)
+  //     );
+  //     setFilter(filtered);
+  //   }
+  
+  //   setCurrentPage(1); // Reset pagination
+   };
 
   return (
     <>
@@ -140,7 +160,7 @@ const Navbar = () => {
           </div>
           <Link to="/cart">
             <Badge
-              badgeContent={cart.length === 0 ? "0" : cart.length}
+              badgeContent={user && cart.length === 0 ? "0" : cart.length}
               color="primary"
               anchorOrigin={{
                 vertical: "bottom",
@@ -153,13 +173,8 @@ const Navbar = () => {
         </div>
         <div className={`mobile-menu ${mobileMenuOpen ? "open" : ""}`}>
           <div className="mobile-menuTop">
-            <div className="mobile-menuSearchBar">
-              <div className="mobile-menuSearchBarContainer">
-                <input type="text" placeholder="Search products" />
-                <Link to="/shop">
-                  <FiSearch size={22} onClick={toggleMobileMenu} />
-                </Link>
-              </div>
+            <div className="mobile-menuSearchBar">   
+                  <SearchBar onSearch={handleSearch}/>
             </div>
             <div className="mobile-menuList">
               <ul>
@@ -194,6 +209,28 @@ const Navbar = () => {
                 <p style={{ margin: 0 }}>My Account</p>
               </Link>
             </div>
+            {!user ? (
+            <>
+             <div className="d-flex gap-2">
+              <NavLink to="/login" className="btn btn-outline-dark btn-sm">
+                <i className="fa fa-sign-in-alt me-1"></i> Login
+              </NavLink>
+              <NavLink to="/register" className="btn btn-outline-dark btn-sm">
+                <i className="fa fa-user-plus me-1"></i> Register
+              </NavLink>
+            </div>
+
+            </>
+          ) : (
+            <>
+              <span className="text-muted small me-2">
+                Hi, <strong>{user.full_name}</strong>
+              </span>
+              <button onClick={logout} className="btn btn-outline-dark btn-sm">
+                <i className="fa fa-sign-out-alt me-1"></i> Logout
+              </button>
+            </>
+          )}
            
             <div className="mobile-menuSocial_links">
              
