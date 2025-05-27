@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
 import { supabase } from "../supaBaseClient";
-
+import { sendOrderEmail } from "../service/emailService";
 // Create context
 const AuthContext = createContext();
 
@@ -78,7 +78,6 @@ export const AuthProvider = ({ children }) => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (session) {
-          console.log(session);
           setUser({ ...session.user.user_metadata, id: session.user.id });
         } else {
           setUser(null);
@@ -211,6 +210,7 @@ export const AuthProvider = ({ children }) => {
 
     await fetchCartItems(memoizedUser.id);
   };
+
   const insertReviewWithAttachments = async ({  productId , rating, reviewText, files }) => {
     try {
       // 1. Insert the review
@@ -270,8 +270,158 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const placeOrder = async (data) => {
+    if (!memoizedUser || cart.length === 0) return;
+  
+    try {
+  
+      // Generate delivery date (7 days from now)
+      const deliveryDate = new Date();
+      deliveryDate.setDate(deliveryDate.getDate() + 7);
+  
+      // Generate unique tracking code (e.g., ORD-XYZ123)
+      const generateTrackingCode = () => {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        const randomCode = Array.from({ length: 6 }, () =>
+          chars[Math.floor(Math.random() * chars.length)]
+        ).join('');
+        return `ORD-${randomCode}`;
+      };
+  
+      // Ensure the tracking code is unique
+      let trackingCode;
+      let isUnique = false;
+      while (!isUnique) {
+        trackingCode = generateTrackingCode();
+        const { data: existing } = await supabase
+          .from("orders")
+          .select("id")
+          .eq("tracking_code", trackingCode)
+          .single();
+  
+        if (!existing) {
+          isUnique = true;
+        }
+      }
+  
+      // 1. Create new order
+      const { data: orderData, error: orderError } = await supabase
+        .from("orders")
+        .insert([
+          {
+            user_id: memoizedUser.id,
+            status: data.payment_status == "success" ? "Confirmed" : "Pending",
+            created_at: new Date(),
+            total_amount: data.amount,
+            shipping_address: data.address,
+            payment_status: data.payment_status,
+            order_date: deliveryDate.toISOString(),
+            tracking_number: trackingCode,
+          },
+        ])
+        .select()
+        .single();
+  
+      if (orderError) {
+        throw orderError;
+      }
+  
+      const orderId = orderData.id;
+  
+      // 2. Prepare order items
+      const orderItems = cart.map((item) => ({
+        order_id: orderId,
+        product_id: item.product_id,
+        quantity: item.quantity,
+        price_each: item.amount,
+      }));
+  
+      // 3. Insert order items
+      const { error: itemsError } = await supabase
+        .from("order_items")
+        .insert(orderItems);
+  
+      if (itemsError) {
+        throw itemsError;
+      }
+      
+      await sendOrderEmail(
+                  user.full_name || user.name,
+                  data.email,
+                  cart,
+                  data.address,
+                  data.amount,
+                  orderId,
+                  deliveryDate.toISOString()
+                );
+      // 4. Clear cart after order
+      await removeFromCartAfterOrder();
+  
+      console.log("Order placed successfully with tracking:", trackingCode);
+      return orderId;
+    } catch (error) {
+      console.error("Error placing order:", error.message);
+      throw error;
+    }
+  };
+  
+  // Inside AppContextProvider or export separately
+  const fetchUserOrders = async () => {
+    if (!memoizedUser) return [];
+  
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("orders")
+        .select("id, created_at, total_amount, status, payment_status, order_date, shipping_address")
+        .eq("user_id", memoizedUser.id)
+        .order("created_at", { ascending: false });
+  
+      if (error) {
+        console.error("Error fetching orders:", error.message);
+        return [];
+      }
+      return data;
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+
+  
+  const getOrderDetails = async (orderId) => {
+    try {
+      const { data: order, error: orderError } = await supabase
+        .from("orders")
+        .select(`
+          *,
+          order_items (
+            *,
+            products:product_id (
+              id,
+              name,
+              banner_url,
+              amount,
+              description
+            )
+          )
+        `)
+        .eq("id", orderId)
+        .single();
+  
+      if (orderError) {
+        throw orderError;
+      }
+  
+      return order;
+    } catch (error) {
+      console.error("Error fetching order details:", error.message);
+      throw error;
+    }
+  };
+  
   return (
-    <AuthContext.Provider value={{ user, logout, addToCart, removeFromCart, cart, setUser, removeFromCartAfterOrder, setToken, access_token, loading, setLoading }}>
+    <AuthContext.Provider value={{ user, logout, addToCart, removeFromCart, cart, setUser, removeFromCartAfterOrder, setToken, access_token, loading, setLoading,placeOrder,fetchUserOrders,getOrderDetails }}>
       {children}
     </AuthContext.Provider>
   );

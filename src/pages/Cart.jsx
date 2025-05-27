@@ -87,7 +87,7 @@ const Cart = () => {
                     </div>
     
                     {/* Product Info */}
-                    <div className="flex-grow-1">
+                    <div className="flex-grow-1 d-none d-md-block">
                       <h6 className="mb-1 text-gray-800 d-none d-md-block ">{item.products.name}</h6>
                       <p className="text-sm text-muted d-none d-md-block">Product ID: #{item.products.id}</p>
                       <div className="d-flex gap-1 mt-1 d-none d-md-block">
@@ -118,7 +118,7 @@ const Cart = () => {
                         </button>
                       </div>
                     </div>
-                    <strong className="text-success">${item.amount * item.quantity}</strong>
+                    <strong className="text-gray-300">${item.amount * item.quantity}</strong>
                   </div>
                 </div>
               ))}

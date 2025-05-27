@@ -3,9 +3,11 @@ export async function sendOrderEmail(
   userEmail,
   cartList,
   address,
-  cartTotal
+  cartTotal,
+  orderId,
+  orderDate
 ) {
-  const payload = { userName, userEmail, cartList, address, cartTotal };
+  const payload = { userName, userEmail, cartList, address, cartTotal,orderId,orderDate };
   
   try {
     const res = await fetch(
@@ -19,8 +21,6 @@ export async function sendOrderEmail(
         body: JSON.stringify(payload),
       }
     );
-    
-    console.log(await res.json());
   } catch (err) {
     console.error("Email sending failed:", err);
   }

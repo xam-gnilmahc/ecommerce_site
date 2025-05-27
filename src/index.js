@@ -27,6 +27,9 @@ import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "./context/authContext";
 import ProtectedRoute from "./components/ProtectedRoute"; // ✅ fixed import
 import PublicRoute from "./components/PublicRoute";
+import OrdersPage from "./pages/OrdersPage";
+import OrderDetailsPage from "./pages/OrderDetails";
+import Profile from "./pages/Profile";
 import ForgotPassword
  from "./pages/ForgotPassword";
  import Popup from "./pages/Popup";
@@ -48,11 +51,28 @@ root.render(
             <Route path="/update-password" element={<UpdatePassword />} />
             <Route path="/order-details" element={<OrderDetailsSheet />} />
             <Route path="/terms" element={<TermsandConditions/>} />
+            <Route path="/orders/:orderId" element={<OrderDetailsPage />} />
             <Route
               path="/cart"
               element={
                 <ProtectedRoute>
                   <Cart />
+                </ProtectedRoute>
+              }
+            />
+              <Route
+              path="/order"
+              element={
+                <ProtectedRoute>
+                  <OrdersPage />
+                </ProtectedRoute>
+              }
+            />
+             <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
                 </ProtectedRoute>
               }
             />
