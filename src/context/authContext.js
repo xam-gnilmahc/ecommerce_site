@@ -390,7 +390,9 @@ export const AuthProvider = ({ children }) => {
 
   
   const getOrderDetails = async (orderId) => {
+    setLoading(true);
     try {
+      
       const { data: order, error: orderError } = await supabase
         .from("orders")
         .select(`
@@ -417,6 +419,8 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error("Error fetching order details:", error.message);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
   

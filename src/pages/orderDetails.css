@@ -12,13 +12,9 @@
   
   /* Header */
   .order-id {
-    font-weight: 600;
-    font-size: 1.8rem;
+    font-weight: 700;
+    font-size: 1.4rem;
   }
-  .order-id span {
-    color: #0d6efd;
-  }
-  
   /* Dates row */
   .dates-row {
     display: flex;
@@ -193,4 +189,41 @@
     box-shadow: 0 0 15px #0d6efd;
   }
 }
+
+/* Sidebar hide on small screens */
+@media (max-width: 767.98px) {
+  .sidebar {
+    display: none;
+  }
+  main {
+    margin-left: 0 !important;
+  }
+}
+
+/* Optional: improve progress tracker steps for small */
+@media (max-width: 575.98px) {
+  .progress-tracker {
+    flex-wrap: wrap;
+  }
+  .step-item {
+    flex: 1 1 50%;
+    margin-bottom: 1rem;
+  }
+}
+
+/* Product image responsive */
+.product-img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Other minor tweaks */
+.dates-row > div {
+  flex: 1 1 50%;
+  min-width: 150px;
+  margin-bottom: 1rem;
+}
+
+/* For modals, buttons, etc. just rely on Bootstrap responsiveness */
+
 
