@@ -86,8 +86,8 @@ const predefinedReasons = [
         {/* Header with Back Arrow and Order ID */}
         <div className="d-flex justify-content-between align-items-center mb-2">
             <div>
-  <h2 className="order-id m-0 text-muted">
-    Orders Details # <span className="text-muted">{order.id}</span>
+  <h2 className="order-id m-0">
+    Orders Details # <span className="">{order.id}</span>
   </h2>
 
   <small className="text-muted d-block mt-1">Dashboard / Order Details</small>
@@ -117,16 +117,18 @@ Refund
         {/* Header Buttons */}
 
         {/* Dates */}
-        <div className="dates-row mb-5">
-          <div>
-            <small className="text-muted">Order Date</small>
-            <div className="date-value">{formatDate(order.created_at)}</div>
-          </div>
-          <div>
-            <small className="text-muted">Delivery Date</small>
-            <div className="date-value">{formatDate(order.order_date)}</div>
-          </div>
-        </div>
+        <div className="d-flex flex-wrap align-items-center gap-3 mb-4">
+  <div>
+    <p className="mb-1 text-secondary small">Order Date</p>
+    <p className="mb-0 fw-semibold small">{formatDate(order.created_at)}</p>
+  </div>
+  <div>
+    <p className="mb-1 text-secondary small">Delivery Date</p>
+    <p className="mb-0 fw-semibold small">{formatDate(order.order_date)}</p>
+  </div>
+</div>
+
+
 
         {/* Progress Tracker */}
         <div className="progress-tracker mb-5">
@@ -176,11 +178,11 @@ Refund
         {/* Items Table */}
         <h4 className="mb-4">Purchased Products</h4>
         <div className="table-responsive mb-5">
-  <table className="table table-hover align-middle mb-0">
+  <table className="table  align-middle mb-0">
     <thead className="table-light">
       <tr>
         <th style={{ width: 110, color: "#333" }}>Image</th>
-        <th style={{ color: "#333" }}>Name</th>
+        <th style={{ width: 400,  color: "#333" }}>Name</th>
         <th className="text-end" style={{ color: "#333" }}>Ordered Qty</th>
         <th className="text-end" style={{ color: "#333" }}>Price</th>
         <th className="text-end" style={{ color: "#333" }}>Total</th>

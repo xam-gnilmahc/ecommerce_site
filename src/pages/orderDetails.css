@@ -58,15 +58,15 @@
     box-shadow: 0 0 6px transparent;
   }
   .step-circle.completed {
-    background-color: #0d6efd;
+    background-color: #7694b1;
     color: #fff;
-    box-shadow: 0 0 10px #0d6efd88;
+    box-shadow: 0 0 10px #93a4be88;
   }
   .step-circle.current {
-    background-color: #0d6efd;
+    background-color: #6d82aa;
     color: #fff;
     animation: pulse-ring 1.5s infinite;
-    box-shadow: 0 0 12px #0d6efdcc;
+    box-shadow: 0 0 12px #ced3dbcc;
   }
   
   @keyframes pulse-ring {
@@ -87,11 +87,11 @@
     font-weight: 600;
   }
   .current-label {
-    color: #0d6efd;
+    color: #788fb0;
     font-weight: 700;
   }
   .completed-label {
-    color: #0d6efd;
+    color: #6d82a2;
     font-weight: 600;
   }
   
