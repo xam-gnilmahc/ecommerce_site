@@ -98,34 +98,48 @@ const handlePrint = () => {
           <main className="flex-grow-1 p-3" style={{ marginLeft: "280px" }}>
       <div ref={designRef}>
         {/* Header with Back Arrow and Order ID */}
-        <div className="d-flex justify-content-between align-items-center mb-2">
-            <div>
-  <h2 className="order-id m-0">
-    Orders Details # <span className="">{order?.id}</span>
-  </h2>
-
-  <small className="text-muted d-block mt-1">Dashboard / Order Details</small>
-
+        <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-2 gap-3">
+  {/* Left side - Heading and Breadcrumb */}
+  <div>
+    <h2 className="order-id m-0">
+      Orders Details # <span>{order?.id}</span>
+    </h2>
+    <small className="text-muted d-block mt-1">
+      Dashboard / Order Details
+    </small>
   </div>
 
-<div>
-<button type="button" class="btn  mr-2" data-toggle="modal" data-target="#exampleModal" style={{ backgroundColor: "#333",color:"#fff" }}>
-Cancel Order
-</button>
-  <div className="btn-group">
-    <button className="btn btn-outline-secondary" onClick={handlePrint} >
-      <i className="bi bi-receipt-cutoff me-2" /> Invoice
+  {/* Right side - Buttons */}
+  <div className="d-flex flex-wrap gap-2">
+    <button
+      type="button"
+      className="btn"
+      data-toggle="modal"
+      data-target="#exampleModal"
+      style={{ backgroundColor: "#333", color: "#fff" }}
+    >
+      Cancel Order
     </button>
+
+    <button
+      className="btn btn-outline-secondary"
+      onClick={handlePrint}
+    >
+      <i className="bi bi-receipt-cutoff me-2" />
+      Invoice
+    </button>
+
     <button
       className="btn"
-      style={{ backgroundColor: "#333", color:"#fff" }}
+      style={{ backgroundColor: "#333", color: "#fff" }}
       onClick={() => navigate(`/track/${order.id}`)}
     >
-      <i className="bi bi-truck me-2" /> Track
+      <i className="bi bi-truck me-2" />
+      Track
     </button>
   </div>
-  </div>
 </div>
+
 <hr/>
 
 

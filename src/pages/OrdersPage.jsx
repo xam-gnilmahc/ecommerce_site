@@ -63,7 +63,7 @@ const OrdersPage = () => {
         {/* Status filter row */}
         <div
   className="d-flex flex-row flex-wrap gap-3 mb-4"
-  style={{ cursor: "pointer" }}
+
 >
   {STATUSES.map((status) => {
     const count =

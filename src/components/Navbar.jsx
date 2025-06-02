@@ -197,7 +197,7 @@ const Navbar = () => {
 
           <div className="mobile-menuFooter">
             <div className="mobile-menuFooterLogin">
-              <Link to="/loginSignUp" onClick={toggleMobileMenu}>
+              <Link to="/profile" onClick={toggleMobileMenu}>
                 <FaRegUser style={{ margin: 0 }} />
                 <p style={{ margin: 0 }}>My Account</p>
               </Link>
@@ -223,7 +223,8 @@ const Navbar = () => {
                 </span>
                 <button
                   onClick={logout}
-                  className="btn btn-outline-dark btn-sm"
+                  className="btn btn-sm rounded-pill p-2"
+                  style={{ backgroundColor: "#333",color:"#fff", maxWidth:'120px' }}
                 >
                   <i className="fa fa-sign-out-alt me-1"></i> Logout
                 </button>
