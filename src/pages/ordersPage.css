@@ -1,0 +1,19 @@
+/* Default: xs/sm (<768px) */
+.responsive-container {
+    width: 100%;
+  }
+  
+  /* md (≥768px and <992px): max-width 150px */
+  @media (min-width: 768px) and (max-width: 1600px) {
+    .responsive-container {
+      max-width: 160vh;
+    }
+  }
+  
+  /* lg and up (≥992px): max-width 120px */
+  @media (min-width: 1600px) {
+    .responsive-container {
+      max-width: 120vh;
+    }
+  }
+  

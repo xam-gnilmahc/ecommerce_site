@@ -1,0 +1,24 @@
+/* Larger switch size */
+.custom-switch .form-check-input {
+    width: 3.2rem;
+    height: 1.8rem;
+    cursor: pointer;
+  }
+  
+  .custom-switch .form-check-input:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+  }
+  
+  .setting-item label {
+    font-size: 1rem;
+  }
+  
+  .setting-item {
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .setting-item:hover {
+    background-color: #f8f9fa;
+  }
+  

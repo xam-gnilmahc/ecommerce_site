@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useEffect, useState ,useRef} from "react";
+import { useParams, useNavigate} from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import { FiArrowLeft } from "react-icons/fi";
 import "./orderDetails.css";
 import Sidebar from "../components/Sidebar";
 import LottieLoader from "../components/LottieLoader";
+import Modal from "react-modal";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 
 const OrderDetailsPage = () => {
@@ -23,19 +26,29 @@ const predefinedReasons = [
   "Changed my mind",
   "Other",
 ];
+const [modalIsOpen, setModalIsOpen] = useState(false);
+const [pdfUrl, setPdfUrl] = useState(null);
+const designRef = useRef();
+
+
+const handlePrint = () => {
+  const printContents = designRef.current.innerHTML;
+  const originalContents = document.body.innerHTML;
+
+  document.body.innerHTML = printContents;
+  window.print();
+  document.body.innerHTML = originalContents;
+  window.location.reload()
+};
+
 
   useEffect(() => {
     (async () => setOrder(await getOrderDetails(orderId)))();
-  }, [orderId]);
-
-  if (loading || !order)
-    return (
-    <LottieLoader/>
-    );
-
+  }, [orderId])
+  
   const steps = ["Pending","Confirmed", "Shipped Out", "Out for Delivery", "Delivered"];
   const currentIdx = steps.findIndex(
-    (s) => s.toLowerCase() === order.status.toLowerCase()
+    (s) => s.toLowerCase() === order?.status?.toLowerCase()
   );
 
   const payColor = (s) =>
@@ -79,15 +92,16 @@ const predefinedReasons = [
 
   return (
     <>
+
      <div className="d-flex">
           <Sidebar />
           <main className="flex-grow-1 p-3" style={{ marginLeft: "280px" }}>
-      <div className="">
+      <div ref={designRef}>
         {/* Header with Back Arrow and Order ID */}
         <div className="d-flex justify-content-between align-items-center mb-2">
             <div>
   <h2 className="order-id m-0">
-    Orders Details # <span className="">{order.id}</span>
+    Orders Details # <span className="">{order?.id}</span>
   </h2>
 
   <small className="text-muted d-block mt-1">Dashboard / Order Details</small>
@@ -96,14 +110,15 @@ const predefinedReasons = [
 
 <div>
 <button type="button" class="btn  mr-2" data-toggle="modal" data-target="#exampleModal" style={{ backgroundColor: "#333",color:"#fff" }}>
-Refund
+Cancel Order
 </button>
   <div className="btn-group">
-    <button className="btn btn-outline-secondary" disabled>
+    <button className="btn btn-outline-secondary" onClick={handlePrint} >
       <i className="bi bi-receipt-cutoff me-2" /> Invoice
     </button>
     <button
-      className="btn btn-secondary"
+      className="btn"
+      style={{ backgroundColor: "#333", color:"#fff" }}
       onClick={() => navigate(`/track/${order.id}`)}
     >
       <i className="bi bi-truck me-2" /> Track
@@ -115,6 +130,11 @@ Refund
 
 
         {/* Header Buttons */}
+        
+  {loading || !order ? ( 
+    <LottieLoader />
+  ) : (
+    <>
 
         {/* Dates */}
         <div className="d-flex flex-wrap align-items-center gap-3 mb-4">
@@ -219,7 +239,7 @@ Refund
         {/* Payment & Summary & Address */}
         <div className="row g-4">
   {/* Payment */}
-  <div className="col-md-4">
+  <div className="col-12 col-sm-4">
     <div
       className="p-4 rounded"
       style={{
@@ -252,7 +272,7 @@ Refund
   </div>
 
   {/* Order Summary */}
-  <div className="col-md-4">
+  <div className="col-12 col-sm-4">
     <div
       className="p-4 rounded"
       style={{
@@ -294,7 +314,7 @@ Refund
   </div>
 
   {/* Shipping Address */}
-  <div className="col-md-4">
+  <div className="col-12 col-sm-4">
     <div
       className="p-4 rounded"
       style={{
@@ -345,7 +365,7 @@ Refund
         <div className="modal-content border-0 shadow-lg rounded-3">
           <div className="modal-header bg-light border-bottom-0">
             <h5 className="modal-title fw-bold" id="exampleModalLabel">
-              Refund Order
+              Cancel Order
             </h5>
             <button type="button" className="btn-close" data-dismiss="modal" aria-label="Close"
              onClick={() => {
@@ -416,9 +436,42 @@ Refund
       </div>
     </div>
 </div>
-
+</>
+  )}
 
       </div>
+      <div className="modal fade" id="pdfModal" tabIndex="-1" role="dialog" aria-labelledby="pdfModal" aria-hidden="true">
+  <div className="modal-dialog modal-xl" role="document">
+    <div className="modal-content">
+
+      <div className="modal-header">
+        <h2 className="modal-title">PDF Preview</h2>
+        <button type="button" className="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <div className="modal-body" style={{ padding: 0, height: '80vh' }}>
+        {pdfUrl && (
+          <iframe
+            src={pdfUrl}
+            width="100%"
+            style={{ height: '100%', border: 'none' }}
+            title="PDF Preview"
+          />
+        )}
+      </div>
+
+      <div className="modal-footer">
+        <button type="button" className="btn btn-secondary" data-dismiss="modal">
+          Close
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
       </main>
       </div>
     </>

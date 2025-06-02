@@ -3,6 +3,7 @@ import { useAuth } from "../context/authContext";
 import { Link, useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import LottieLoader from "../components/LottieLoader";
+import ordersPage from "./ordersPage.css";
 
 const STATUSES = [
   "All",
@@ -121,8 +122,8 @@ const OrdersPage = () => {
           </div>
         ) : (
           <div
-            className="d-flex flex-column gap-3 overflow-auto"
-            style={{ maxHeight: "75vh", maxWidth: "120vh" }}
+            className="d-flex flex-column gap-3 overflow-auto  responsive-container"
+            style={{ maxHeight: "75vh"}}
           >
             {filteredOrders.map((order) => {
               const shippingAddress = parseAddress(order.shipping_address);
@@ -132,9 +133,9 @@ const OrdersPage = () => {
                   className="card border border-gray-200 rounded-3"
                   role="button"
                   tabIndex={0}
-                  onClick={() => navigate(`/orders/#/${order.id}`)}
+                  onClick={() => navigate(`/orders/${order.id}`)}
                   onKeyPress={(e) => {
-                    if (e.key === "Enter") navigate(`/orders/#/${order.id}`);
+                    if (e.key === "Enter") navigate(`/orders/${order.id}`);
                   }}
                 >
                   <div className="card-body">
@@ -148,7 +149,7 @@ const OrdersPage = () => {
                             e.stopPropagation();
                             navigate(`/orders/${order.id}`);
                           }}
-                          onKeyDown={(e) => {
+                          onKeyDown={(e) => { 
                             if (e.key === "Enter" || e.key === " ") {
                               e.preventDefault();
                               navigate(`/orders/${order.id}`);
@@ -170,7 +171,8 @@ const OrdersPage = () => {
 
                       {order.status.toLowerCase() === "delivered" && (
                         <button
-                          className="btn btn-sm btn-outline-danger"
+                          className="btn btn-sm"
+                          style={{ backgroundColor: "#333",color:"#fff" }}
                           onClick={(e) => {
                             e.stopPropagation();
                             handleRefund(order.id);

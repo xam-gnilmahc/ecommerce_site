@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Provider } from "react-redux";
 import store from "./redux/store";
 
+
 import {
   Home,
   Product,
@@ -33,10 +34,13 @@ import Profile from "./pages/Profile";
 import ForgotPassword
  from "./pages/ForgotPassword";
  import Popup from "./pages/Popup";
+ import Payment from "./pages/Payment";
+ import NotificationSettings from "./pages/NotificationSetting";
 const root = ReactDOM.createRoot(document.getElementById("root"));
+
 root.render(
   <>
-  <Popup/>
+  {/* <Popup/> */}
   <BrowserRouter>
     <ScrollToTop>
       <Provider store={store}>
@@ -52,6 +56,8 @@ root.render(
             <Route path="/order-details" element={<OrderDetailsSheet />} />
             <Route path="/terms" element={<TermsandConditions/>} />
             <Route path="/orders/:orderId" element={<OrderDetailsPage />} />
+            <Route path="/payment" element={<Payment />} />
+            <Route path="/notification" element={<NotificationSettings />} />
             <Route
               path="/cart"
               element={

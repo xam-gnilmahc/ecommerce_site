@@ -14,7 +14,7 @@ const activeStyle = {
 const links = [
   { to: "/profile", label: "Profile" },
   { to: "/order", label: "Orders" },
-  { to: "/notifications", label: "Notifications" },
+  { to: "/notification", label: "Notifications" },
   { to: "/settings", label: "Settings" },
 ];
 
