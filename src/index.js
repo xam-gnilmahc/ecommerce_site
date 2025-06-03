@@ -40,7 +40,7 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <>
-  {/* <Popup/> */}
+  <Popup/>
   <BrowserRouter>
     <ScrollToTop>
       <Provider store={store}>
