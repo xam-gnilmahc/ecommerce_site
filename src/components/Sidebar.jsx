@@ -15,7 +15,7 @@ const activeStyle = {
 const links = [
   { to: "/profile", label: "Profile" },
   { to: "/order", label: "Orders"},
-  { to: "/notification", label: "Notifications" },
+  { to: "/notification", label: "Notification Setting" },
   { to: "/settings", label: "Settings" },
 ];
 
@@ -29,7 +29,7 @@ const Sidebar = () => {
       {/* Mobile Toggle Button */}
       {!isOpen && (
   <button
-    className="d-md-none position-fixed top-0 end-0 m-3 btn btn-success"
+    className="d-md-none position-fixed top-0 end-0  m-3 btn btn-success"
     onClick={toggleSidebar}
     style={{ zIndex: 1051 }}
   >
@@ -44,7 +44,7 @@ const Sidebar = () => {
         } d-md-flex`}
         style={{
           width: 280,
-          height: "100vh",
+          height: "100%",
           overflowY: "auto",
           zIndex: 1040,
         }}

@@ -44,6 +44,7 @@ const handlePrint = () => {
 
   useEffect(() => {
     (async () => setOrder(await getOrderDetails(orderId)))();
+    console.log(order);
   }, [orderId])
   
   const steps = ["Pending","Confirmed", "Shipped Out", "Out for Delivery", "Delivered"];
@@ -193,7 +194,7 @@ const handlePrint = () => {
                 {i < steps.length - 1 && (
                   <div
                     className={`position-absolute top-50 start-50 translate-middle-y border-bottom ${
-                      i < currentIdx ? "border-primary" : "border-muted"
+                      i < currentIdx ? "border-info" : "border-muted"
                     }`}
                     style={{
                       width: "100%",
@@ -211,21 +212,21 @@ const handlePrint = () => {
 
         {/* Items Table */}
         <h4 className="mb-4">Purchased Products</h4>
-        <div className="table-responsive mb-5">
-  <table className="table  align-middle mb-0">
-    <thead className="table-light">
+        <div className=" table-responsive overflow-x-auto rounded-lg  border rounded mb-5">
+  <table className=" table-auto text-md text-gray-700">
+    <thead className="bg-gray-100 text-left">
       <tr>
-        <th style={{ width: 110, color: "#333" }}>Image</th>
-        <th style={{ width: 400,  color: "#333" }}>Name</th>
-        <th className="text-end" style={{ color: "#333" }}>Ordered Qty</th>
-        <th className="text-end" style={{ color: "#333" }}>Price</th>
-        <th className="text-end" style={{ color: "#333" }}>Total</th>
+        <th className="p-4  text-dark font-semibold">Image</th>
+        <th className="p-4  text-dark font-semibold"style={{ width: "800px" }}>Name</th>
+        <th className="p-4  text-dark font-semibold" style={{ width: "400px" }}>Ordered Qty</th>
+        <th className="p-4 text-dark font-semibold" style={{ width: "400px" }}>Price</th>
+        <th className="p-4  text-dark font-semibold" style={{ width: "400px" }}>Total</th>
       </tr>
     </thead>
-    <tbody>
+    <tbody className="divide-y divide-gray-200">
       {order.order_items.map((it) => (
-        <tr key={it.id}>
-          <td>
+        <tr key={it.id} className="hover:bg-gray-50">
+          <td className="p-4">
             <img
               src={
                 it.products?.banner_url
@@ -233,14 +234,13 @@ const handlePrint = () => {
                   : "/no-image.png"
               }
               alt={it.products?.name}
-              className="img-fluid rounded"
               style={{ width: "80px", height: "60px", objectFit: "contain" }}
             />
           </td>
-          <td className="fw-medium">{it.products?.name}</td>
-          <td className="text-end">{it.quantity}</td>
-          <td className="text-end">${it.price_each.toFixed(2)}</td>
-          <td className="text-end">
+          <td className="p-4 font-medium">{it.products?.name}</td>
+          <td className="p-4 ">{it.quantity}</td>
+          <td className="p-4 ">${it.price_each.toFixed(2)}</td>
+          <td className="p-4 ">
             ${(it.quantity * it.price_each).toFixed(2)}
           </td>
         </tr>
@@ -250,41 +250,62 @@ const handlePrint = () => {
 </div>
 
 
+
         {/* Payment & Summary & Address */}
         <div className="row g-4">
   {/* Payment */}
   <div className="col-12 col-sm-4">
-    <div
-      className="p-4 rounded"
-      style={{
-        border: "1px solid #e2e8f0",
-        minHeight: "250px",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-      }}
-    >
-      <h5 className="mb-3" style={{ fontWeight: "700", color: "#333" }}>
-        Payment
-      </h5>
-      <div style={{ maxWidth: "120px" }}>
-        <span
-          className={`badge bg-${payColor(order.payment_status)} fs-6 w-100 d-inline-block text-center`}
-          style={{
-            fontWeight: "700",
-            padding: "0.5rem 0",
-            borderRadius: "12px",
-          }}
-        >
-          {order.payment_status.toUpperCase()}
-        </span>
-      </div>
-      <p className="mt-3 text-muted small" style={{ fontStyle: "italic" }}>
-        Paid via Stripe card payment
-      </p>
-    </div>
-  </div>
+  <div
+    className="p-4 rounded "
+    style={{
+      border: "1px solid #e2e8f0",
+      backgroundColor: "#fff",
+      minHeight: "250px",
+    }}
+  >
+    {/* Header */}
+    <h5 className="mb-4" style={{ fontWeight: "700", color: "#2d3748" }}>
+      Payment Summary
+    </h5>
 
+
+    {/* Payment Status Badge */}
+    {/* <div style={{ maxWidth: "140px" }}>
+      <span
+        className={`badge bg-${payColor(order.payment_status)} fs-6 w-100 text-uppercase`}
+        style={{
+          fontWeight: "600",
+          padding: "0.55rem 0.75rem",
+          borderRadius: "16px",
+          letterSpacing: "0.5px",
+        }}
+      >
+        {order.payment_status}
+      </span>
+    </div> */}
+
+    {/* Payment Details */}
+    {order.orderpayments_logs?.length > 0 ? (
+      <div className="small" style={{ color: "#4a5568" }}>
+        <div className="mb-2">
+          <strong>Amount:</strong> ${order.orderpayments_logs[0].amount.toFixed(2)}{" "}
+          <strong>{order.orderpayments_logs[0].currency}</strong>
+        </div>
+        <div className="mb-2">
+          <strong>Transcation Id:</strong> {order.orderpayments_logs[0].stripe_payment_id}
+        </div>
+        <div className="">
+          <strong>Status:</strong> {order.orderpayments_logs[0].status}
+        </div>
+        <div style={{ fontStyle: "italic", color: "#718096" }}>
+          Paid via Stripe card
+        </div>
+      </div>
+    ) : (
+      <div className="mt-4 text-muted small">No payment records found.</div>
+    )}
+  </div>
+</div>
   {/* Order Summary */}
   <div className="col-12 col-sm-4">
     <div

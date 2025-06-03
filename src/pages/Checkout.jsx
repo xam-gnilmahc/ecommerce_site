@@ -130,7 +130,7 @@ const Checkout = () => {
           status = 'failed';
           toast.error("Payment processing failed.");
         }
-        await placeOrder({...paymentData,payment_status: status} );
+        await placeOrder({...paymentData,payment_status: status} , result );
 
         if(status=="success"){
           setShow(true);
@@ -470,7 +470,7 @@ const Checkout = () => {
                       <div className="col-12 pt-4">
                         <button
                           type="submit"
-                          className="btn btn-success w-100"
+                          className="btn btn-dark w-100"
                           disabled={loading || !stripe}
                         >
                           {paymentLoading
@@ -489,7 +489,15 @@ const Checkout = () => {
                   <h5 className="mb-4 text-lg font-semibold text-gray-800">
                     📦 Order Summary
                   </h5>
+                  
                   <div className="card-body">
+                  <div
+  className="mx-auto"
+  style={{
+    maxHeight: "790px",
+    overflowX: "auto",
+  }}
+>
                     {cart.map((item, index) => (
                       <div
                         key={index}
@@ -544,6 +552,7 @@ const Checkout = () => {
                         </div>
                       </div>
                     ))}
+                    </div>
 
                     {/* Order Summary */}
                     <ul className="list-group list-group-flush mt-3">

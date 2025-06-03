@@ -174,7 +174,7 @@ export const AuthProvider = ({ children }) => {
     await fetchCartItems(memoizedUser.id);
   };
 
-  const removeFromCart = async (product) => {
+  const removeFromCart = async (product, state = false) => {
     if (!memoizedUser) return;
 
     const { data: existingItem } = await supabase
@@ -184,7 +184,7 @@ export const AuthProvider = ({ children }) => {
       .eq("product_id", product.id)
       .single();
 
-    if (existingItem) {
+    if (existingItem & !state) {
       const newQty = existingItem.quantity - 1;
 
       if (newQty > 0) {
@@ -196,6 +196,14 @@ export const AuthProvider = ({ children }) => {
           .delete()
           .eq("id", existingItem.id);
       }
+
+      await fetchCartItems(memoizedUser.id);
+    }
+
+    if(state){
+      await supabase.from("cart")
+      .delete()
+      .eq("id", existingItem.id);
 
       await fetchCartItems(memoizedUser.id);
     }
@@ -270,7 +278,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const placeOrder = async (data) => {
+  const placeOrder = async (data, stripe) => {
     if (!memoizedUser || cart.length === 0) return;
   
     try {
@@ -344,6 +352,24 @@ export const AuthProvider = ({ children }) => {
       if (itemsError) {
         throw itemsError;
       }
+  
+      // 3. Insert order items
+      const { error: logError } = await supabase
+        .from("orderpayments_logs")
+        .insert([
+          {
+            order_id: orderId,
+            stripe_payment_id:stripe.transactionId,
+            status: stripe.message,
+            amount: data.amount,
+            currency: 'USD',
+            response_data: stripe,
+          },
+        ]);
+  
+      if (logError) {
+        throw itemsError;
+      }
       
       await sendOrderEmail(
                   user.full_name || user.name,
@@ -406,7 +432,9 @@ export const AuthProvider = ({ children }) => {
               amount,
               description
             )
-          )
+          ),
+          orderpayments_logs(
+          *)
         `)
         .eq("id", orderId)
         .single();

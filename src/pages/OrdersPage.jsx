@@ -42,7 +42,9 @@ const OrdersPage = () => {
   const filteredOrders =
     filterStatus === "All"
       ? orders
-      : orders.filter((o) => o.status.toLowerCase() === filterStatus.toLowerCase());
+      : orders.filter(
+          (o) => o.status.toLowerCase() === filterStatus.toLowerCase()
+        );
 
   // Dummy refund handler
   const handleRefund = (orderId) => {
@@ -53,60 +55,44 @@ const OrdersPage = () => {
     <div className="d-flex">
       <Sidebar />
       <main className="flex-grow-1 p-4" style={{ marginLeft: "280px" }}>
-        <div className="mb-4">
-          <h2 className="fw-bold text-dark">
-            <i className="bi bi-bag-check-fill"></i> My Orders
-          </h2>
-          <p className="text-muted">A summary of your recent purchases</p>
+        <div className="mb-3">
+          <h2 className="fw-bold text-secondary mb-1">Orders</h2>
+          <p className="text-muted small mb-2">Dashboard / Orders</p>
+          <hr />
         </div>
 
         {/* Status filter row */}
-        <div
-  className="d-flex flex-row flex-wrap gap-3 mb-4"
+        <div className="d-flex flex-wrap gap-2 mb-4 bg-light p-3 rounded">
+          {STATUSES.map((status) => {
+            const count =
+              status === "All"
+                ? orders.length
+                : orders.filter(
+                    (o) => o.status.toLowerCase() === status.toLowerCase()
+                  ).length;
 
->
-  {STATUSES.map((status) => {
-    const count =
-      status === "All"
-        ? orders.length
-        : orders.filter(
-            (o) => o.status.toLowerCase() === status.toLowerCase()
-          ).length;
+            const isActive = filterStatus === status;
 
-    return (
-      <div
-        key={status}
-        onClick={() => setFilterStatus(status)}
-        className={`status-item ${filterStatus === status ? "active" : ""}`}
-        tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            setFilterStatus(status);
-          }
-        }}
-        role="button"
-        aria-pressed={filterStatus === status}
-      >
-        {status}{" "}
-        <span
-          style={{
-            fontSize: "0.8rem",
-            backgroundColor: "#ddd",
-            borderRadius: "12px",
-            padding: "0 6px",
-            color: "#333",
-            fontWeight: "600",
-            userSelect: "none",
-            marginLeft: "6px",
-          }}
-        >
-          {count}
-        </span>
-      </div>
-    );
-  })}
-</div>
+            return (
+              <button
+                key={status}
+                onClick={() => setFilterStatus(status)}
+                className={`btn btn-sm d-flex align-items-center ${
+                  isActive ? "btn-dark text-white" : "btn-outline-secondary"
+                }`}
+                style={{
+                  borderRadius: "20px",
+                  fontWeight: 500,
+                }}
+              >
+                {status}
+                <span className="badge bg-secondary text-white rounded-pill ms-2">
+                  {count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
 
         {loading ? (
           <LottieLoader />
@@ -122,68 +108,51 @@ const OrdersPage = () => {
           </div>
         ) : (
           <div
-            className="d-flex flex-column gap-3 overflow-auto  responsive-container"
-            style={{ maxHeight: "75vh"}}
+            className="d-flex flex-column gap-3 overflow-auto bg-light p-3 rounded"
+            style={{ maxHeight: "75vh", minWidth: "100%" }}
           >
             {filteredOrders.map((order) => {
               const shippingAddress = parseAddress(order.shipping_address);
               return (
                 <div
                   key={order.id}
-                  className="card border border-gray-200 rounded-3"
-                  role="button"
-                  tabIndex={0}
+                  className="card  border-0 w-100"
+                  style={{ cursor: "pointer" }}
                   onClick={() => navigate(`/orders/${order.id}`)}
-                  onKeyPress={(e) => {
-                    if (e.key === "Enter") navigate(`/orders/${order.id}`);
-                  }}
                 >
                   <div className="card-body">
-                    <div className="d-flex justify-content-between flex-wrap">
-                      <div className="fw-semibold mb-2 text-dark">
+                    <div className="d-flex justify-content-between align-items-center flex-wrap mb-2">
+                      <div className="fw-semibold text-dark">
                         Order{" "}
-                        <span
-                          role="button"
-                          tabIndex={0}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`/orders/${order.id}`);
-                          }}
-                          onKeyDown={(e) => { 
-                            if (e.key === "Enter" || e.key === " ") {
-                              e.preventDefault();
-                              navigate(`/orders/${order.id}`);
-                            }
-                          }}
-                          style={{ cursor: "pointer", textDecoration: "underline" }}
-                        >
+                        <span className="text-decoration-underline">
                           #{order.id}
                         </span>
-
                         <span
-                          className={`badge bg-${getStatusColor(order.status)} ms-2`}
-                          style={{ fontSize: "0.75rem" }}
+                          className={`badge bg-${getStatusColor(
+                            order.status
+                          )} ms-2`}
                         >
-                          <i className={`bi ${getStatusIcon(order.status)} me-1`}></i>
+                          <i
+                            className={`bi ${getStatusIcon(order.status)} me-1`}
+                          ></i>
                           {order.status}
                         </span>
                       </div>
 
                       {order.status.toLowerCase() === "delivered" && (
                         <button
-                          className="btn btn-sm"
-                          style={{ backgroundColor: "#333",color:"#fff" }}
+                          className="btn btn-danger btn-sm"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleRefund(order.id);
                           }}
                         >
-                          Request Refund
+                          Cancel & Refund
                         </button>
                       )}
                     </div>
 
-                    <div className="d-flex flex-wrap gap-4 mt-2">
+                    <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
                       <InlineDetail
                         label="Order Date"
                         value={formatDate(order.created_at)}
@@ -201,32 +170,27 @@ const OrdersPage = () => {
                       />
                       <InlineDetail
                         label="Payment"
-                        icon="credit-card"
                         value={
                           <span
                             className={`badge bg-${getPaymentStatusColor(
                               order.payment_status
-                            )} px-2 py-1`}
-                            style={{ fontSize: "0.8rem" }}
+                            )}`}
                           >
                             {order.payment_status}
                           </span>
                         }
+                        icon="credit-card"
                       />
                       {shippingAddress && (
-                        <div className="d-flex flex-column" style={{ minWidth: "180px" }}>
-                          <small className="text-muted fw-semibold mb-1">
-                            <i className="bi bi-geo-alt "></i> Shipping Address
-                          </small>
-                          <small className="text-muted">
-                            {shippingAddress.addressLine1}
-                            {shippingAddress.addressLine2
-                              ? `, ${shippingAddress.addressLine2}`
-                              : ""}
-                            , {shippingAddress.state} {shippingAddress.zipCode},{" "}
-                            {shippingAddress.country}
-                          </small>
-                        </div>
+                        <InlineDetail
+                          label="Shipping Address"
+                          value={`${shippingAddress.addressLine1}, ${
+                            shippingAddress.addressLine2 || ""
+                          }, ${shippingAddress.state} ${
+                            shippingAddress.zipCode
+                          }, ${shippingAddress.country}`}
+                          icon="geo-alt"
+                        />
                       )}
                     </div>
                   </div>
@@ -281,9 +245,9 @@ const OrdersPage = () => {
 };
 
 const InlineDetail = ({ label, value, icon }) => (
-  <div className="d-flex flex-column" style={{ minWidth: "150px" }}>
-    <small className="text-muted fw-semibold mb-1">
-      <i className={`bi bi-${icon}`}></i> {label}
+  <div>
+    <small className="text-muted d-block fw-semibold mb-1">
+      <i className={`bi bi-${icon} `}></i> {label}
     </small>
     <small>{value}</small>
   </div>

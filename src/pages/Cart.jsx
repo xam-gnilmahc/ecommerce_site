@@ -7,6 +7,8 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import toast from "react-hot-toast";
 import { FaCarTunnel } from "react-icons/fa6";
+import { FaTimes } from "react-icons/fa";
+
 import LottieLoader from "../components/LottieLoader";
 import "./cart.css";
 
@@ -42,6 +44,12 @@ const Cart = () => {
     }
   };
 
+  const handleRemoveFromCart = (product) => {
+    removeFromCart(product , true)
+   
+  };
+  
+
   const EmptyCart = () => (
     <div className="container py-5 text-center">
       <h3 className="mb-4">Your Cart is Empty</h3>
@@ -69,59 +77,107 @@ const Cart = () => {
           <div className="col-12 col-lg-8">
             <div className="bg-white border border-gray-200 rounded-3 p-4 mobile-no-border">
               <h5 className="mb-4 text-xl font-semibold text-gray-800">🛒 Shopping Cart</h5>
+              <div
+  className="mx-auto"
+  style={{
+    maxHeight: "800px",
+    overflowX: "auto",
+  }}
+>
               {cart.map((item) => (
-                <div key={item.id} className="mb-4 p-3 bg-gray-50 border rounded-2">
-                  <div className="d-flex flex-wrap flex-md-nowrap align-items-center gap-4">
-                    {/* Product Image */}
-                    <div style={{ flex: "0 0 80px" }}>
-                      <img
-                        src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.products.banner_url}`}
-                        alt={item.products.name}
-                        className="img-fluid rounded bg-white p-2"
-                        style={{
-                          width: "80px",
-                          height: "80px",
-                          objectFit: "contain",
-                        }}
-                      />
-                    </div>
-    
-                    {/* Product Info */}
-                    <div className="flex-grow-1 d-none d-md-block">
-                      <h6 className="mb-1 text-gray-800 d-none d-md-block ">{item.products.name}</h6>
-                      <p className="text-sm text-muted d-none d-md-block">Product ID: #{item.products.id}</p>
-                      <div className="d-flex gap-1 mt-1 d-none d-md-block">
-                        {Array.from({ length: 5 }, (_, i) => {
-                          const rating = item.products?.rating || 0;
-                          if (rating >= i + 1) return <i key={i} className="fa fa-star text-warning"></i>;
-                          else if (rating >= i + 0.5) return <i key={i} className="fa fa-star-half-o text-warning"></i>;
-                          return <i key={i} className="fa fa-star-o text-warning"></i>;
-                        })}
-                      </div>
-                    </div>
-    
-                    {/* Quantity & Price */}
-                    <div className="text-end">
-                      <div className="d-flex align-items-center gap-2 justify-content-end mb-2">
-                        <button
-                          className="btn btn-sm btn-outline-secondary rounded-circle"
-                          onClick={() => updateItemQuantity(item.products, "decrease")}
-                        >
-                          <i className="fas fa-minus"></i>
-                        </button>
-                        <span>{item.quantity}</span>
-                        <button
-                          className="btn btn-sm btn-outline-secondary rounded-circle"
-                          onClick={() => updateItemQuantity(item.products, "increase")}
-                        >
-                          <i className="fas fa-plus"></i>
-                        </button>
-                      </div>
-                    </div>
-                    <strong className="text-gray-300">${item.amount * item.quantity}</strong>
-                  </div>
-                </div>
-              ))}
+  <div
+    key={item.id}
+    className="mb-4 p-3 border rounded  bg-white position-relative"
+    style={{ borderRadius: "12px" }}
+  >
+      {/* ❌ Remove Icon */}
+      <button
+      onClick={() => handleRemoveFromCart(item.products)}
+      className="position-absolute top-0 end-0 m-2 btn btn-sm btn-light"
+      style={{
+        borderRadius: "50%",
+        width: "30px",
+        height: "30px",
+        padding: 0,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <FaTimes size={14} className="text-danger" />
+    </button>
+    <div className="d-flex flex-column flex-md-row align-items-center gap-3">
+      {/* Product Image */}
+      <div
+  style={{ flex: "0 0 100px" }}
+  className="overflow-hidden"
+>
+  <img
+    src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.products.banner_url}`}
+    alt={item.products.name}
+    className="img-fluid rounded bg-light p-2 transition-all"
+    style={{
+      width: "100px",
+      height: "100px",
+      objectFit: "contain",
+      transition: "transform 0.3s ease, box-shadow 0.3s ease",
+    }}
+    onMouseOver={(e) => {
+      e.currentTarget.style.transform = "scale(1.05)";
+      e.currentTarget.style.boxShadow = "0 4px 10px rgba(0,0,0,0.1)";
+    }}
+    onMouseOut={(e) => {
+      e.currentTarget.style.transform = "scale(1)";
+      e.currentTarget.style.boxShadow = "none";
+    }}
+  />
+</div>
+
+
+      {/* Product Info */}
+      <div className="flex-grow-1 w-100">
+        <h6 className="mb-1 text-dark fw-semibold">{item.products.name}</h6>
+        <p className="mb-1 text-muted small">Product ID: #{item.products.id}</p>
+        <div className="d-flex gap-1 mb-2">
+          {Array.from({ length: 5 }, (_, i) => {
+            const rating = item.products?.rating || 0;
+            if (rating >= i + 1) return <i key={i} className="fa fa-star text-warning"></i>;
+            else if (rating >= i + 0.5) return <i key={i} className="fa fa-star-half-o text-warning"></i>;
+            return <i key={i} className="fa fa-star-o text-warning"></i>;
+          })}
+        </div>
+
+        {/* Quantity + Total Line */}
+        <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-2">
+          {/* Quantity Controls */}
+          <div className="d-flex align-items-center gap-2">
+            <span className="text-muted small me-2">Quantity</span>
+            <button
+              className="btn btn-sm btn-outline-dark rounded-circle"
+              onClick={() => updateItemQuantity(item.products, "decrease")}
+            >
+              <i className="fas fa-minus"></i>
+            </button>
+            <span className="px-2 fw-semibold">{item.quantity}</span>
+            <button
+              className="btn btn-sm btn-outline-dark rounded-circle"
+              onClick={() => updateItemQuantity(item.products, "increase")}
+            >
+              <i className="fas fa-plus"></i>
+            </button>
+          </div>
+
+          {/* Total */}
+          <div>
+            <span className="text-muted small">Total</span><br />
+            <strong className="text-dark">${(item.amount * item.quantity).toFixed(2)}</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+))}
+</div>
             </div>
           </div>
     
@@ -141,7 +197,7 @@ const Cart = () => {
                   <strong>${Math.round(subtotal + shipping)}</strong>
                 </li>
               </ul>
-              <Link to="/checkout" className="btn btn-success btn-lg w-100 mt-3">
+              <Link to="/checkout" className="btn btn-dark btn-lg w-100 mt-3">
                 Proceed to Checkout
               </Link>
             </div>
