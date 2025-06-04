@@ -8,7 +8,8 @@ import LottieLoader from "../components/LottieLoader";
 import Modal from "react-modal";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-
+import { FaCheckCircle, FaBox, SiPoe ,FaShippingFast,FaRegCopy , FaMapMarkerAlt, FaUser, FaFileInvoice, FaPhoneAlt ,FaListAlt, FaTag, FaMoneyBillWave ,FaClock} from 'react-icons/fa';
+import toast from "react-hot-toast";
 
 const OrderDetailsPage = () => {
   const { orderId } = useParams();
@@ -29,7 +30,13 @@ const predefinedReasons = [
 const [modalIsOpen, setModalIsOpen] = useState(false);
 const [pdfUrl, setPdfUrl] = useState(null);
 const designRef = useRef();
+const [copied, setCopied] = useState(false);
 
+const handleCopy = () => {
+  navigator.clipboard.writeText(order.tracking_number);
+  setCopied(true);
+  toast.success('Copied Successfully')
+};
 
 const handlePrint = () => {
   const printContents = designRef.current.innerHTML;
@@ -41,34 +48,29 @@ const handlePrint = () => {
   window.location.reload()
 };
 
+  
+const parseAddress = (addressStr) => {
+  try {
+    return JSON.parse(addressStr);
+  } catch {
+    return null;
+  }
+};
 
   useEffect(() => {
     (async () => setOrder(await getOrderDetails(orderId)))();
-    console.log(order);
   }, [orderId])
   
   const steps = ["Pending","Confirmed", "Shipped Out", "Out for Delivery", "Delivered"];
   const currentIdx = steps.findIndex(
     (s) => s.toLowerCase() === order?.status?.toLowerCase()
   );
+  const shippingAddress = parseAddress(order?.shipping_address);
+  const destination = `${shippingAddress?.addressLine1}, ${shippingAddress?.country}` || "Destination";
+
 
   const payColor = (s) =>
     s === "success" ? "success" : s === "pending" ? "warning" : "danger";
-
-  const formatDate = (value) => {
-    if (!value) return "N/A";
-    const fixed = value.replace(" ", "T");
-    const date = new Date(fixed);
-    if (isNaN(date)) return "Invalid date";
-    return date.toLocaleString("en-GB", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
-  };
 
   const handleBack = () => {
     if (window.history.length > 2) {
@@ -91,6 +93,18 @@ const handlePrint = () => {
     
   };
 
+  const formatDate = (value) => {
+    if (!value) return "N/A";
+    const fixed = value.replace(" ", "T");
+    const date = new Date(fixed);
+    if (isNaN(date)) return "Invalid date";
+  
+    return date.toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  };
   return (
     <>
 
@@ -140,94 +154,150 @@ const handlePrint = () => {
     </button>
   </div>
 </div>
-
-<hr/>
-
-
         {/* Header Buttons */}
         
   {loading || !order ? ( 
     <LottieLoader />
   ) : (
     <>
+    <div className="border m-1  p-4" style={{ borderRadius:"1rem"}}>
+      <div className="card mb-4 p-4">
+  <div className="row gy-4 align-items-center">
+    {/* Shipping Info */}
+    <div className="col-12 col-md-8 col-lg-5">
+      <h6 className="fw-semibold mb-2 d-flex align-items-center">
+        <FaShippingFast className="me-2" />
+        Be patient, package on deliver!
+      </h6>
 
-        {/* Dates */}
-        <div className="d-flex flex-wrap align-items-center gap-3 mb-4">
-  <div>
-    <p className="mb-1 text-secondary small">Order Date</p>
-    <p className="mb-0 fw-semibold small">{formatDate(order.created_at)}</p>
-  </div>
-  <div>
-    <p className="mb-1 text-secondary small">Delivery Date</p>
-    <p className="mb-0 fw-semibold small">{formatDate(order.order_date)}</p>
+      <div className="d-flex flex-column flex-sm-row align-items-center gap-2 small">
+        {/* Origin */}
+        <div className="border rounded-pill px-3 py-1 bg-white">
+          Kathmandu, Nepal
+        </div>
+
+        {/* Dotted Line */}
+        <div
+          className="d-none d-sm-block flex-grow-1 position-relative"
+          style={{ height: "1px", background: "#ccc" }}
+        >
+          <span
+            className="position-absolute top-50 start-0 translate-middle-y w-100"
+            style={{
+              borderTop: "2px dotted #999",
+              height: "1px",
+              display: "block",
+            }}
+          ></span>
+        </div>
+
+        {/* Destination */}
+        <div className="border rounded-pill px-3 py-1 bg-white text-end">
+          {destination}
+        </div>
+      </div>
+    </div>
+
+    {/* Estimated Arrival */}
+    <div className="col-6 col-md-2 text-center text-md-start">
+      <p className="text-muted small mb-1">  <FaShippingFast className="me-2" />Estimated Arrival</p>
+      <p className="fw-semibold mb-0">{formatDate(order.order_date)}</p>
+    </div>
+
+    {/* Delivered In */}
+    <div className="col-6 col-md-2 text-center text-md-start">
+      <p className="text-muted small mb-1">   <FaClock className="me-2" />Delivered in</p>
+      <p className="fw-semibold mb-0">5 Days</p>
+    </div>
   </div>
 </div>
 
 
+      <div className="row g-4 mb-4">
+  {/* Timeline */}
+  <div className="col-md-4">
+    <div className="p-4 border rounded bg-white h-100">
+      <h6 className="fw-semibold mb-3 d-flex align-items-center">
+        <FaBox className="me-2 text-secondary" />
+        Timeline
+      </h6>
+      <ul className="list-unstyled small mb-0">
+        <li className="mb-3">
+          <strong>4 Jul (Now) 06:00</strong><br />
+          Your package is packed by the courier<br />
+          Malang, East Java, Indonesia
+        </li>
+        <li className="mb-3">
+          <strong>2 Jul 06:00</strong><br />
+          Shipment has been created<br />
+          Malang, Indonesia
+        </li>
+        <li>
+          <strong>1 Jul 06:00</strong><br />
+          Order placed <FaCheckCircle className="text-success ms-1" />
+        </li>
+      </ul>
+    </div>
+  </div>
 
-        {/* Progress Tracker */}
-        <div className="progress-tracker mb-5">
-          {steps.map((label, i) => {
-            const isCurrent = i === currentIdx;
-            const isCompleted = i < currentIdx;
+  {/* Shipment */}
+  <div className="col-md-4">
+    <div className="p-4 border rounded bg-white h-100">
+      <h6 className="fw-semibold mb-3 d-flex align-items-center">
+        <FaShippingFast className="me-2 text-secondary" />
+        Shipment Details
+      </h6>
+      <p className="fw-bold mb-1">Doordash Indonesia</p>
+      <p><FaUser className="me-1" /><strong>Recipient:</strong> {user.name}</p>
+      <p><FaMapMarkerAlt className="me-1" /><strong>Delivery address:</strong><br />
+        {shippingAddress?.addressLine1}, {shippingAddress?.state}, {shippingAddress?.zipCode}, {shippingAddress?.country}
+      </p>
+      <p className="mb-0">
+  <strong>Tracking No.:</strong>{' '}
+  <span className="border rounded-pill px-2 py-1 d-inline-block">
+    {order.tracking_number}
+  </span>
+  <FaRegCopy
+        onClick={handleCopy}
+        className="text-black ml-1"
+        style={{ cursor: "pointer" }}
+        title={copied ? "Copied!" : "Copy to clipboard"}
+      />
+</p>
 
-            return (
-              <div key={label} className="step-item position-relative">
-                <div
-                  className={`step-circle ${
-                    isCompleted ? "completed" : ""
-                  } ${isCurrent ? "current" : ""}`}
-                >
-                  {i + 1}
-                </div>
-                <div
-                  className={`step-label ${
-                    isCurrent
-                      ? "current-label"
-                      : isCompleted
-                      ? "completed-label"
-                      : ""
-                  }`}
-                >
-                  {label}
-                </div>
-                {i < steps.length - 1 && (
-                  <div
-                    className={`position-absolute top-50 start-50 translate-middle-y border-bottom ${
-                      i < currentIdx ? "border-info" : "border-muted"
-                    }`}
-                    style={{
-                      width: "100%",
-                      zIndex: -1,
-                      left: "50%",
-                      right: 0,
-                      height: "8px",
-                    }}
-                  />
-                )}
-              </div>
-            );
-          })}
+    </div>
+  </div>
+
+  {/* Payment */}
+  <div className="col-md-4">
+    <div className="p-4 border rounded bg-white h-100">
+      <h6 className="fw-semibold mb-3 d-flex align-items-center">
+        <FaFileInvoice className="me-2 text-secondary" />
+        Payment Summary
+      </h6>
+      {order.orderpayments_logs?.length > 0 ? (
+        <div className="">
+          <div className="mb-2"><strong>Amount:</strong> ${order.orderpayments_logs[0].amount.toFixed(2)} {order.orderpayments_logs[0].currency}</div>
+          <div className="mb-2 small"><strong>Transaction ID:</strong> {order.orderpayments_logs[0].stripe_payment_id}</div>
+          <div className="mb-2"><strong>Status:</strong> {order.orderpayments_logs[0].status}</div>
+          <div className="text-muted" style={{ fontStyle: "italic" }}>Paid via Stripe card</div>
         </div>
+      ) : (
+        <div className="text-muted small">No payment records found.</div>
+      )}
+    </div>
+  </div>
+</div>
 
-        {/* Items Table */}
-        <h4 className="mb-4">Purchased Products</h4>
-        <div className=" table-responsive overflow-x-auto rounded-lg  border rounded mb-5">
-  <table className=" table-auto text-md text-gray-700">
-    <thead className="bg-gray-100 text-left">
-      <tr>
-        <th className="p-4  text-dark font-semibold">Image</th>
-        <th className="p-4  text-dark font-semibold"style={{ width: "800px" }}>Name</th>
-        <th className="p-4  text-dark font-semibold" style={{ width: "400px" }}>Ordered Qty</th>
-        <th className="p-4 text-dark font-semibold" style={{ width: "400px" }}>Price</th>
-        <th className="p-4  text-dark font-semibold" style={{ width: "400px" }}>Total</th>
-      </tr>
-    </thead>
-    <tbody className="divide-y divide-gray-200">
-      {order.order_items.map((it) => (
-        <tr key={it.id} className="hover:bg-gray-50">
-          <td className="p-4">
-            <img
+
+      <div className="card p-4 mb-4 border rounded">
+        <h6 className="fw-semibold mb-3">Items <span className="badge bg-light text-dark ms-2">{order?.order_items?.length}</span></h6>
+        <div className="row g-3">
+          {order.order_items.map((it, i) => (
+            <div key={i} className="col-md-6">
+              <div className="d-flex align-items-center bg-light rounded p-3">
+                <div className="me-3  rounded" style={{ width: '80px', height: '80px' }}>
+                <img
               src={
                 it.products?.banner_url
                   ? `https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${it.products.banner_url}`
@@ -236,158 +306,73 @@ const handlePrint = () => {
               alt={it.products?.name}
               style={{ width: "80px", height: "60px", objectFit: "contain" }}
             />
-          </td>
-          <td className="p-4 font-medium">{it.products?.name}</td>
-          <td className="p-4 ">{it.quantity}</td>
-          <td className="p-4 ">${it.price_each.toFixed(2)}</td>
-          <td className="p-4 ">
-            ${(it.quantity * it.price_each).toFixed(2)}
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div>
-
-
-
-        {/* Payment & Summary & Address */}
-        <div className="row g-4">
-  {/* Payment */}
-  <div className="col-12 col-sm-4">
-  <div
-    className="p-4 rounded "
-    style={{
-      border: "1px solid #e2e8f0",
-      backgroundColor: "#fff",
-      minHeight: "250px",
-    }}
-  >
-    {/* Header */}
-    <h5 className="mb-4" style={{ fontWeight: "700", color: "#2d3748" }}>
-      Payment Summary
-    </h5>
-
-
-    {/* Payment Status Badge */}
-    {/* <div style={{ maxWidth: "140px" }}>
-      <span
-        className={`badge bg-${payColor(order.payment_status)} fs-6 w-100 text-uppercase`}
-        style={{
-          fontWeight: "600",
-          padding: "0.55rem 0.75rem",
-          borderRadius: "16px",
-          letterSpacing: "0.5px",
-        }}
-      >
-        {order.payment_status}
-      </span>
-    </div> */}
-
-    {/* Payment Details */}
-    {order.orderpayments_logs?.length > 0 ? (
-      <div className="small" style={{ color: "#4a5568" }}>
-        <div className="mb-2">
-          <strong>Amount:</strong> ${order.orderpayments_logs[0].amount.toFixed(2)}{" "}
-          <strong>{order.orderpayments_logs[0].currency}</strong>
-        </div>
-        <div className="mb-2">
-          <strong>Transcation Id:</strong> {order.orderpayments_logs[0].stripe_payment_id}
-        </div>
-        <div className="">
-          <strong>Status:</strong> {order.orderpayments_logs[0].status}
-        </div>
-        <div style={{ fontStyle: "italic", color: "#718096" }}>
-          Paid via Stripe card
+                </div>
+                <div>
+                  <p className="fw-semibold mb-1 small mb-0">{it.products.name}</p>
+                 
+                  <p className="text-muted small mb-0">price: ${it.price_each.toFixed(2)}</p>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
-    ) : (
-      <div className="mt-4 text-muted small">No payment records found.</div>
-    )}
-  </div>
-</div>
+
+
+
+
   {/* Order Summary */}
-  <div className="col-12 col-sm-4">
-    <div
-      className="p-4 rounded"
-      style={{
-        border: "1px solid #e2e8f0",
-        minHeight: "250px",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-      }}
-    >
-      <h5 className="mb-3" style={{ fontWeight: "700", color: "#333" }}>
-        Order Summary
-      </h5>
-      <div>
-        <div
-          className="summary-row d-flex justify-content-between mb-2"
-          style={{ fontWeight: "600" }}
-        >
-          <span>Subtotal</span>
-          <span>${(order.total_amount - 30).toFixed(2)}</span>
-        </div>
-        <div
-          className="summary-row d-flex justify-content-between mb-2"
-          style={{ fontWeight: "600" }}
-        >
-          <span>Shipping</span>
-          <span>$30.00</span>
-        </div>
-        <hr style={{ borderColor: "#d1d5db" }} />
-        <div
-          className="summary-row total d-flex justify-content-between"
-          style={{ fontWeight: "700", fontSize: "1.15rem" }}
-        >
-          <span>Total</span>
-          <span>${order.total_amount.toFixed(2)}</span>
-        </div>
+  <div
+  className=" card p-4 rounded"
+  style={{
+    border: "1px solid #e2e8f0",
+    backgroundColor: "#fff",
+    minHeight: "250px",
+  }}
+>
+  {/* Order Summary Header */}
+  <h5 className="mb-4 d-flex align-items-center" style={{ fontWeight: "700", color: "#2d3748" }}>
+    <FaListAlt className="me-2 text-primary" /> Order Summary
+  </h5>
+
+  {/* Order Items */}
+  {order.order_items.length > 0 ? (
+    <>
+      <ul className="list-unstyled small mb-4">
+        {order.order_items.map((item, index) => (
+          <li
+            key={index}
+            className="d-flex justify-content-between border-bottom py-2"
+          >
+            <span>
+              <FaTag className="me-2 text-muted" />
+              {item.products.name}
+            </span>
+            <span>${parseFloat(item.price_each).toFixed(2)}</span>
+          </li>
+        ))}
+      </ul>
+
+      {/* Total */}
+      <div className="d-flex justify-content-between fw-bold border-top pt-3">
+        <span className="d-flex align-items-center">
+          <FaMoneyBillWave className="me-2 text-success" />
+          Total
+        </span>
+        <span>
+          $
+          {order.order_items
+            .reduce((acc, item) => acc + parseFloat(item.price_each), 0)
+            .toFixed(2)}
+        </span>
       </div>
-    </div>
-  </div>
-
-  {/* Shipping Address */}
-  <div className="col-12 col-sm-4">
-    <div
-      className="p-4 rounded"
-      style={{
-        border: "1px solid #e2e8f0",
-        minHeight: "250px",
-        color: "#444",
-        fontWeight: "500",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "flex-start",
-        gap: "0.5rem",
-      }}
-    >
-      <h5 className="mb-3" style={{ fontWeight: "700", color: "#333" }}>
-        Shipping Address
-      </h5>
-
-      <p style={{ fontWeight: "700", marginBottom: "0.25rem" }}>Name</p>
-      <p style={{ marginTop: 0 }}>{user.name}</p>
-
-      <p style={{ fontWeight: "700", marginBottom: "0.25rem" }}>Address</p>
-      {(() => {
-        let addr;
-        try {
-          addr = JSON.parse(order.shipping_address);
-        } catch {
-          addr = null;
-        }
-        return addr ? (
-          <p style={{ marginTop: 0 }}>
-            {addr.addressLine1}, {addr.state}, {addr.zipCode}, {addr.country}
-          </p>
-        ) : (
-          <small className="text-muted">No address available.</small>
-        );
-      })()}
-    </div>
-  </div>
+    </>
+  ) : (
+    <div className="text-muted small">No items found in this order.</div>
+  )}
+</div>
+</div>
+ 
   <div
       className="modal fade"
       id="exampleModal"
@@ -470,41 +455,12 @@ const handlePrint = () => {
         </div>
       </div>
     </div>
-</div>
+
 </>
   )}
 
       </div>
-      <div className="modal fade" id="pdfModal" tabIndex="-1" role="dialog" aria-labelledby="pdfModal" aria-hidden="true">
-  <div className="modal-dialog modal-xl" role="document">
-    <div className="modal-content">
-
-      <div className="modal-header">
-        <h2 className="modal-title">PDF Preview</h2>
-        <button type="button" className="close" data-dismiss="modal">&times;</button>
-      </div>
-
-      <div className="modal-body" style={{ padding: 0, height: '80vh' }}>
-        {pdfUrl && (
-          <iframe
-            src={pdfUrl}
-            width="100%"
-            style={{ height: '100%', border: 'none' }}
-            title="PDF Preview"
-          />
-        )}
-      </div>
-
-      <div className="modal-footer">
-        <button type="button" className="btn btn-secondary" data-dismiss="modal">
-          Close
-        </button>
-      </div>
-
-    </div>
-  </div>
-</div>
-
+   
 
 
       </main>

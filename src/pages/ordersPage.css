@@ -17,3 +17,23 @@
     }
   }
   
+  .tiny {
+    font-size: 0.7rem;
+  }
+  @media (min-width: 576px) {
+    .order-card {
+      flex: 1 1 48%;
+      max-width: 48%;
+    }
+  }
+  
+  @media (min-width: 768px) {
+    .order-card {
+      flex: 1 1 32%;
+      max-width: 32%;
+    }
+  }
+  /* Hide scrollbar for Chrome, Safari and Opera */
+.d-flex.flex-wrap::-webkit-scrollbar {
+  display: none;
+}

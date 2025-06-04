@@ -399,7 +399,21 @@ export const AuthProvider = ({ children }) => {
     try {
       const { data, error } = await supabase
         .from("orders")
-        .select("id, created_at, total_amount, status, payment_status, order_date, shipping_address")
+        .select(`
+          *,
+          order_items (
+            *,
+            products:product_id (
+              id,
+              name,
+              banner_url,
+              amount,
+              description
+            )
+          ),
+          orderpayments_logs(
+          *)
+        `)
         .eq("user_id", memoizedUser.id)
         .order("created_at", { ascending: false });
   

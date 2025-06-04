@@ -4,7 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import LottieLoader from "../components/LottieLoader";
 import ordersPage from "./ordersPage.css";
-
+import { HiLocationMarker } from "react-icons/hi"; // or choose another icon
+import { FaTruck } from 'react-icons/fa';
 const STATUSES = [
   "All",
   "Pending",
@@ -56,13 +57,13 @@ const OrdersPage = () => {
       <Sidebar />
       <main className="flex-grow-1 p-4" style={{ marginLeft: "280px" }}>
         <div className="mb-3">
-          <h2 className="fw-bold text-secondary mb-1">Orders</h2>
+          <h2 className="fw-bold text-dark mb-1">Orders</h2>
           <p className="text-muted small mb-2">Dashboard / Orders</p>
           <hr />
         </div>
 
         {/* Status filter row */}
-        <div className="d-flex flex-wrap gap-2 mb-4 bg-light p-3 rounded">
+        <div className="d-flex flex-wrap gap-2 mb-4 bg-light p-3 rounded-pill">
           {STATUSES.map((status) => {
             const count =
               status === "All"
@@ -107,97 +108,145 @@ const OrdersPage = () => {
             </Link>
           </div>
         ) : (
-          <div
-            className="d-flex flex-column gap-3 overflow-auto bg-light p-3 rounded"
-            style={{ maxHeight: "75vh", minWidth: "100%" }}
-          >
-            {filteredOrders.map((order) => {
-              const shippingAddress = parseAddress(order.shipping_address);
-              return (
+          <div className="row g-3 bg-white">
+          {filteredOrders.map((order) => {
+            const shippingAddress = parseAddress(order.shipping_address);
+            const destination = `${shippingAddress?.addressLine1}, ${shippingAddress?.country}` || "Destination";
+        
+            return (
+              <div
+                key={order.id}
+                className="col-12 col-sm-6"
+                onClick={() => navigate(`/orders/${order.id}`)}
+                style={{ cursor: "pointer" }}
+              >
                 <div
-                  key={order.id}
-                  className="card  border-0 w-100"
-                  style={{ cursor: "pointer" }}
-                  onClick={() => navigate(`/orders/${order.id}`)}
+                  className="border h-100 d-flex flex-column"
+                  style={{
+                    borderRadius: "1rem",
+                    borderColor: "#ddd",
+                    minHeight: "270px",
+                  }}
                 >
-                  <div className="card-body">
-                    <div className="d-flex justify-content-between align-items-center flex-wrap mb-2">
-                      <div className="fw-semibold text-dark">
-                        Order{" "}
-                        <span className="text-decoration-underline">
-                          #{order.id}
-                        </span>
+                  {/* Card Body */}
+                  <div className="card-body d-flex flex-column" style={{ flex: 1 }}>
+                    {/* Header */}
+                    <div className="d-flex justify-content-between px-2 pt-2 align-items-start flex-wrap">
+                      <div className="d-flex flex-column">
+                        <span className="text-muted tiny">Order ID</span>
+                        <span className="fw-semibold tiny">#{order.id}</span>
+                      </div>
+                      <div className="d-flex align-items-center gap-1">
+                        <div className="py-0 px-2 rounded-pill border bg-white">
+                          <span className="text-muted tiny me-1">Est:</span>
+                          <span className="fw-medium tiny">{formatDate(order.order_date)}</span>
+                        </div>
                         <span
-                          className={`badge bg-${getStatusColor(
-                            order.status
-                          )} ms-2`}
+                          className={`bg-${getStatusColor(order.status)} rounded-pill p-1 text-white`}
+                          style={{ fontSize: "0.6rem", padding: "2px 6px" }}
                         >
-                          <i
-                            className={`bi ${getStatusIcon(order.status)} me-1`}
-                          ></i>
                           {order.status}
                         </span>
                       </div>
+                    </div>
+        
+                    {/* Route */}
+                    <div
+                      className="d-flex justify-content-between px-2 pt-2 align-items-center flex-nowrap overflow-auto gap-2"
+                      style={{ flexShrink: 0 }}
+                    >
+                      <div className="d-flex align-items-center border rounded-pill p-1 bg-white" style={{ minWidth: "130px" }}>
+                        <FaTruck className="me-1 text-dark tiny" />
+                        <span className="tiny">Kathmandu, Nepal</span>
+                      </div>
 
-                      {order.status.toLowerCase() === "delivered" && (
-                        <button
-                          className="btn btn-danger btn-sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleRefund(order.id);
-                          }}
-                        >
-                          Cancel & Refund
-                        </button>
-                      )}
+                      <span className="text-muted">••••••••</span>
+
+                      <div className="d-flex align-items-center border rounded-pill p-1 bg-white" style={{ minWidth: "130px" }}>
+                        <HiLocationMarker className="me-1 text-dark tiny" />
+                        <span className="tiny">{destination}</span>
+                      </div>
                     </div>
 
-                    <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
-                      <InlineDetail
-                        label="Order Date"
-                        value={formatDate(order.created_at)}
-                        icon="calendar"
-                      />
-                      <InlineDetail
-                        label="Delivery Date"
-                        value={formatDate(order.order_date)}
-                        icon="truck"
-                      />
-                      <InlineDetail
-                        label="Total"
-                        value={`$${order.total_amount.toFixed(2)}`}
-                        icon="cash-stack"
-                      />
-                      <InlineDetail
-                        label="Payment"
-                        value={
-                          <span
-                            className={`badge bg-${getPaymentStatusColor(
-                              order.payment_status
-                            )}`}
-                          >
-                            {order.payment_status}
-                          </span>
-                        }
-                        icon="credit-card"
-                      />
-                      {shippingAddress && (
-                        <InlineDetail
-                          label="Shipping Address"
-                          value={`${shippingAddress.addressLine1}, ${
-                            shippingAddress.addressLine2 || ""
-                          }, ${shippingAddress.state} ${
-                            shippingAddress.zipCode
-                          }, ${shippingAddress.country}`}
-                          icon="geo-alt"
-                        />
-                      )}
+                    {/* Product List */}
+                    <div
+                      className="d-flex flex-wrap gap-2 px-2 py-1 ml-2 mr-2 mt-2 border  overflow-auto"
+                      style={{
+                        flexGrow: 1,
+                        maxHeight: "150px",
+                        borderTopLeftRadius:"1rem",
+                        borderTopRightRadius:"1rem",
+                        scrollbarWidth: "none", /* Firefox */
+                        msOverflowStyle: "none", /* IE and Edge */
+                      }}
+                      onScroll={e => e.currentTarget.style.scrollbarWidth = 'none'}
+                    >
+                      {order.order_items?.map((item, index) => (
+                        <div
+                          key={index}
+                          className="d-flex rounded p-1 bg-white"
+                          style={{
+                            flex: "1 1 calc(50% - 10px)",
+                            maxWidth: "calc(50% - 10px)",
+                            minWidth: "140px",
+                            alignItems: "center",
+                            gap: "6px",
+                          }}
+                        >
+                          <img
+                            src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.products.banner_url}`}
+                            alt={item.products.name}
+                            className="img-fluid rounded"
+                            style={{
+                              width: "60px",
+                              height: "60px",
+                              objectFit: "contain",
+                              flexShrink: 0,
+                            }}
+                          />
+                          <div className="d-flex flex-column justify-content-center" style={{ flex: 1 }}>
+                            <div className="fw-medium tiny d-none d-sm-block">{item.products?.name}</div>
+                            <div className="text-muted tiny">${item.price_each} x {item.quantity}</div>
+                            <div className="text-muted tiny">
+                              ${(item.price_each * item.quantity).toFixed(2)}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+        
+                    {/* Footer */}
+                    <div
+                      className="d-flex justify-content-between align-items-center px-2 py-2 bg-light"
+                      style={{
+                        borderBottomLeftRadius: "1rem",
+                        borderBottomRightRadius: "1rem",
+                      }}
+                    >
+                      <div>
+                        <span className="fw-semibold tiny">${order.total_amount.toLocaleString()}</span>
+                        <span className="text-muted tiny"> ({order.order_items?.length} items)</span>
+                      </div>
+                      <button
+                        className="btn btn-dark btn-xs px-3 py-1 rounded-pill"
+                        style={{ fontSize: "0.7rem" }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/orders/${order.id}`);
+                        }}
+                      >
+                        Details
+                      </button>
                     </div>
                   </div>
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            );
+          })}
+        </div>
+        
+
+        
         )}
       </main>
 
@@ -258,13 +307,11 @@ const formatDate = (value) => {
   const fixed = value.replace(" ", "T");
   const date = new Date(fixed);
   if (isNaN(date)) return "Invalid date";
-  return date.toLocaleString("en-GB", {
-    day: "2-digit",
-    month: "2-digit",
+
+  return date.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
     year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
   });
 };
 
