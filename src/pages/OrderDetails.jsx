@@ -8,7 +8,7 @@ import LottieLoader from "../components/LottieLoader";
 import Modal from "react-modal";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import { FaCheckCircle, FaBox, SiPoe ,FaShippingFast,FaRegCopy , FaMapMarkerAlt, FaUser, FaFileInvoice, FaPhoneAlt ,FaListAlt, FaTag, FaMoneyBillWave ,FaClock} from 'react-icons/fa';
+import { FaCheckCircle, FaBox, SiPoe ,FaTruck,FaShippingFast,FaRegCopy , FaMapMarkerAlt, FaUser, FaFileInvoice, FaPhoneAlt ,FaListAlt, FaTag, FaMoneyBillWave ,FaClock} from 'react-icons/fa';
 import toast from "react-hot-toast";
 
 const OrderDetailsPage = () => {
@@ -133,14 +133,14 @@ const parseAddress = (addressStr) => {
       data-target="#exampleModal"
       style={{ backgroundColor: "#333", color: "#fff" }}
     >
-      Cancel Order
+      Cancel
     </button>
 
     <button
       className="btn btn-outline-secondary"
       onClick={handlePrint}
     >
-      <i className="bi bi-receipt-cutoff me-2" />
+      <i className="bi bi-receipt-cutoff" />
       Invoice
     </button>
 
@@ -149,7 +149,7 @@ const parseAddress = (addressStr) => {
       style={{ backgroundColor: "#333", color: "#fff" }}
       onClick={() => navigate(`/track/${order.id}`)}
     >
-      <i className="bi bi-truck me-2" />
+      <i className="bi bi-truck" />
       Track
     </button>
   </div>
@@ -207,7 +207,9 @@ const parseAddress = (addressStr) => {
     {/* Delivered In */}
     <div className="col-6 col-md-2 text-center text-md-start">
       <p className="text-muted small mb-1">   <FaClock className="me-2" />Delivered in</p>
-      <p className="fw-semibold mb-0">5 Days</p>
+      <p className="fw-semibold mb-0">
+      {Math.floor(Math.random() * (10 - 7 + 1)) + 7} Days
+      </p>
     </div>
   </div>
 </div>
@@ -225,12 +227,12 @@ const parseAddress = (addressStr) => {
         <li className="mb-3">
           <strong>4 Jul (Now) 06:00</strong><br />
           Your package is packed by the courier<br />
-          Malang, East Java, Indonesia
+          Kthmandu, Bagmati, kalanki
         </li>
         <li className="mb-3">
           <strong>2 Jul 06:00</strong><br />
           Shipment has been created<br />
-          Malang, Indonesia
+          Kalanki, Bafal
         </li>
         <li>
           <strong>1 Jul 06:00</strong><br />
@@ -247,7 +249,7 @@ const parseAddress = (addressStr) => {
         <FaShippingFast className="me-2 text-secondary" />
         Shipment Details
       </h6>
-      <p className="fw-bold mb-1">Doordash Indonesia</p>
+      <p className="fw-bold mb-1">UOM WHARE HOUSE , KALANKI </p>
       <p><FaUser className="me-1" /><strong>Recipient:</strong> {user.name}</p>
       <p><FaMapMarkerAlt className="me-1" /><strong>Delivery address:</strong><br />
         {shippingAddress?.addressLine1}, {shippingAddress?.state}, {shippingAddress?.zipCode}, {shippingAddress?.country}
@@ -295,10 +297,10 @@ const parseAddress = (addressStr) => {
         <div className="row g-3">
           {order.order_items.map((it, i) => (
             <div key={i} className="col-md-6">
-              <div className="d-flex align-items-center bg-light rounded p-3">
-                <div className="me-3  rounded" style={{ width: '80px', height: '80px' }}>
+              <div className="d-flex align-items-center bg-light gap-2 rounded p-3">
+               
                 <img
-              src={
+               src={
                 it.products?.banner_url
                   ? `https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${it.products.banner_url}`
                   : "/no-image.png"
@@ -306,11 +308,11 @@ const parseAddress = (addressStr) => {
               alt={it.products?.name}
               style={{ width: "80px", height: "60px", objectFit: "contain" }}
             />
-                </div>
+              
                 <div>
                   <p className="fw-semibold mb-1 small mb-0">{it.products.name}</p>
-                 
-                  <p className="text-muted small mb-0">price: ${it.price_each.toFixed(2)}</p>
+                  <p className="text-muted small mb-0">Quantity: {it.quantity}</p>
+                  <p className="text-muted small mb-0">Price: ${it.price_each.toFixed(2)}</p>
                 </div>
               </div>
             </div>
@@ -351,7 +353,15 @@ const parseAddress = (addressStr) => {
             <span>${parseFloat(item.price_each).toFixed(2)}</span>
           </li>
         ))}
+           <li
+           
+            className="d-flex justify-content-between border-bottom py-2"
+          >
+      <span ><FaTruck className="me-2 text-muted" />Shipping Charge</span>
+      <span>$30.00</span>
+    </li>
       </ul>
+
 
       {/* Total */}
       <div className="d-flex justify-content-between fw-bold border-top pt-3">
@@ -361,9 +371,9 @@ const parseAddress = (addressStr) => {
         </span>
         <span>
           $
-          {order.order_items
-            .reduce((acc, item) => acc + parseFloat(item.price_each), 0)
-            .toFixed(2)}
+          {(order.order_items
+            .reduce((acc, item) => acc + parseFloat(item.price_each * item.quantity), 0) + 30
+          ).toFixed(2)}
         </span>
       </div>
     </>
@@ -397,7 +407,7 @@ const parseAddress = (addressStr) => {
           <div className="modal-body py-2 px-3">
 
           {selectedReason !== "Other" && (
-  <div className="mb-3">
+  <div className="mb-2">
     <label className="form-label fw-semibold">
       Reason <span className="text-danger">*</span>
     </label>
@@ -426,7 +436,7 @@ const parseAddress = (addressStr) => {
 )}
 
 {selectedReason === "Other" && (
-  <div className="mb-3 animate__animated animate__fadeIn">
+  <div className="mb-2 animate__animated animate__fadeIn">
     <label className="form-label fw-semibold">
       Enter Custom Reason <span className="text-danger">*</span>
     </label>
@@ -439,6 +449,20 @@ const parseAddress = (addressStr) => {
     />
   </div>
 )}
+ <p
+  style={{
+    backgroundColor: "#dbeafe",
+    color: "#0d6efd",
+    padding: "6px 10px",
+    borderRadius: "6px",
+    fontSize: "0.65rem",  // smaller font size
+    fontStyle: "normal",
+    marginTop: "2px",
+    border: "1px solid #a5d8ff",
+  }}
+>
+  ℹ️ Please note: Cancelled orders are subject to our cancellation policy. Refunds may take up to 7 business days.
+</p>
 
           </div>
 

@@ -1,25 +1,23 @@
-import { useEffect } from "react";
+import { useEffect ,useState} from "react";
 import { Footer, Navbar } from "../components";
 import { useSelector, useDispatch } from "react-redux";
 import { addCart, delCart } from "../redux/action";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import toast from "react-hot-toast";
 import { FaCarTunnel } from "react-icons/fa6";
 import { FaTimes } from "react-icons/fa";
-
 import LottieLoader from "../components/LottieLoader";
 import "./cart.css";
+import { FaQuestion,FaChevronDown, FaChevronUp } from "react-icons/fa";
 
 const Cart = () => {
   const state = useSelector((state) => state.handleCart);
   const dispatch = useDispatch();
   const { cart, addToCart, removeFromCart, user, loading } = useAuth();
   const navigate = useNavigate();
-
+  const [showPromo, setShowPromo] = useState(false);
   const updateItemQuantity = (product, action) => {
-    // Find the item in the cart and update its quantity locally
     const updatedCart = [...cart];
     const itemIndex = updatedCart.findIndex(
       (item) => item.products.id === product.id
@@ -27,15 +25,12 @@ const Cart = () => {
     if (itemIndex !== -1) {
       const updatedItem = updatedCart[itemIndex];
       if (action === "increase") {
-        updatedItem.quantity += 1; // Increase quantity
+        updatedItem.quantity += 1;
       } else if (action === "decrease" && updatedItem.quantity > 1) {
-        updatedItem.quantity -= 1; // Decrease quantity but don't go below 1
+        updatedItem.quantity -= 1;
       }
 
-      // Update the cart state with the new quantity
-      dispatch(addCart(updatedCart)); // Using redux action to update cart (you can manage state this way)
-
-      // Also update on the backend
+      dispatch(addCart(updatedCart));
       if (action === "increase") {
         addToCart(product);
       } else if (action === "decrease") {
@@ -45,10 +40,8 @@ const Cart = () => {
   };
 
   const handleRemoveFromCart = (product) => {
-    removeFromCart(product , true)
-   
+    removeFromCart(product, true);
   };
-  
 
   const EmptyCart = () => (
     <div className="container py-5 text-center">
@@ -70,144 +63,246 @@ const Cart = () => {
     });
 
     return (
-      <section className="py-3 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
-      <div className="container">
-        <div className="row g-">
-          {/* Cart Items Section */}
-          <div className="col-12 col-lg-8">
-            <div className="bg-white border border-gray-200 rounded-3 p-4 mobile-no-border">
-              <h5 className="mb-4 text-xl font-semibold text-gray-800">🛒 Shopping Cart</h5>
-              <div
-  className="mx-auto"
-  style={{
-    maxHeight: "800px",
-    overflowX: "auto",
-  }}
->
-              {cart.map((item) => (
-  <div
-    key={item.id}
-    className="mb-4 p-3 border rounded  bg-white position-relative"
-    style={{ borderRadius: "12px" }}
-  >
-      {/* ❌ Remove Icon */}
-      <button
-      onClick={() => handleRemoveFromCart(item.products)}
-      className="position-absolute top-0 end-0 m-2 btn btn-sm btn-light"
-      style={{
-        borderRadius: "50%",
-        width: "30px",
-        height: "30px",
-        padding: 0,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <FaTimes size={14} className="text-danger" />
-    </button>
-    <div className="d-flex flex-column flex-md-row align-items-center gap-3">
-      {/* Product Image */}
-      <div
-  style={{ flex: "0 0 100px" }}
-  className="overflow-hidden"
->
-  <img
-    src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.products.banner_url}`}
-    alt={item.products.name}
-    className="img-fluid rounded bg-light p-2 transition-all"
-    style={{
-      width: "100px",
-      height: "100px",
-      objectFit: "contain",
-      transition: "transform 0.3s ease, box-shadow 0.3s ease",
-    }}
-    onMouseOver={(e) => {
-      e.currentTarget.style.transform = "scale(1.05)";
-      e.currentTarget.style.boxShadow = "0 4px 10px rgba(0,0,0,0.1)";
-    }}
-    onMouseOut={(e) => {
-      e.currentTarget.style.transform = "scale(1)";
-      e.currentTarget.style.boxShadow = "none";
-    }}
-  />
-</div>
-
-
-      {/* Product Info */}
-      <div className="flex-grow-1 w-100">
-        <h6 className="mb-1 text-dark fw-semibold">{item.products.name}</h6>
-        <p className="mb-1 text-muted small">Product ID: #{item.products.id}</p>
-        <div className="d-flex gap-1 mb-2">
-          {Array.from({ length: 5 }, (_, i) => {
-            const rating = item.products?.rating || 0;
-            if (rating >= i + 1) return <i key={i} className="fa fa-star text-warning"></i>;
-            else if (rating >= i + 0.5) return <i key={i} className="fa fa-star-half-o text-warning"></i>;
-            return <i key={i} className="fa fa-star-o text-warning"></i>;
-          })}
-        </div>
-
-        {/* Quantity + Total Line */}
-        <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-2">
-          {/* Quantity Controls */}
-          <div className="d-flex align-items-center gap-2">
-            <span className="text-muted small me-2">Quantity</span>
-            <button
-              className="btn btn-sm btn-outline-dark rounded-circle"
-              onClick={() => updateItemQuantity(item.products, "decrease")}
+      <section className="py-3 bg-gradient from-gray-50 to-gray-100 min-h-screen">
+        <div className="container">
+          {/* Top Offer Banner */}
+          <div className="alert alert-warning rounded-3 text-center fw-bold fs-6 mb-4 text-dark">
+            🔥 Save up to <span className="text-danger">40%</span> for{" "}
+            <span className="text-primary">Premium Members</span>!
+            <Link
+              to="#"
+              className="ms-2 text-decoration-underline text-primary"
             >
-              <i className="fas fa-minus"></i>
-            </button>
-            <span className="px-2 fw-semibold">{item.quantity}</span>
-            <button
-              className="btn btn-sm btn-outline-dark rounded-circle"
-              onClick={() => updateItemQuantity(item.products, "increase")}
-            >
-              <i className="fas fa-plus"></i>
-            </button>
+              Join Now
+            </Link>
           </div>
 
-          {/* Total */}
-          <div>
-            <span className="text-muted small">Total</span><br />
-            <strong className="text-dark">${(item.amount * item.quantity).toFixed(2)}</strong>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-))}
-</div>
+          <div className="row g-3">
+            {/* Cart Items */}
+            <div className="col-12 col-lg-8">
+              {/* Info Banner */}
+              <div className="alert alert-info d-flex justify-content-between align-items-center rounded-3 px-3 py-2 mb-3">
+                <div>
+                  🎉 Free shipping for members!{" "}
+                  <Link
+                    to="#"
+                    className="text-decoration-underline text-primary fw-semibold"
+                  >
+                    Sign up now
+                  </Link>
+                </div>
+                <button className="btn-close" aria-label="Close" />
+              </div>
+
+              <div className="bg-light p-4 rounded-3">
+                <h5 className="mb-4 text-xl fw-semibold text-dark">
+                  🛒 Shopping Cart
+                </h5>
+                <div style={{ maxHeight: "800px", overflowX: "auto" }}>
+                  {cart.map((item) => (
+                    <div
+                      key={item.id}
+                      className="mb-4 p-3 bg-white rounded-3 position-relative"
+                    >
+                      <button
+                        onClick={() => handleRemoveFromCart(item.products)}
+                        className="position-absolute top-0 end-0 m-2 bg-danger-subtle text-danger border-0 rounded-circle d-flex align-items-center justify-content-center"
+                        style={{ width: "30px", height: "30px" }}
+                      >
+                        <FaTimes size={14} />
+                      </button>
+
+                      <div className="d-flex flex-column flex-md-row align-items-center gap-3">
+                        {/* Product Image */}
+                        <img
+                          src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.products.banner_url}`}
+                          alt={item.products.name}
+                          className="img-fluid"
+                          style={{
+                            width: "100px",
+                            height: "100px",
+                            objectFit: "contain",
+                          }}
+                        />
+
+                        {/* Product Details */}
+                        <div className="flex-grow-1 w-100">
+                          <h6
+                            className="mb-1 fw-bold text-dark"
+                            style={{
+                              maxWidth: "400px",
+                            }}
+                            title={item.products.name}
+                          >
+                            {item.products.name}
+                          </h6>
+                          <p
+                            className="mb-1 text-muted small"
+                            style={{
+                              maxWidth: "400px",
+                            }}
+                          >
+                            {item.products.description.length > 100
+                              ? item.products.description.slice(0, 100) + "..."
+                              : item.products.description}
+                          </p>
+                          <div className="d-flex gap-1 mb-2">
+                            {Array.from({ length: 5 }, (_, i) => {
+                              const rating = item.products?.rating || 0;
+                              return (
+                                <i
+                                  key={i}
+                                  className={`fa ${
+                                    rating >= i + 1
+                                      ? "fa-star"
+                                      : rating >= i + 0.5
+                                      ? "fa-star-half-o"
+                                      : "fa-star-o"
+                                  } text-warning`}
+                                />
+                              );
+                            })}
+                          </div>
+
+                          {/* Quantity Controls + Total */}
+                          <div className="d-flex align-items-center flex-wrap gap-2">
+                            <span className="text-muted small me-2">
+                              Quantity:
+                            </span>
+                            <div
+                              className="d-flex align-items-center rounded-pill border overflow-hidden"
+                              style={{
+                                height: "38px",
+                                fontSize: "14px",
+                                backgroundColor: "#fff",
+                              }}
+                            >
+                              <div
+                                className="d-flex justify-content-center align-items-center border-end"
+                                style={{
+                                  cursor: "pointer",
+                                  userSelect: "none",
+                                  width: "38px",
+                                  height: "100%",
+                                  backgroundColor: "#f0f0f0",
+                                }}
+                                onClick={() =>
+                                  updateItemQuantity(item.products, "decrease")
+                                }
+                              >
+                                <i className="fas fa-minus" />
+                              </div>
+                              <span
+                                className="px-3 fw-semibold text-center"
+                                style={{ minWidth: "40px" }}
+                              >
+                                {item.quantity}
+                              </span>
+                              <div
+                                className="d-flex justify-content-center align-items-center border-start"
+                                style={{
+                                  cursor: "pointer",
+                                  userSelect: "none",
+                                  width: "38px",
+                                  height: "100%",
+                                  backgroundColor: "#f0f0f0",
+                                }}
+                                onClick={() =>
+                                  updateItemQuantity(item.products, "increase")
+                                }
+                              >
+                                <i className="fas fa-plus" />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Order Summary */}
+            <div className="col-12 col-lg-4">
+              <div className="bg-light p-4 rounded-3">
+                <h5 className="mb-4 text-lg fw-semibold text-dark">
+                  📦 Order Summary
+                </h5>
+                <div
+                onClick={() => setShowPromo(!showPromo)}
+                className="d-flex justify-content-between align-items-center mb-3 fw-semibold text-primary cursor-pointer"
+                style={{ userSelect: "none" }}
+              >
+                <span>Do you have a promo code?</span>
+                {showPromo ? <FaChevronUp /> : <FaChevronDown />}
+              </div>
+
+              {/* Promo code input */}
+              {showPromo && (
+                <div className="mb-3">
+                  <input
+                    type="text"
+                    className="form-control rounded"
+                    placeholder="Enter promo code"
+                  />
+                </div>
+              )}
+                <ul className="list-unstyled mb-3">
+                  <li className="d-flex justify-content-between mb-2">
+                    <span className="fw-bold d-flex align-items-center gap-1">
+                      Subtotal ({totalItems}){" "}
+                      <span
+                        className="bg-dark rounded-circle text-white d-flex justify-content-center align-items-center"
+                        style={{
+                          width: "10px",
+                          height: "10px",
+                          fontSize: "8px",
+                          cursor: "pointer",
+                        }}
+                      >
+                        <FaQuestion />
+                      </span>
+                    </span>
+                    <span>${Math.round(subtotal)}</span>
+                  </li>
+                  <li className="d-flex justify-content-between mb-2">
+                    <span className="fw-bold">Shipping</span>
+                    <span>${shipping}</span>
+                  </li>
+                  <li className="d-flex justify-content-between mb-2">
+                    <span className="fw-bold d-flex align-items-center gap-1">
+                      Estimated Tax{" "}
+                      <span
+                        className="bg-dark rounded-circle text-white d-flex justify-content-center align-items-center"
+                        style={{
+                          width: "10px",
+                          height: "10px",
+                          fontSize: "8px",
+                          cursor: "pointer",
+                        }}
+                      >
+                        <FaQuestion />
+                      </span>
+                    </span>
+                    <span>-</span>
+                  </li>
+                  <li className="d-flex justify-content-between border-top pt-2 fw-bold">
+                    <span>Total</span>
+                    <span>${Math.round(subtotal + shipping)}</span>
+                  </li>
+                </ul>
+                <Link
+                  to="/checkout"
+                  className="btn btn-dark w-100 rounded-pill fw-semibold"
+                >
+                  Checkout
+                </Link>
+              </div>
             </div>
           </div>
-    
-          {/* Order Summary */}
-          <div className="col-12 col-lg-4">
-            <div className="bg-white border border-gray-200 rounded-3 p-4">
-              <h5 className="mb-4 text-lg font-semibold text-gray-800">📦 Order Summary</h5>
-              <ul className="list-group list-group-flush mb-3">
-                <li className="list-group-item d-flex justify-content-between">
-                  Products ({totalItems}) <strong>${Math.round(subtotal)}</strong>
-                </li>
-                <li className="list-group-item d-flex justify-content-between">
-                  Shipping <strong>${shipping}</strong>
-                </li>
-                <li className="list-group-item d-flex justify-content-between">
-                  <strong>Total</strong>
-                  <strong>${Math.round(subtotal + shipping)}</strong>
-                </li>
-              </ul>
-              <Link to="/checkout" className="btn btn-dark btn-lg w-100 mt-3">
-                Proceed to Checkout
-              </Link>
-            </div>
-          </div>
         </div>
-      </div>
-    </section>
-    
-    
-
+      </section>
     );
   };
 

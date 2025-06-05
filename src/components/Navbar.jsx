@@ -117,8 +117,21 @@ const Navbar = () => {
               <span className="text-muted small me-2">
                 Hi, <strong>{user.full_name}</strong>
               </span>
-              <NavLink to="/profile" className="me-2">
-                <FaRegUser size={20} color="black" />
+              <NavLink to="/profile" className="me-2 d-flex align-items-center">
+                {user?.picture ? (
+                  <img
+                    src={user.picture}
+                    alt="Profile"
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                    }}
+                  />
+                ) : (
+                  <FaRegUser size={20} color="black" />
+                )}
               </NavLink>
               <NavLink to="/cart" className="me-2">
                 <Badge
@@ -132,9 +145,9 @@ const Navbar = () => {
                   <RiShoppingBagLine size={22} color="black" />
                 </Badge>
               </NavLink>
-              <button onClick={logout} className="btn btn-outline-dark btn-sm">
+              {/* <button onClick={logout} className="btn btn-outline-dark btn-sm">
                 <i className="fa fa-sign-out-alt me-1"></i> Logout
-              </button>
+              </button> */}
             </>
           )}
         </div>

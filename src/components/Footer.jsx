@@ -77,16 +77,16 @@ const Footer = () => {
             <div className="links_container">
               <ul onClick={scrollToTop}>
                 <li>
-                  <Link to="/shop">New Arrivals</Link>
+                  <Link to="/shop">Mobile</Link>
                 </li>
                 <li>
-                  <Link to="/shop">Accessories</Link>
+                  <Link to="/shop">Tablet</Link>
                 </li>
                 <li>
-                  <Link to="/shop">Men</Link>
+                  <Link to="/shop">Monitor</Link>
                 </li>
                 <li>
-                  <Link to="/shop">Women</Link>
+                  <Link to="/shop">Watch</Link>
                 </li>
                 <li>
                   <Link to="/shop">Shop All</Link>
@@ -146,7 +146,7 @@ const Footer = () => {
               rel="noreferrer"
               style={{ color: "#C22928", textDecoration: "none" }}
             >
-              Shakti Tamrakar
+              Max Chamling
             </a>{" "}
             with ❤️
           </p>

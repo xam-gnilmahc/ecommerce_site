@@ -134,12 +134,12 @@ const OrdersPage = () => {
                     <div className="d-flex justify-content-between px-2 pt-2 align-items-start flex-wrap">
                       <div className="d-flex flex-column">
                         <span className="text-muted tiny">Order ID</span>
-                        <span className="fw-semibold tiny">#{order.id}</span>
+                        <span className="fw-bold tiny">#{order.id}</span>
                       </div>
                       <div className="d-flex align-items-center gap-1">
                         <div className="py-0 px-2 rounded-pill border bg-white">
                           <span className="text-muted tiny me-1">Est:</span>
-                          <span className="fw-medium tiny">{formatDate(order.order_date)}</span>
+                          <span className="fw-bold tiny">{formatDate(order.order_date)}</span>
                         </div>
                         <span
                           className={`bg-${getStatusColor(order.status)} rounded-pill p-1 text-white`}
@@ -157,14 +157,14 @@ const OrdersPage = () => {
                     >
                       <div className="d-flex align-items-center border rounded-pill p-1 bg-white" style={{ minWidth: "130px" }}>
                         <FaTruck className="me-1 text-dark tiny" />
-                        <span className="tiny">Kathmandu, Nepal</span>
+                        <span className="tiny fw-bold">Kathmandu, Nepal</span>
                       </div>
 
                       <span className="text-muted">••••••••</span>
 
                       <div className="d-flex align-items-center border rounded-pill p-1 bg-white" style={{ minWidth: "130px" }}>
                         <HiLocationMarker className="me-1 text-dark tiny" />
-                        <span className="tiny">{destination}</span>
+                        <span className="tiny fw-bold">{destination}</span>
                       </div>
                     </div>
 
@@ -193,21 +193,34 @@ const OrdersPage = () => {
                             gap: "6px",
                           }}
                         >
-                          <img
-                            src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.products.banner_url}`}
-                            alt={item.products.name}
-                            className="img-fluid rounded"
-                            style={{
-                              width: "60px",
-                              height: "60px",
-                              objectFit: "contain",
-                              flexShrink: 0,
-                            }}
-                          />
+                            <div
+  style={{ flex: "0 0 100px" }}
+  className="overflow-hidden"
+>
+  <img
+    src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.products.banner_url}`}
+    alt={item.products.name}
+    className="img-fluid rounded bg-light p-2 transition-all"
+    style={{
+      width: "80px",
+      height: "80px",
+      objectFit: "contain",
+      transition: "transform 0.3s ease, box-shadow 0.3s ease",
+    }}
+    onMouseOver={(e) => {
+      e.currentTarget.style.transform = "scale(1.05)";
+      e.currentTarget.style.boxShadow = "0 4px 10px rgba(0,0,0,0.1)";
+    }}
+    onMouseOut={(e) => {
+      e.currentTarget.style.transform = "scale(1)";
+      e.currentTarget.style.boxShadow = "none";
+    }}
+  />
+</div>
                           <div className="d-flex flex-column justify-content-center" style={{ flex: 1 }}>
-                            <div className="fw-medium tiny d-none d-sm-block">{item.products?.name}</div>
-                            <div className="text-muted tiny">${item.price_each} x {item.quantity}</div>
-                            <div className="text-muted tiny">
+                            <div className="fw-bold tiny d-none d-sm-block">{item.products?.name}</div>
+                            <div className="text-muted tiny fw-bold">${item.price_each} x {item.quantity}</div>
+                            <div className="text-muted tiny fw-bold">
                               ${(item.price_each * item.quantity).toFixed(2)}
                             </div>
                           </div>
@@ -224,7 +237,7 @@ const OrdersPage = () => {
                       }}
                     >
                       <div>
-                        <span className="fw-semibold tiny">${order.total_amount.toLocaleString()}</span>
+                        <span className="fw-bold tiny">${order.total_amount.toLocaleString()}</span>
                         <span className="text-muted tiny"> ({order.order_items?.length} items)</span>
                       </div>
                       <button
