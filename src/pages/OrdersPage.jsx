@@ -63,7 +63,7 @@ const OrdersPage = () => {
         </div>
 
         {/* Status filter row */}
-        <div className="d-flex flex-wrap gap-2 mb-4 bg-light p-3 rounded-pill">
+        <div className="d-flex flex-wrap gap-2 mb-4 bg-light p-3 rounded-pill no-bg-on-mobile">
           {STATUSES.map((status) => {
             const count =
               status === "All"

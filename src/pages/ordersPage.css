@@ -37,3 +37,9 @@
 .d-flex.flex-wrap::-webkit-scrollbar {
   display: none;
 }
+
+@media (max-width: 767.98px) {
+  .no-bg-on-mobile {
+    background-color: transparent !important;
+  }
+}
