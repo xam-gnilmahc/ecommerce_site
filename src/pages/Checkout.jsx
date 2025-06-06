@@ -129,7 +129,9 @@ const Checkout = () => {
         if (result.message != "Payment successful") {
           status = 'failed';
           toast.error("Payment processing failed.");
+          return;
         }
+        
         await placeOrder({...paymentData,payment_status: status} , result );
 
         if(status=="success"){

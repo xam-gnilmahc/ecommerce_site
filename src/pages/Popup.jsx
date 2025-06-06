@@ -13,7 +13,7 @@ const Popup = () => {
 
   useEffect(() => {
     if (showPopup) {
-      const timer = setTimeout(() => { setFadeOut(true); setTimeout(() => setShowPopup(false), 300); }, 3000);
+      const timer = setTimeout(() => { setFadeOut(true); setTimeout(() => setShowPopup(false), 300); }, 1000);
       return () => clearTimeout(timer);
     }
   }, [showPopup]);

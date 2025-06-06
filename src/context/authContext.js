@@ -529,7 +529,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const updateOrder = async (orderId, result, amount, reason="Change my minde") => {
+  const updateOrder = async (orderId, result, amount, reason="Change my mind") => {
     // Fetch the latest payment log for this order
     const { data: latestLog, error: fetchError } = await supabase
       .from("orderpayments_logs")
@@ -563,16 +563,19 @@ export const AuthProvider = ({ children }) => {
       console.error("Failed to insert refund log:", logInsertError);
       throw logInsertError;
     }
-  
-    // Update the order status
+    
+    if(result?.refundId){
+      // Update the order status
     const { error: updateError } = await supabase
-      .from("orders")
-      .update({ status: "Cancelled", Reason: reason })
-      .eq("id", orderId);
-  
-    if (updateError) {
-      console.error("Failed to update order status:", updateError);
-      throw updateError;
+    .from("orders")
+    .update({ status: "Cancelled", Reason: reason })
+    .eq("id", orderId);
+
+  if (updateError) {
+    console.error("Failed to update order status:", updateError);
+    throw updateError;
+  }
+
     }
   };
   
