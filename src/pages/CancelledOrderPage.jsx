@@ -6,24 +6,16 @@ import LottieLoader from "../components/LottieLoader";
 import ordersPage from "./ordersPage.css";
 import { HiLocationMarker } from "react-icons/hi"; // or choose another icon
 import { FaTruck } from 'react-icons/fa';
-const STATUSES = [
-  "All",
-  "Pending",
-  "Confirmed",
-  "Shipped Out",
-  "Out for Delivery",
-  "Delivered"
-];
 
-const OrdersPage = () => {
-  const { fetchUserOrders, loading } = useAuth();
+const CancelledOrderPage = () => {
+  const { fetchUserCancelledOrders, loading } = useAuth();
   const [orders, setOrders] = useState([]);
   const [filterStatus, setFilterStatus] = useState("All");
   const navigate = useNavigate();
 
   useEffect(() => {
     const loadOrders = async () => {
-      const data = await fetchUserOrders();
+      const data = await fetchUserCancelledOrders();
       setOrders(data);
     };
     loadOrders();
@@ -38,75 +30,30 @@ const OrdersPage = () => {
   };
 
   // Filter orders by selected status
-  const filteredOrders =
-    filterStatus === "All"
-      ? orders
-      : orders.filter(
-          (o) => o.status.toLowerCase() === filterStatus.toLowerCase()
-        );
-
-  // Dummy refund handler
-  const handleRefund = (orderId) => {
-    alert(`Refund requested for order #${orderId}`);
-  };
-
   return (
     <div className="d-flex">
       <Sidebar />
       <main className="flex-grow-1 p-4" style={{ marginLeft: "280px" }}>
-        <div className="mb-3">
-          <h2 className="fw-bold text-dark mb-1"> My Orders</h2>
-          {/* <p className="text-muted small mb-2">Dashboard / Orders</p>
-          <hr /> */}
+        <div className="mb-4">
+          <h2 className="fw-bold text-dark mb-1"> My Cancelled Orders</h2>
+          <p className="text-muted small mb-2">Dashboard / Cancelled Orders</p>
+          <hr />
         </div>
         {/* Status filter row */}
-        <div className="d-flex flex-wrap gap-2 mb-4 bg-light p-3 rounded-pill no-bg-on-mobile">
-          {STATUSES.map((status) => {
-            const count =
-              status === "All"
-                ? orders.length
-                : orders.filter(
-                    (o) => o.status.toLowerCase() === status.toLowerCase()
-                  ).length;
 
-            const isActive = filterStatus === status;
-
-            return (
-              <button
-                key={status}
-                onClick={() => setFilterStatus(status)}
-                className={`btn btn-sm d-flex align-items-center ${
-                  isActive ? "btn-dark text-white" : "btn-outline-secondary"
-                }`}
-                style={{
-                  borderRadius: "20px",
-                  fontWeight: 500,
-                }}
-              >
-                {status}
-                <span className="badge bg-secondary text-white rounded-pill ms-2">
-                  {count}
-                </span>
-              </button>
-            );
-          })}
-        </div>
 
         {loading ? (
           <LottieLoader />
-        ) : filteredOrders.length === 0 ? (
+        ) : orders.length === 0 ? (
           <div className="text-center mt-5">
-            <h4>No Orders Found</h4>
-            <p className="text-muted">
-              Try selecting a different status or place your first order!
-            </p>
+            <h4>No Cancelled Orders Found</h4>
             <Link to="/" className="btn btn-outline-secondary">
               <i className="bi bi-arrow-left me-1"></i> Continue Shopping
             </Link>
           </div>
         ) : (
           <div className="row g-3 bg-white">
-          {filteredOrders.map((order) => {
+          {orders.map((order) => {
             const shippingAddress = parseAddress(order.shipping_address);
             const destination = `${shippingAddress?.addressLine1}, ${shippingAddress?.country}` || "Destination";
         
@@ -381,4 +328,4 @@ const getPaymentStatusColor = (status) => {
   }
 };
 
-export default OrdersPage;
+export default CancelledOrderPage;

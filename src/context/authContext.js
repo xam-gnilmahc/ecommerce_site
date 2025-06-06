@@ -360,6 +360,7 @@ export const AuthProvider = ({ children }) => {
           {
             order_id: orderId,
             stripe_payment_id:stripe.transactionId,
+            charge_id:stripe.chargeId,
             status: stripe.message,
             amount: data.amount,
             currency: 'USD',
@@ -415,6 +416,7 @@ export const AuthProvider = ({ children }) => {
           *)
         `)
         .eq("user_id", memoizedUser.id)
+        .neq('status', "Cancelled")
         .order("created_at", { ascending: false });
   
       if (error) {
@@ -426,6 +428,56 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
+
+  const fetchUserCancelledOrders = async () => {
+    if (!memoizedUser) return [];
+  
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("orders")
+        .select(`
+          *,
+          order_items (
+            *,
+            products:product_id (
+              id,
+              name,
+              banner_url,
+              amount,
+              description
+            )
+          ),
+          orderpayments_logs (
+            *
+          )
+        `)
+        .eq("user_id", memoizedUser.id)
+        .eq("status", "Cancelled")
+        .order("created_at", { ascending: false });
+  
+      if (error) {
+        console.error("Error fetching orders:", error.message);
+        return [];
+      }
+  
+      // 🔽 Replace logs array with only the latest (max id)
+      const processedData = data.map(order => {
+        const logs = order.orderpayments_logs || [];
+        const latestLog = logs.sort((a, b) => b.id - a.id)[0] || null;
+        console.log(latestLog);
+        return {
+          ...order,
+          orderpayments_logs: latestLog ?? null,
+        };
+      });
+  
+      return processedData;
+    } finally {
+      setLoading(false);
+    }
+  };
+  
   
 
   
@@ -433,7 +485,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       
-      const { data: order, error: orderError } = await supabase
+      const { data, error: orderError } = await supabase
         .from("orders")
         .select(`
           *,
@@ -457,7 +509,18 @@ export const AuthProvider = ({ children }) => {
         throw orderError;
       }
   
-      return order;
+      const latestLog =
+      data.orderpayments_logs?.sort((a, b) => b.id - a.id)[0] || null;
+
+    // Replace full logs array with the latest one only
+    const processedData = {
+      ...data,
+      orderpayments_logs: latestLog,
+    };
+
+    console.log(processedData);
+
+    return processedData;
     } catch (error) {
       console.error("Error fetching order details:", error.message);
       throw error;
@@ -465,9 +528,56 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
+
+  const updateOrder = async (orderId, result, amount, reason="Change my minde") => {
+    // Fetch the latest payment log for this order
+    const { data: latestLog, error: fetchError } = await supabase
+      .from("orderpayments_logs")
+      .select("*")
+      .eq("order_id", orderId)
+      .order("id", { ascending: false })
+      .limit(1)
+      .single();
+  
+    if (fetchError || !latestLog) {
+      console.error("Failed to fetch latest payment log:", fetchError);
+      return;
+    }
+  
+    // Insert a new refund log
+    const { error: logInsertError } = await supabase
+      .from("orderpayments_logs")
+      .insert([
+        {
+          order_id: latestLog.order_id,
+          stripe_payment_id: latestLog.stripe_payment_id,
+          status: result.message,
+          amount: amount,
+          currency: "USD",
+          refund_transaction_id: result.refundId, // renamed for clarity
+          charge_id: latestLog.charge_id,
+        },
+      ]);
+  
+    if (logInsertError) {
+      console.error("Failed to insert refund log:", logInsertError);
+      throw logInsertError;
+    }
+  
+    // Update the order status
+    const { error: updateError } = await supabase
+      .from("orders")
+      .update({ status: "Cancelled", Reason: reason })
+      .eq("id", orderId);
+  
+    if (updateError) {
+      console.error("Failed to update order status:", updateError);
+      throw updateError;
+    }
+  };
   
   return (
-    <AuthContext.Provider value={{ user, logout, addToCart, removeFromCart, cart, setUser, removeFromCartAfterOrder, setToken, access_token, loading, setLoading,placeOrder,fetchUserOrders,getOrderDetails }}>
+    <AuthContext.Provider value={{ user, logout, addToCart, removeFromCart, cart, setUser, removeFromCartAfterOrder, setToken, access_token, loading, setLoading,placeOrder,fetchUserOrders,getOrderDetails,updateOrder , fetchUserCancelledOrders}}>
       {children}
     </AuthContext.Provider>
   );

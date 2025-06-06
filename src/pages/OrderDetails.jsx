@@ -5,7 +5,6 @@ import { FiArrowLeft } from "react-icons/fi";
 import "./orderDetails.css";
 import Sidebar from "../components/Sidebar";
 import LottieLoader from "../components/LottieLoader";
-import Modal from "react-modal";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { FaCheckCircle, FaBox, SiPoe ,FaTruck,FaShippingFast,FaRegCopy , FaMapMarkerAlt, FaUser, FaFileInvoice, FaPhoneAlt ,FaListAlt, FaTag, FaMoneyBillWave ,FaClock} from 'react-icons/fa';
@@ -14,7 +13,8 @@ import toast from "react-hot-toast";
 const OrderDetailsPage = () => {
   const { orderId } = useParams();
   const navigate = useNavigate();
-  const { getOrderDetails,user,loading } = useAuth();
+  const { getOrderDetails,user,loading ,updateOrder} = useAuth();
+    const [paymentLoading, setLoading] = useState(false); // Add loading state
   const [order, setOrder] = useState(null);
   const [showModal, setShowModal] = useState(false);
 const [refundReason, setRefundReason] = useState("");
@@ -37,6 +37,7 @@ const handleCopy = () => {
   setCopied(true);
   toast.success('Copied Successfully')
 };
+
 
 const handlePrint = () => {
   const printContents = designRef.current.innerHTML;
@@ -80,18 +81,18 @@ const parseAddress = (addressStr) => {
     }
   };
 
-  const handleSubmit = () => {
-    if (!refundReason) {
-      alert("Please provide a reason for refund.");
-      return;
-    }
-    alert(`Refund reason submitted: ${refundReason}`);
+  // const handleSubmit = () => {
+  //   if (!refundReason) {
+  //     alert("Please provide a reason for refund.");
+  //     return;
+  //   }
+  //   alert(`Refund reason submitted: ${refundReason}`);
 
-    // Reset form and close modal
-    setSelectedReason("");
-    setRefundReason("");
+  //   // Reset form and close modal
+  //   setSelectedReason("");
+  //   setRefundReason("");
     
-  };
+  // };
 
   const formatDate = (value) => {
     if (!value) return "N/A";
@@ -105,6 +106,60 @@ const parseAddress = (addressStr) => {
       year: "numeric",
     });
   };
+
+  const handleCancelOrder = async () => {
+    setLoading(true);
+  
+    const amount = (
+      order.order_items.reduce(
+        (acc, item) => acc + parseFloat(item.price_each * item.quantity),
+        0
+      ) + 30
+    ).toFixed(2);
+
+    const paymentData = {
+      chargeId: order.orderpayments_logs[0]?.charge_id || 'null',
+      amount: parseFloat(amount)
+    };
+
+    console.log(paymentData);
+  
+    try {
+      const response = await fetch(
+        "https://fzliiwigydluhgbuvnmr.supabase.co/functions/v1/quick-responder",
+        {
+          method: "POST",
+          headers: {
+            Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6bGlpd2lneWRsdWhnYnV2bm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE5MjkxNTMsImV4cCI6MjA1NzUwNTE1M30.w3Y7W14lmnD-gu2U4dRjqIhy7JZpV9RUmv8-1ybQ92w",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(paymentData),
+        }
+      );
+  
+      const result = await response.json();
+  
+      if (result.message !== "Refund processed") {
+        const modalEl = document.getElementById('exampleModal');
+        modalEl.setAttribute('data-dismiss', 'modal');
+        toast.error("Refund processing failed.");
+        await updateOrder(order.id, { message: "Refund failed" }, amount);
+      } else { 
+        await updateOrder(order.id, result, amount , refundReason);
+        navigate("/return-cancel");
+        toast.success("Refund successful. Refund may take up to 7 business days.");
+      }
+    } catch (err) {
+      const errorMessage =
+        err.response?.data?.errors?.error_message ||
+        err.response?.data?.message ||
+        "Order cancel failed.";
+      toast.error(`Payment error: ${errorMessage}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
   return (
     <>
 
@@ -126,6 +181,8 @@ const parseAddress = (addressStr) => {
 
   {/* Right side - Buttons */}
   <div className="d-flex flex-wrap gap-2">
+  {order?.status !== "Cancelled" && (
+  <>
     <button
       type="button"
       className="btn"
@@ -152,6 +209,24 @@ const parseAddress = (addressStr) => {
       <i className="bi bi-truck" />
       Track
     </button>
+  </>
+)}
+
+{order?.status === "Cancelled" && (
+  <>
+  <button className="btn btn-outline-danger" disabled>
+    Order Cancelled
+  </button>
+   <button
+   className="btn btn-outline-secondary"
+   onClick={handlePrint}
+ >
+   <i className="bi bi-receipt-cutoff" />
+   Invoice
+ </button>
+ </>
+)}
+
   </div>
 </div>
         {/* Header Buttons */}
@@ -167,7 +242,9 @@ const parseAddress = (addressStr) => {
     <div className="col-12 col-md-8 col-lg-5">
       <h6 className="fw-semibold mb-2 d-flex align-items-center">
         <FaShippingFast className="me-2" />
-        Be patient, package on deliver!
+        {order.status === "Cancelled"
+  ? "This order was cancelled."
+  : "Be patient, package on deliver!"}
       </h6>
 
       <div className="d-flex flex-column flex-sm-row align-items-center gap-2 small">
@@ -200,16 +277,32 @@ const parseAddress = (addressStr) => {
 
     {/* Estimated Arrival */}
     <div className="col-6 col-md-2 text-center text-md-start">
-      <p className="text-muted small mb-1">  <FaShippingFast className="me-2" />Estimated Arrival</p>
+      <p className="text-muted small mb-1">{order.status === "Cancelled" ? (
+  <>
+    <FaShippingFast className="me-2 text-danger" />
+    Order was Cancelled
+  </>
+) : (
+  <>
+    <FaShippingFast className="me-2" />
+    Estimated Arrival
+  </>
+)}
+</p>
       <p className="fw-semibold mb-0">{formatDate(order.order_date)}</p>
     </div>
 
     {/* Delivered In */}
     <div className="col-6 col-md-2 text-center text-md-start">
       <p className="text-muted small mb-1">   <FaClock className="me-2" />Delivered in</p>
-      <p className="fw-semibold mb-0">
-      {Math.floor(Math.random() * (10 - 7 + 1)) + 7} Days
-      </p>
+      {order.status === "Cancelled" ? (
+  <p className="fw-semibold mb-0 text-danger">Cancelled</p>
+) : (
+  <p className="fw-semibold mb-0">
+    {Math.floor(Math.random() * (10 - 7 + 1)) + 7} Days
+  </p>
+)}
+
     </div>
   </div>
 </div>
@@ -277,11 +370,11 @@ const parseAddress = (addressStr) => {
         <FaFileInvoice className="me-2 text-secondary" />
         Payment Summary
       </h6>
-      {order.orderpayments_logs?.length > 0 ? (
+      {order.orderpayments_logs ? (
         <div className="">
-          <div className="mb-2"><strong>Amount:</strong> ${order.orderpayments_logs[0].amount.toFixed(2)} {order.orderpayments_logs[0].currency}</div>
-          <div className="mb-2 small"><strong>Transaction ID:</strong> {order.orderpayments_logs[0].stripe_payment_id}</div>
-          <div className="mb-2"><strong>Status:</strong> {order.orderpayments_logs[0].status}</div>
+          <div className="mb-2"><strong>Amount:</strong> ${order.orderpayments_logs.amount.toFixed(2)} {order.orderpayments_logs.currency}</div>
+          <div className="mb-2 small"><strong>Transaction ID:</strong> {order.orderpayments_logs.stripe_payment_id}</div>
+          <div className="mb-2"><strong>Status:</strong> {order.orderpayments_logs.status}</div>
           <div className="text-muted" style={{ fontStyle: "italic" }}>Paid via Stripe card</div>
         </div>
       ) : (
@@ -463,7 +556,6 @@ const parseAddress = (addressStr) => {
 >
   ℹ️ Please note: Cancelled orders are subject to our cancellation policy. Refunds may take up to 7 business days.
 </p>
-
           </div>
 
           <div className="modal-footer bg-light border-top-0 px-4 py-3">
@@ -474,7 +566,26 @@ const parseAddress = (addressStr) => {
               }}>
               Cancel
             </button>
-            <button type="button" className="btn btn-secondary" onClick={handleSubmit}>Submit</button>
+            <button
+  onClick={handleCancelOrder}
+  disabled={paymentLoading}
+  className="btn btn-danger"
+>
+  {paymentLoading ? (
+    <>
+      <span
+        className="spinner-border spinner-border-sm me-2"
+        role="status"
+        aria-hidden="true"
+      ></span>
+      Processing...
+    </>
+  ) : (
+    "Cancel & Refund"
+  )}
+</button>
+
+
           </div>
         </div>
       </div>

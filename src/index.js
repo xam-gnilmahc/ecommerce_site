@@ -31,6 +31,7 @@ import PublicRoute from "./components/PublicRoute";
 import OrdersPage from "./pages/OrdersPage";
 import OrderDetailsPage from "./pages/OrderDetails";
 import Profile from "./pages/Profile";
+import CancelledOrderPage from "./pages/CancelledOrderPage";
 import ForgotPassword
  from "./pages/ForgotPassword";
  import Popup from "./pages/Popup";
@@ -63,6 +64,14 @@ root.render(
               element={
                 <ProtectedRoute>
                   <Cart />
+                </ProtectedRoute>
+              }
+            />
+             <Route
+              path="/return-cancel"
+              element={
+                <ProtectedRoute>
+                  <CancelledOrderPage />
                 </ProtectedRoute>
               }
             />

@@ -175,14 +175,16 @@ const Checkout = () => {
             <>
               {/* Main form section */}
               <div className="col-12 col-lg-8">
-                <div className="card bg-white border border-gray-200 rounded-3 p-4">
+                <div className="">
                   <form onSubmit={handleSubmit}>
                     <div className="row g-4">
-                      {/* 1. Contact Information */}
+                      {/* 1. Contact Information */}  
                       <div className="col-12">
+                    
                         <h5 className="mb-3" style={{ color: "#000" }}>
-                          1. Contact Information
+                          Delivery Information
                         </h5>
+                        <div className="border border-gray-200 rounded-3 p-4 ">
                         <div className="row g-3">
                           <div className="col-12 col-md-6">
                             <label
@@ -217,14 +219,12 @@ const Checkout = () => {
                             />
                           </div>
                         </div>
-                      </div>
+                     
+               
 
                       {/* 2. Delivery Method */}
-                      <div className="col-12 pt-4">
-                        <h5 className="mb-3" style={{ color: "#000" }}>
-                          2. Delivery Method
-                        </h5>
-                        <div className="row g-3">
+                
+                        <div className="row g-3 mt-2">
                           <div className="col-12 col-md-6">
                             <label
                               className="form-label"
@@ -327,144 +327,109 @@ const Checkout = () => {
                             </select>
                           </div>
                         </div>
+                     
+                      </div>
                       </div>
 
                       {/* 3. Payment Method */}
                       <div className="col-12 pt-4">
-                        <h5 className="mb-3" style={{ color: "#000" }}>
-                          3. Payment Method
-                        </h5>
-                        <div className="p-3 border bg-white rounded payment-method">
-                          <label
-                            className="form-label"
-                            style={{ color: "#6c757d" }}
-                          >
-                            Payment Methods
-                          </label>
+      <h5 className="mb-3" style={{ color: "#000" }}>
+        Payment Method
+      </h5>
+      <div className="p-3 border bg-white rounded payment-method">
 
-                          <div className="d-flex flex-wrap gap-3">
-                            <button
-                              type="button"
-                              className={`btn btn-light p-2 flex-grow-1 border d-flex align-items-center justify-content-center ${
-                                paymentMethod === "card"
-                                  ? "border-secondary"
-                                  : ""
-                              }`}
-                              onClick={() => setPaymentMethod("card")}
-                            >
-                              <i
-                                className="fa fa-credit-card"
-                                style={{ fontSize: "24px" }}
-                              ></i>
-                              <span
-                                className="ms-2"
-                                style={{ color: "#6c757d" }}
-                              >
-                                Card
-                              </span>
-                            </button>
-                            <button
-                              type="button"
-                              className={`btn btn-light p-2 flex-grow-1 border d-flex align-items-center justify-content-center ${
-                                paymentMethod === "googlePay"
-                                  ? "border-secondary"
-                                  : ""
-                              }`}
-                              onClick={() => setPaymentMethod("googlePay")}
-                            >
-                              <i
-                                className="fa fa-google"
-                                style={{ fontSize: "24px" }}
-                              ></i>
-                              <span
-                                className="ms-2"
-                                style={{ color: "#6c757d" }}
-                              >
-                                Google Pay
-                              </span>
-                            </button>
-                            <button
-                              type="button"
-                              className={`btn btn-light p-2 flex-grow-1 border d-flex align-items-center justify-content-center ${
-                                paymentMethod === "applePay"
-                                  ? "border-secondary"
-                                  : ""
-                              }`}
-                              onClick={() => setPaymentMethod("applePay")}
-                            >
-                              <i
-                                className="fa fa-apple"
-                                style={{ fontSize: "24px" }}
-                              ></i>
-                              <span
-                                className="ms-2"
-                                style={{ color: "#6c757d" }}
-                              >
-                                Apple Pay
-                              </span>
-                            </button>
-                          </div>
-                          {paymentMethod === "card" && (
-                            <div className="mt-4 p-3 border rounded">
-                              <CardElement
-                                options={{
-                                  style: {
-                                    base: {
-                                      fontSize: "18px", // bigger font
-                                      lineHeight: "30px", // taller input
-                                      padding: "12px 14px", // spacing inside
-                                      color: "#424770",
-                                      "::placeholder": {
-                                        color: "#aab7c4",
-                                      },
-                                    },
-                                    invalid: {
-                                      color: "#9e2146",
-                                    },
-                                  },
-                                }}
-                              />
+        <div className="d-flex  gap-3">
 
-                              <p
-                                className="mt-2"
-                                style={{ fontSize: "0.9rem", color: "#6c757d" }}
-                              >
-                                Test Card Numbers: <br />
-                                - 4242 4242 4242 4242 (Visa) <br />
-                                - 5555 5555 5555 4444 (Mastercard) <br />- 3782
-                                8224 6310 005 (American Express)
-                              </p>
-                            </div>
-                          )}
+          {/* Cash on Delivery */}
+          <label
+            style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "10px" }}
+          >
+            <input
+              type="radio"
+              name="payment"
+              value="cod"
+              checked={paymentMethod === "cod"}
+              onChange={() => setPaymentMethod("cod")}
+              style={{ accentColor: "#0d6efd" }} // Blue circle color for checked radio
+            />
+            <span>Cash on Delivery</span>
+          </label>
 
-                          {paymentMethod === "googlePay" && (
-                            <p>Google Pay button will be here.</p>
-                          )}
-                          {paymentMethod === "applePay" && (
-                            <p>Apple Pay button will be here.</p>
-                          )}
+          {/* Card Payment */}
+          <label
+            style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "10px" }}
+          >
+            <input
+              type="radio"
+              name="payment"
+              value="card"
+              checked={paymentMethod === "card"}
+              onChange={() => setPaymentMethod("card")}
+              style={{ accentColor: "#0d6efd" }}
+            />
+            <span>Card</span>
+          </label>
 
-                          <div
-                            className="dev-mode-warning mt-3"
-                            style={{
-                              backgroundColor: "#fff8db",
-                              borderLeft: "4px solid #facc15",
-                              color: "#92400e",
-                              padding: "8px 12px",
-                              fontSize: "0.95rem",
-                              fontWeight: "500",
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "6px",
-                              borderRadius: "4px",
-                            }}
-                          >
-                            🚧 This feature is currently in{" "}
-                            <strong>development mode</strong>. Use test cards
-                            only. 🛠️
-                          </div>
-                        </div>
-                      </div>
+          {/* Google Pay */}
+          {/* <label
+            style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "10px" }}
+          >
+            <input
+              type="radio"
+              name="payment"
+              value="googlePay"
+              checked={paymentMethod === "googlePay"}
+              onChange={() => setPaymentMethod("googlePay")}
+              style={{ accentColor: "#0d6efd" }}
+            />
+            <span>Google Pay</span>
+          </label> */}
+
+          {/* Apple Pay */}
+          {/* <label
+            style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "10px" }}
+          >
+            <input
+              type="radio"
+              name="payment"
+              value="applePay"
+              checked={paymentMethod === "applePay"}
+              onChange={() => setPaymentMethod("applePay")}
+              style={{ accentColor: "#0d6efd" }}
+            />
+            <span>Apple Pay</span>
+          </label> */}
+        </div>
+
+        {/* Conditional payment fields */}
+        {paymentMethod === "card" && (
+          <div className="mt-4 p-3 border rounded">
+            <CardElement
+              options={{
+                style: {
+                  base: {
+                    fontSize: "18px",
+                    lineHeight: "30px",
+                    padding: "12px 14px",
+                    color: "#424770",
+                    "::placeholder": { color: "#aab7c4" },
+                  },
+                  invalid: { color: "#9e2146" },
+                },
+              }}
+            />
+            <p className="mt-2" style={{ fontSize: "0.9rem", color: "#6c757d" }}>
+              Test Card Numbers: <br />
+              - 4242 4242 4242 4242 (Visa) <br />
+              - 5555 5555 5555 4444 (Mastercard) <br />
+              - 3782 8224 6310 005 (American Express)
+            </p>
+          </div>
+        )}
+        {paymentMethod === "googlePay" && <p>Google Pay button will be here.</p>}
+        {paymentMethod === "applePay" && <p>Apple Pay button will be here.</p>}
+      </div>
+    </div>
 
                       {/* Submit */}
                       <div className="col-12 pt-4">
@@ -484,7 +449,7 @@ const Checkout = () => {
               </div>
 
               {/* Order Summary on Right */}
-              <div className="col-md-4 order-summary">
+              <div className="col-md-4 order-summary pt-5">
                 <div className="bg-white border border-gray-200 rounded-3 p-4">
                   <h5 className="mb-4 text-lg font-semibold text-gray-800">
                     📦 Order Summary
