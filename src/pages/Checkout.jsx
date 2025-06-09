@@ -24,7 +24,8 @@ const stripePromise = loadStripe(
 );
 
 const Checkout = () => {
-  const { user, removeFromCartAfterOrder, cart, loading ,placeOrder} = useAuth();
+  const { user, removeFromCartAfterOrder, cart, loading, placeOrder } =
+    useAuth();
 
   const state = useSelector((state) => state.handleCart);
   const elements = useElements();
@@ -70,7 +71,7 @@ const Checkout = () => {
       setPaymentError(
         "Card element is not mounted properly. Please reload and try again."
       );
-      toast.error("Card element not found.");
+      toast.error("Use card payment gate way.");
       return;
     }
 
@@ -124,17 +125,17 @@ const Checkout = () => {
 
         const result = await response.json();
 
-        let status = 'success';
+        let status = "success";
 
         if (result.message != "Payment successful") {
-          status = 'failed';
+          status = "failed";
           toast.error("Payment processing failed.");
           return;
         }
-        
-        await placeOrder({...paymentData,payment_status: status} , result );
 
-        if(status=="success"){
+        await placeOrder({ ...paymentData, payment_status: status }, result);
+
+        if (status == "success") {
           setShow(true);
         }
       } catch (err) {
@@ -180,200 +181,208 @@ const Checkout = () => {
                 <div className="">
                   <form onSubmit={handleSubmit}>
                     <div className="row g-4">
-                      {/* 1. Contact Information */}  
+                      {/* 1. Contact Information */}
                       <div className="col-12">
-                    
                         <h5 className="mb-3" style={{ color: "#000" }}>
                           Delivery Information
                         </h5>
                         <div className="border border-gray-200 rounded-3 p-4 ">
-                        <div className="row g-3">
-                          <div className="col-12 col-md-6">
-                            <label
-                              className="form-label"
-                              style={{ color: "#6c757d" }}
-                            >
-                              Email
-                            </label>
-                            <input
-                              type="email"
-                              className="form-control"
-                              value={email}
-                              style={{ color: "#6c757d" }}
-                              onChange={(e) => setEmail(e.target.value)}
-                              required
-                            />
+                          <div className="row g-3">
+                            <div className="col-12 col-md-6">
+                              <label
+                                className="form-label"
+                                style={{ color: "#6c757d" }}
+                              >
+                                Email
+                              </label>
+                              <input
+                                type="email"
+                                className="form-control"
+                                value={email}
+                                style={{ color: "#6c757d" }}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                              />
+                            </div>
+                            <div className="col-12 col-md-6">
+                              <label
+                                className="form-label"
+                                style={{ color: "#6c757d" }}
+                              >
+                                Name
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                value={name}
+                                style={{ color: "#6c757d" }}
+                                onChange={(e) => setName(e.target.value)}
+                                required
+                              />
+                            </div>
                           </div>
-                          <div className="col-12 col-md-6">
-                            <label
-                              className="form-label"
-                              style={{ color: "#6c757d" }}
-                            >
-                              Name
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              value={name}
-                              style={{ color: "#6c757d" }}
-                              onChange={(e) => setName(e.target.value)}
-                              required
-                            />
-                          </div>
-                        </div>
-                     
-               
 
-                      {/* 2. Delivery Method */}
-                
-                        <div className="row g-3 mt-2">
-                          <div className="col-12 col-md-6">
-                            <label
-                              className="form-label"
-                              style={{ color: "#6c757d" }}
-                            >
-                              Address Line 1
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              value={addressLine1}
-                              style={{ color: "#6c757d" }}
-                              onChange={(e) => setAddressLine1(e.target.value)}
-                              required
-                            />
-                          </div>
-                          <div className="col-12 col-md-6">
-                            <label
-                              className="form-label"
-                              style={{ color: "#6c757d" }}
-                            >
-                              Address Line 2
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              style={{ color: "#6c757d" }}
-                              value={addressLine2}
-                              onChange={(e) => setAddressLine2(e.target.value)}
-                            />
-                          </div>
-                          <div className="col-12 col-md-6">
-                            <label
-                              className="form-label"
-                              style={{ color: "#6c757d" }}
-                            >
-                              Zip Code
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              style={{ color: "#6c757d" }}
-                              value={zipCode}
-                              onChange={(e) => setZipCode(e.target.value)}
-                              required
-                            />
-                          </div>
-                          <div className="col-12 col-md-6">
-                            <label
-                              className="form-label"
-                              style={{ color: "#6c757d" }}
-                            >
-                              Country
-                            </label>
-                            <select
-                              className="form-select"
-                              style={{ color: "#6c757d" }}
-                              value={selectedCountry}
-                              onChange={(e) =>
-                                handleCountryChange(e.target.value)
-                              }
-                              required
-                            >
-                              <option value="">Select Country</option>
-                              {Country.getAllCountries().map((country) => (
-                                <option
-                                  key={country.isoCode}
-                                  value={country.isoCode}
-                                >
-                                  {country.name}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-                          <div className="col-12 col-md-6">
-                            <label
-                              className="form-label"
-                              style={{ color: "#6c757d" }}
-                            >
-                              State
-                            </label>
-                            <select
-                              style={{ color: "#6c757d" }}
-                              className="form-select"
-                              value={selectedState}
-                              onChange={(e) =>
-                                handleStateChange(e.target.value)
-                              }
-                              required
-                            >
-                              <option value="">Select State</option>
-                              {states.map((state) => (
-                                <option
-                                  key={state.isoCode}
-                                  value={state.isoCode}
-                                >
-                                  {state.name}
-                                </option>
-                              ))}
-                            </select>
+                          {/* 2. Delivery Method */}
+
+                          <div className="row g-3 mt-2">
+                            <div className="col-12 col-md-6">
+                              <label
+                                className="form-label"
+                                style={{ color: "#6c757d" }}
+                              >
+                                Address Line 1
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                value={addressLine1}
+                                style={{ color: "#6c757d" }}
+                                onChange={(e) =>
+                                  setAddressLine1(e.target.value)
+                                }
+                                required
+                              />
+                            </div>
+                            <div className="col-12 col-md-6">
+                              <label
+                                className="form-label"
+                                style={{ color: "#6c757d" }}
+                              >
+                                Address Line 2
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                style={{ color: "#6c757d" }}
+                                value={addressLine2}
+                                onChange={(e) =>
+                                  setAddressLine2(e.target.value)
+                                }
+                              />
+                            </div>
+                            <div className="col-12 col-md-6">
+                              <label
+                                className="form-label"
+                                style={{ color: "#6c757d" }}
+                              >
+                                Zip Code
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                style={{ color: "#6c757d" }}
+                                value={zipCode}
+                                onChange={(e) => setZipCode(e.target.value)}
+                                required
+                              />
+                            </div>
+                            <div className="col-12 col-md-6">
+                              <label
+                                className="form-label"
+                                style={{ color: "#6c757d" }}
+                              >
+                                Country
+                              </label>
+                              <select
+                                className="form-select"
+                                style={{ color: "#6c757d" }}
+                                value={selectedCountry}
+                                onChange={(e) =>
+                                  handleCountryChange(e.target.value)
+                                }
+                                required
+                              >
+                                <option value="">Select Country</option>
+                                {Country.getAllCountries().map((country) => (
+                                  <option
+                                    key={country.isoCode}
+                                    value={country.isoCode}
+                                  >
+                                    {country.name}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                            <div className="col-12 col-md-6">
+                              <label
+                                className="form-label"
+                                style={{ color: "#6c757d" }}
+                              >
+                                State
+                              </label>
+                              <select
+                                style={{ color: "#6c757d" }}
+                                className="form-select"
+                                value={selectedState}
+                                onChange={(e) =>
+                                  handleStateChange(e.target.value)
+                                }
+                                required
+                              >
+                                <option value="">Select State</option>
+                                {states.map((state) => (
+                                  <option
+                                    key={state.isoCode}
+                                    value={state.isoCode}
+                                  >
+                                    {state.name}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
                           </div>
                         </div>
-                     
-                      </div>
                       </div>
 
                       {/* 3. Payment Method */}
                       <div className="col-12 pt-4">
-      <h5 className="mb-3" style={{ color: "#000" }}>
-        Payment Method
-      </h5>
-      <div className="p-3 border bg-white rounded payment-method">
+                        <h5 className="mb-3" style={{ color: "#000" }}>
+                          Payment Method
+                        </h5>
+                        <div className="p-3 border bg-white rounded payment-method">
+                          <div className="d-flex  gap-3">
+                            {/* Cash on Delivery */}
+                            <label
+                              style={{
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "10px",
+                              }}
+                            >
+                              <input
+                                type="radio"
+                                name="payment"
+                                value="cod"
+                                checked={paymentMethod === "cod"}
+                                onChange={() => setPaymentMethod("cod")}
+                                style={{ accentColor: "#0d6efd" }} // Blue circle color for checked radio
+                              />
+                              <span>Cash on Delivery</span>
+                            </label>
 
-        <div className="d-flex  gap-3">
+                            {/* Card Payment */}
+                            <label
+                              style={{
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "10px",
+                              }}
+                            >
+                              <input
+                                type="radio"
+                                name="payment"
+                                value="card"
+                                checked={paymentMethod === "card"}
+                                onChange={() => setPaymentMethod("card")}
+                                style={{ accentColor: "#0d6efd" }}
+                              />
+                              <span>Card</span>
+                            </label>
 
-          {/* Cash on Delivery */}
-          <label
-            style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "10px" }}
-          >
-            <input
-              type="radio"
-              name="payment"
-              value="cod"
-              checked={paymentMethod === "cod"}
-              onChange={() => setPaymentMethod("cod")}
-              style={{ accentColor: "#0d6efd" }} // Blue circle color for checked radio
-            />
-            <span>Cash on Delivery</span>
-          </label>
-
-          {/* Card Payment */}
-          <label
-            style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "10px" }}
-          >
-            <input
-              type="radio"
-              name="payment"
-              value="card"
-              checked={paymentMethod === "card"}
-              onChange={() => setPaymentMethod("card")}
-              style={{ accentColor: "#0d6efd" }}
-            />
-            <span>Card</span>
-          </label>
-
-          {/* Google Pay */}
-          {/* <label
+                            {/* Google Pay */}
+                            {/* <label
             style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "10px" }}
           >
             <input
@@ -387,8 +396,8 @@ const Checkout = () => {
             <span>Google Pay</span>
           </label> */}
 
-          {/* Apple Pay */}
-          {/* <label
+                            {/* Apple Pay */}
+                            {/* <label
             style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "10px" }}
           >
             <input
@@ -401,37 +410,62 @@ const Checkout = () => {
             />
             <span>Apple Pay</span>
           </label> */}
-        </div>
+                          </div>
 
-        {/* Conditional payment fields */}
-        {paymentMethod === "card" && (
-          <div className="mt-4 p-3 border rounded">
-            <CardElement
-              options={{
-                style: {
-                  base: {
-                    fontSize: "18px",
-                    lineHeight: "30px",
-                    padding: "12px 14px",
-                    color: "#424770",
-                    "::placeholder": { color: "#aab7c4" },
-                  },
-                  invalid: { color: "#9e2146" },
-                },
-              }}
-            />
-            <p className="mt-2" style={{ fontSize: "0.9rem", color: "#6c757d" }}>
-              Test Card Numbers: <br />
-              - 4242 4242 4242 4242 (Visa) <br />
-              - 5555 5555 5555 4444 (Mastercard) <br />
-              - 3782 8224 6310 005 (American Express)
-            </p>
-          </div>
-        )}
-        {paymentMethod === "googlePay" && <p>Google Pay button will be here.</p>}
-        {paymentMethod === "applePay" && <p>Apple Pay button will be here.</p>}
-      </div>
-    </div>
+                          {/* Conditional payment fields */}
+                          {paymentMethod === "card" && (
+                            <div className="mt-4 p-3 border rounded">
+                              <CardElement
+                                options={{
+                                  style: {
+                                    base: {
+                                      fontSize: "18px",
+                                      lineHeight: "30px",
+                                      padding: "12px 14px",
+                                      color: "#424770",
+                                      "::placeholder": { color: "#aab7c4" },
+                                    },
+                                    invalid: { color: "#9e2146" },
+                                  },
+                                }}
+                              />
+                              <p
+                                className="mt-2"
+                                style={{ fontSize: "0.9rem", color: "#6c757d" }}
+                              >
+                                Test Card Numbers: <br />
+                                - 4242 4242 4242 4242 (Visa) <br />
+                                - 5555 5555 5555 4444 (Mastercard) <br />- 3782
+                                8224 6310 005 (American Express)
+                              </p>
+                            </div>
+                          )}
+                          {paymentMethod === "cod" && (
+                            <div
+                              className="px-3 py-3"
+                              style={{
+                                marginTop: "-0.75rem",
+                                marginBottom: "1rem",
+                              }}
+                            >
+                              <h6 className="fw-bold text-warning mb-2">
+                                Cash on Delivery Unavailable
+                              </h6>
+                              <p className="text-muted mb-1">
+                                For some reason, Cash on Delivery is not
+                                available at the moment.
+                              </p>
+                              <p className="text-muted mb-0">
+                                Please proceed with a secure card payment to
+                                complete your order.
+                              </p>
+                            </div>
+                          )}
+                          {paymentMethod === "applePay" && (
+                            <p>Apple Pay button will be here.</p>
+                          )}
+                        </div>
+                      </div>
 
                       {/* Submit */}
                       <div className="col-12 pt-4">
@@ -441,7 +475,16 @@ const Checkout = () => {
                           disabled={loading || !stripe}
                         >
                           {paymentLoading
-                            ? "Submitting Payment..."
+                            ?(
+                              <>
+                                <span
+                                className="spinner-border spinner-border-sm me-2"
+                                role="status"
+                                aria-hidden="true"
+                              ></span>
+                                Submitting Payment...
+                             </>
+                            )
                             : "Submit Payment"}
                         </button>
                       </div>
@@ -456,69 +499,69 @@ const Checkout = () => {
                   <h5 className="mb-4 text-lg font-semibold text-gray-800">
                     📦 Order Summary
                   </h5>
-                  
+
                   <div className="card-body">
-                  <div
-  className="mx-auto"
-  style={{
-    maxHeight: "790px",
-    overflowX: "auto",
-  }}
->
-                    {cart.map((item, index) => (
-                      <div
-                        key={index}
-                        className="d-flex align-items-center mb-3"
-                        style={{
-                          borderBottom: "1px solid #ddd",
-                          paddingBottom: "10px",
-                        }}
-                      >
-                        {/* Product Image */}
-                        <div style={{ width: "25%", flexShrink: 0 }}>
-                          <img
-                            src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.products.banner_url}`}
-                            alt={item.products.name}
-                            style={{
-                              width: "60px",
-                              height: "60px",
-                              objectFit: "contain",
-                              borderRadius: "5px",
-                            }}
-                          />
-                        </div>
-
-                        {/* Product Details */}
+                    <div
+                      className="mx-auto"
+                      style={{
+                        maxHeight: "790px",
+                        overflowX: "auto",
+                      }}
+                    >
+                      {cart.map((item, index) => (
                         <div
-                          className="d-flex flex-column"
-                          style={{ width: "75%", paddingLeft: "10px" }}
+                          key={index}
+                          className="d-flex align-items-center mb-3"
+                          style={{
+                            borderBottom: "1px solid #ddd",
+                            paddingBottom: "10px",
+                          }}
                         >
-                          <div className="d-flex flex-column mb-1">
-                            {/* Product Name */}
-                            <span
-                              className="fw-bold"
-                              style={{ color: "#000", color: "#6c757d" }}
-                            >
-                              {item.products.name}
-                            </span>
+                          {/* Product Image */}
+                          <div style={{ width: "25%", flexShrink: 0 }}>
+                            <img
+                              src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.products.banner_url}`}
+                              alt={item.products.name}
+                              style={{
+                                width: "60px",
+                                height: "60px",
+                                objectFit: "contain",
+                                borderRadius: "5px",
+                              }}
+                            />
+                          </div>
 
-                            {/* Quantity */}
-                            <span
-                              style={{ color: "#6c757d", fontSize: "14px" }}
-                            >
-                              Quantity: {item.quantity}
-                            </span>
+                          {/* Product Details */}
+                          <div
+                            className="d-flex flex-column"
+                            style={{ width: "75%", paddingLeft: "10px" }}
+                          >
+                            <div className="d-flex flex-column mb-1">
+                              {/* Product Name */}
+                              <span
+                                className="fw-bold"
+                                style={{ color: "#000", color: "#6c757d" }}
+                              >
+                                {item.products.name}
+                              </span>
 
-                            {/* Price */}
-                            <span
-                              style={{ color: "#6c757d", fontSize: "14px" }}
-                            >
-                              {`$${item.amount.toFixed(2)}`}
-                            </span>
+                              {/* Quantity */}
+                              <span
+                                style={{ color: "#6c757d", fontSize: "14px" }}
+                              >
+                                Quantity: {item.quantity}
+                              </span>
+
+                              {/* Price */}
+                              <span
+                                style={{ color: "#6c757d", fontSize: "14px" }}
+                              >
+                                {`$${item.amount.toFixed(2)}`}
+                              </span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
                     </div>
 
                     {/* Order Summary */}
@@ -572,20 +615,20 @@ const Checkout = () => {
                   overflow: "hidden",
                 }}
               >
-                {/* 🔥 Lottie animation as overlay */}
+                {/* ✅ Success Lottie Animation */}
                 <div
                   className="position-absolute top-0 start-50 translate-middle-x"
                   style={{
                     width: "1000px",
                     height: "100px",
-                    zIndex: 1, // Ensure the loader is below the button
+                    zIndex: 1,
                     marginTop: "-50px",
                   }}
                 >
                   <LottieLoader useAlt={true} />
                 </div>
 
-                {/* Modal header with close button */}
+                {/* ✅ Header */}
                 <div
                   className="modal-header border-0 d-flex justify-content-between align-items-center"
                   style={{ zIndex: 2 }}
@@ -597,16 +640,26 @@ const Checkout = () => {
                     type="button"
                     className="btn-close"
                     onClick={closeModal}
-                    style={{ zIndex: 3 }} // Ensure the close button is above the animation
+                    style={{ zIndex: 3 }}
                   ></button>
                 </div>
 
-                <div className="modal-body px-4">
-                  <h6 className="text-success mb-3">
-                    Your payment was successful.
+                {/* ✅ Body Content */}
+                <div className="modal-body px-4 text-center">
+                  <div className="mb-3">
+                    <i className="bi bi-check-circle-fill text-success fs-1"></i>
+                  </div>
+
+                  <h6 className="text-success fw-bold mb-2">
+                    Payment Successful!
                   </h6>
+                  <p className="text-muted mb-4">
+                    Your order has been placed successfully. We'll start
+                    preparing it right away!
+                  </p>
+
                   <hr
-                    className="mt-2 mb-4"
+                    className="my-4"
                     style={{
                       height: "0",
                       backgroundColor: "transparent",
@@ -614,41 +667,34 @@ const Checkout = () => {
                       borderTop: "2px dashed #9e9e9e",
                     }}
                   />
-                  <ul className="list-group list-group-flush mt-3">
-                    <li
-                      className="list-group-item d-flex justify-content-between"
-                      style={{ color: "#6c757d" }}
-                    >
-                      order
-                      <span>#12343556</span>
+
+                  <ul className="list-group list-group-flush text-start">
+                    <li className="list-group-item d-flex justify-content-between text-muted">
+                      Estimated Delivery
+                      <span>7 business days</span>
                     </li>
-                    <li
-                      className="list-group-item d-flex justify-content-between"
-                      style={{ color: "#6c757d" }}
-                    >
-                      Estimated Delivery <span>3–5 business days</span>
+                    <li className="list-group-item d-flex justify-content-between text-muted">
+                      Payment Status
+                      <span className="text-success fw-semibold">
+                        Confirmed
+                      </span>
                     </li>
-                    {/* <li
-                      className="list-group-item d-flex justify-content-between fw-bold"
-                      style={{ color: "#000" }}
-                    >
-                      Total <span>${Math.round(subtotal + shipping)}</span>
-                    </li> */}
                   </ul>
                 </div>
 
-                <div className="modal-footer border-0 d-flex justify-content-center pb-4">
-                  <button
-                    className="btn bg-success"
-                    style={{
-                      color: "#fff",
-                      borderRadius: "2rem",
-                      padding: "0.6rem 1.5rem",
-                    }}
-                  >
-                    Track Your Order
-                  </button>
-                </div>
+                {/* ✅ Footer */}
+                {/* <div className="modal-footer border-0 d-flex justify-content-center pb-4">
+          <button
+            className="btn bg-success"
+            style={{
+              color: "#fff",
+              borderRadius: "2rem",
+              padding: "0.6rem 1.5rem",
+            }}
+          >
+            Track Your Order
+          </button>
+        </div> */}
               </div>
             </div>
           </div>

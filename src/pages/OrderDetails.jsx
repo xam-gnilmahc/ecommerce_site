@@ -7,6 +7,14 @@ import Sidebar from "../components/Sidebar";
 import LottieLoader from "../components/LottieLoader";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import { FaCcVisa, FaGooglePay, FaApplePay} from "react-icons/fa";
+import {
+  FaHourglassHalf,     // Pending
+  FaTruckLoading,      // Shipped Out
+  FaBoxOpen,           // Out for Delivery
+  FaTimesCircle,       // Cancelled
+  FaCheckDouble        // Delivered
+} from "react-icons/fa";
 import {
   FaCheckCircle,
   FaBox,
@@ -52,6 +60,25 @@ const OrderDetailsPage = () => {
     setCopied(true);
     toast.success("Copied Successfully");
   };
+
+const getStatusIcon = (status) => {
+  switch (status) {
+    case "Pending":
+      return <FaHourglassHalf className="text-warning" title="Pending" />;
+    case "Confirmed":
+      return <FaCheckCircle className="text-primary" title="Confirmed" />;
+    case "Shipped Out":
+      return <FaTruckLoading className="text-info" title="Shipped Out" />;
+    case "Out for Delivery":
+      return <FaBoxOpen className="text-success" title="Out for Delivery" />;
+    case "Delivered":
+      return <FaCheckDouble className="text-success" title="Delivered" />;
+    case "Cancelled":
+      return <FaTimesCircle className="text-danger" title="Cancelled" />;
+    default:
+      return <FaHourglassHalf className="text-secondary" title="Processing" />;
+  }
+};
 
   const handlePrint = () => {
     const printContents = designRef.current.innerHTML;
@@ -100,6 +127,24 @@ const OrderDetailsPage = () => {
       navigate("/");
     }
   };
+  const getPaymentIcon = (method) => {
+    switch (method) {
+      case 0:
+        return <FaCcVisa title="Card" className="text-primary fs-3" />;
+      case 1:
+        return <FaGooglePay title="Google Pay" className="text-success fs-3" />;
+      case 2:
+        return <FaApplePay title="Apple Pay" className="text-dark fs-3" />;
+      default:
+        return <span className="text-muted">Unknown</span>;
+    }
+  };
+
+  const getStatusColor = (status) => {
+    if (status.toLowerCase().includes("fail")) return "text-danger";
+    if (status.toLowerCase().includes("refund")) return "text-warning";
+    return "text-success";
+  };
 
   // const handleSubmit = () => {
   //   if (!refundReason) {
@@ -138,7 +183,7 @@ const OrderDetailsPage = () => {
     ).toFixed(2);
 
     const paymentData = {
-      chargeId: order.orderpayments_logs?.charge_id || "null",
+      chargeId: order.orderpayments_logs[0]?.charge_id || "null",
       amount: parseFloat(amount),
     };
 
@@ -160,7 +205,6 @@ const OrderDetailsPage = () => {
 
       const result = await response.json();
       console.log(result);
-
       if (result.message !== "Refund processed") {
         const modalEl = document.getElementById("exampleModal");
         modalEl.setAttribute("data-dismiss", "modal");
@@ -204,8 +248,9 @@ const OrderDetailsPage = () => {
 
               {/* Right side - Buttons */}
               <div className="d-flex flex-wrap gap-2">
-                {order?.status !== "Cancelled" && (
+                {order?.status !== "Cancelled"  && (
                   <>
+                  { order?.status !== "Delivered"  && (
                     <button
                       type="button"
                       className="btn"
@@ -215,6 +260,7 @@ const OrderDetailsPage = () => {
                     >
                       Cancel
                     </button>
+                    )}
 
                     <button
                       className="btn btn-outline-secondary"
@@ -316,14 +362,22 @@ const OrderDetailsPage = () => {
                           )}
                         </p>
                         <p className="fw-semibold mb-0">
-                          {formatDate(order.order_date)}
+                           {order.status === "Cancelled" ? (
+                            <>
+                              {formatDate(order.order_cancelled)}
+                            </>
+                          ) : (
+                            <>
+                              {formatDate(order.order_date)}
+                            </>
+                          )}
+                         
                         </p>
                       </div>
 
                       {/* Delivered In */}
                       <div className="col-6 col-md-2 text-center text-md-start">
                         <p className="text-muted small mb-1">
-                          {" "}
                           <FaClock className="me-2" />
                           Delivered in
                         </p>
@@ -332,10 +386,53 @@ const OrderDetailsPage = () => {
                             Cancelled
                           </p>
                         ) : (
-                          <p className="fw-semibold mb-0">
-                            {Math.floor(Math.random() * (10 - 7 + 1)) + 7} Days
-                          </p>
+                          (() => {
+                            const today = new Date();
+                            const deliveryDate = new Date(order.order_date);
+
+                            // Remove time part for accurate day difference
+                            today.setHours(0, 0, 0, 0);
+                            deliveryDate.setHours(0, 0, 0, 0);
+
+                            const diffDays = Math.ceil(
+                              (deliveryDate - today) / (1000 * 60 * 60 * 24)
+                            );
+
+                            if (diffDays === 0) {
+                              return (
+                                <p className="fw-semibold mb-0 text-success">
+                                  Item will arrive today!
+                                </p>
+                              );
+                            }
+
+                              if (diffDays < 0) {
+                              return (
+                                <p className="fw-semibold mb-0 text-success">
+                                  Item is already delivered!
+                                </p>
+                              );
+                            }
+
+                            return (
+                              <p className="fw-semibold mb-0">
+                                {diffDays} Days
+                              </p>
+                            );
+                          })()
                         )}
+                      </div>
+
+                         <div className="col-6 col-md-2 text-center text-md-start">
+                        <p className="text-muted small mb-1">
+                          <FaClock className="me-2" />
+                           Status
+                        </p>
+                         {getStatusIcon(order.status)}
+                           <span className="fw-semibold mb-0 ml-1">
+                           {order.status}
+                           </span>
+
                       </div>
                     </div>
                   </div>
@@ -343,7 +440,7 @@ const OrderDetailsPage = () => {
                   <div className="row g-4 mb-4">
                     {/* Timeline */}
                     {order.status != "Cancelled" ? (
-                        <div className="col-md-4">
+                      <div className="col-md-4">
                         <div className="p-4 border rounded bg-white h-100">
                           <h6 className="fw-semibold mb-3 d-flex align-items-center">
                             <FaBox className="me-2 text-secondary" />
@@ -380,82 +477,104 @@ const OrderDetailsPage = () => {
                             <FaShippingFast className="me-2 text-secondary" />
                             Reason
                           </h6>
-                          <p className="fw-bold text-muted mb-1">{order?.Reason}</p>
+                          <p className="fw-bold text-muted mb-1">
+                            {order?.Reason}
+                          </p>
                         </div>
                       </div>
                     )}
                     <div className="col-md-4">
-                        <div className="p-4 border rounded bg-white h-100">
-                          <h6 className="fw-semibold mb-3 d-flex align-items-center">
-                            <FaShippingFast className="me-2 text-secondary" />
-                            Shipment Details
-                          </h6>
-                          <p className="fw-bold mb-1">
-                            UOM WHARE HOUSE , KALANKI{" "}
-                          </p>
-                          <p>
-                            <FaUser className="me-1" />
-                            <strong>Recipient:</strong> {user.name}
-                          </p>
-                          <p>
-                            <FaMapMarkerAlt className="me-1" />
-                            <strong>Delivery address:</strong>
-                            <br />
-                            {shippingAddress?.addressLine1},{" "}
-                            {shippingAddress?.state}, {shippingAddress?.zipCode}
-                            , {shippingAddress?.country}
-                          </p>
-                          <p className="mb-0">
-                            <strong>Tracking No.:</strong>{" "}
-                            <span className="border rounded-pill px-2 py-1 d-inline-block">
-                              {order.tracking_number}
-                            </span>
-                            <FaRegCopy
-                              onClick={handleCopy}
-                              className="text-black ml-1"
-                              style={{ cursor: "pointer" }}
-                              title={copied ? "Copied!" : "Copy to clipboard"}
-                            />
-                          </p>
-                        </div>
-                      </div>
-                    {/* Payment */}
-                    <div className="col-md-4">
                       <div className="p-4 border rounded bg-white h-100">
                         <h6 className="fw-semibold mb-3 d-flex align-items-center">
+                          <FaShippingFast className="me-2 text-secondary" />
+                          Shipment Details
+                        </h6>
+                        <p className="fw-bold mb-1">
+                          UOM WHARE HOUSE , KALANKI{" "}
+                        </p>
+                        <p>
+                          <FaUser className="me-1" />
+                          <strong>Recipient:</strong> {user?.name}
+                        </p>
+                        <p>
+                          <FaMapMarkerAlt className="me-1" />
+                          <strong>Delivery address:</strong>
+                          <br />
+                          {shippingAddress?.addressLine1},{" "}
+                          {shippingAddress?.state}, {shippingAddress?.zipCode},{" "}
+                          {shippingAddress?.country}
+                        </p>
+                        <p className="mb-0">
+                          <strong>Tracking No.:</strong>{" "}
+                          <span className="border rounded-pill px-2 py-1 d-inline-block">
+                            {order.tracking_number}
+                          </span>
+                          <FaRegCopy
+                            onClick={handleCopy}
+                            className="text-black ml-1"
+                            style={{ cursor: "pointer" }}
+                            title={copied ? "Copied!" : "Copy to clipboard"}
+                          />
+                        </p>
+                      </div>
+                    </div>
+                    {/* Payment */}
+                    <div className="col-md-4">
+                      <div className="p-3 border rounded  h-100">
+                        <h6 className="fw-semibold mb-3 d-flex align-items-center small">
                           <FaFileInvoice className="me-2 text-secondary" />
                           Payment Summary
                         </h6>
-                        {order.orderpayments_logs ? (
-                          <div className="">
-                            <div className="mb-2">
-                              <strong>Amount:</strong> $
-                              {order.orderpayments_logs.amount.toFixed(2)}{" "}
-                              {order.orderpayments_logs.currency}
-                            </div>
-                            <div className="mb-2 small">
-                              <strong>Transaction ID:</strong>{" "}
-                              {order.orderpayments_logs.stripe_payment_id}
-                            </div>
-                            <div className="mb-2">
-                              <strong>Status:</strong>{" "}
-                              {order.orderpayments_logs.status}
-                            </div>
-                            <div
-                              className="text-muted"
-                              style={{ fontStyle: "italic" }}
-                            >
-                              Paid via Stripe card
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="text-muted small">
-                            No payment records found.
-                          </div>
-                        )}
+
+                        <div
+                          className="table-responsive"
+                          style={{ maxHeight: "220px", overflowY: "auto" }}
+                        >
+                          <table className="table table-sm table-borderless mb-0 small align-middle">
+                            <thead className="table-light sticky-top">
+                              <tr>
+                                <th style={{ width: "3rem" }}>#</th>
+                                <th style={{ width: "6rem" }}>Method</th>
+                                <th style={{ width: "6rem" }}>Amount</th>
+                                <th style={{ width: "7rem" }}>Status</th>
+                                <th style={{ width: "7rem" }}>Date</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {order?.orderpayments_logs?.length > 0 ? (
+                                order.orderpayments_logs.map((log, index) => (
+                                  <tr key={log.id}>
+                                    <td>{index + 1}</td>
+                                    <td>
+                                      {getPaymentIcon(log.payment_method)}
+                                    </td>
+                                    <td>${log.amount.toFixed(2)}</td>
+                                    <td className={getStatusColor(log.status)}>
+                                      {log.status}
+                                    </td>
+                                   
+                                    <td>
+                                      {new Date(
+                                        log.created_at
+                                      ).toLocaleDateString()}
+                                    </td>
+                                  </tr>
+                                ))
+                              ) : (
+                                <tr>
+                                  <td
+                                    colSpan="6"
+                                    className="text-center text-muted small"
+                                  >
+                                    No payment logs available.
+                                  </td>
+                                </tr>
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
                       </div>
                     </div>
-                    
                   </div>
 
                   <div className="card p-4 mb-4 border rounded">

@@ -79,7 +79,6 @@ const NotificationSettings = () => {
                   {renderSwitch('Review Requests after Purchase', 'reviewRequests')}
                 </div>
               </div>
-
               <div className="card mt-4  border-0 rounded-4">
                 <div className="card-body">
                   <h5 className="mb-3">🔐 Security & Subscriptions</h5>

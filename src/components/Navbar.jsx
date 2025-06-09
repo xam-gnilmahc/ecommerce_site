@@ -20,6 +20,7 @@ import SearchBar from "./SearchBar";
 
 const Navbar = () => {
   const { user, logout, cart } = useAuth();
+  console.log('max',user);
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -115,12 +116,12 @@ const Navbar = () => {
           ) : (
             <>
               <span className="text-muted small me-2">
-                Hi, <strong>{user.full_name}</strong>
+                Hi, <strong>{user?.full_name}</strong>
               </span>
               <NavLink to="/profile" className="me-2 d-flex align-items-center">
                 {user?.picture ? (
                   <img
-                    src={user.picture}
+                    src={user?.picture}
                     alt="Profile"
                     style={{
                       width: "32px",
@@ -128,6 +129,7 @@ const Navbar = () => {
                       borderRadius: "50%",
                       objectFit: "cover",
                     }}
+                    title={user.picture}
                   />
                 ) : (
                   <FaRegUser size={20} color="black" />

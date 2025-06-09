@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useMemo,
+} from "react";
 import { supabase } from "../supaBaseClient";
 import { sendOrderEmail } from "../service/emailService";
 // Create context
@@ -25,53 +31,58 @@ export const AuthProvider = ({ children }) => {
   const memoizedProcessed = useMemo(() => processed, [processed]);
 
   // Check if user exists in Supabase or create/update
-  const handleUserInSupabase = useMemo(() => async (authenticatedUser) => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from("users")
-        .select("*")
-        .eq("email", authenticatedUser.email)
-        .single();
-
-      if (!data) {
-        const { data: insertData, error: insertError } = await supabase
+  const handleUserInSupabase = useMemo(
+    () => async (authenticatedUser) => {
+      try {
+        setLoading(true);
+        const { data, error } = await supabase
           .from("users")
-          .insert([{
-            id: authenticatedUser.id,
-            email: authenticatedUser.email || "ashimasharma742@gmail.com",
-            name: authenticatedUser.full_name || "ashima sharma",
-            created_at: new Date(),
-          }])
-          .select();
+          .select("*")
+          .eq("email", authenticatedUser.email)
+          .single();
 
-        if (insertError) {
-          console.error("Error inserting user:", insertError.message);
-        } else {
-          console.log("User inserted:", insertData);
-        }
-      } else {
-        const { data: updateData, error: updateError } = await supabase
-          .from("users")
-          .update({
-            email: authenticatedUser.email || "ashimasharma742@gmail.com",
-            name: authenticatedUser.full_name || "ashima sharma"
-          })
-          .eq("email", authenticatedUser.email);
+        if (!data) {
+          const { data: insertData, error: insertError } = await supabase
+            .from("users")
+            .insert([
+              {
+                id: authenticatedUser.id,
+                email: authenticatedUser.email || "ashimasharma742@gmail.com",
+                name: authenticatedUser.full_name || "ashima sharma",
+                created_at: new Date(),
+              },
+            ])
+            .select();
 
-        if (updateError) {
-          console.error("Error updating user:", updateError.message);
+          if (insertError) {
+            console.error("Error inserting user:", insertError.message);
+          } else {
+            console.log("User inserted:");
+          }
         } else {
-          console.log("User updated:", updateData);
+          const { data: updateData, error: updateError } = await supabase
+            .from("users")
+            .update({
+              email: authenticatedUser.email || "ashimasharma742@gmail.com",
+              name: authenticatedUser.full_name || "ashima sharma",
+            })
+            .eq("email", authenticatedUser.email);
+
+          if (updateError) {
+            console.error("Error updating user:", updateError.message);
+          } else {
+            console.log("User updated:");
+          }
         }
+        setLoading(false);
+        setProcessed(true);
+      } catch (error) {
+        console.error("Error handling user in Supabase:", error.message);
+        setLoading(false);
       }
-      setLoading(false);
-      setProcessed(true);
-    } catch (error) {
-      console.error("Error handling user in Supabase:", error.message);
-      setLoading(false);
-    }
-  }, []);
+    },
+    []
+  );
 
   // Auth state listener
   useEffect(() => {
@@ -112,11 +123,12 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Fetch cart items with loading state
-  const fetchCartItems = useMemo(() => async (userId) => {
-    const { data, error } = await supabase
-      .from("cart")
-      .select(
-        `*, products:product_id (
+  const fetchCartItems = useMemo(
+    () => async (userId) => {
+      const { data, error } = await supabase
+        .from("cart")
+        .select(
+          `*, products:product_id (
           id,
           name,
           banner_url,
@@ -124,16 +136,18 @@ export const AuthProvider = ({ children }) => {
           description,
           rating
         )`
-      )
-      .eq("user_id", userId)
-      .order("id", { ascending: true });
-    if (!error) {
-      setCart(data);
-    } else {
-      console.error("Fetch cart error:", error.message);
-    }
-    setLoading(false);
-  }, []);
+        )
+        .eq("user_id", userId)
+        .order("id", { ascending: true });
+      if (!error) {
+        setCart(data);
+      } else {
+        console.error("Fetch cart error:", error.message);
+      }
+      setLoading(false);
+    },
+    []
+  );
 
   const addToCart = async (product) => {
     if (!memoizedUser) return;
@@ -151,18 +165,21 @@ export const AuthProvider = ({ children }) => {
     }
 
     if (!existingItem) {
-      const { error: insertError } = await supabase.from("cart").insert([{
-        product_id: product.id,
-        user_id: memoizedUser.id,
-        amount: product.amount,
-        quantity: product.qty ? product.qty : 1,
-      }]);
+      const { error: insertError } = await supabase.from("cart").insert([
+        {
+          product_id: product.id,
+          user_id: memoizedUser.id,
+          amount: product.amount,
+          quantity: product.qty ? product.qty : 1,
+        },
+      ]);
 
       if (insertError) {
         console.error("Error inserting cart item:", insertError.message);
       }
     } else {
-      const { error: updateError } = await supabase.from("cart")
+      const { error: updateError } = await supabase
+        .from("cart")
         .update({ quantity: existingItem.quantity + (product.qty ?? 1) })
         .eq("id", existingItem.id);
 
@@ -188,22 +205,19 @@ export const AuthProvider = ({ children }) => {
       const newQty = existingItem.quantity - 1;
 
       if (newQty > 0) {
-        await supabase.from("cart")
+        await supabase
+          .from("cart")
           .update({ quantity: newQty })
           .eq("id", existingItem.id);
       } else {
-        await supabase.from("cart")
-          .delete()
-          .eq("id", existingItem.id);
+        await supabase.from("cart").delete().eq("id", existingItem.id);
       }
 
       await fetchCartItems(memoizedUser.id);
     }
 
-    if(state){
-      await supabase.from("cart")
-      .delete()
-      .eq("id", existingItem.id);
+    if (state) {
+      await supabase.from("cart").delete().eq("id", existingItem.id);
 
       await fetchCartItems(memoizedUser.id);
     }
@@ -212,90 +226,92 @@ export const AuthProvider = ({ children }) => {
   const removeFromCartAfterOrder = async () => {
     if (!memoizedUser) return;
 
-    await supabase.from("cart")
-      .delete()
-      .eq("user_id", memoizedUser.id);
+    await supabase.from("cart").delete().eq("user_id", memoizedUser.id);
 
     await fetchCartItems(memoizedUser.id);
   };
 
-  const insertReviewWithAttachments = async ({  productId , rating, reviewText, files }) => {
+  const insertReviewWithAttachments = async ({
+    productId,
+    rating,
+    reviewText,
+    files,
+  }) => {
     try {
       // 1. Insert the review
       const { data: review, error: reviewError } = await supabase
-      .from('reviews')
-      .insert([
-        {
-          user_id: user.id,
-          product_id: productId,
-          rating,
-          review: reviewText,
-        },
-      ])
-      .select()
-      .single();
+        .from("reviews")
+        .insert([
+          {
+            user_id: user.id,
+            product_id: productId,
+            rating,
+            review: reviewText,
+          },
+        ])
+        .select()
+        .single();
 
-    if (reviewError) throw reviewError;
+      if (reviewError) throw reviewError;
 
-    const attachments = [];
+      const attachments = [];
 
-    for (const file of files) {
-      const filePath = `${Date.now()}-${file.name}`;
+      for (const file of files) {
+        const filePath = `${Date.now()}-${file.name}`;
 
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('attachments')
-        .upload(filePath, file);
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from("attachments")
+          .upload(filePath, file);
 
-      if (uploadError) throw uploadError;
+        if (uploadError) throw uploadError;
 
-      // Get public URL from Supabase
-      const { data: publicUrlData } = supabase.storage
-        .from('attachments')
-        .getPublicUrl(filePath);
+        // Get public URL from Supabase
+        const { data: publicUrlData } = supabase.storage
+          .from("attachments")
+          .getPublicUrl(filePath);
 
-      const publicUrl = publicUrlData.publicUrl;
+        const publicUrl = publicUrlData.publicUrl;
 
-      attachments.push({
-        review_id: review.id,
-        file_url: publicUrl,
-        file_name: file.name,
-      });
-      
-    }
+        attachments.push({
+          review_id: review.id,
+          file_url: publicUrl,
+          file_name: file.name,
+        });
+      }
       // 3. Insert attachments metadata into the attachments table
       if (attachments.length > 0) {
         const { error: attachInsertError } = await supabase
-          .from('review_attachments')
+          .from("review_attachments")
           .insert(attachments);
-  
+
         if (attachInsertError) throw attachInsertError;
       }
-  
+
       return true;
     } catch (error) {
-      console.error('Error inserting review with attachments:', error.message);
+      console.error("Error inserting review with attachments:", error.message);
       throw error;
     }
   };
 
   const placeOrder = async (data, stripe) => {
     if (!memoizedUser || cart.length === 0) return;
-  
+
     try {
-  
       // Generate delivery date (7 days from now)
       const deliveryDate = new Date();
       deliveryDate.setDate(deliveryDate.getDate() + 7);
-  
+
       // Generate unique tracking code (e.g., ORD-XYZ123)
       const generateTrackingCode = () => {
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        const randomCode = Array.from({ length: 6 }, () =>
-          chars[Math.floor(Math.random() * chars.length)]
-        ).join('');
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        const randomCode = Array.from(
+          { length: 6 },
+          () => chars[Math.floor(Math.random() * chars.length)]
+        ).join("");
         return `ORD-${randomCode}`;
       };
-  
+
       // Ensure the tracking code is unique
       let trackingCode;
       let isUnique = false;
@@ -306,12 +322,12 @@ export const AuthProvider = ({ children }) => {
           .select("id")
           .eq("tracking_code", trackingCode)
           .single();
-  
+
         if (!existing) {
           isUnique = true;
         }
       }
-  
+
       // 1. Create new order
       const { data: orderData, error: orderError } = await supabase
         .from("orders")
@@ -329,13 +345,13 @@ export const AuthProvider = ({ children }) => {
         ])
         .select()
         .single();
-  
+
       if (orderError) {
         throw orderError;
       }
-  
+
       const orderId = orderData.id;
-  
+
       // 2. Prepare order items
       const orderItems = cart.map((item) => ({
         order_id: orderId,
@@ -343,64 +359,65 @@ export const AuthProvider = ({ children }) => {
         quantity: item.quantity,
         price_each: item.amount,
       }));
-  
+
       // 3. Insert order items
       const { error: itemsError } = await supabase
         .from("order_items")
         .insert(orderItems);
-  
+
       if (itemsError) {
         throw itemsError;
       }
-  
+
       // 3. Insert order items
       const { error: logError } = await supabase
         .from("orderpayments_logs")
         .insert([
           {
             order_id: orderId,
-            stripe_payment_id:stripe.transactionId,
-            charge_id:stripe.chargeId,
+            stripe_payment_id: stripe.transactionId,
+            charge_id: stripe.chargeId,
             status: stripe.message,
             amount: data.amount,
-            currency: 'USD',
+            currency: "USD",
             response_data: stripe,
           },
         ]);
-  
+
       if (logError) {
         throw itemsError;
       }
-      
+
       await sendOrderEmail(
-                  user.full_name || user.name,
-                  data.email,
-                  cart,
-                  data.address,
-                  data.amount,
-                  orderId,
-                  deliveryDate.toISOString()
-                );
+        user.full_name || user.name,
+        data.email,
+        cart,
+        data.address,
+        data.amount,
+        orderId,
+        deliveryDate.toISOString()
+      );
       // 4. Clear cart after order
       await removeFromCartAfterOrder();
-  
-      console.log("Order placed successfully with tracking:", trackingCode);
+
+      console.log("Order placed successfully with tracking:");
       return orderId;
     } catch (error) {
       console.error("Error placing order:", error.message);
       throw error;
     }
   };
-  
+
   // Inside AppContextProvider or export separately
   const fetchUserOrders = async () => {
     if (!memoizedUser) return [];
-  
+
     setLoading(true);
     try {
       const { data, error } = await supabase
         .from("orders")
-        .select(`
+        .select(
+          `
           *,
           order_items (
             *,
@@ -414,11 +431,12 @@ export const AuthProvider = ({ children }) => {
           ),
           orderpayments_logs(
           *)
-        `)
+        `
+        )
         .eq("user_id", memoizedUser.id)
-        .neq('status', "Cancelled")
+        .neq("status", "Cancelled")
         .order("created_at", { ascending: false });
-  
+
       if (error) {
         console.error("Error fetching orders:", error.message);
         return [];
@@ -431,12 +449,13 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUserCancelledOrders = async () => {
     if (!memoizedUser) return [];
-  
+
     setLoading(true);
     try {
       const { data, error } = await supabase
         .from("orders")
-        .select(`
+        .select(
+          `
           *,
           order_items (
             *,
@@ -451,43 +470,40 @@ export const AuthProvider = ({ children }) => {
           orderpayments_logs (
             *
           )
-        `)
+        `
+        )
         .eq("user_id", memoizedUser.id)
         .eq("status", "Cancelled")
         .order("created_at", { ascending: false });
-  
+
       if (error) {
         console.error("Error fetching orders:", error.message);
         return [];
       }
-  
+
       // 🔽 Replace logs array with only the latest (max id)
-      const processedData = data.map(order => {
+      const processedData = data.map((order) => {
         const logs = order.orderpayments_logs || [];
         const latestLog = logs.sort((a, b) => b.id - a.id)[0] || null;
-        console.log(latestLog);
         return {
           ...order,
           orderpayments_logs: latestLog ?? null,
         };
       });
-  
+
       return processedData;
     } finally {
       setLoading(false);
     }
   };
-  
-  
 
-  
   const getOrderDetails = async (orderId) => {
     setLoading(true);
     try {
-      
       const { data, error: orderError } = await supabase
         .from("orders")
-        .select(`
+        .select(
+          `
           *,
           order_items (
             *,
@@ -501,26 +517,27 @@ export const AuthProvider = ({ children }) => {
           ),
           orderpayments_logs(
           *)
-        `)
+        `
+        )
         .eq("id", orderId)
         .single();
-  
+
       if (orderError) {
         throw orderError;
       }
-  
-      const latestLog =
-      data.orderpayments_logs?.sort((a, b) => b.id - a.id)[0] || null;
 
-    // Replace full logs array with the latest one only
-    const processedData = {
-      ...data,
-      orderpayments_logs: latestLog,
-    };
+      //   const latestLog =
+      //   data.orderpayments_logs?.sort((a, b) => b.id - a.id)[0] || null;
 
-    console.log(processedData);
+      // // Replace full logs array with the latest one only
+      // const processedData = {
+      //   ...data,
+      //   orderpayments_logs: latestLog,
+      // };
 
-    return processedData;
+      // console.log(data);
+
+      return data;
     } catch (error) {
       console.error("Error fetching order details:", error.message);
       throw error;
@@ -529,7 +546,12 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const updateOrder = async (orderId, result, amount, reason="Change my mind") => {
+  const updateOrder = async (
+    orderId,
+    result,
+    amount,
+    reason = "Change my mind"
+  ) => {
     // Fetch the latest payment log for this order
     const { data: latestLog, error: fetchError } = await supabase
       .from("orderpayments_logs")
@@ -538,12 +560,12 @@ export const AuthProvider = ({ children }) => {
       .order("id", { ascending: false })
       .limit(1)
       .single();
-  
+
     if (fetchError || !latestLog) {
       console.error("Failed to fetch latest payment log:", fetchError);
       return;
     }
-  
+
     // Insert a new refund log
     const { error: logInsertError } = await supabase
       .from("orderpayments_logs")
@@ -558,29 +580,106 @@ export const AuthProvider = ({ children }) => {
           charge_id: latestLog.charge_id,
         },
       ]);
-  
+
     if (logInsertError) {
       console.error("Failed to insert refund log:", logInsertError);
       throw logInsertError;
     }
-    
-    if(result?.refundId){
+
+    if (result?.refundId) {
       // Update the order status
-    const { error: updateError } = await supabase
-    .from("orders")
-    .update({ status: "Cancelled", Reason: reason })
-    .eq("id", orderId);
+      const { error: updateError } = await supabase
+        .from("orders")
+        .update({
+          status: "Cancelled",
+          Reason: reason,
+          order_cancelled: new Date(),
+        })
+        .eq("id", orderId);
 
-  if (updateError) {
-    console.error("Failed to update order status:", updateError);
-    throw updateError;
-  }
-
+      if (updateError) {
+        console.error("Failed to update order status:", updateError);
+        throw updateError;
+      }
     }
   };
-  
+
+  const sendDeliverEmail = async()=>{
+      setLoading(true);
+  try {
+    const today = new Date();
+    const startOfDay = new Date(today.setHours(0, 0, 0, 0)).toISOString();
+    const endOfDay = new Date(today.setHours(23, 59, 59, 999)).toISOString();
+
+    const { data: orders, error } = await supabase
+    .from("orders")
+    .select(`
+      *,
+      order_items (
+        *,
+        products:product_id (
+          id,
+          name,
+          banner_url,
+          amount,
+          description
+        )
+      )
+    `)
+    .gte("order_date", startOfDay)
+    .lt("order_date", endOfDay);
+
+  if (error) throw error;
+
+  // Now fetch users separately
+  const userIds = [...new Set(orders.map(o => o.user_id))];
+
+  const { data: users, error: userError } = await supabase
+    .from("users")
+    .select(`id, name, email`)
+    .in("id", userIds);
+
+  if (userError) throw userError;
+
+  // Merge user info into orders
+  const usersMap = Object.fromEntries(users.map(u => [u.id, u]));
+  const enrichedOrders = orders.map(order => ({
+    ...order,
+    user: usersMap[order.user_id] || null,
+  }));
+
+  console.log(enrichedOrders);
+
+  } catch (error) {
+    console.error("Error fetching today's orders:", error.message);
+    throw error;
+  } finally {
+    setLoading(false);
+  }
+  }
+
   return (
-    <AuthContext.Provider value={{ user, logout, addToCart, removeFromCart, cart, setUser, removeFromCartAfterOrder, setToken, access_token, loading, setLoading,placeOrder,fetchUserOrders,getOrderDetails,updateOrder , fetchUserCancelledOrders}}>
+    <AuthContext.Provider
+      value={{
+        user,
+        logout,
+        addToCart,
+        removeFromCart,
+        cart,
+        setUser,
+        removeFromCartAfterOrder,
+        setToken,
+        access_token,
+        loading,
+        setLoading,
+        placeOrder,
+        fetchUserOrders,
+        getOrderDetails,
+        updateOrder,
+        fetchUserCancelledOrders,
+        sendDeliverEmail,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
