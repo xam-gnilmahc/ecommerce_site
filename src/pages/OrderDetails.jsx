@@ -8,6 +8,7 @@ import LottieLoader from "../components/LottieLoader";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { FaCcVisa, FaGooglePay, FaApplePay} from "react-icons/fa";
+
 import {
   FaHourglassHalf,     // Pending
   FaTruckLoading,      // Shipped Out
@@ -43,6 +44,7 @@ const OrderDetailsPage = () => {
   const [refundReason, setRefundReason] = useState("");
   const [error, setError] = useState("");
   const [selectedReason, setSelectedReason] = useState("");
+  const [cancelShow, setCancelShow] = useState(false);
   const predefinedReasons = [
     "Wrong item delivered",
     "Item damaged",
@@ -212,6 +214,7 @@ const getStatusIcon = (status) => {
         await updateOrder(order.id, { message: "Refund failed" }, amount);
       } else {
         await updateOrder(order.id, result, amount, refundReason);
+        setCancelShow(false);
         navigate("/return-cancel");
         toast.success(
           "Refund successful. Refund may take up to 7 business days."
@@ -227,6 +230,9 @@ const getStatusIcon = (status) => {
       setLoading(false);
     }
   };
+
+    const closeModal = () => setCancelShow(false);
+
 
   return (
     <>
@@ -254,9 +260,8 @@ const getStatusIcon = (status) => {
                     <button
                       type="button"
                       className="btn"
-                      data-toggle="modal"
-                      data-target="#exampleModal"
                       style={{ backgroundColor: "#333", color: "#fff" }}
+                      onClick={()=>setCancelShow(true)}
                     >
                       Cancel
                     </button>
@@ -689,15 +694,13 @@ const getStatusIcon = (status) => {
                     )}
                   </div>
                 </div>
-
+{cancelShow && (
                 <div
-                  className="modal fade"
-                  id="exampleModal"
-                  tabIndex="-1"
-                  role="dialog"
-                  aria-labelledby="exampleModalLabel"
-                  aria-hidden="true"
-                >
+            className="modal fade show d-block"
+            tabIndex="-1"
+            role="dialog"
+            style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
+          >
                   <div
                     className="modal-dialog modal-md modal-dialog-centered"
                     role="document"
@@ -716,6 +719,7 @@ const getStatusIcon = (status) => {
                           data-dismiss="modal"
                           aria-label="Close"
                           onClick={() => {
+                            closeModal()
                             setSelectedReason("");
                             setRefundReason("");
                           }}
@@ -791,6 +795,7 @@ const getStatusIcon = (status) => {
                           className="btn btn-outline-secondary"
                           data-dismiss="modal"
                           onClick={() => {
+                            closeModal()
                             setSelectedReason("");
                             setRefundReason("");
                           }}
@@ -819,6 +824,7 @@ const getStatusIcon = (status) => {
                     </div>
                   </div>
                 </div>
+                        )}
               </>
             )}
           </div>
