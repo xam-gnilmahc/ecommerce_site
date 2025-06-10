@@ -20,8 +20,11 @@ import SearchBar from "./SearchBar";
 
 const Navbar = () => {
   const { user, logout, cart } = useAuth();
-  console.log('max',user);
+  const [isOpen, setIsOpen] = useState(false);
 
+  const togglePopup = () => {
+    setIsOpen((prev) => !prev);
+  };
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const toggleMobileMenu = () => {
@@ -92,12 +95,31 @@ const Navbar = () => {
               <li className="nav-item">
                 <NavLink to="/product">Shop</NavLink>
               </li>
-              <li className="nav-item">
-                <NavLink to="/about">About</NavLink>
-              </li>
-              <li className="nav-item">
-                <NavLink to="/contact">Contact</NavLink>
-              </li>
+             <li  className={`nav-item category-dropdown ${isOpen ? 'open' : ''}`}
+      onMouseEnter={() => setIsOpen(true)}
+      onMouseLeave={() => setIsOpen(false)}
+      onClick={togglePopup}>
+  <Link className="nav-item">Categories</Link>
+  <div className="category-popup">
+    <ul>
+      {[
+        'Mobile', 'Laptop', 'Tablet', 'Smartwatch', 'Earbuds',
+        'Headphones', 'Desktop', 'Monitor', 'Keyboard', 'Mouse',
+        'Charger', 'Power Bank', 'Camera', 'Tripod', 'Drone',
+        'Printer', 'Scanner', 'Speaker', 'Projector', 'USB Cable',
+        'SD Card', 'Router', 'VR Headset', 'Game Console', 'TV'
+      ].map((item, index) => (
+        <li key={index} className="text-muted">
+          <Link to={`/`}>
+            {item}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  </div>
+</li>
+
+
             </ul>
           </div>
         </div>
@@ -119,9 +141,9 @@ const Navbar = () => {
                 Hi, <strong>{user?.full_name}</strong>
               </span>
               <NavLink to="/profile" className="me-2 d-flex align-items-center">
-                {user?.picture ? (
+                {user.picture ? (
                   <img
-                    src={user?.picture}
+                    src={user.picture}
                     alt="Profile"
                     style={{
                       width: "32px",
@@ -196,16 +218,7 @@ const Navbar = () => {
                     SHOP
                   </Link>
                 </li>
-                <li>
-                  <Link to="/about" onClick={toggleMobileMenu}>
-                    ABOUT
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/contact" onClick={toggleMobileMenu}>
-                    CONTACT
-                  </Link>
-                </li>
+                
               </ul>
             </div>
           </div>
@@ -234,7 +247,7 @@ const Navbar = () => {
             ) : (
               <>
                 <span className="text-muted small me-2">
-                  Hi, <strong>{user.full_name}</strong>
+                  Hi, <strong>{user?.full_name}</strong>
                 </span>
                 <button
                   onClick={logout}

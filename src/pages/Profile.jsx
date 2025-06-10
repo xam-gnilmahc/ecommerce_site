@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import Sidebar from "../components/Sidebar";
+import { useAuth } from "../context/authContext"; // adjust path if needed
 
 const Profile = () => {
+  const { user} = useAuth();
   // Example state for form fields
   const [profile, setProfile] = useState({
-    name: "John Doe",
-    email: "john.doe@example.com",
+    name: user.name,
+    email: user.email,
     phone: "+1 234 567 890",
     address: "123 Main Street, City, Country",
   });
@@ -35,17 +37,18 @@ const Profile = () => {
       >
         <h2 className="mb-4">Profile</h2>
 
-        <div className="card shadow-sm p-4" style={{ maxWidth: 700 }}>
+        <div className="card p-4" style={{ maxWidth: 700 }}>
           {/* Profile Picture + Upload */}
           <div className="d-flex align-items-center mb-4">
             <img
-              src="https://i.pravatar.cc/100"
-              alt="Profile"
+              src={user?.picture}
+              alt={user.picture}
               className="rounded-circle me-4"
               style={{ width: 100, height: 100, objectFit: "cover" }}
+              title={user?.picture}
             />
             <div>
-              <label htmlFor="profileImage" className="btn btn-dark rounded btn-sm">
+              <label htmlFor="profileImage" className="btn btn-dark rounded btn-sm" disabled>
                 Change Photo
               </label>
               <input
@@ -54,6 +57,7 @@ const Profile = () => {
                 accept="image/*"
                 style={{ display: "none" }}
                 // onChange={handleFileUpload} // you can add upload handler here
+                disabled
               />
             </div>
           </div>
@@ -72,7 +76,8 @@ const Profile = () => {
                 value={profile.name}
                 onChange={handleChange}
                 placeholder="Enter full name"
-                required
+                readonly
+                disabled
               />
             </div>
 
@@ -88,7 +93,8 @@ const Profile = () => {
                 value={profile.email}
                 onChange={handleChange}
                 placeholder="Enter email"
-                required
+                readonly
+                disabled
               />
             </div>
 
@@ -104,6 +110,8 @@ const Profile = () => {
                 value={profile.phone}
                 onChange={handleChange}
                 placeholder="Enter phone number"
+                readonly
+                disabled
               />
             </div>
 
@@ -119,10 +127,12 @@ const Profile = () => {
                 value={profile.address}
                 onChange={handleChange}
                 placeholder="Enter address"
+                readOnly
+                disabled
               />
             </div>
 
-            <button type="submit" className="btn btn-dark btn-lg w-100 rounded-3">
+            <button type="submit" className="btn btn-dark btn-lg w-100 rounded-3" disabled>
               Save Profile
             </button>
           </form>
