@@ -13,10 +13,7 @@ const Pagination = ({ postsPerPage, totalPosts, paginate, currentPage }) => {
   }
 
   const baseButtonStyle = {
-    padding: '6px 12px',
     minWidth: '40px',
-    border: '1px solid #343a40',
-    borderRadius: '6px',
     backgroundColor: '#fff',
     color: '#343a40',
     cursor: 'pointer',
@@ -30,43 +27,43 @@ const Pagination = ({ postsPerPage, totalPosts, paginate, currentPage }) => {
 
   return (
     <nav aria-label="Page navigation" className="mt-3">
-      <ul className="pagination justify-content-center flex-wrap" style={{ gap: '6px', padding: 0 }}>
+      <ul className="pagination justify-content-center flex-wrap" style={{ padding: 0 }}>
         {/* Previous Button */}
         {currentPage > 1 && (
           <li className="page-item">
-            <button
+            <a
               onClick={() => paginate(currentPage - 1)}
-              className="btn"
+              className="page-link"
               style={baseButtonStyle}
             >
-              {'<'}
-            </button>
+              Previous
+            </a>
           </li>
         )}
 
         {/* Page Number Buttons */}
         {pageNumbers.map((number) => (
           <li key={number} className="page-item">
-            <button
+            <a
               onClick={() => paginate(number)}
-              className="btn"
+              className="page-link"
               style={number === currentPage ? activeButtonStyle : baseButtonStyle}
             >
               {number}
-            </button>
+            </a>
           </li>
         ))}
 
         {/* Next Button */}
         {currentPage < totalPages && (
           <li className="page-item">
-            <button
+            <a
               onClick={() => paginate(currentPage + 1)}
-              className="btn"
+              className="page-link"
               style={baseButtonStyle}
             >
-              {'>'}
-            </button>
+              Next
+            </a>
           </li>
         )}
       </ul>
