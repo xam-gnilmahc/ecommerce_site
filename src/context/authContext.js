@@ -604,88 +604,106 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-const sendAllDeliveryEmails = async () => {
-  setLoading(true);
-  try {
-    const today = new Date();
-    const startOfDay = new Date(today.setHours(0, 0, 0, 0)).toISOString();
-    const endOfDay = new Date(today.setHours(23, 59, 59, 999)).toISOString();
+  const sendAllDeliveryEmails = async () => {
+    setLoading(true);
+    try {
+      const today = new Date();
+      const startOfDay = new Date(today.setHours(0, 0, 0, 0)).toISOString();
+      const endOfDay = new Date(today.setHours(23, 59, 59, 999)).toISOString();
 
-    const { data: orders, error } = await supabase
-      .from("orders")
-      .select(
-        `
-        *,
-        order_items (
+      const { data: orders, error } = await supabase
+        .from("orders")
+        .select(
+          `
           *,
-          products:product_id (
-            id,
-            name,
-            banner_url,
-            amount,
-            description
+          order_items (
+            *,
+            products:product_id (
+              id,
+              name,
+              banner_url,
+              amount,
+              description
+            )
           )
+          `
         )
-        `
-      )
-      .gte("order_date", startOfDay)
-      .lt("order_date", endOfDay);
+        .gte("order_date", startOfDay)
+        .lt("order_date", endOfDay);
 
-    if (error) throw error;
+      if (error) throw error;
 
-    const userIds = [...new Set(orders.map((o) => o.user_id))];
+      const userIds = [...new Set(orders.map((o) => o.user_id))];
 
-    const { data: users, error: userError } = await supabase
-      .from("users")
-      .select(`id, name, email`)
-      .in("id", userIds);
+      const { data: users, error: userError } = await supabase
+        .from("users")
+        .select(`id, name, email`)
+        .in("id", userIds);
 
-    if (userError) throw userError;
+      if (userError) throw userError;
 
-    const usersMap = Object.fromEntries(users.map((u) => [u.id, u]));
+      const usersMap = Object.fromEntries(users.map((u) => [u.id, u]));
 
-    const sendTasks = orders
-      .filter((order) => usersMap[order.user_id])
-      .map(async (order) => {
-        const user = usersMap[order.user_id];
-        const address = JSON.parse(order.shipping_address || "{}");
+      const sendTasks = orders
+        .filter((order) => usersMap[order.user_id])
+        .map(async (order) => {
+          const user = usersMap[order.user_id];
+          const address = JSON.parse(order.shipping_address || "{}");
 
-        const payload = {
-          userName: user.name,
-          userEmail: user.email,
-          orderItems: order.order_items.map((item) => ({
-            name: item.products?.name || "Unnamed",
-            quantity: item.quantity,
-            amount: item.price_each,
-            image: item.products?.banner_url,
-          })),
-          address: {
-            line1: address.addressLine1 || "",
-            line2: address.addressLine2 || "",
-            state: address.state || "",
-            country: address.country || "",
-            zip: address.zipCode || "",
-          },
-          cartTotal: order.total_amount,
-          orderId: order.id,
-          orderDate: order.order_date,
-        };
+          const payload = {
+            userName: user.name,
+            userEmail: user.email,
+            orderItems: order.order_items.map((item) => ({
+              name: item.products?.name || "Unnamed",
+              quantity: item.quantity,
+              amount: item.price_each,
+              image: item.products?.banner_url,
+            })),
+            address: {
+              line1: address.addressLine1 || "",
+              line2: address.addressLine2 || "",
+              state: address.state || "",
+              country: address.country || "",
+              zip: address.zipCode || "",
+            },
+            cartTotal: order.total_amount,
+            orderId: order.id,
+            orderDate: order.order_date,
+          };
 
-        await sendDeliveryEmail(payload); // <- Make sure this is the correct import
-      });
+          await sendDeliveryEmail(payload);
+        });
 
-    await Promise.all(sendTasks);
+      await Promise.all(sendTasks);
 
-    console.log("All emails sent.");
+      console.log("All emails sent.");
 
-  } catch (error) {
-    console.error("Error sending delivery emails:", error.message);
-  } finally {
-    setLoading(false);
-  }
-};
+    } catch (error) {
+      console.error("Error sending delivery emails:", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+    const bestSellingProduct = async () => {
+      const { data, error } = await supabase
+        .from("best_selling_product")
+        .select(`*, products:product_id (
+          id,
+          name,
+          banner_url,
+          amount,
+          description,
+          rating
+        )`);
 
+      if (error) {
+        console.error("Failed to fetch best selling products:", error.message);
+        throw error;
+      }
+
+      return data;
+  };
 
   return (
     <AuthContext.Provider
@@ -707,6 +725,7 @@ const sendAllDeliveryEmails = async () => {
         updateOrder,
         fetchUserCancelledOrders,
         sendAllDeliveryEmails,
+        bestSellingProduct,
       }}
     >
       {children}

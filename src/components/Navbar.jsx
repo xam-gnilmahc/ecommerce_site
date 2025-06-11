@@ -93,7 +93,7 @@ const Navbar = () => {
                 </NavLink>
               </li>
               <li className="nav-item">
-                <NavLink to="/product">Shop</NavLink>
+                <NavLink to="/shop">Shop</NavLink>
               </li>
              <li  className={`nav-item category-dropdown ${isOpen ? 'open' : ''}`}
       onMouseEnter={() => setIsOpen(true)}
@@ -214,7 +214,7 @@ const Navbar = () => {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/product" onClick={toggleMobileMenu}>
+                  <Link to="/shop" onClick={toggleMobileMenu}>
                     SHOP
                   </Link>
                 </li>

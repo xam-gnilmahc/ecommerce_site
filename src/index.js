@@ -19,6 +19,10 @@ import {
   PageNotFound,
 } from "./pages";
 
+// App.js or index.js
+import "swiper/css";
+import "swiper/css/navigation";
+
 import UpdatePassword from "./pages/UpdatePassword";
 import OrderDetailsSheet from "./pages/OrderDetailsSheet";
 import TermsandConditions from "./pages/TermsandConditions";
@@ -39,6 +43,7 @@ import Payment from "./pages/Payment";
 import NotificationSettings from "./pages/NotificationSetting";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
+
 root.render(
   <>
     <Popup />
@@ -49,7 +54,7 @@ root.render(
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/cronjob" element={<CronJob />} />
-              <Route path="/product" element={<Products />} />
+              <Route path="/shop" element={<Products />} />
               <Route path="/product/:id" element={<Product />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/contact" element={<ContactPage />} />

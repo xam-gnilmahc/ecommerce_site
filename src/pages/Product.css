@@ -46,6 +46,8 @@
   .productShowCase {
     display: flex;
     gap: 60px;
+    padding: 0 100px;
+    margin: 1px 0;
   }
   
   .productGallery {
@@ -303,19 +305,30 @@
   
   .productQuantity input {
     width: 40px;
-    height: 57px;
+    height: 50px;
     text-align: center;
     border: none;
     outline: none;
   }
   
   .productCartBtn button {
-    padding: 20px 110px;
+    padding: 15px 80px;
     background-color: black;
     color: white;
     font-weight: 600;
     text-transform: uppercase;
     border: none;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .productBuyBtn button{
+     padding: 15px 80px;
+    background-color:#fff;
+    border: 1px solid black;
+    color: rgb(17, 19, 21);
+    font-weight: 600;
+    text-transform: uppercase;
     cursor: pointer;
     white-space: nowrap;
   }
@@ -416,7 +429,10 @@
     .productShowCase {
       display: flex;
       gap: 30px;
+      padding: 0 60px;
+      margin: 1px 0;
     }
+
   
     .productFullImg img {
       width: 420px;
@@ -433,6 +449,7 @@
     .productShowCase {
       flex-direction: column;
       gap: 30px;
+      
     }
   
     .productGallery {

@@ -33,7 +33,7 @@ const CancelledOrderPage = () => {
   return (
     <div className="d-flex">
       <Sidebar />
-      <main className="flex-grow-1 p-4" style={{ marginLeft: "280px" }}>
+      <main className="flex-grow-1 p-4" style={{ marginLeft: "280px"}}>
         <div className="mb-4">
           <h2 className="fw-bold text-dark mb-1"> My Cancelled Orders</h2>
           <p className="text-muted small mb-2">Dashboard / Cancelled Orders</p>

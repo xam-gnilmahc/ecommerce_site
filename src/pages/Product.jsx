@@ -194,12 +194,12 @@ const Product = () => {
                   />
                 ))}
               </div>
-              <div className="w-full" style={{ maxHeight: "350px" }}>
+              <div  style={{ maxHeight: "350px" ,width:"300px", justifyContent:"center",display:"flex"}}>
                 <img
                   src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${activeImage}`}
                   alt={activeImage}
-                  className="img-fluid d-block mx-auto"
-                  style={{ maxHeight: "200px", objectFit: "contain" }}
+                  className="w-full"
+                  style={{maxHeight: "200px", objectFit: "contain" }}
                 />
               </div>
             </div>
@@ -226,8 +226,10 @@ const Product = () => {
               <div className="productName">
                 <h1>{product.name}</h1>
               </div>
-
-              <p className="productRating">
+<div  style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap:"100px" }}>
+             
+              <h2 className="productPrice">${product.amount}</h2>
+               <p className="productRating">
                 {Array.from({ length: 5 }, (_, i) => {
                   const rating = product?.rating || 0;
                   if (rating >= i + 1) {
@@ -242,10 +244,13 @@ const Product = () => {
                     ); // empty star
                   }
                 })}
-                <p>({product?.rating || 0} / 5)</p>
+                <div>({product?.rating || 0} / 5)</div>
+               
               </p>
-              <h2 className="productPrice">${product.amount}</h2>
-              <p className="productDescription">
+              </div>
+
+              <h6>Description : </h6>
+              <p className="productDescription text-muted">
                 {product.description?.substring(0, 200)}
               </p>
 
@@ -331,6 +336,21 @@ const Product = () => {
                     }}
                   >
                     Add to Cart
+                  </button>
+                </div>
+                 <div className="productBuyBtn">
+                  <button
+                    onClick={() => {
+                      if (!user) {
+                        toast.error("Please login to add products to cart.");
+                        navigate("/login");
+                        return;
+                      }
+                      toast.success("Added to cart");
+                      addProduct(product);
+                    }}
+                  >
+                    BUY NOW
                   </button>
                 </div>
               </div>
@@ -463,7 +483,7 @@ const Product = () => {
     <>
       <Navbar />
       <div className="productSection">
-        <div className="productShowCase">{loading ? <Loading /> : <ShowProduct />}</div>
+        <div className=" productShowCase">{loading ? <Loading /> : <ShowProduct />}</div>
         <div className="row my-5 py-5">
           <div className="d-md-block">
             <AdditionalInfo/>

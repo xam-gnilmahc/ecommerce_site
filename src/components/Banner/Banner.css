@@ -1,0 +1,89 @@
+.banner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 24.875rem;
+  padding: 0 160px;
+  margin: 100px 0px;
+  grid-gap: 30px;
+}
+
+.bannerLeft {
+  background-image: url("https://static.independent.co.uk/2024/07/25/16/samsung-galaxy-fold-6.jpg");
+  background-position: cover;
+  background-size: cover;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 30px;
+  gap: 10px;
+}
+
+.bannerRight {
+  background-image: url("https://www.samsungplaza.com.np/public/files/633A08F22757F0F-X110N.jpeg");
+  background-position: cover;
+  background-size: cover;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 30px;
+  gap: 10px;
+}
+
+/* text style */
+
+.bannerh6 {
+  color: var(--color, rgb(20, 17, 17));
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 17px;
+}
+
+.bannerh3 {
+  color: var(--color, rgb(21, 9, 9));
+  font-size: 27px;
+  font-weight: 600;
+}
+
+.bannerh5 {
+  font-size: 15px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.bannerh5 a {
+  text-decoration: none;
+  color: none;
+  position: relative;
+}
+
+.bannerh5 a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -5px;
+  width: 50%;
+  border-bottom: 2px solid rgb(49, 27, 27);
+  transition: width 0.2s ease;
+}
+
+.bannerh5 a:hover::after {
+  width: 100%;
+}
+
+@media screen and (max-width: 1210px) {
+  .banner {
+    grid-gap: 30px;
+    padding: 0 60px;
+    height: 20rem;
+    margin: 50px 0px;
+  }
+}
+
+@media screen and (max-width: 450px) {
+  .banner {
+    padding: 15px;
+    grid-template-columns: 1fr;
+    grid-gap: 10px;
+    height: 35rem;
+  }
+}
