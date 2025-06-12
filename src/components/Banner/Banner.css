@@ -8,7 +8,7 @@
 }
 
 .bannerLeft {
-  background-image: url("https://static.independent.co.uk/2024/07/25/16/samsung-galaxy-fold-6.jpg");
+  background-image: url("https://www.dhiraagu.com.mv/sites/default/files/2023-10/web-banner-samsung-foldflip-min-1920x1080.jpg");
   background-position: cover;
   background-size: cover;
   display: flex;
@@ -19,9 +19,9 @@
 }
 
 .bannerRight {
-  background-image: url("https://www.samsungplaza.com.np/public/files/633A08F22757F0F-X110N.jpeg");
+  background-image: url("https://www.teamcomputers.com/images/microsoftsurface/images/surface-laptop-4/primary-banner-2.jpg");
   background-position: cover;
-  background-size: cover;
+  background-size: contain;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
