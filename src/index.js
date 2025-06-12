@@ -40,6 +40,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import Popup from "./pages/Popup";
 import CronJob from "./pages/CronJob";
 import Payment from "./pages/Payment";
+import ChatBot from "./pages/ChatBot";
 import NotificationSettings from "./pages/NotificationSetting";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -48,6 +49,7 @@ root.render(
   <>
     <Popup />
     <BrowserRouter>
+    <ChatBot/>
       <ScrollToTop>
         <Provider store={store}>
           <AuthProvider>
