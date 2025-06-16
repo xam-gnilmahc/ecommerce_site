@@ -1,6 +1,17 @@
+
 .mainDeal {
-  padding: 15px;
+  opacity: 0;
+  transform: translateY(50px);
+  transition: all 1s ease;
+  padding: 2rem;
+  border-radius: 10px;
 }
+
+.mainDeal.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* common keyframes */
 
 .dealTimer {
   background-color: #ebebeb;

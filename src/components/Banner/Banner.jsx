@@ -1,9 +1,12 @@
-import React from "react";
+import React , {useEffect,useState,useRef} from "react";
 import "./Banner.css";
 
 import { Link } from "react-router-dom";
 
 const Banner = () => {
+    const timerRef = useRef(null);
+    const [inView, setInView] = useState(false);
+  
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
@@ -11,9 +14,25 @@ const Banner = () => {
     });
   };
 
+
+   useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setInView(entry.isIntersecting);
+      },
+      { threshold: 0.3 }
+    );
+  
+    if (timerRef.current) observer.observe(timerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <>
-      <div className="banner">
+      <div
+           ref={timerRef}
+      className={`banner bg-slide ${inView ? "in-view" : ""}`}
+      >
         <div className="bannerLeft">
           <h6 className="bannerh6"  style={{ color: "black" }}>Starting At $1999</h6>
           <h3 className="bannerh3" style={{ color: "black" }}>Samsung Zfold series</h3>

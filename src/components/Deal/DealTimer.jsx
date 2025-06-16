@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import "./DealTimer.css";
 
 const DealTimer = () => {
+  const timerRef = useRef(null);
+  const [inView, setInView] = useState(false);
+
   const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const [timeLeft, setTimeLeft] = useState({
@@ -19,87 +19,91 @@ const DealTimer = () => {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimeLeft((prevTimeLeft) => {
-        const { days, hours, minutes, seconds } = prevTimeLeft;
+      setTimeLeft((prev) => {
+        let { days, hours, minutes, seconds } = prev;
+
         if (days === 0 && hours === 0 && minutes === 0 && seconds === 0) {
           clearInterval(timer);
-          return prevTimeLeft;
+          return prev;
         }
-        let newSeconds = seconds - 1;
-        let newMinutes = minutes;
-        let newHours = hours;
-        let newDays = days;
-
-        if (newSeconds < 0) {
-          newSeconds = 59;
-          newMinutes -= 1;
+        seconds--;
+        if (seconds < 0) {
+          seconds = 59;
+          minutes--;
         }
-        if (newMinutes < 0) {
-          newMinutes = 59;
-          newHours -= 1;
+        if (minutes < 0) {
+          minutes = 59;
+          hours--;
         }
-        if (newHours < 0) {
-          newHours = 23;
-          newDays -= 1;
+        if (hours < 0) {
+          hours = 23;
+          days--;
         }
 
-        return {
-          days: newDays,
-          hours: newHours,
-          minutes: newMinutes,
-          seconds: newSeconds,
-        };
+        return { days, hours, minutes, seconds };
       });
     }, 1000);
 
     return () => clearInterval(timer);
   }, []);
 
-  const formatTime = (value) => {
-    return value.toString().padStart(2, "0");
-  };
+ useEffect(() => {
+  const observer = new IntersectionObserver(
+    ([entry]) => {
+      setInView(entry.isIntersecting);
+    },
+    { threshold: 0.3 }
+  );
+
+  if (timerRef.current) observer.observe(timerRef.current);
+  return () => observer.disconnect();
+}, []);
+
+
+  const formatTime = (val) => val.toString().padStart(2, "0");
 
   return (
-    <>
-      <div className="mainDeal">
-        <div className="dealTimer">
-          <div className="dealTimerMainContent">
-            <div className="dealTimeContent">
-              <p>Deal of the Week</p>
-              <h3>
-                Iphone 16e
-              </h3>
-              <div className="dealTimeLink">
-                <Link to="/shop" onClick={scrollToTop}>
-                  Shop Now
-                </Link>
-              </div>
+    <div
+      ref={timerRef}
+      className={`mainDeal bg-slide ${inView ? "in-view" : ""}`}
+    >
+      <div className="dealTimer">
+        <div className="dealTimerMainContent">
+          <div className="dealTimeContent">
+            <p>Deal of the Week</p>
+            <h3>Iphone 16e</h3>
+            <div className="dealTimeLink">
+              <Link to="/shop" onClick={scrollToTop}>
+                Shop Now
+              </Link>
             </div>
-            <div className="dealTimeCounter">
-              <div className="dealTimeDigit">
-                <h4>{timeLeft.days}</h4>
-                <p>Days</p>
-              </div>
-              <h4>:</h4>
-              <div className="dealTimeDigit">
-                <h4>{timeLeft.hours}</h4>
-                <p>Hours</p>
-              </div>
-              <h4>:</h4>
-              <div className="dealTimeDigit">
-                <h4>{formatTime(timeLeft.minutes)}</h4>
-                <p>Minutes</p>
-              </div>
-              <h4>:</h4>
-              <div className="dealTimeDigit">
-                <h4>{formatTime(timeLeft.seconds)}</h4>
-                <p>Seconds</p>
-              </div>
+          </div>
+
+          <div className="dealTimeCounter">
+            <div className="dealTimeDigit">
+              <h4>{timeLeft.days}</h4>
+              <p>Days</p>
+            </div>
+            <h4>:</h4>
+            <div className="dealTimeDigit">
+              <h4>{formatTime(timeLeft.hours)}</h4>
+              <p>Hours</p>
+            </div>
+            <h4>:</h4>
+            <div className="dealTimeDigit">
+              <h4>{formatTime(timeLeft.minutes)}</h4>
+              <p>Minutes</p>
+            </div>
+            <h4>:</h4>
+            <div className="dealTimeDigit">
+              <h4>{formatTime(timeLeft.seconds)}</h4>
+              <p>Seconds</p>
             </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
+
 export default DealTimer;

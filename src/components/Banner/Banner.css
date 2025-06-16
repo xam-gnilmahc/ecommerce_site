@@ -1,4 +1,16 @@
 .banner {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: all 1s ease;
+  padding: 2rem;
+  border-radius: 10px;
+}
+
+.banner.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+.banner {
   display: grid;
   grid-template-columns: 1fr 1fr;
   height: 24.875rem;

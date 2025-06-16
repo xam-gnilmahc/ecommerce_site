@@ -1,4 +1,19 @@
 .collection {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: all 1s ease;
+  padding: 2rem;
+  border-radius: 10px;
+}
+
+.collection.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+
+.collection {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-gap: 30px;
@@ -16,7 +31,16 @@
   flex-direction: column;
   justify-content: flex-end;
   background-color: #eff0f1;
+
+  opacity: 0;
+  transform: scale(1.1) translateY(30px);
+  transition: all 1.2s ease-in-out;
 }
+.collectionLeft.in-view {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
 
 .col-link {
   display: flex;
@@ -55,7 +79,17 @@
   justify-content: flex-end;
   padding: 30px;
   background-color: #eff0f1;
+
+  opacity: 0;
+  transform: scale(1.1) translateY(30px);
+  transition: all 1.2s ease-in-out;
 }
+
+.collectionTop.in-view {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
 
 .collectionBottom {
   display: grid;
@@ -72,6 +106,15 @@
   justify-content: flex-end;
   padding: 30px;
   background-color: #eff0f1;
+
+  opacity: 0;
+  transform: scale(1.1) translateY(30px);
+  transition: all 1.2s ease-in-out;
+}
+
+.box1.in-view {
+  opacity: 1;
+  transform: scale(1) translateY(0);
 }
 
 .box2 {
