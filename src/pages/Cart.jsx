@@ -16,7 +16,6 @@ const Cart = () => {
   const dispatch = useDispatch();
   const { cart, addToCart, removeFromCart, user, loading } = useAuth();
   const navigate = useNavigate();
-  const [showPromo, setShowPromo] = useState(false);
   const updateItemQuantity = (product, action) => {
     const updatedCart = [...cart];
     const itemIndex = updatedCart.findIndex(
@@ -34,6 +33,7 @@ const Cart = () => {
       if (action === "increase") {
         addToCart(product);
       } else if (action === "decrease") {
+        console.log('decrease');
         removeFromCart(product);
       }
     }
@@ -54,7 +54,7 @@ const Cart = () => {
 
   const ShowCart = () => {
     let subtotal = 0;
-    let shipping = 30.0;
+    let shipping = 0.00;
     let totalItems = 0;
 
     cart.forEach((item) => {
@@ -229,25 +229,6 @@ const Cart = () => {
                 <h5 className="mb-4 text-lg fw-semibold text-dark">
                   📦 Order Summary
                 </h5>
-                <div
-                onClick={() => setShowPromo(!showPromo)}
-                className="d-flex justify-content-between align-items-center mb-3 fw-semibold text-primary cursor-pointer"
-                style={{ userSelect: "none" }}
-              >
-                <span>Do you have a promo code?</span>
-                {showPromo ? <FaChevronUp /> : <FaChevronDown />}
-              </div>
-
-              {/* Promo code input */}
-              {showPromo && (
-                <div className="mb-3">
-                  <input
-                    type="text"
-                    className="form-control rounded"
-                    placeholder="Enter promo code"
-                  />
-                </div>
-              )}
                 <ul className="list-unstyled mb-3">
                   <li className="d-flex justify-content-between mb-2">
                     <span className="fw-bold d-flex align-items-center gap-1">

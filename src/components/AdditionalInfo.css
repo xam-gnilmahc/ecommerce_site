@@ -1,5 +1,5 @@
 .productAdditionalInfo {
-  padding: 0 250px;
+  padding: 0 160px;
   margin: 85px 0;
 }
 
@@ -133,7 +133,7 @@
 .aiTabReviewContainer {
   display: flex;
   flex-direction: column;
-  gap: 50px;
+  gap: 30px;
 }
 
 .aiTabReviewContainer h3 {
@@ -162,7 +162,7 @@
 .userReviewContent {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 5px;
 }
 
 .userReviewTopContent {
@@ -188,7 +188,7 @@
 }
 
 .userDate p {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 400;
   color: #767676;
 }
@@ -304,11 +304,12 @@
 
 /* reponsive */
 
-@media screen and (max-width: 1210px) {
+@media screen and (min-width: 1600px) {
   .productAdditionalInfo {
-    padding: 0 60px;
+    padding: 0 250px;
     margin: 1px 0;
   }
+
 }
 
 @media screen and (max-width: 768px) {

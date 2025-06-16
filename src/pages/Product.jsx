@@ -37,25 +37,27 @@ const Product = () => {
       setLoading(true);
       setLoading2(true);
 
-      const fetchProductById = async (id) => {
-        const { data, error } = await supabase
-          .from("products")
-          .select(
-            `
+    const fetchProductById = async (id) => {
+    const { data, error } = await supabase
+        .from("products")
+        .select(
+          `
             *,
             product_items(id, size, sku_number, color),
-            product_images(id, image_url, is_primary)
+            product_images(id, image_url, is_primary),
+            product_reviews(id, name, picture, comment, rating, created_at)
           `
-          )
-          .eq("id", id)
-          .single();
+        )
+        .eq("id", id)
+        .single();
 
-        if (error) {
-          console.error("Error fetching product by ID:", error);
-          return null;
-        }
-        return data;
-      };
+      if (error) {
+        console.error("Error fetching product by ID:", error);
+        return null;
+      }
+      return data;
+    };
+
 
       const productData = await fetchProductById(id);
       setProduct(productData);
@@ -87,7 +89,7 @@ const Product = () => {
     };
 
     getProduct();
-  }, [id]);
+  }, []);
 
   const [activeImage, setActiveImage] = useState("");
 
@@ -486,7 +488,7 @@ const Product = () => {
         <div className=" productShowCase">{loading ? <Loading /> : <ShowProduct />}</div>
         <div className="row my-5 py-5">
           <div className="d-md-block">
-            <AdditionalInfo/>
+            <AdditionalInfo product_reviews = {product?.product_reviews}/>
             <div className="relatedProducts d-none d-md-block">
           <h2>
             RELATED <span>PRODUCTS</span>

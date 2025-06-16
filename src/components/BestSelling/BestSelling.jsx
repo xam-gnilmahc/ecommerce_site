@@ -10,7 +10,7 @@ import { Navigation } from "swiper/modules";
 import { Autoplay } from "swiper/modules";
 
 import { Link } from "react-router-dom";
-
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/authContext"; // adjust path if needed
 import { FiHeart } from "react-icons/fi";
 import { FaStar } from "react-icons/fa";
@@ -20,12 +20,18 @@ import { FaCartPlus } from "react-icons/fa";
 import toast from "react-hot-toast";
 
 const BestSelling = () => {
-    const { bestSellingProduct } = useAuth(); // get user from context
-
+    const { bestSellingProduct , addToCart, user} = useAuth(); // get user from context
+  
   const [wishList, setWishList] = useState({});
+  const navigate = useNavigate();
+  
    const [data, setData] = useState([]);
   const [filter, setFilter] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const addProduct = async (product) => {
+    await addToCart(product);
+  };
 
   const handleWishlistClick = (productID) => {
     setWishList((prevWishlist) => ({
@@ -127,7 +133,17 @@ useEffect(() => {
                           className="lpImage"
                         />
                       </Link>
-                      <h4>
+                      <h4
+                       onClick={() => {
+                         if (!user) {
+                      toast.error("Please login to add products to cart.");
+                      navigate("/login");
+                      return;
+                    }
+                    toast.success("Added to cart");
+                    addProduct(item.products);
+                  }}
+                      >
                         Add to Cart
                       </h4>
                     </div>

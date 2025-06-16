@@ -4,12 +4,15 @@ import "./AdditionalInfo.css";
 import user1 from "../components/assets/user-1.jpg";
 import user2 from "../components/assets/user-2.jpg";
 
-import { FaStar } from "react-icons/fa";
+import { FaStar,FaThumbsUp, FaThumbsDown  } from "react-icons/fa";
 import Rating from "@mui/material/Rating";
 import DeleteIcon from "@mui/icons-material/Delete"; // Import Delete icon
 import IconButton from "@mui/material/IconButton";
 
-const AdditionalInfo = () => {
+
+const AdditionalInfo = ({product_reviews}) => {
+
+  console.log('mm',product_reviews);
   const [activeTab, setActiveTab] = useState("aiTab1");
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
@@ -64,6 +67,53 @@ const AdditionalInfo = () => {
       mediaFiles,
     });
   };
+
+  const formatDate = (value) => {
+  if (!value) return "N/A";
+  const fixed = value.replace(" ", "T");
+  const date = new Date(fixed);
+  if (isNaN(date)) return "Invalid date";
+
+  return date.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+};
+//  const ratings = [
+//     { stars: 5, count: 2000, color: "bg-teal-500" },
+//     { stars: 4, count: 1000, color: "bg-pink-500" },
+//     { stars: 3, count: 500, color: "bg-cyan-500" },
+//     { stars: 2, count: 200, color: "bg-orange-500" },
+//     { stars: 1, count: 0, color: "bg-red-500" },
+//   ];
+
+
+const ratingColors = {
+  5: "bg-success",
+  4: "bg-primary",
+  3: "bg-warning",
+  2: "bg-info",
+  1: "bg-danger",
+};
+
+
+  const total = product_reviews?.length;
+
+  const ratingCounts = [1, 2, 3, 4, 5].map((star) => {
+    const count = product_reviews?.filter((r) => r.rating === star).length;
+    return {
+      stars: star,
+      count,
+      color: ratingColors[star],
+    };
+  }).reverse(); // So that 5★ appears on top
+
+  const avg = total > 0
+    ? (product_reviews?.reduce((sum, r) => sum + r.rating, 0) / total).toFixed(1)
+    : 0;
+
+
   return (
     <>
       <div className="productAdditionalInfo">
@@ -86,7 +136,7 @@ const AdditionalInfo = () => {
                 onClick={() => handleTabClick("aiTab3")}
                 className={activeTab === "aiTab3" ? "aiActive" : ""}
               >
-                Reviews (2)
+                Reviews {product_reviews?.length}
               </p>
             </div>
           </div>
@@ -163,68 +213,135 @@ const AdditionalInfo = () => {
             {activeTab === "aiTab3" && (
               <div className="aiTabReview">
                 <div className="aiTabReviewContainer">
-                  <h3>Reviews</h3>
-                  <div className="userReviews">
-                    <div
-                      className="userReview"
-                      style={{ borderBottom: "1px solid #e4e4e4" }}
-                    >
-                      <div className="userReviewImg">
-                        <img src={user1} alt="" />
+                  <h2>Reviews</h2>
+   <div className="row g-4">
+  {/* Total Reviews */}
+  <div className="col-md-4 d-flex align-items-stretch">
+    <div className="border rounded p-3 w-100 d-flex flex-column justify-content-between" style={{ minHeight: "150px" }}>
+      <p className="text-black mb-1 fw-bold">Total Reviews</p>
+      <div className="d-flex gap-2 align-items-center">
+        <h2 className="h2 fw-bold mb-0">{product_reviews.length}</h2>
+        <span className="badge bg-success text-uppercase small">21% ↑</span>
+      </div>
+      <p className="text-muted small mt-2 mb-0">Growth in reviews on this year</p>
+    </div>
+  </div>
+
+  {/* Average Rating */}
+  <div className="col-md-4 d-flex align-items-stretch">
+    <div className="border rounded p-3 w-100 d-flex flex-column justify-content-between" style={{ minHeight: "150px" }}>
+      <p className="text-black mb-1 fw-bold">Average Rating</p>
+      <div className="d-flex align-items-center gap-2">
+        <span className="h2 fw-bold mb-0">{avg}</span>
+        <div>
+          {[...Array(5)].map((_, i) => (
+            <FaStar
+              key={i}
+              size={20}
+              color={i < Math.round(avg) ? "#FEC78A" : "#E5E7EB"}
+            />
+          ))}
+        </div>
+      </div>
+      <p className="text-muted small mt-2 mb-0">Average rating on this year</p>
+    </div>
+  </div>
+
+  {/* Rating Distribution */}
+  <div className="col-md-4 d-flex align-items-stretch">
+    <div className="border rounded p-3 w-100 d-flex flex-column justify-content-between" style={{ minHeight: "150px" }}>
+      <p className="text-black mb-1 fw-bold">Rating Distribution</p>
+      <div className="flex-grow-1">
+        {ratingCounts.map((r, idx) => (
+          <div
+            key={idx}
+            className="d-flex align-items-center justify-content-between mb-1 small"
+          >
+            <div className="d-flex align-items-center" style={{ minWidth: "100px" }}>
+              <span className="text-secondary fw-bold">★ {r.stars}</span>
+              <div className="progress flex-grow-1 ms-2" style={{ height: "8px" }}>
+                <div
+                  className={`progress-bar ${r.color}`}
+                  role="progressbar"
+                  style={{
+                    width: total ? `${(r.count / total) * 100}%` : "0%",
+                  }}
+                  aria-valuenow={total ? (r.count / total) * 100 : 0}
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                />
+              </div>
+            </div>
+            <span
+              className="text-dark fw-bold"
+              style={{ minWidth: "40px", textAlign: "right" }}
+            >
+              {r.count >= 1000 ? `${(r.count / 1000).toFixed(1)}k` : r.count}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+
+                 <div className="userReviews">
+  {product_reviews?.map((review, index) => (
+    <div
+      key={index}
+      className="d-flex gap-3 border-bottom pb-4 mb-4"
+    >
+      {/* User Image */}
+     <div className="userReviewImg">
+                        <img src={review?.picture || "https://thumbs.dreamstime.com/b/default-avatar-profile-vector-user-profile-default-avatar-profile-vector-user-profile-profile-179376714.jpg"} alt="User" />
                       </div>
-                      <div className="userReviewContent">
-                        <div className="userReviewTopContent">
-                          <div className="userNameRating">
-                            <h6>Max chamling</h6>
-                            <div className="userRating">
-                              {[...Array(5)].map((_, i) => (
-                                <FaStar key={i} color="#FEC78A" size={10} />
-                              ))}
-                            </div>
-                          </div>
-                          <div className="userDate">
-                            <p>April 06, 2023</p>
-                          </div>
+
+      {/* Review Content */}
+      <div className="flex-grow-1 position-relative">
+        {/* Name, Rating, Date */}
+        <div className="d-flex justify-content-between flex-wrap mb-1">
+          <div className="d-flex align-items-center gap-2">
+            <h6 className="mb-0">{review.name}</h6>
+            <div className="d-flex gap-1">
+              {[...Array(5)].map((_, i) => (
+                <FaStar
+                  key={i}
+                  size={14}
+                  color={i < review.rating ? "#FEC78A" : "#E5E7EB"}
+                />
+              ))}
+            </div>
+          </div>
+          <p className="text-muted small mb-0">{formatDate(review.created_at)}</p>
+        </div>
+
+        {/* Comment */}
+          <div className="userReviewBottomContent" style={{ marginBottom: "30px" }}>
+                          <p>{review.comment}</p>
                         </div>
-                        <div
-                          className="userReviewBottomContent"
-                          style={{ marginBottom: "30px" }}
-                        >
-                          <p>
-                            Great camera quality, stunning display, and super
-                            fast. Easily lasts all day even with heavy use.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="userReview">
-                      <div className="userReviewImg">
-                        <img src={user2} alt="" />
-                      </div>
-                      <div className="userReviewContent">
-                        <div className="userReviewTopContent">
-                          <div className="userNameRating">
-                            <h6>Benjam Porter</h6>
-                            <div className="userRating">
-                              {[...Array(5)].map((_, i) => (
-                                <FaStar key={i} color="#FEC78A" size={10} />
-                              ))}
-                            </div>
-                          </div>
-                          <div className="userDate">
-                            <p>April 12, 2023</p>
-                          </div>
-                        </div>
-                        <div className="userReviewBottomContent">
-                          <p>
-                            Sleek design, blazing-fast performance. Definitely
-                            worth the price!
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                      <div
+  className="position-absolute d-flex align-items-center gap-2"
+  style={{ bottom: "0", right: "0" }}
+>
+  <div className="p-1  me-1">
+    <FaThumbsUp size={16} className="text-secondary" />
+  </div>
+  <div className="p-1 rounded ">
+    <FaThumbsDown size={16} className="text-secondary" />
+  </div>
+</div>
+
+      </div>
+    </div>
+  ))}
+</div>
+
+
                   <div className="userNewReview">
+                    { product_reviews.length < 0 && (
                     <div className="userNewReviewMessage">
                       <h5>Be the first to review</h5>
                       <p>
@@ -232,6 +349,7 @@ const AdditionalInfo = () => {
                         fields are marked *
                       </p>
                     </div>
+                    )}
                     <div className="userNewReviewRating">
                       <label>Your rating *</label>
                       <Rating

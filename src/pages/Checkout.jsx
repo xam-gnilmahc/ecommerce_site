@@ -17,6 +17,7 @@ import LottieLoader from "../components/LottieLoader";
 import { supabase } from "../supaBaseClient";
 import "./Animation.css";
 import "./checkout.css";
+import {FaChevronDown, FaChevronUp } from "react-icons/fa";
 
 // Stripe Publishable Key
 const stripePromise = loadStripe(
@@ -44,7 +45,8 @@ const Checkout = () => {
   const [paymentLoading, setLoading] = useState(false); // Add loading state
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [show, setShow] = useState(false);
-
+  const [shippingMethod, setShippingMethod] = useState("free");
+    const [showPromo, setShowPromo] = useState(false);
   // Handle Country Change
   const handleCountryChange = (country) => {
     setSelectedCountry(country);
@@ -82,7 +84,7 @@ const Checkout = () => {
       toast.error(`Payment failed: ${error.message}`);
     } else {
       let subtotal = 0;
-      let shipping = 30.0;
+      let shipping = shippingMethod === "free" ? 0 : 30;
       let totalItems = 0;
       cart.map((item) => {
         subtotal += item.amount * item.quantity;
@@ -104,7 +106,7 @@ const Checkout = () => {
         name,
         email,
         address,
-        comment: "Payment for order #12345",
+        comment: "Payment for order",
       };
 
       setLoading(true); // Set loading to true when payment is being processed
@@ -133,7 +135,7 @@ const Checkout = () => {
           return;
         }
 
-        await placeOrder({ ...paymentData, payment_status: status }, result);
+        await placeOrder({ ...paymentData, payment_status: status , shippingMethod}, result);
 
         if (status == "success") {
           setShow(true);
@@ -153,7 +155,7 @@ const Checkout = () => {
   };
 
   let subtotal = 0;
-  let shipping = 30.0;
+  let shipping = shippingMethod === "free" ? 0 : 30;
   let totalItems = 0;
   cart.map((item) => {
     return (subtotal += item.amount * item.quantity);
@@ -186,7 +188,7 @@ const Checkout = () => {
                         <h5 className="mb-3" style={{ color: "#000" }}>
                           Delivery Information
                         </h5>
-                        <div className="border border-gray-200 rounded-3 p-4 ">
+                        <div className="">
                           <div className="row g-3">
                             <div className="col-12 col-md-6">
                               <label
@@ -260,86 +262,128 @@ const Checkout = () => {
                                 }
                               />
                             </div>
-                            <div className="col-12 col-md-6">
-                              <label
-                                className="form-label"
-                                style={{ color: "#6c757d" }}
-                              >
-                                Zip Code
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                style={{ color: "#6c757d" }}
-                                value={zipCode}
-                                onChange={(e) => setZipCode(e.target.value)}
-                                required
-                              />
-                            </div>
-                            <div className="col-12 col-md-6">
-                              <label
-                                className="form-label"
-                                style={{ color: "#6c757d" }}
-                              >
-                                Country
-                              </label>
-                              <select
-                                className="form-select"
-                                style={{ color: "#6c757d" }}
-                                value={selectedCountry}
-                                onChange={(e) =>
-                                  handleCountryChange(e.target.value)
-                                }
-                                required
-                              >
-                                <option value="">Select Country</option>
-                                {Country.getAllCountries().map((country) => (
-                                  <option
-                                    key={country.isoCode}
-                                    value={country.isoCode}
-                                  >
-                                    {country.name}
-                                  </option>
-                                ))}
-                              </select>
-                            </div>
-                            <div className="col-12 col-md-6">
-                              <label
-                                className="form-label"
-                                style={{ color: "#6c757d" }}
-                              >
-                                State
-                              </label>
-                              <select
-                                style={{ color: "#6c757d" }}
-                                className="form-select"
-                                value={selectedState}
-                                onChange={(e) =>
-                                  handleStateChange(e.target.value)
-                                }
-                                required
-                              >
-                                <option value="">Select State</option>
-                                {states.map((state) => (
-                                  <option
-                                    key={state.isoCode}
-                                    value={state.isoCode}
-                                  >
-                                    {state.name}
-                                  </option>
-                                ))}
-                              </select>
-                            </div>
+                            <div className="row g-3">
+      <div className="col-md-4">
+        <label className="form-label" style={{ color: "#6c757d" }}>
+          Zip Code
+        </label>
+        <input
+          type="text"
+          className="form-control w-full"
+          style={{ color: "#6c757d" }}
+          value={zipCode}
+          onChange={(e) => setZipCode(e.target.value)}
+          required
+        />
+      </div>
+      <div className="col-md-4">
+        <label className="form-label" style={{ color: "#6c757d" }}>
+          Country
+        </label>
+        <select
+          className="form-select w-full"
+          style={{ color: "#6c757d" }}
+          value={selectedCountry}
+          onChange={(e) => handleCountryChange(e.target.value)}
+          required
+        >
+          <option value="">Select Country</option>
+          {Country.getAllCountries().map((country) => (
+            <option key={country.isoCode} value={country.isoCode}>
+              {country.name}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="col-md-4">
+        <label className="form-label" style={{ color: "#6c757d" }}>
+          State
+        </label>
+        <select
+          style={{ color: "#6c757d" }}
+          className="form-select w-full"
+          value={selectedState}
+          onChange={(e) => handleStateChange(e.target.value)}
+          required
+        >
+          <option value="">Select State</option>
+          {states.map((state) => (
+            <option key={state.isoCode} value={state.isoCode}>
+              {state.name}
+            </option>
+          ))}
+        </select>
+      </div>
+    </div>
                           </div>
                         </div>
                       </div>
+                <div className="col-12 pt-2">
+  <h6 className="mb-3" style={{ color: "#000" }}>Shipping Method</h6>
+  <div className="d-flex gap-3">
+    {/* Free Shipping Option */}
+    <label
+      className={`border rounded p-3 flex-fill text-start ${
+        shippingMethod === "free" ? "border-dark bg-light" : "border-secondary"
+      }`}
+      style={{ cursor: "pointer", minWidth: "160px" }}
+    >
+      <div className="d-flex justify-content-between align-items-center mb-1">
+        <div className="form-check m-0">
+          <input
+            className="form-check-input"
+            type="radio"
+            name="shipping"
+            id="shippingFree"
+            value="free"
+            checked={shippingMethod === "free"}
+            onChange={() => setShippingMethod("free")}
+          />
+          <label className="form-check-label ms-2" htmlFor="shippingFree">
+            Free Shipping
+          </label>
+        </div>
+        <strong>$0</strong>
+      </div>
+      <div className="text-muted ps-4">7–20 Days</div>
+    </label>
+
+    {/* Express Shipping Option */}
+    <label
+      className={`border rounded p-3 flex-fill text-start ${
+        shippingMethod === "express" ? "border-dark bg-light" : "border-secondary"
+      }`}
+      style={{ cursor: "pointer", minWidth: "160px" }}
+    >
+      <div className="d-flex justify-content-between align-items-center mb-1">
+        <div className="form-check m-0">
+          <input
+            className="form-check-input"
+            type="radio"
+            name="shipping"
+            id="shippingExpress"
+            value="express"
+            checked={shippingMethod === "express"}
+            onChange={() => setShippingMethod("express")}
+          />
+          <label className="form-check-label ms-2" htmlFor="shippingExpress">
+            Express Shipping
+          </label>
+        </div>
+        <strong>$30</strong>
+      </div>
+      <div className="text-muted ps-4">1–3 Days</div>
+    </label>
+  </div>
+</div>
+
 
                       {/* 3. Payment Method */}
                       <div className="col-12 pt-4">
                         <h5 className="mb-3" style={{ color: "#000" }}>
                           Payment Method
                         </h5>
-                        <div className="p-3 border bg-white rounded payment-method">
+                        <div className=" payment-method">
                           <div className="d-flex  gap-3">
                             {/* Cash on Delivery */}
                             <label
@@ -494,7 +538,7 @@ const Checkout = () => {
               </div>
 
               {/* Order Summary on Right */}
-              <div className="col-md-4 order-summary pt-5">
+              <div className="col-md-4 order-summary pt-5 ">
                 <div className="bg-white border border-gray-200 rounded-3 p-4">
                   <h5 className="mb-4 text-lg font-semibold text-gray-800">
                     📦 Order Summary
@@ -566,6 +610,25 @@ const Checkout = () => {
 
                     {/* Order Summary */}
                     <ul className="list-group list-group-flush mt-3">
+                        <div
+                                      onClick={() => setShowPromo(!showPromo)}
+                                      className=" d-flex justify-content-between px-3"
+                                      style={{ userSelect: "none" }}
+                                    >
+                                      <span>Do you have a promo code?</span>
+                                      {showPromo ? <FaChevronUp /> : <FaChevronDown />}
+                                    </div>
+                      
+                                    {/* Promo code input */}
+                                    {showPromo && (
+                                      <div className="mb-1">
+                                        <input
+                                          type="text"
+                                          className="form-control rounded ms-3 me-5"
+                                          placeholder="Enter promo code"
+                                        />
+                                      </div>
+                                    )}
                       <li
                         className="list-group-item d-flex justify-content-between"
                         style={{ color: "#6c757d" }}
@@ -667,11 +730,20 @@ const Checkout = () => {
                       borderTop: "2px dashed #9e9e9e",
                     }}
                   />
-
                   <ul className="list-group list-group-flush text-start">
                     <li className="list-group-item d-flex justify-content-between text-muted">
                       Estimated Delivery
-                      <span>7 business days</span>
+                      { shippingMethod === "free" ? (
+                        <>
+                         <span>7 - 20 business days</span>
+                        </>
+
+                      ):(
+                        <>
+                        <span>1 - 3 business days</span>
+                        </>
+
+                      )}
                     </li>
                     <li className="list-group-item d-flex justify-content-between text-muted">
                       Payment Status

@@ -152,6 +152,8 @@ export const AuthProvider = ({ children }) => {
   const addToCart = async (product) => {
     if (!memoizedUser) return;
 
+    console.log(product);
+
     const { data: existingItem, error: selectError } = await supabase
       .from("cart")
       .select("id, quantity")
@@ -191,7 +193,7 @@ export const AuthProvider = ({ children }) => {
     await fetchCartItems(memoizedUser.id);
   };
 
-  const removeFromCart = async (product, state = false) => {
+  const removeFromCart = async (product) => {
     if (!memoizedUser) return;
 
     const { data: existingItem } = await supabase
@@ -201,7 +203,7 @@ export const AuthProvider = ({ children }) => {
       .eq("product_id", product.id)
       .single();
 
-    if (existingItem & !state) {
+    if (existingItem) {
       const newQty = existingItem.quantity - 1;
 
       if (newQty > 0) {
@@ -214,13 +216,14 @@ export const AuthProvider = ({ children }) => {
       }
 
       await fetchCartItems(memoizedUser.id);
-    }
-
-    if (state) {
+    }else{
+      
       await supabase.from("cart").delete().eq("id", existingItem.id);
 
       await fetchCartItems(memoizedUser.id);
+
     }
+
   };
 
   const removeFromCartAfterOrder = async () => {
@@ -299,8 +302,19 @@ export const AuthProvider = ({ children }) => {
 
     try {
       // Generate delivery date (7 days from now)
-      const deliveryDate = new Date();
-      deliveryDate.setDate(deliveryDate.getDate() + 7);
+      const today = new Date();
+
+      const getRandomDays = (min, max) => {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      };
+
+      const daysToAdd = data.shippingMethod === "free" 
+        ? getRandomDays(7, 23) 
+        : getRandomDays(1, 3);
+
+      const deliveryDate = new Date(today);
+      deliveryDate.setDate(today.getDate() + daysToAdd);
+
 
       // Generate unique tracking code (e.g., ORD-XYZ123)
       const generateTrackingCode = () => {
@@ -341,6 +355,7 @@ export const AuthProvider = ({ children }) => {
             payment_status: data.payment_status,
             order_date: deliveryDate.toISOString(),
             tracking_number: trackingCode,
+            shipping_method:data.shippingMethod === "free" ? 0 : 1 ,
           },
         ])
         .select()
@@ -395,7 +410,7 @@ export const AuthProvider = ({ children }) => {
         data.address,
         data.amount,
         orderId,
-        deliveryDate.toISOString()
+        deliveryDate.toISOString(),
       );
       // 4. Clear cart after order
       await removeFromCartAfterOrder();
@@ -689,12 +704,7 @@ export const AuthProvider = ({ children }) => {
       const { data, error } = await supabase
         .from("best_selling_product")
         .select(`*, products:product_id (
-          id,
-          name,
-          banner_url,
-          amount,
-          description,
-          rating
+          *
         )`);
 
       if (error) {

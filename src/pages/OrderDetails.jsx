@@ -85,7 +85,8 @@ const OrderDetailsPage = () => {
   };
 
   const handlePrint = () => {
-  const printContents = `
+    const printContents =
+      `
   <div>
     <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
       <div>
@@ -107,7 +108,6 @@ const OrderDetailsPage = () => {
     window.print();
     document.body.innerHTML = originalContents;
     window.location.reload();
-
   };
 
   const parseAddress = (addressStr) => {
@@ -199,7 +199,7 @@ const OrderDetailsPage = () => {
       order.order_items.reduce(
         (acc, item) => acc + parseFloat(item.price_each * item.quantity),
         0
-      ) + 30
+      ) + (order.shipping_method === 0 ? 0 : 30)
     ).toFixed(2);
 
     const paymentData = {
@@ -329,10 +329,8 @@ const OrderDetailsPage = () => {
                   className="border m-1  p-4"
                   ref={designRef}
                   style={{ borderRadius: "1rem" }}
-                > 
-             
-
-            <div className=" mb-4 p-4">
+                >
+                  <div className=" mb-4 p-4">
                     <div className="row gy-4 align-items-center">
                       {/* Shipping Info */}
                       <div className="col-12 col-md-8 col-lg-5">
@@ -678,12 +676,14 @@ const OrderDetailsPage = () => {
                               <FaTruck className="me-2 text-muted" />
                               Shipping Charge
                             </span>
-                            <span>$30.00</span>
+                            <span>
+                              ${order.shippnig_method === 0 ? 0.0 : 30.0}
+                            </span>
                           </li>
                         </ul>
 
                         {/* Total */}
-                        <div className="d-flex justify-content-between fw-bold border-top pt-3">
+                        <div className="d-flex justify-content-between fw-bold  pt-3">
                           <span className="d-flex align-items-center">
                             <FaMoneyBillWave className="me-2 text-success" />
                             Total
@@ -696,7 +696,7 @@ const OrderDetailsPage = () => {
                                   acc +
                                   parseFloat(item.price_each * item.quantity),
                                 0
-                              ) + 30
+                              ) + (order.shipping_method === 0 ? 0 : 30)
                             ).toFixed(2)}
                           </span>
                         </div>

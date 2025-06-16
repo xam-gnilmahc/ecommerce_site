@@ -95,12 +95,12 @@ const Products = () => {
   const Loading = () => {
     return (
       <>
-        <div className="col-12 py-5 text-center">
+        {/* <div className="col-12 py-5 text-center">
           <Skeleton height={40} width={560} />
-        </div>
-        {[...Array(7)].map((_, idx) => (
+        </div> */}
+        {[...Array(9)].map((_, idx) => (
           <div key={idx} className="col-md-4 col-sm-6 col-xs-8 col-12 mb-4">
-            <Skeleton height={592} />
+            <Skeleton height={400} />
           </div>
         ))}
       </>
@@ -130,7 +130,26 @@ const Products = () => {
   ) : (
           currentPosts.map((product) => (
             <div className="sdProductContainer">
-              <div className="sdProductImages ">
+              <div className="sdProductImages position-relative ">
+             {product.sticker && (
+  <div
+    className="position-absolute top-0 end-0 bg-transparent px-4"
+    style={{
+      zIndex: 1,
+    }}
+  >
+    <img
+      src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/sticker/${product.sticker}`}
+      alt="Sticker"
+      style={{
+        width: "50px", // adjust size as needed
+        height: "50px",
+        objectFit: "contain",
+      }}
+    />
+  </div>
+)}
+
                 <Link to={"/product/" + product.id}>
                   <img
                     className=""
