@@ -1,3 +1,12 @@
+.lpImageContainer img.lpImage {
+  transition: transform 0.3s ease;
+}
+
+.lpImageContainer img.lpImage:hover {
+  transform: scale(0.9);
+  cursor: pointer;
+}
+
 .limitedProductSection {
   margin: 40px 0;
   padding: 0px 160px;

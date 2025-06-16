@@ -3,8 +3,8 @@
   opacity: 0;
   transform: translateY(50px);
   transition: all 1s ease;
-  padding: 2rem;
-  border-radius: 10px;
+  margin: 2rem;
+  border-radius: 15px;
 }
 
 .mainDeal.in-view {
@@ -22,6 +22,7 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+    border-radius: 15px;
 }
 
 .dealTimerMainContent {

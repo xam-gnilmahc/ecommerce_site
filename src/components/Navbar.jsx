@@ -101,6 +101,7 @@ const Navbar = () => {
       onClick={togglePopup}>
   <Link className="nav-item">Categories</Link>
   <div className="category-popup">
+    <div className="content pe-5">
     <ul>
       {[
         'Mobile', 'Laptop', 'Tablet', 'Smartwatch', 'Earbuds',
@@ -109,13 +110,14 @@ const Navbar = () => {
         'Printer', 'Scanner', 'Speaker', 'Projector', 'USB Cable',
         'SD Card', 'Router', 'VR Headset', 'Game Console', 'TV'
       ].map((item, index) => (
-        <li key={index} className="text-muted">
+        <li key={index} className="">
           <Link to={`/`}>
             {item}
           </Link>
         </li>
       ))}
     </ul>
+    </div>
   </div>
 </li>
 
