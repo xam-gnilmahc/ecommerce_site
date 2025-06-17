@@ -37,14 +37,15 @@ const Login = () => {
       setLoading(false);
       return;
     }
-
-    toast.success("Login successful!");
-    login();
-    navigate("/");
+    
+    if (data){
+      toast.success("Login successful!");
+      login();
+      navigate("/");
+    }
   };
 
   const loginWithGoogle = async () => {
-    console.log("google");
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
     });
@@ -52,8 +53,12 @@ const Login = () => {
       toast.error("Facebook sign-in failed: " + error.message);
       return;
     }
-    login();
-    navigate("/");
+
+    if (data){
+      login();
+      navigate("/");
+
+    }
   };
 
   // const loginWithFacebook = async () => {
