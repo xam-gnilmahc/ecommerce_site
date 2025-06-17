@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { NavLink, Link } from "react-router-dom";
+import { NavLink, Link ,useNavigate} from "react-router-dom";
 import { BsHouseDoorFill, BsBagCheck } from "react-icons/bs";
 import { FaBars, FaSignOutAlt, FaCreditCard } from "react-icons/fa";
 import { FiSettings } from "react-icons/fi";
@@ -116,6 +116,7 @@ const Sidebar = () => {
           tabIndex={0}
           onKeyPress={(e) => {
             if (e.key === "Enter") logout();
+          
           }}
           aria-label="Logout"
         >

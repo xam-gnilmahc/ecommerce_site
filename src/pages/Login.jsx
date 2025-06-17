@@ -38,11 +38,9 @@ const Login = () => {
       return;
     }
     
-    if (data){
-      toast.success("Login successful!");
-      login();
-      navigate("/");
-    }
+    toast.success("Login successful!");
+    navigate("/");
+    
   };
 
   const loginWithGoogle = async () => {

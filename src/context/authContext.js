@@ -7,6 +7,8 @@ import React, {
 } from "react";
 import { supabase } from "../supaBaseClient";
 import { sendOrderEmail, sendDeliveryEmail } from "../service/emailService";
+import { useNavigate } from "react-router-dom";
+
 // Create context
 const AuthContext = createContext();
 
@@ -21,6 +23,8 @@ export const useAuth = () => {
 
 // Provider component
 export const AuthProvider = ({ children }) => {
+  const navigate = useNavigate();
+  
   const [user, setUser] = useState(null);
   const [access_token, setToken] = useState(null);
   const [cart, setCart] = useState([]);
@@ -84,18 +88,6 @@ export const AuthProvider = ({ children }) => {
     []
   );
 
-  // Auth state listener
-  const login = () => {
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (session) {
-          setUser({ ...session.user.user_metadata, id: session.user.id });
-        } else {
-          setUser(null);
-        }
-      }
-    );
-  }
  useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
@@ -162,6 +154,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     setToken(null);
     setCart([]);
+    navigate("/login"); // ✅ redirect to login page
   };
 
   // Fetch cart items with loading state
@@ -776,7 +769,6 @@ export const AuthProvider = ({ children }) => {
         fetchUserCancelledOrders,
         sendAllDeliveryEmails,
         bestSellingProduct,
-        login,
       }}
     >
       {children}
