@@ -96,7 +96,19 @@ export const AuthProvider = ({ children }) => {
       }
     );
   }
+ useEffect(() => {
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (session) {
+          setUser({ ...session.user.user_metadata, id: session.user.id });
+        };
+      }
+    );
 
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
   
    useEffect(() => {
     // Fallback: try restoring session from localStorage manually
@@ -127,6 +139,8 @@ export const AuthProvider = ({ children }) => {
     restoreSession();
   
   }, []);
+
+
 
 
   // // Fetch cart items when user is set
