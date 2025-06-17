@@ -39,6 +39,7 @@ const Login = () => {
     }
 
     toast.success("Login successful!");
+    login();
     navigate("/");
   };
 
@@ -51,6 +52,8 @@ const Login = () => {
       toast.error("Facebook sign-in failed: " + error.message);
       return;
     }
+    login();
+    navigate("/");
   };
 
   // const loginWithFacebook = async () => {

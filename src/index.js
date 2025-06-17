@@ -68,7 +68,7 @@ root.render(
                 path="/orders/:orderId"
                 element={
                   <ProtectedRoute>
-                    <OrderDetailsPage />{" "}
+                    <OrderDetailsPage />
                   </ProtectedRoute>
                 }
               />

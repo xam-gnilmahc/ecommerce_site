@@ -8,35 +8,36 @@ const ProtectedRoute = ({ children }) => {
   const [loading, setLoading] = useState(true); // Start as true while checking
   const { user, setUser,setToken } = useAuth();
 
-  useEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (session) {
-          setUser({ ...session.user.user_metadata, id: session.user.id });
-          setToken(session?.access_token);
-        } else {
-          setUser(null);
-        }
-        setLoading(false);
-      }
+useEffect(() => {
+  // Fallback: try restoring session from localStorage manually
+  const restoreSession = async () => {
+    // Supabase stores the session under a key like this:
+    const key = Object.keys(localStorage).find((k) =>
+      k.startsWith("sb-") && k.endsWith("-auth-token")
     );
 
-    // Initial check
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        setUser({ ...session.user.user_metadata, id: session.user.id });
-        setToken(session?.access_token);
-      } else {
-        setUser(null);
+    if (key) {
+      try {
+        const sessionRaw = localStorage.getItem(key);
+        if (sessionRaw) {
+          const session = JSON.parse(sessionRaw);
+          if (session?.access_token && session?.user) {
+            setUser({ ...session.user.user_metadata, id: session.user.id });
+            setToken(session.access_token);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to restore session:", err);
       }
-      setLoading(false);
-    });
+    }
 
-    // Cleanup listener on unmount
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
-  }, [setUser]);
+    setLoading(false);
+  };
+
+  restoreSession()
+
+}, []);
+
   
 
   if (loading) return null; // Optionally show a spinner

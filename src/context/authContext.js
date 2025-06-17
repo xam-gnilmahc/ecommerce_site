@@ -85,7 +85,7 @@ export const AuthProvider = ({ children }) => {
   );
 
   // Auth state listener
-  useEffect(() => {
+  const login = () => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (session) {
@@ -95,13 +95,41 @@ export const AuthProvider = ({ children }) => {
         }
       }
     );
+  }
 
-    return () => {
-      authListener.subscription.unsubscribe();
+  
+   useEffect(() => {
+    // Fallback: try restoring session from localStorage manually
+    const restoreSession = async () => {
+      // Supabase stores the session under a key like this:
+      const key = Object.keys(localStorage).find((k) =>
+        k.startsWith("sb-") && k.endsWith("-auth-token")
+      );
+  
+      if (key) {
+        try {
+          const sessionRaw = localStorage.getItem(key);
+          if (sessionRaw) {
+            const session = JSON.parse(sessionRaw);
+            if (session?.access_token && session?.user) {
+              setUser({ ...session.user.user_metadata, id: session.user.id });
+              setToken(session.access_token);
+            }
+          }
+        } catch (err) {
+          console.error("Failed to restore session:", err);
+        }
+      }
+  
+      setLoading(false);
     };
+  
+    restoreSession();
+  
   }, []);
 
-  // Fetch cart items when user is set
+
+  // // Fetch cart items when user is set
   useEffect(() => {
     const updateUserData = async () => {
       if (user && user.id) {
@@ -151,8 +179,6 @@ export const AuthProvider = ({ children }) => {
 
   const addToCart = async (product) => {
     if (!memoizedUser) return;
-
-    console.log(product);
 
     const { data: existingItem, error: selectError } = await supabase
       .from("cart")
@@ -736,6 +762,7 @@ export const AuthProvider = ({ children }) => {
         fetchUserCancelledOrders,
         sendAllDeliveryEmails,
         bestSellingProduct,
+        login,
       }}
     >
       {children}
