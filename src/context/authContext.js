@@ -150,7 +150,7 @@ export const AuthProvider = ({ children }) => {
   }, [user, handleUserInSupabase, memoizedProcessed]);
 
   const logout = () => {
-    supabase.auth.signOut();
+    localStorage.clear();
     setUser(null);
     setToken(null);
     setCart([]);
