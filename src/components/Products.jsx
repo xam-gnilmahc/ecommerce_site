@@ -47,23 +47,43 @@ const Products = () => {
   useEffect(() => {
     let componentMounted = true;
 
-    const getProducts = async () => {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from("products")
-        .select("*")
-        .eq("is_active", true);
+   const getProducts = async () => {
+  setLoading(true);
+  let allProducts = [];
+  let batchSize = 1000;
+  let start = 0;
+  let hasMore = true;
 
-      if (error) {
-        console.error("Error fetching products:", error.message);
-        toast.error("Failed to load products.");
-      } else if (componentMounted) {
-        setData(data);
-        setFilter(data);
+  while (hasMore) {
+    const { data, error } = await supabase
+      .from("products")
+      .select("*", { count: "exact" }) // Ensures complete range
+      .range(start, start + batchSize - 1);
+
+    if (error) {
+      console.error("Error fetching products:", error.message);
+      toast.error("Failed to load products.");
+      break;
+    }
+
+    if (data && data.length > 0) {
+      allProducts = allProducts.concat(data);
+      start += batchSize;
+      if (data.length < batchSize) {
+        hasMore = false; // no more records to fetch
       }
+    } else {
+      hasMore = false;
+    }
+  }
 
-      setLoading(false);
-    };
+  if (componentMounted) {
+    setData(allProducts);
+    setFilter(allProducts);
+  }
+
+  setLoading(false);
+};
 
     getProducts();
 
