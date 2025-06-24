@@ -620,7 +620,7 @@ const OrderDetailsPage = () => {
                             />
 
                             <div>
-                              <p className="fw-semibold mb-1 small mb-0">
+                              <p className="fw-semibold  mb-1 small mb-0">
                                 {it.products.name}
                               </p>
                               <p className="text-muted small mb-0">

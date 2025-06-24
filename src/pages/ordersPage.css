@@ -1,4 +1,14 @@
 /* Default: xs/sm (<768px) */
+
+/* You can put this in ordersPage.css */
+.row::-webkit-scrollbar {
+  width: 6px;
+}
+.row::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 5px;
+}
+
 .responsive-container {
     width: 100%;
   }

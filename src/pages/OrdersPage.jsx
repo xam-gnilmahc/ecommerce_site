@@ -105,7 +105,15 @@ const OrdersPage = () => {
             </Link>
           </div>
         ) : (
-          <div className="row g-3 bg-white">
+         <div
+  className="row g-3 bg-white overflow-auto px-2"
+  style={{
+    maxHeight: "75vh", // better on all devices
+    overflowY: "auto",
+    scrollbarWidth: "thin",
+  }}
+>
+
           {filteredOrders.map((order) => {
             const shippingAddress = parseAddress(order.shipping_address);
             const destination = `${shippingAddress?.addressLine1}, ${shippingAddress?.country}` || "Destination";
@@ -153,15 +161,15 @@ const OrdersPage = () => {
                       style={{ flexShrink: 0 }}
                     >
                       <div className="d-flex align-items-center border rounded-pill p-1 bg-white" style={{ minWidth: "130px" }}>
-                        <FaTruck className="me-1 text-dark tiny" />
-                        <span className="tiny fw-bold">Kathmandu, Nepal</span>
+                        <FaTruck className="me-1 t  tiny" />
+                        <span className="tiny fw-bold text-muted">Kathmandu, Nepal</span>
                       </div>
 
                       <span className="text-muted">••••••••</span>
 
                       <div className="d-flex align-items-center border rounded-pill p-1 bg-white" style={{ minWidth: "130px" }}>
                         <HiLocationMarker className="me-1 text-dark tiny" />
-                        <span className="tiny fw-bold">{destination}</span>
+                        <span className="tiny fw-bold text-muted">{destination}</span>
                       </div>
                     </div>
 
@@ -215,7 +223,7 @@ const OrdersPage = () => {
   />
 </div>
                           <div className="d-flex flex-column justify-content-center" style={{ flex: 1 }}>
-                            <div className="fw-bold tiny d-none d-sm-block">{item.products?.name}</div>
+                            <div className="fw-bold  text-muted tiny d-none d-sm-block">{item.products?.name}</div>
                             <div className="text-muted tiny fw-bold">${item.price_each} x {item.quantity}</div>
                             <div className="text-muted tiny fw-bold">
                               ${(item.price_each * item.quantity).toFixed(2)}

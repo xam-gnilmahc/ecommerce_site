@@ -6,8 +6,9 @@ import React, {
   useMemo,
 } from "react";
 import { supabase } from "../supaBaseClient";
-import { sendOrderEmail, sendDeliveryEmail } from "../service/emailService";
+import { sendOrderEmail, sendDeliveryEmail ,sendNotification} from "../service/emailService";
 import { useNavigate } from "react-router-dom";
+import Pusher from 'pusher-js';
 
 // Create context
 const AuthContext = createContext();
@@ -33,6 +34,27 @@ export const AuthProvider = ({ children }) => {
 
   const memoizedUser = useMemo(() => user, [user]);
   const memoizedProcessed = useMemo(() => processed, [processed]);
+  
+  const pusher = new Pusher('8a749302cc2bbbaf87b5', {
+    cluster: 'ap1', // e.g., 'ap2'
+    encrypted: true,
+  });
+
+  useEffect(() => {
+    if (!user?.id) return;
+
+    // Subscribe to user-specific channel (no events bound yet)
+    const channel = pusher.subscribe(`user.${user.id}`);
+
+    // Optional: log to verify it's subscribed
+    console.log(`🔔 Pusher initialized for user: ${user.id}`);
+
+    // Cleanup when component unmounts or user changes
+    return () => {
+      pusher.unsubscribe(`user-${user.id}`);
+      console.log(`🧹 Pusher unsubscribed for user: ${user.id}`);
+    };
+  }, [user?.id]);
 
   // Check if user exists in Supabase or create/update
   const handleUserInSupabase = useMemo(
@@ -367,12 +389,12 @@ export const AuthProvider = ({ children }) => {
         const { data: existing } = await supabase
           .from("orders")
           .select("id")
-          .eq("tracking_code", trackingCode)
-          .single();
+          .eq("tracking_number", trackingCode)
+          .limit(1);
 
-        if (!existing) {
-          isUnique = true;
-        }
+         if (!existing || existing.length === 0) {
+            isUnique = true;
+          }
       }
 
       // 1. Create new order
@@ -436,6 +458,26 @@ export const AuthProvider = ({ children }) => {
         throw itemsError;
       }
 
+      await supabase.from("notifications").insert([
+      {
+        user_id: memoizedUser.id,
+        order_id: orderId,
+        message: `✨Your order <a href="/orders/${orderId}" target="_blank" rel="noopener noreferrer" style="color:#0d6efd; text-decoration:underline;">#${orderId}</a> has been placed successfully. Thank you for shopping with us!`,
+        read: false,
+        type:0,
+      },
+    ]);
+  
+      await sendNotification({
+      channel: `user-${memoizedUser?.id}`,
+      event: "order-placed",
+      type:0,
+      message: {
+        orderId:orderId,
+        message: `✨Your order <a href="/orders/${orderId}" target="_blank" rel="noopener noreferrer" style="color:#0d6efd; text-decoration:underline;">#${orderId}</a> has been placed successfully. Thank you for shopping with us!`
+      }
+    });
+
       await sendOrderEmail(
         user.full_name || user.name,
         data.email,
@@ -455,6 +497,29 @@ export const AuthProvider = ({ children }) => {
       throw error;
     }
   };
+
+  const getNotificationsByUserId = async() =>{
+    if (!memoizedUser?.id) return [];
+
+  try {
+    const { data, error } = await supabase
+      .from("notifications")
+      .select("*")
+      .eq("user_id", memoizedUser?.id)
+      .order("id", { ascending: false });
+
+    if (error) {
+      console.error("Failed to fetch notifications:", error.message);
+      return [];
+    }
+
+    return data;
+  } catch (err) {
+    console.error("Unexpected error fetching notifications:", err);
+    return [];
+  }
+
+  }
 
   // Inside AppContextProvider or export separately
   const fetchUserOrders = async () => {
@@ -769,6 +834,7 @@ export const AuthProvider = ({ children }) => {
         fetchUserCancelledOrders,
         sendAllDeliveryEmails,
         bestSellingProduct,
+        getNotificationsByUserId
       }}
     >
       {children}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState ,useRef,useEffect} from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import "./Navbar.css";
@@ -11,16 +11,19 @@ import { FiSearch } from "react-icons/fi";
 import { FaRegUser } from "react-icons/fa6";
 import { MdOutlineClose } from "react-icons/md";
 import { FiHeart } from "react-icons/fi";
-import { FaFacebookF } from "react-icons/fa";
+import { FaFacebookF} from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { FaInstagram } from "react-icons/fa";
 import { FaYoutube } from "react-icons/fa";
 import { FaPinterest } from "react-icons/fa";
 import SearchBar from "./SearchBar";
+import NotificationPage from "../pages/NotificationPage";
 
 const Navbar = () => {
   const { user, logout, cart } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
+ const notifRef = useRef();
 
   const togglePopup = () => {
     setIsOpen((prev) => !prev);
@@ -50,6 +53,19 @@ const Navbar = () => {
 
     //   setCurrentPage(1); // Reset pagination
   };
+   useEffect(() => {
+    function handleClickOutside(event) {
+      if (notifRef.current && !notifRef.current.contains(event.target)) {
+        setNotifOpen(false);
+      }
+    }
+    if (notifOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [notifOpen]);
 
   return (
     <>
@@ -139,6 +155,13 @@ const Navbar = () => {
             </>
           ) : (
             <>
+           
+              {/* Render NotificationPage UI here */}
+              <NotificationPage embedded={true} />
+              {/* embedded prop is optional, you can modify NotificationPage to hide its own wrapper if embedded */}
+          
+        
+      
               <span className="text-muted small me-2">
                 Hi, <strong>{user?.full_name}</strong>
               </span>
@@ -232,6 +255,7 @@ const Navbar = () => {
                 <p style={{ margin: 0 }}>My Account</p>
               </Link>
             </div>
+            
             {!user ? (
               <>
                 <div className="d-flex gap-2">

@@ -16,6 +16,7 @@ import { FiHeart } from "react-icons/fi";
 import { FaStar } from "react-icons/fa";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { FaCartPlus } from "react-icons/fa";
+import { supabase } from "../../supaBaseClient";
 
 import toast from "react-hot-toast";
 
@@ -74,6 +75,33 @@ useEffect(() => {
     componentMounted = false;
   };
 }, []);
+
+useEffect(() => {
+  const channel = supabase
+    .channel("realtime:best_sell")
+    .on(
+      "postgres_changes",
+      {
+        event: "INSERT",
+        schema: "public",
+        table: "best_selling_product",
+      },
+      (payload) => {
+        console.log("New best-sell inserted:", payload.new);
+        setData((prev) => {
+          const updated = [...prev.slice(1), payload.new]; // remove first, add new
+          setFilter(updated); // optional, if using `filter`
+          return updated;
+        });
+      }
+    )
+    .subscribe();
+
+  return () => {
+    supabase.removeChannel(channel);
+  };
+}, []);
+
 
   return (
     <>

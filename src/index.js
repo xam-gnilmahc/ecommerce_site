@@ -41,6 +41,7 @@ import Popup from "./pages/Popup";
 import CronJob from "./pages/CronJob";
 import Payment from "./pages/Payment";
 import ChatBot from "./pages/ChatBot";
+import NotificationPage from "./pages/NotificationPage";
 import NotificationSettings from "./pages/NotificationSetting";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -64,6 +65,7 @@ root.render(
               <Route path="/update-password" element={<UpdatePassword />} />
               <Route path="/order-details" element={<OrderDetailsSheet />} />
               <Route path="/terms" element={<TermsandConditions />} />
+              <Route path="/notification" element={<NotificationPage />} />
               <Route
                 path="/orders/:orderId"
                 element={

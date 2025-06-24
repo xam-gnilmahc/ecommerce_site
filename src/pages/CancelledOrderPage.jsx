@@ -52,7 +52,12 @@ const CancelledOrderPage = () => {
             </Link>
           </div>
         ) : (
-          <div className="row g-3 bg-white">
+          <div className="row g-3 bg-white overflow-auto "
+          style={{
+    maxHeight: "75vh", // better on all devices
+    overflowY: "auto",
+    scrollbarWidth: "thin",
+  }}>
           {orders.map((order) => {
             const shippingAddress = parseAddress(order.shipping_address);
             const destination = `${shippingAddress?.addressLine1}, ${shippingAddress?.country}` || "Destination";
