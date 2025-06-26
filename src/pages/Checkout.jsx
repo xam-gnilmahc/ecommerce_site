@@ -135,10 +135,14 @@ const Checkout = () => {
           return;
         }
 
-        await placeOrder({ ...paymentData, payment_status: status , shippingMethod}, result);
+       const orderId = await placeOrder({ 
+          ...paymentData, 
+          payment_status: status,
+          shippingMethod 
+        }, result);
 
-        if (status == "success") {
-          setShow(true);
+        if (orderId) {
+          setShow(true); // ✅ Only show after order placement is successful
         }
       } catch (err) {
         console.log(err);

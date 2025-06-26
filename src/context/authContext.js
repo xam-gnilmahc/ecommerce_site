@@ -352,151 +352,126 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const placeOrder = async (data, stripe) => {
-    if (!memoizedUser || cart.length === 0) return;
+const placeOrder = async (data, stripe) => {
+  if (!memoizedUser || cart.length === 0) return;
 
-    try {
-      // Generate delivery date (7 days from now)
-      const today = new Date();
+  try {
+    const today = new Date();
+    const getRandomDays = (min, max) =>
+      Math.floor(Math.random() * (max - min + 1)) + min;
 
-      const getRandomDays = (min, max) => {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-      };
+    const daysToAdd =
+      data.shippingMethod === "free" ? getRandomDays(7, 23) : getRandomDays(1, 3);
 
-      const daysToAdd = data.shippingMethod === "free" 
-        ? getRandomDays(7, 23) 
-        : getRandomDays(1, 3);
+    const deliveryDate = new Date(today);
+    deliveryDate.setDate(today.getDate() + daysToAdd);
 
-      const deliveryDate = new Date(today);
-      deliveryDate.setDate(today.getDate() + daysToAdd);
+    const generateTrackingCode = () => {
+      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+      return `ORD-${Array.from({ length: 6 }, () =>
+        chars[Math.floor(Math.random() * chars.length)]
+      ).join("")}`;
+    };
 
-
-      // Generate unique tracking code (e.g., ORD-XYZ123)
-      const generateTrackingCode = () => {
-        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        const randomCode = Array.from(
-          { length: 6 },
-          () => chars[Math.floor(Math.random() * chars.length)]
-        ).join("");
-        return `ORD-${randomCode}`;
-      };
-
-      // Ensure the tracking code is unique
-      let trackingCode;
-      let isUnique = false;
-      while (!isUnique) {
-        trackingCode = generateTrackingCode();
-        const { data: existing } = await supabase
-          .from("orders")
-          .select("id")
-          .eq("tracking_number", trackingCode)
-          .limit(1);
-
-         if (!existing || existing.length === 0) {
-            isUnique = true;
-          }
-      }
-
-      // 1. Create new order
-      const { data: orderData, error: orderError } = await supabase
+    let trackingCode, isUnique = false;
+    while (!isUnique) {
+      trackingCode = generateTrackingCode();
+      const { data: existing } = await supabase
         .from("orders")
-        .insert([
-          {
-            user_id: memoizedUser.id,
-            status: data.payment_status == "success" ? "Confirmed" : "Pending",
-            created_at: new Date(),
-            total_amount: data.amount,
-            shipping_address: data.address,
-            payment_status: data.payment_status,
-            order_date: deliveryDate.toISOString(),
-            tracking_number: trackingCode,
-            shipping_method:data.shippingMethod === "free" ? 0 : 1 ,
-          },
-        ])
-        .select()
-        .single();
+        .select("id")
+        .eq("tracking_number", trackingCode)
+        .limit(1);
+      isUnique = !existing || existing.length === 0;
+    }
 
-      if (orderError) {
-        throw orderError;
-      }
+    // Create the order
+    const { data: orderData, error: orderError } = await supabase
+      .from("orders")
+      .insert([
+        {
+          user_id: memoizedUser.id,
+          status: data.payment_status === "success" ? "Confirmed" : "Pending",
+          created_at: new Date(),
+          total_amount: data.amount,
+          shipping_address: data.address,
+          payment_status: data.payment_status,
+          order_date: deliveryDate.toISOString(),
+          tracking_number: trackingCode,
+          shipping_method: data.shippingMethod === "free" ? 0 : 1,
+        },
+      ])
+      .select()
+      .single();
 
-      const orderId = orderData.id;
+    if (orderError) throw orderError;
 
-      // 2. Prepare order items
-      const orderItems = cart.map((item) => ({
-        order_id: orderId,
-        product_id: item.product_id,
-        quantity: item.quantity,
-        price_each: item.amount,
-      }));
+    const orderId = orderData.id;
 
-      // 3. Insert order items
-      const { error: itemsError } = await supabase
-        .from("order_items")
-        .insert(orderItems);
+    // Prepare order items
+    const orderItems = cart.map((item) => ({
+      order_id: orderId,
+      product_id: item.product_id,
+      quantity: item.quantity,
+      price_each: item.amount,
+    }));
 
-      if (itemsError) {
-        throw itemsError;
-      }
+    // Run async inserts in parallel
+    await Promise.all([
+      supabase.from("order_items").insert(orderItems),
 
-      // 3. Insert order items
-      const { error: logError } = await supabase
-        .from("orderpayments_logs")
-        .insert([
-          {
-            order_id: orderId,
-            stripe_payment_id: stripe.transactionId,
-            charge_id: stripe.chargeId,
-            status: stripe.message,
-            amount: data.amount,
-            currency: "USD",
-            response_data: stripe,
-          },
-        ]);
+      supabase.from("orderpayments_logs").insert([
+        {
+          order_id: orderId,
+          stripe_payment_id: stripe.transactionId,
+          charge_id: stripe.chargeId,
+          status: stripe.message,
+          amount: data.amount,
+          currency: "USD",
+          response_data: stripe,
+        },
+      ]),
 
-      if (logError) {
-        throw itemsError;
-      }
+      supabase.from("notifications").insert([
+        {
+          user_id: memoizedUser.id,
+          order_id: orderId,
+          message: `✨Your order <a href="/orders/${orderId}" target="_blank" rel="noopener noreferrer" style="color:#0d6efd; text-decoration:underline;">#${orderId}</a> has been placed successfully. Thank you for shopping with us!`,
+          read: false,
+          type: 0,
+        },
+      ]),
 
-      await supabase.from("notifications").insert([
-      {
-        user_id: memoizedUser.id,
-        order_id: orderId,
-        message: `✨Your order <a href="/orders/${orderId}" target="_blank" rel="noopener noreferrer" style="color:#0d6efd; text-decoration:underline;">#${orderId}</a> has been placed successfully. Thank you for shopping with us!`,
-        read: false,
-        type:0,
-      },
-    ]);
-  
-      await sendNotification({
-      channel: `user-${memoizedUser?.id}`,
-      event: "order-placed",
-      type:0,
-      message: {
-        orderId:orderId,
-        message: `✨Your order <a href="/orders/${orderId}" target="_blank" rel="noopener noreferrer" style="color:#0d6efd; text-decoration:underline;">#${orderId}</a> has been placed successfully. Thank you for shopping with us!`
-      }
-    });
+      sendNotification({
+        channel: `user-${memoizedUser?.id}`,
+        event: "order-placed",
+        message: {
+          orderId,
+          message: `Your order <a href="/orders/${orderId}" target="_blank" rel="noopener noreferrer" style="color:#0d6efd; text-decoration:underline;">#${orderId}</a> has been placed successfully. Thank you for shopping with us`,
+          type: 0,
+        },
+      }),
 
-      await sendOrderEmail(
+      sendOrderEmail(
         user.full_name || user.name,
         data.email,
         cart,
         data.address,
         data.amount,
         orderId,
-        deliveryDate.toISOString(),
-      );
-      // 4. Clear cart after order
-      await removeFromCartAfterOrder();
+        deliveryDate.toISOString()
+      ),
 
-      console.log("Order placed successfully with tracking:");
-      return orderId;
-    } catch (error) {
-      console.error("Error placing order:", error.message);
-      throw error;
-    }
-  };
+      removeFromCartAfterOrder(),
+    ]);
+
+    console.log("Order placed successfully with tracking:", trackingCode);
+    return orderId;
+  } catch (error) {
+    console.error("Error placing order:", error.message);
+    throw error;
+  }
+};
+
 
   const getNotificationsByUserId = async() =>{
     if (!memoizedUser?.id) return [];

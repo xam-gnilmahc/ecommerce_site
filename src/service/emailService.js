@@ -72,7 +72,7 @@ export async function sendNotification(
       }
     );
 
-     if (!res.ok) {
+    if (!res.ok) {
       console.error("push notification failed with status:", res.status);
     } else {
       console.log("Notification sent successfully");

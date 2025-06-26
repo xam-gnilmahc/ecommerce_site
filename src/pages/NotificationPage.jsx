@@ -32,6 +32,7 @@ const NotificationPage = () => {
           id: Date.now(),
           orderId: data.orderId,
           message: data.message,
+          type:data.type,
           read: false,
         },
         ...prev,
@@ -49,7 +50,7 @@ const NotificationPage = () => {
       channel.unsubscribe();
       pusher.disconnect();
     };
-  }, [user]);
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -124,21 +125,24 @@ const NotificationPage = () => {
 
       {/* Dropdown */}
       {open && (
-        <div
-          className="card shadow border-0"
-          style={{
-            position: "absolute",
-            top: "2.5rem",
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: "420px",
-            height: "400px",
-            zIndex: 1050,
-            borderRadius: "10px",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
+       <div
+  className="card border"
+  style={{
+    position: "absolute",
+    top: "2.5rem",
+    left: "50%",
+    transform: "translateX(-50%)",
+    width: "420px",
+    height: "400px",
+    zIndex: 1050,
+    borderRadius: "8px",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+    display: "flex",
+    flexDirection: "column",
+    backgroundColor: "white",
+  }}
+>
+
           {/* Fixed Header */}
           <div
             className="card-header bg-secondary text-white"
@@ -197,20 +201,20 @@ const NotificationPage = () => {
               filteredNotifications.map(
                 ({ id, order_id, message, read, created_at, type }) => (
                   <li
-                    key={id}
-                    className="list-group-item"
-                    style={{
-                      border: "none",
-                      borderBottom: "1px solid #eee",
-                      padding: "16px",
-                      cursor: "pointer",
-                      backgroundColor: read ? "#fff" : "#f9f9f9",
-                      display: "flex",
-                      gap: "12px",
-                      alignItems: "flex-start",
-                    }}
-                    onClick={() => handleNotificationClick(id, order_id)}
-                  >
+  key={id}
+  className="list-group-item"
+  style={{
+    border: "none",
+    borderBottom: "1px solid #dee2e6",
+    padding: "16px",
+    cursor: "pointer",
+    display: "flex",
+    gap: "12px",
+    alignItems: "flex-start",
+  }}
+  onClick={() => handleNotificationClick(id, order_id)}
+>
+
                     {/* Left check icon */}
                     <FaCheckCircle
                       size={20}
@@ -232,6 +236,7 @@ const NotificationPage = () => {
                             color: "black",
                           }}
                         >
+                         
                           {type === 0
                             ? "New order placed"
                             : type === 1
