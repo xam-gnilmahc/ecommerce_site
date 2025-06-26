@@ -57,12 +57,20 @@
   align-items: center;
   justify-content: space-between;
   padding: 10px 160px;
-  position: relative;
   z-index: 10;
   background-color: rgb(253, 253, 253);
   position: sticky;
   top: 0;
-  position: relative;
+}
+@keyframes fadeSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }
 
 .logoLinkContainer {
