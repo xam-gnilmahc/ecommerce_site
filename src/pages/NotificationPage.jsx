@@ -226,7 +226,7 @@ const NotificationPage = () => {
                         className="d-flex justify-content-between align-items-center"
                         style={{ marginBottom: "4px" }}
                       >
-                        <div
+                        <div 
                           style={{
                             fontWeight: 600,
                             fontSize: "0.95rem",

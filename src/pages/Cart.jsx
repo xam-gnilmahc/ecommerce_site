@@ -1,7 +1,6 @@
 import { useEffect ,useState} from "react";
 import { Footer, Navbar } from "../components";
 import { useSelector, useDispatch } from "react-redux";
-import { addCart, delCart } from "../redux/action";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import toast from "react-hot-toast";
@@ -28,8 +27,6 @@ const Cart = () => {
       } else if (action === "decrease" && updatedItem.quantity > 1) {
         updatedItem.quantity -= 1;
       }
-
-      dispatch(addCart(updatedCart));
       if (action === "increase") {
         addToCart(product);
       } else if (action === "decrease") {
