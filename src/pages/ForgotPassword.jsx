@@ -3,8 +3,6 @@ import { supabase } from "../supaBaseClient"; // Assuming you've set up supabase
 import toast from "react-hot-toast";
 import { useNavigate, Link } from "react-router-dom";
 import "./ForgotPassword.css";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
@@ -40,7 +38,6 @@ const ForgotPassword = () => {
 
   return (
     <>
-    <Navbar/>
     <div className="resetPasswordSection">
        <h2>Reset Your Password</h2>
      
@@ -74,7 +71,6 @@ const ForgotPassword = () => {
           </Link>
         </p>
     </div>
-    <Footer/>
     </>
   );
 };

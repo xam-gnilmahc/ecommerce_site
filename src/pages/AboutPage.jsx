@@ -1,5 +1,4 @@
 import React from 'react';
-import { Footer, Navbar } from "../components";
 import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
 import LaptopMacIcon from '@mui/icons-material/LaptopMac';
 import TabletIcon from '@mui/icons-material/Tablet';
@@ -38,7 +37,6 @@ const categories = [
 const AboutPage = () => {
   return (
     <>
-      <Navbar />
       <div className="container py-5">
         <div className="text-center mb-5">
           <h1 className="fw-bold display-6">About Our Brand</h1>
@@ -71,7 +69,6 @@ const AboutPage = () => {
           ))}
         </div>
       </div>
-      <Footer />
     </>
   );
 };

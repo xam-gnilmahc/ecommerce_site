@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import "./ContactPage.css";
-import { Footer, Navbar } from "../components";
 const ContactPage = () => {
   const [name, setname] = useState("");
   const [email, setEmail] = useState("");
@@ -18,7 +17,6 @@ const ContactPage = () => {
 
   return (
     <>
-      <Navbar />
       <div className="container my-3 py-3">
       <div className="contactSection">
         <div className="contactMap">
@@ -89,7 +87,6 @@ const ContactPage = () => {
         </div>
       </div>
       </div>
-      <Footer />
     </>
   );
 };

@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Footer, Navbar } from "../components";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Country, State } from "country-state-city";
@@ -173,7 +172,6 @@ const Checkout = () => {
 
   return (
     <>
-      <Navbar />
       <div className="container my-4 py-3">
         {/* <h1 className="text-center mb-4">Checkout</h1>
         <hr /> */}
@@ -776,7 +774,6 @@ const Checkout = () => {
           </div>
         )}
       </div>
-      <Footer />
     </>
   );
 };

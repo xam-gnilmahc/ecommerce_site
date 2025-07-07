@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Footer } from "../components";
 import { supabase } from "../supaBaseClient";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/authContext";
 import FacebookLogin from "react-facebook-login";
-import Navbar from "../components/Navbar";
 import "./Login.css";
 
 const Login = () => {
@@ -69,7 +67,6 @@ const Login = () => {
 
   return (
     <>
-      <Navbar />
       <div className="loginSignUpSection">
         <div className="loginSignUpContainer">
         <div className="loginSignUpTabs">
@@ -165,7 +162,6 @@ const Login = () => {
           </div>
         </div>
       </div>
-      <Footer />
     </>
   );
 };

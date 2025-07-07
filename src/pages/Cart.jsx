@@ -1,50 +1,45 @@
-import { useEffect ,useState} from "react";
-import { Footer, Navbar } from "../components";
-import { useSelector, useDispatch } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import { useAuth } from "../context/authContext";
-import toast from "react-hot-toast";
-import { FaCarTunnel } from "react-icons/fa6";
-import { FaTimes } from "react-icons/fa";
+import { FaTimes, FaQuestion } from "react-icons/fa";
 import LottieLoader from "../components/LottieLoader";
 import "./cart.css";
-import { FaQuestion,FaChevronDown, FaChevronUp } from "react-icons/fa";
+import "animate.css"; // ✅ added animation library
+import { useAppDispatch } from "../redux/index.ts";
+import { addToCart, removeFromCart, fetchCartItems } from "../redux/slice/userCart.ts";
 
 const Cart = () => {
-  const state = useSelector((state) => state.handleCart);
-  const dispatch = useDispatch();
-  const { cart, addToCart, removeFromCart, user, loading } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth();
+  const dispatch = useAppDispatch();
+  const { items: cart, fetchLoading  } = useSelector((state) => state.addToCart);
+
+  useEffect(() => {
+    if (user?.id) {
+      dispatch(fetchCartItems(user.id));
+    }
+  }, [user, dispatch]);
+
   const updateItemQuantity = (product, action) => {
-    const updatedCart = [...cart];
-    const itemIndex = updatedCart.findIndex(
-      (item) => item.products.id === product.id
-    );
-    if (itemIndex !== -1) {
-      const updatedItem = updatedCart[itemIndex];
-      if (action === "increase") {
-        updatedItem.quantity += 1;
-      } else if (action === "decrease" && updatedItem.quantity > 1) {
-        updatedItem.quantity -= 1;
-      }
-      if (action === "increase") {
-        addToCart(product);
-      } else if (action === "decrease") {
-        console.log('decrease');
-        removeFromCart(product);
-      }
+    if (!user) return;
+
+    if (action === "increase") {
+      dispatch(addToCart({ userId: user.id, product }));
+    } else if (action === "decrease") {
+      dispatch(removeFromCart({ userId: user.id, product }));
     }
   };
 
   const handleRemoveFromCart = (product) => {
-    removeFromCart(product, true);
+    if (!user) return;
+    dispatch(removeFromCart({ userId: user.id, product }));
   };
 
   const EmptyCart = () => (
-    <div className="container py-5 text-center">
-      <h3 className="mb-4">Your Cart is Empty</h3>
-      <Link to="/" className="btn btn-outline-dark btn-lg">
-        <i className="fa fa-arrow-left me-2"></i> Continue Shopping
+    <div className="container py-5 text-center bg-white">
+      <h3 className="mb-4 text-primary">Your Cart is Empty</h3>
+      <Link to="/" className="btn btn-outline-primary btn-lg">
+        <i className="fa fa-arrow-left me-2" /> Continue Shopping
       </Link>
     </div>
   );
@@ -286,9 +281,8 @@ const Cart = () => {
 
   return (
     <>
-      <Navbar />
       <div className="container py-4">
-        {loading ? (
+        {fetchLoading  ? (
           <LottieLoader />
         ) : cart.length ? (
           <ShowCart />
@@ -296,7 +290,6 @@ const Cart = () => {
           <EmptyCart />
         )}
       </div>
-      <Footer />
     </>
   );
 };
