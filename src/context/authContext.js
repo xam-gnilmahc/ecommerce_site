@@ -73,8 +73,8 @@ export const AuthProvider = ({ children }) => {
             .insert([
               {
                 id: authenticatedUser.id,
-                email: authenticatedUser.email || "ashimasharma742@gmail.com",
-                name: authenticatedUser.full_name || "ashima sharma",
+                email: authenticatedUser.email || "null",
+                name: authenticatedUser.full_name || "null",
                 created_at: new Date(),
               },
             ])
@@ -115,6 +115,9 @@ export const AuthProvider = ({ children }) => {
       async (event, session) => {
         if (session) {
           setUser({ ...session.user.user_metadata, id: session.user.id });
+          if(user){
+            handleUserInSupabase(user);
+          }
         };
       }
     );
@@ -124,52 +127,52 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
   
-   useEffect(() => {
-    // Fallback: try restoring session from localStorage manually
-    const restoreSession = async () => {
-      // Supabase stores the session under a key like this:
-      const key = Object.keys(localStorage).find((k) =>
-        k.startsWith("sb-") && k.endsWith("-auth-token")
-      );
+  //  useEffect(() => {
+  //   // Fallback: try restoring session from localStorage manually
+  //   const restoreSession = async () => {
+  //     // Supabase stores the session under a key like this:
+  //     const key = Object.keys(localStorage).find((k) =>
+  //       k.startsWith("sb-") && k.endsWith("-auth-token")
+  //     );
   
-      if (key) {
-        try {
-          const sessionRaw = localStorage.getItem(key);
-          if (sessionRaw) {
-            const session = JSON.parse(sessionRaw);
-            if (session?.access_token && session?.user) {
-              setUser({ ...session.user.user_metadata, id: session.user.id });
-              setToken(session.access_token);
-            }
-          }
-        } catch (err) {
-          console.error("Failed to restore session:", err);
-        }
-      }
+  //     if (key) {
+  //       try {
+  //         const sessionRaw = localStorage.getItem(key);
+  //         if (sessionRaw) {
+  //           const session = JSON.parse(sessionRaw);
+  //           if (session?.access_token && session?.user) {
+  //             setUser({ ...session.user.user_metadata, id: session.user.id });
+  //             setToken(session.access_token);
+  //           }
+  //         }
+  //       } catch (err) {
+  //         console.error("Failed to restore session:", err);
+  //       }
+  //     }
   
-      setLoading(false);
-    };
+  //     setLoading(false);
+  //   };
   
-    restoreSession();
+  //   restoreSession();
   
-  }, []);
+  // }, []);
 
 
 
 
-  // // Fetch cart items when user is set
-  useEffect(() => {
-    const updateUserData = async () => {
-      if (user && user.id) {
-        if (!memoizedProcessed) {
-          await handleUserInSupabase(user);
-        }
-        await fetchCartItems(user.id);
-      }
-    };
+  // // // Fetch cart items when user is set
+  // useEffect(() => {
+  //   const updateUserData = async () => {
+  //     if (user && user.id) {
+  //       if (!memoizedProcessed) {
+  //         await handleUserInSupabase(user);
+  //       }
+  //       await fetchCartItems(user.id);
+  //     }
+  //   };
 
-    updateUserData();
-  }, [user, handleUserInSupabase, memoizedProcessed]);
+  //   updateUserData();
+  // }, [user, handleUserInSupabase, memoizedProcessed]);
 
   const logout = () => {
     localStorage.clear();

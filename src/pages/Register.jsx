@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Footer, Navbar } from "../components";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../supaBaseClient"; // adjust path as needed
 import toast from "react-hot-toast";
@@ -47,7 +46,6 @@ const Register = () => {
 
   return (
     <>
-    <Navbar />
       <div className="loginSignUpSection">
         <div className="loginSignUpContainer">
         <div className="loginSignUpTabs">
@@ -125,7 +123,6 @@ const Register = () => {
           </div>
         </div>
       </div>
-      <Footer />
     </>
   );
 };

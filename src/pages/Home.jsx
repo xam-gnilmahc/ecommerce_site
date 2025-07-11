@@ -1,4 +1,4 @@
-import { Navbar, Main, Product, Footer} from "../components";
+import {  Main} from "../components";
 import Filters from "../components/Filter";
 import HeroSection from "./HeroSection";
 import CollectionBox from "../components/collectionBox/CollectionBox";
@@ -8,7 +8,6 @@ import Banner from "../components/Banner/Banner";
 function Home() {
   return (
     <>
-      <Navbar />
       {/* <HeroSection/> */}
       <Main/>
       <BestSelling/>
@@ -16,9 +15,7 @@ function Home() {
 
       <DealTimer/>
       <Banner/>
-    
-      {/* <Product /> */}
-      <Footer />
+
     </>
   )
 }

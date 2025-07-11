@@ -1,11 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Navbar } from "../components";
 
 const PageNotFound = () => {
   return (
     <>
-      <Navbar />
       <div
         className="container-fluid d-flex flex-column justify-content-center align-items-center"
         style={{ minHeight: "80vh", backgroundColor: "#f8f9fa" }}

@@ -1,6 +1,7 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 
+// Pages
 import {
   Home,
   Product,
@@ -11,9 +12,8 @@ import {
   Login,
   Register,
   Checkout,
-  PageNotFound,
+  PageNotFound
 } from "./pages";
-
 
 import UpdatePassword from "./pages/UpdatePassword";
 import OrderDetailsSheet from "./pages/OrderDetailsSheet";
@@ -28,83 +28,42 @@ import CronJob from "./pages/CronJob";
 import NotificationPage from "./pages/NotificationPage";
 import NotificationSettings from "./pages/NotificationSetting";
 
-import ProtectedRoute from "./components/ProtectedRoute";
-import PublicRoute from "./components/PublicRoute";
+
+// Layouts
+import GuestLayout from "./layouts/GuestLayout";
+import AuthLayout from "./layouts/AuthLayout";
 
 const RoutesComponent = () => (
   <Routes>
-    <Route path="/" element={<Home />} />
-    <Route path="/cronjob" element={<CronJob />} />
-    <Route path="/shop" element={<Products />} />
-    <Route path="/product/:id" element={<Product />} />
-    <Route path="/about" element={<AboutPage />} />
-    <Route path="/contact" element={<ContactPage />} />
-    <Route path="/forgot-password" element={<ForgotPassword />} />
-    <Route path="/update-password" element={<UpdatePassword />} />
-    <Route path="/order-details" element={<OrderDetailsSheet />} />
-    <Route path="/terms" element={<TermsandConditions />} />
-    <Route path="/notification" element={<NotificationPage />} />
-    <Route
-      path="/orders/:orderId"
-      element={
-        <ProtectedRoute>
-          <OrderDetailsPage />
-        </ProtectedRoute>
-      }
-    />
-    <Route path="/payments" element={<PaymentsPage />} />
-    <Route path="/notification" element={<NotificationSettings />} />
-    <Route
-      path="/cart"
-      element={
-        <ProtectedRoute>
-          <Cart />
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/return-cancel"
-      element={
-        <ProtectedRoute>
-          <CancelledOrderPage />
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/order"
-      element={
-        <ProtectedRoute>
-          <OrdersPage />
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/profile"
-      element={
-        <ProtectedRoute>
-          <Profile />
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/login"
-      element={
-        <PublicRoute>
-          <Login />
-        </PublicRoute>
-      }
-    />
-    <Route path="/register" element={<Register />} />
-    <Route
-      path="/checkout"
-      element={
-        <ProtectedRoute>
-          <Checkout />
-        </ProtectedRoute>
-      }
-    />
-    <Route path="*" element={<PageNotFound />} />
-    <Route path="/product/*" element={<PageNotFound />} />
+    {/* Public/Guest Layout */}
+    <Route element={<GuestLayout />}>
+      <Route path="/" element={<Home />} />
+      <Route path="/shop" element={<Products />} />
+      <Route path="/product/:id" element={<Product />} />
+      <Route path="/about" element={<AboutPage />} />
+      <Route path="/contact" element={<ContactPage />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/update-password" element={<UpdatePassword />} />
+      <Route path="/order-details" element={<OrderDetailsSheet />} />
+      <Route path="/terms" element={<TermsandConditions />} />
+      <Route path="/cronjob" element={<CronJob />} />
+      <Route path="*" element={<PageNotFound />} />
+    </Route>
+
+    {/* Authenticated Layout */}
+    <Route element={<AuthLayout />}>
+      <Route path="/cart" element={<Cart />} />
+      <Route path="/checkout" element={<Checkout />} />
+      <Route path="/order" element={<OrdersPage />} />
+      <Route path="/profile" element={<Profile />} />
+      <Route path="/payments" element={<PaymentsPage />} />
+      <Route path="/return-cancel" element={<CancelledOrderPage />} />
+      <Route path="/orders/:orderId" element={<OrderDetailsPage />} />
+      <Route path="/notification" element={<NotificationPage />} />
+      <Route path="/notification-settings" element={<NotificationSettings />} />
+    </Route>
   </Routes>
 );
 
