@@ -6,9 +6,7 @@ import ProtectedRoute from "../components/ProtectedRoute.jsx";
 
 const AuthLayout = () => (
   <ProtectedRoute>
-    <Navbar />
     <Outlet />
-    <Footer />
   </ProtectedRoute>
 );
 

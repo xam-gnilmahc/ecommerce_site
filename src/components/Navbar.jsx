@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { NavLink, Link } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import { useAppDispatch } from "../redux/index.ts";
-import { fetchCartItems } from "../redux/slice/userCart.ts";
+import { fetchTotalCart } from "../redux/slice/userCart.ts";
 import { RootState } from "../redux/index.ts";
 import Badge from "@mui/material/Badge";
 import { RiShoppingBagLine, RiMenu2Line } from "react-icons/ri";
@@ -22,11 +22,11 @@ const Navbar = () => {
   const dispatch = useAppDispatch();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const { items } = useSelector((state: RootState) => state.addToCart);
+  const { totalCart } = useSelector((state: RootState) => state.addToCart);
 
   useEffect(() => {
     if (user?.id) {
-      dispatch(fetchCartItems(user.id));
+      dispatch(fetchTotalCart(user.id));
     }
   }, [user, dispatch]);
 
@@ -119,8 +119,8 @@ const Navbar = () => {
                 ) : <FaRegUser size={20} color="black" />}
               </NavLink>
               <NavLink to="/cart" className="me-2">
-                <Badge
-                  badgeContent={items.length || "0"}
+               <Badge
+                  badgeContent={totalCart || "0"}
                   color="primary"
                   anchorOrigin={{ vertical: "bottom", horizontal: "right" }}>
                   <RiShoppingBagLine size={22} color="black" />
@@ -142,12 +142,12 @@ const Navbar = () => {
             <Link to="/"><img src={logo} alt="Logo" /></Link>
           </div>
           <Link to="/cart">
-            <Badge
-              badgeContent={user && items.length === 0 ? "0" : items.length}
-              color="primary"
-              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}>
-              <RiShoppingBagLine size={22} color="black" />
-            </Badge>
+           <Badge
+          badgeContent={totalCart || "0"}
+          color="primary"
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}>
+          <RiShoppingBagLine size={22} color="black" />
+        </Badge>
           </Link>
         </div>
 
