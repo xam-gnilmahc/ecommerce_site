@@ -10,15 +10,51 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTime);
 
+const PAGE_SIZE = 10; // number of notifications to load per batch
+
 const NotificationPage = () => {
   const { user, getNotificationsByUserId } = useAuth();
   const [notifications, setNotifications] = useState([]);
   const [open, setOpen] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(1); // page number for pagination
+
   const containerRef = useRef();
+  const listRef = useRef();
+
+  // Fetch notifications in pages
+  const fetchNotifications = async (pageNum) => {
+    // Assuming getNotificationsByUserId supports pagination with page and pageSize params
+    // If not, you need to modify backend or filter manually here
+    try {
+      setLoadingMore(true);
+      const allData = await getNotificationsByUserId(); // Get all first (adjust if backend supports pagination)
+
+      // Slice data for pagination
+      const start = (pageNum - 1) * PAGE_SIZE;
+      const newItems = allData.slice(start, start + PAGE_SIZE);
+
+      // Append or initialize
+      setNotifications((prev) =>
+        pageNum === 1 ? newItems : [...prev, ...newItems]
+      );
+
+      // If less than page size received, no more data
+      if (newItems.length < PAGE_SIZE) setHasMore(false);
+      else setHasMore(true);
+
+      setLoadingMore(false);
+    } catch (error) {
+      console.error("Failed to load notifications:", error);
+      setLoadingMore(false);
+    }
+  };
 
   useEffect(() => {
     if (!user?.id) return;
 
+    // Setup Pusher for real-time updates (same as before)
     const pusher = new Pusher("8a749302cc2bbbaf87b5", {
       cluster: "ap1",
       encrypted: true,
@@ -40,18 +76,17 @@ const NotificationPage = () => {
       ]);
     });
 
-    (async () => {
-      const data = await getNotificationsByUserId();
-      setNotifications(data);
-    })();
+    // Fetch first page
+    fetchNotifications(1);
 
     return () => {
       channel.unbind_all();
       channel.unsubscribe();
       pusher.disconnect();
     };
-  }, []);
+  }, [user?.id]);
 
+  // Handle clicks outside dropdown to close
   useEffect(() => {
     function handleClickOutside(event) {
       if (
@@ -73,19 +108,27 @@ const NotificationPage = () => {
     };
   }, [open]);
 
+  // Infinite scroll handler
+  const onScroll = () => {
+    if (!listRef.current || loadingMore || !hasMore) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = listRef.current;
+
+    // When user scrolls near bottom (e.g. 100px from bottom)
+    if (scrollHeight - scrollTop - clientHeight < 100) {
+      setPage((prevPage) => prevPage + 1);
+    }
+  };
+
+  // Fetch more when page changes (except first load)
+  useEffect(() => {
+    if (page === 1) return; // already loaded page 1 on mount
+    fetchNotifications(page);
+  }, [page]);
+
   const unreadCount = notifications.filter((n) => !n.read).length;
 
-  const handleNotificationClick = async (id, orderId) => {
-    // try {
-    //   await supabase.from("notifications").update({ read: true }).eq("id", id);
-    // } catch (err) {
-    //   console.error("Failed to mark notification as read:", err.message);
-    // }
-
-    // setNotifications((prev) =>
-    //   prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-    // );
-
+  const handleNotificationClick = (id, orderId) => {
     window.open(`/orders/${orderId}`, "_blank");
   };
 
@@ -111,7 +154,6 @@ const NotificationPage = () => {
 
   return (
     <div style={{ position: "relative" }} ref={containerRef}>
-      {/* Bell Icon with Hover Circle */}
       <div
         onClick={handleBellClick}
         style={{
@@ -150,7 +192,6 @@ const NotificationPage = () => {
           )}
         </div>
       </div>
-      {/* Dropdown */}
       {open && (
         <div
           className="notification-dropdown card border"
@@ -168,7 +209,7 @@ const NotificationPage = () => {
             flexDirection: "column",
             backgroundColor: "white",
             opacity: 0,
-            animation: "fadeSlideIn 0.3s ease forwards", // apply the animation
+            animation: "fadeSlideIn 0.3s ease forwards",
           }}
         >
           <div className="card-header bg-white  d-flex justify-content-between py-3 align-items-center">
@@ -184,6 +225,8 @@ const NotificationPage = () => {
           <ul
             className="list-group list-group-flush"
             style={{ overflowY: "auto", flex: 1 }}
+            ref={listRef}
+            onScroll={onScroll}
           >
             {notifications.length === 0 ? (
               <li className="list-group-item text-center text-muted py-3">
@@ -226,7 +269,7 @@ const NotificationPage = () => {
                         className="d-flex justify-content-between align-items-center"
                         style={{ marginBottom: "4px" }}
                       >
-                        <div 
+                        <div
                           style={{
                             fontWeight: 600,
                             fontSize: "0.95rem",
@@ -250,6 +293,12 @@ const NotificationPage = () => {
                   </li>
                 )
               )
+            )}
+            {/* Loading indicator at bottom */}
+            {loadingMore && (
+              <li className="list-group-item text-center text-muted py-3">
+                Loading more notifications...
+              </li>
             )}
           </ul>
         </div>

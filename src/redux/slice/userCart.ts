@@ -9,14 +9,16 @@ interface CartState {
   fetchLoading: boolean;   // used only during initial fetch
   status: 'idle' | 'loading' | 'success' | 'failed';
   error?: string;
+  totalCart: number;
 }
 
 const initialState: CartState = {
   items: [],
   loading: false,
-  fetchLoading: true,
+  fetchLoading: false,
   status: 'idle',
   error: undefined,
+  totalCart: 0,
 };
 
 export const fetchCartItems = createAsyncThunk(
@@ -49,6 +51,25 @@ export const fetchCartItems = createAsyncThunk(
   }
 );
 
+export const fetchTotalCart = createAsyncThunk(
+  'cart/fetchTotalCart',
+  async (userId: string, { rejectWithValue }) => {
+    try {
+      const { data, error } = await supabase
+        .from('cart')
+        .select('id') // Only need the ID or any field
+        .eq('user_id', userId);
+
+      if (error) return rejectWithValue(error.message);
+
+      return data.length; // Count of unique items
+    } catch (err) {
+      return rejectWithValue('Failed to fetch total cart count');
+    }
+  }
+);
+
+
 export const addToCart = createAsyncThunk(
   'cart/addToCart',
   async ({ userId, product }, { rejectWithValue, dispatch }) => {
@@ -61,37 +82,76 @@ export const addToCart = createAsyncThunk(
         .single();
 
       if (selectError && selectError.code !== 'PGRST116') {
-        toast.error(`Failed to check cart: ${selectError.message}`);
         return rejectWithValue(selectError.message);
       }
 
       if (!existingItem) {
-        const { error: insertError } = await supabase.from('cart').insert([{
-          product_id: product.id,
-          user_id: userId,
-          amount: product.amount,
-          quantity: product.qty ?? 1,
-        }]);
-        if (insertError) {
-          toast.error(`Failed to add to cart: ${insertError.message}`);
-          return rejectWithValue(insertError.message);
-        }
-      } else {
-        const { error: updateError } = await supabase
+        const { data: inserted, error: insertError } = await supabase
           .from('cart')
-          .update({ quantity: existingItem.quantity + (product.qty ?? 1) })
-          .eq('id', existingItem.id);
-        if (updateError) {
-          toast.error(`Failed to update cart quantity: ${updateError.message}`);
-          return rejectWithValue(updateError.message);
-        }
+          .insert([{
+            product_id: product.id,
+            user_id: userId,
+            amount: product.amount,
+            quantity: product.qty ?? 1,
+          }])
+          .select('*, products:product_id(id, name, banner_url, amount, description, rating)') // return new item with product
+          .single();
+
+        if (insertError) return rejectWithValue(insertError.message);
+
+        toast.success('Product added to cart!');
+        await dispatch(fetchTotalCart(userId));
+        return inserted;
+      } else {
+        const newQty = existingItem.quantity + (product.qty ?? 1);
+
+        const { data: updated, error: updateError } = await supabase
+          .from('cart')
+          .update({ quantity: newQty })
+          .eq('id', existingItem.id)
+          .select('*, products:product_id(id, name, banner_url, amount, description, rating)')
+          .single();
+
+        if (updateError) return rejectWithValue(updateError.message);
+
+        await dispatch(fetchTotalCart(userId));
+        return updated;
+      }
+    } catch (err) {
+      toast.error('Error adding to cart');
+      return rejectWithValue('Unknown error occurred');
+    }
+  }
+);
+
+export const removeItemDirectlyFromCart = createAsyncThunk(
+  'cart/removeItemDirectlyFromCart',
+  async ({ userId, productId }, { rejectWithValue, dispatch }) => {
+    try {
+      const { data: existingItem, error: findError } = await supabase
+        .from('cart')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('product_id', productId)
+        .single();
+
+      if (findError || !existingItem) {
+        return rejectWithValue(findError?.message || 'Item not found');
       }
 
-      toast.success('Product added to cart!');
-      await dispatch(fetchCartItems(userId));
+      const { error: deleteError } = await supabase
+        .from('cart')
+        .delete()
+        .eq('id', existingItem.id);
+
+      if (deleteError) {
+        return rejectWithValue(deleteError.message);
+      }
+
+      await dispatch(fetchTotalCart(userId));
+      return { removedId: existingItem.id };
     } catch (err) {
-      toast.error('Unknown error occurred while adding to cart');
-      return rejectWithValue('Unknown error occurred');
+      return rejectWithValue('Failed to remove item from cart');
     }
   }
 );
@@ -102,7 +162,7 @@ export const removeFromCart = createAsyncThunk(
     try {
       const { data: existingItem, error: selectError } = await supabase
         .from('cart')
-        .select('id, quantity')
+        .select('id, quantity, product_id')
         .eq('user_id', userId)
         .eq('product_id', product.id)
         .single();
@@ -112,33 +172,39 @@ export const removeFromCart = createAsyncThunk(
         return rejectWithValue(selectError.message);
       }
 
-      if (existingItem) {
-        const newQty = existingItem.quantity - 1;
-
-        if (newQty > 0) {
-          const { error: updateError } = await supabase
-            .from('cart')
-            .update({ quantity: newQty })
-            .eq('id', existingItem.id);
-          if (updateError) {
-            toast.error(`Failed to update cart quantity: ${updateError.message}`);
-            return rejectWithValue(updateError.message);
-          }
-        } else {
-          const { error: deleteError } = await supabase
-            .from('cart')
-            .delete()
-            .eq('id', existingItem.id);
-          if (deleteError) {
-            toast.error(`Failed to remove item from cart: ${deleteError.message}`);
-            return rejectWithValue(deleteError.message);
-          }
-        }
-
-        await dispatch(fetchCartItems(userId));
-      } else {
+      if (!existingItem) {
         toast.error("Item not found in cart");
         return rejectWithValue("Item not found in cart");
+      }
+
+      const newQty = existingItem.quantity - 1;
+
+      if (newQty > 0) {
+        const { data: updated, error: updateError } = await supabase
+          .from('cart')
+          .update({ quantity: newQty })
+          .eq('id', existingItem.id)
+          .select('*, products:product_id(id, name, banner_url, amount, description, rating)')
+          .single();
+
+        if (updateError) {
+          toast.error(`Failed to update cart quantity: ${updateError.message}`);
+          return rejectWithValue(updateError.message);
+        }
+
+        return updated;
+      } else {
+        const { error: deleteError } = await supabase
+          .from('cart')
+          .delete()
+          .eq('id', existingItem.id);
+
+        if (deleteError) {
+          toast.error(`Failed to remove item from cart: ${deleteError.message}`);
+          return rejectWithValue(deleteError.message);
+        }
+        await dispatch(fetchTotalCart(userId));
+        return { removedId: existingItem.id };
       }
     } catch (err) {
       toast.error("Unknown error occurred while removing from cart");
@@ -147,6 +213,7 @@ export const removeFromCart = createAsyncThunk(
   }
 );
 
+
 const cartSlice = createSlice({
   name: 'cart',
   initialState,
@@ -154,24 +221,60 @@ const cartSlice = createSlice({
   extraReducers: (builder) => {
     builder
       // Add to Cart
-      .addCase(addToCart.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(addToCart.fulfilled, (state) => {
+      .addCase(addToCart.fulfilled, (state, action) => {
         state.loading = false;
-      })
-      .addCase(addToCart.rejected, (state) => {
-        state.loading = false;
-      })
+        const updated = action.payload;
 
+        const index = state.items.findIndex(item => item.product_id === updated.product_id);
+        if (index !== -1) {
+          // update quantity
+          state.items[index] = updated;
+        } else {
+          // add new item
+          state.items.push(updated);
+        }
+      })
       // Remove from Cart
       .addCase(removeFromCart.pending, (state) => {
         state.loading = true;
       })
-      .addCase(removeFromCart.fulfilled, (state) => {
+      .addCase(removeFromCart.fulfilled, (state, action) => {
         state.loading = false;
+
+        if ('removedId' in action.payload) {
+          const index = state.items.findIndex(item => item.id === action.payload.removedId);
+          if (index !== -1) {
+            state.items.splice(index, 1); // ✅ directly remove the item
+          }
+        } else {
+          const updated = action.payload;
+          const index = state.items.findIndex(item => item.product_id === updated.product_id);
+          if (index !== -1) {
+            state.items[index] = updated; // ✅ update item in place
+          }
+        }
       })
       .addCase(removeFromCart.rejected, (state) => {
+        state.loading = false;
+      })
+      .addCase(removeItemDirectlyFromCart.fulfilled, (state, action) => {
+        const index = state.items.findIndex(item => item.id === action.payload.removedId);
+        if (index !== -1) {
+          state.items.splice(index, 1);
+        }
+      })
+      .addCase(removeItemDirectlyFromCart.rejected, (state, action) => {
+        state.error = typeof action.payload === 'string' ? action.payload : 'Failed to remove item';
+      })
+      // Fetch total cart
+      .addCase(fetchTotalCart.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchTotalCart.fulfilled, (state, action) => {
+        state.loading = false;
+        state.totalCart = action.payload;
+      })
+      .addCase(fetchTotalCart.rejected, (state) => {
         state.loading = false;
       })
 
