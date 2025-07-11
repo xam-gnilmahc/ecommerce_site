@@ -482,7 +482,6 @@ const Product = () => {
   };
   return (
     <>
-      <Navbar />
       <div className="productSection">
         <div className=" productShowCase">{loading ? <Loading /> : <ShowProduct />}</div>
         <div className="row my-5 py-5">

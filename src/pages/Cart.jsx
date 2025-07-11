@@ -7,12 +7,17 @@ import LottieLoader from "../components/LottieLoader";
 import "./cart.css";
 import "animate.css"; // ✅ added animation library
 import { useAppDispatch } from "../redux/index.ts";
-import { addToCart, removeFromCart, fetchCartItems } from "../redux/slice/userCart.ts";
+import {
+  addToCart,
+  removeFromCart,
+  fetchCartItems,
+  removeItemDirectlyFromCart,
+} from "../redux/slice/userCart.ts";
 
 const Cart = () => {
   const { user } = useAuth();
   const dispatch = useAppDispatch();
-  const { items: cart, fetchLoading  } = useSelector((state) => state.addToCart);
+  const { items: cart, fetchLoading } = useSelector((state) => state.addToCart);
 
   useEffect(() => {
     if (user?.id) {
@@ -32,7 +37,9 @@ const Cart = () => {
 
   const handleRemoveFromCart = (product) => {
     if (!user) return;
-    dispatch(removeFromCart({ userId: user.id, product }));
+    dispatch(
+      removeItemDirectlyFromCart({ userId: user.id, productId: product.id })
+    );
   };
 
   const EmptyCart = () => (
@@ -46,7 +53,7 @@ const Cart = () => {
 
   const ShowCart = () => {
     let subtotal = 0;
-    let shipping = 0.00;
+    let shipping = 0.0;
     let totalItems = 0;
 
     cart.forEach((item) => {
@@ -282,7 +289,7 @@ const Cart = () => {
   return (
     <>
       <div className="container py-4">
-        {fetchLoading  ? (
+        {fetchLoading ? (
           <LottieLoader />
         ) : cart.length ? (
           <ShowCart />
