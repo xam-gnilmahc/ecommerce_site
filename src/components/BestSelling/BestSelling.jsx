@@ -64,56 +64,17 @@ const BestSelling = () => {
     };
   }, []);
 
-  useEffect(() => {
-    const channel = supabase
-      .channel("realtime:best_sell")
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "best_selling_product",
-        },
-        (payload) => {
-          console.log("New best-sell inserted:", payload.new);
-          setData((prev) => {
-            const updated = [...prev.slice(1), payload.new];
-            setFilter(updated);
-            return updated;
-          });
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
-
-const LoadingSkeleton = () => (
-  <div className="row justify-content-center">
-    {[...Array(4)].map((_, idx) => (
-      <div
-        key={idx}
-        className="col-6 col-md-4 col-lg-3 d-flex justify-content-center mb-4"
-      >
-        <div
-          className="card p-2 w-100"
-          style={{
-            maxWidth: "250px",
-            minHeight: "320px",
-            border: "1px solid #dee2e6",
-            borderRadius: "8px",
-          }}
-        >
-          <Skeleton height={180} />
-          <Skeleton height={20} className="mt-2" />
-          <Skeleton width={80} height={20} />
+ const LoadingSkeleton = () => (
+    <>
+    <div className="row">
+      {[...Array(4)].map((_, idx) => (
+        <div key={idx} className="col-6 col-md-4 col-lg-3">
+          <Skeleton height={350} />
         </div>
+      ))}
       </div>
-    ))}
-  </div>
-);
+    </>
+  );
 
   return (
     <div className="limitedProductSection">

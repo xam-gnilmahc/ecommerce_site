@@ -12,7 +12,6 @@ function Home() {
       <Main/>
       <BestSelling/>
       <CollectionBox/>
-
       <DealTimer/>
       <Banner/>
 
