@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./BestSelling.css";
-
+import { useSelector } from "react-redux";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -11,6 +11,8 @@ import { useAuth } from "../../context/authContext";
 import { FiHeart } from "react-icons/fi";
 import { FaStar, FaCartPlus } from "react-icons/fa";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import { addToCart } from "../../redux/slice/userCart.ts";
+import { useAppDispatch } from "../../redux/index.ts";
 
 import { supabase } from "../../supaBaseClient";
 import toast from "react-hot-toast";
@@ -18,15 +20,16 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
 const BestSelling = () => {
-  const { bestSellingProduct, addToCart, user } = useAuth();
+  const { bestSellingProduct, user } = useAuth();
   const [wishList, setWishList] = useState({});
   const [data, setData] = useState([]);
   const [filter, setFilter] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const addProduct = async (product) => {
-    await addToCart(product);
+    dispatch(addToCart({ userId: user.id, product }));
   };
 
   const handleWishlistClick = (productID) => {
@@ -132,8 +135,7 @@ const BestSelling = () => {
                             toast.error("Please login to add products to cart.");
                             navigate("/login");
                             return;
-                          }
-                          toast.success("Added to cart");
+                          }         
                           addProduct(product);
                         }}
                       >

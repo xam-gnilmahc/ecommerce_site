@@ -13,6 +13,7 @@ import {
   fetchCartItems,
   removeItemDirectlyFromCart,
 } from "../redux/slice/userCart.ts";
+import Navbar from "../components/Navbar.jsx";
 
 const Cart = () => {
   const { user } = useAuth();
@@ -288,6 +289,7 @@ const Cart = () => {
 
   return (
     <>
+    <Navbar/>
       <div className="container py-4">
         {fetchLoading ? (
           <LottieLoader />

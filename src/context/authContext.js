@@ -76,6 +76,7 @@ export const AuthProvider = ({ children }) => {
                 email: authenticatedUser.email || "null",
                 name: authenticatedUser.full_name || "null",
                 created_at: new Date(),
+                profile:authenticatedUser.picture || null
               },
             ])
             .select();
@@ -89,8 +90,9 @@ export const AuthProvider = ({ children }) => {
           const { data: updateData, error: updateError } = await supabase
             .from("users")
             .update({
-              email: authenticatedUser.email || "ashimasharma742@gmail.com",
-              name: authenticatedUser.full_name || "ashima sharma",
+              email: authenticatedUser.email ,
+              name: authenticatedUser.full_name,
+              profile: authenticatedUser.picture || null
             })
             .eq("email", authenticatedUser.email);
 
@@ -114,10 +116,9 @@ export const AuthProvider = ({ children }) => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (session) {
+          console.log('max');
           setUser({ ...session.user.user_metadata, id: session.user.id });
-          if(user){
-            handleUserInSupabase(user);
-          }
+          handleUserInSupabase({...session.user.user_metadata, id: session.user.id });
         };
       }
     );
@@ -476,15 +477,16 @@ const placeOrder = async (data, stripe) => {
 };
 
 
-  const getNotificationsByUserId = async() =>{
-    if (!memoizedUser?.id) return [];
+ const getNotificationsByUserId = async (start, end) => {
+  if (!memoizedUser?.id) return [];
 
   try {
     const { data, error } = await supabase
       .from("notifications")
       .select("*")
       .eq("user_id", memoizedUser?.id)
-      .order("id", { ascending: false });
+      .order("id", { ascending: false })
+      .range(start, end); // Only fetch the required slice
 
     if (error) {
       console.error("Failed to fetch notifications:", error.message);
@@ -496,8 +498,8 @@ const placeOrder = async (data, stripe) => {
     console.error("Unexpected error fetching notifications:", err);
     return [];
   }
+};
 
-  }
 
   // Inside AppContextProvider or export separately
   const fetchUserOrders = async () => {

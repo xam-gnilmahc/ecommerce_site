@@ -25,24 +25,19 @@ const NotificationPage = () => {
 
   // Fetch notifications in pages
   const fetchNotifications = async (pageNum) => {
-    // Assuming getNotificationsByUserId supports pagination with page and pageSize params
-    // If not, you need to modify backend or filter manually here
     try {
       setLoadingMore(true);
-      const allData = await getNotificationsByUserId(); // Get all first (adjust if backend supports pagination)
 
-      // Slice data for pagination
       const start = (pageNum - 1) * PAGE_SIZE;
-      const newItems = allData.slice(start, start + PAGE_SIZE);
+      const end = start + PAGE_SIZE - 1;
 
-      // Append or initialize
+      const newItems = await getNotificationsByUserId(start, end);
+
       setNotifications((prev) =>
         pageNum === 1 ? newItems : [...prev, ...newItems]
       );
 
-      // If less than page size received, no more data
-      if (newItems.length < PAGE_SIZE) setHasMore(false);
-      else setHasMore(true);
+      setHasMore(newItems.length === PAGE_SIZE); // if less than PAGE_SIZE, no more data
 
       setLoadingMore(false);
     } catch (error) {
@@ -50,6 +45,7 @@ const NotificationPage = () => {
       setLoadingMore(false);
     }
   };
+
 
   useEffect(() => {
     if (!user?.id) return;
