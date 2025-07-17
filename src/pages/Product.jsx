@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import { Link, useParams } from "react-router-dom";
 import Marquee from "react-fast-marquee";
-import { useDispatch } from "react-redux";
 import { supabase } from "../supaBaseClient";
 import { Footer, Navbar } from "../components";
 import toast from "react-hot-toast";
@@ -16,19 +15,21 @@ import Zoom from "@mui/material/Zoom";
 import { FiHeart } from "react-icons/fi";
 import { PiShareNetworkLight } from "react-icons/pi";
 import AdditionalInfo from "../components/AdditionalInfo";
+import { addToCart } from "../redux/slice/userCart.ts";
+import { useAppDispatch } from "../redux/index.ts";
 const Product = () => {
   const { id } = useParams();
   const [product, setProduct] = useState([]);
   const [similarProducts, setSimilarProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loading2, setLoading2] = useState(false);
-  const { user, addToCart } = useAuth(); // get user from context
+  const { user } = useAuth(); // get user from context
   const navigate = useNavigate();
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const addProduct = async (product) => {
-    await addToCart({...product, qty:quantity});
+  const addProduct =  (product) => {
+    dispatch(addToCart({ userId: user.id, product }));
   };
 
   useEffect(() => {

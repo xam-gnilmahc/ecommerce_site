@@ -122,7 +122,7 @@ const BestSelling = () => {
                 <SwiperSlide key={product.id}>
                   <div className="lpContainer">
                     <div className="lpImageContainer">
-                      <Link to="/Product" onClick={scrollToTop}>
+                      <Link to={`/product/${product.id}`}>
                         <img
                           src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${product.banner_url}`}
                           alt={product.name}

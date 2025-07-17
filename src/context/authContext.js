@@ -814,7 +814,8 @@ const placeOrder = async (data, stripe) => {
         fetchUserCancelledOrders,
         sendAllDeliveryEmails,
         bestSellingProduct,
-        getNotificationsByUserId
+        getNotificationsByUserId,
+        fetchCartItems,
       }}
     >
       {children}

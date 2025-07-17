@@ -17,17 +17,26 @@ import { supabase } from "../supaBaseClient";
 import "./Animation.css";
 import "./checkout.css";
 import {FaChevronDown, FaChevronUp } from "react-icons/fa";
-
+import Navbar from "../components/Navbar";
 // Stripe Publishable Key
 const stripePromise = loadStripe(
   "pk_test_51PGec42K0njal9PzJzzxwBOVszXOkqMCBcovRYFChW727EsjLGJ9sWMvztGAGnnmVAtquHDgSllxMryuvfgnv87D00nc9a1Yp7"
 );
 
 const Checkout = () => {
-  const { user, removeFromCartAfterOrder, cart, loading, placeOrder } =
-    useAuth();
+    const { user, loading, placeOrder,cart,fetchCartItems } =
+      useAuth();
+      useEffect(() => {
+      const fetchData = async () => {
+        if (user?.id) {
+          await fetchCartItems(user.id);
+        }
+      };
 
-  const state = useSelector((state) => state.handleCart);
+      fetchData();
+    }, [user, fetchCartItems]); // Also include fetchCartItems if it's memoized
+
+
   const elements = useElements();
   const stripe = useStripe();
 
@@ -172,6 +181,7 @@ const Checkout = () => {
 
   return (
     <>
+    <Navbar/>
       <div className="container my-4 py-3">
         {/* <h1 className="text-center mb-4">Checkout</h1>
         <hr /> */}
