@@ -24,7 +24,7 @@ const Cart = () => {
     if (user?.id) {
       dispatch(fetchCartItems(user.id));
     }
-  }, [user, dispatch]);
+  }, []);
 
   const updateItemQuantity = (product, action) => {
     if (!user) return;

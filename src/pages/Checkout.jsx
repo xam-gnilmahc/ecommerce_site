@@ -18,24 +18,26 @@ import "./Animation.css";
 import "./checkout.css";
 import {FaChevronDown, FaChevronUp } from "react-icons/fa";
 import Navbar from "../components/Navbar";
+import { useAppDispatch } from "../redux/index.ts";
+import {
+  fetchCartItems,
+} from "../redux/slice/userCart.ts";
 // Stripe Publishable Key
 const stripePromise = loadStripe(
   "pk_test_51PGec42K0njal9PzJzzxwBOVszXOkqMCBcovRYFChW727EsjLGJ9sWMvztGAGnnmVAtquHDgSllxMryuvfgnv87D00nc9a1Yp7"
 );
 
 const Checkout = () => {
-    const { user, loading, placeOrder,cart,fetchCartItems } =
+    const { user, placeOrder} =
       useAuth();
-      useEffect(() => {
-      const fetchData = async () => {
-        if (user?.id) {
-          await fetchCartItems(user.id);
-        }
-      };
-
-      fetchData();
-    }, [user, fetchCartItems]); // Also include fetchCartItems if it's memoized
-
+      const dispatch = useAppDispatch();
+      const { items: cart, fetchLoading:loading } = useSelector((state) => state.addToCart);
+    
+        useEffect(() => {
+          if (user?.id) {
+            dispatch(fetchCartItems(user.id));
+          }
+        }, []);
 
   const elements = useElements();
   const stripe = useStripe();

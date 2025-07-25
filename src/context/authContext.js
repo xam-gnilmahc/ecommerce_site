@@ -116,7 +116,6 @@ export const AuthProvider = ({ children }) => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (session) {
-          console.log('max');
           setUser({ ...session.user.user_metadata, id: session.user.id });
           handleUserInSupabase({...session.user.user_metadata, id: session.user.id });
         };
