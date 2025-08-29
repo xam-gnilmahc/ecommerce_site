@@ -357,7 +357,9 @@ export const AuthProvider = ({ children }) => {
 
 const placeOrder = async (data, stripe) => {
   if (!memoizedUser || cart.length === 0) return;
-
+  
+  console.log('max');
+  
   try {
     const today = new Date();
     const getRandomDays = (min, max) =>
