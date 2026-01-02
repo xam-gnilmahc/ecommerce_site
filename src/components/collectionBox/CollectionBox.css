@@ -24,8 +24,8 @@
 
 .collectionLeft {
   background-image: url("https://www.did.ie/cdn/shop/articles/blog-image-1_d7c73ced-0a9f-47fa-80ea-95d09ca018a0_1600x.png?v=1759156177");
-  background-size: cover;
-  background-position: center center;
+  background-size: contain;
+  background-position: center;
   padding: 30px;
   display: flex;
   flex-direction: column;
