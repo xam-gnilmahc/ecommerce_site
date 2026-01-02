@@ -104,7 +104,7 @@
 
 .box1 {
   background-image: url("https://www.apple.com/newsroom/images/product/watch/lifestyle/Apple-watchOS-9-hero-220912.jpg.landing-big_2x.jpg");
-  background-size: contain;
+  background-size: cover;
   background-position: center;
   display: flex;
   flex-direction: column;
