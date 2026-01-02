@@ -1,11 +1,13 @@
 .heroMain {
     background-color: #f4e5e0;
-    background-image: url("../components/assets/slideshow-pattern.png");
-    background-size: cover;
+    background-image: url("https://smartlab.hr/cms/wp-content/uploads/2023/08/Google-pixel-7-pro-banner-1-1.jpg");
+    background-size: contain;
+    background-position: center;
     padding: 0 160px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    height:40rem;
   }
   
   .sectionleft {

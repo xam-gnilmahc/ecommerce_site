@@ -2,7 +2,6 @@
   opacity: 0;
   transform: translateY(50px);
   transition: all 1s ease;
-  padding: 2rem;
   border-radius: 10px;
 }
 
@@ -14,28 +13,26 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   height: 24.875rem;
-  padding: 0 160px;
-  margin: 100px 0px;
+  margin:2rem;
   grid-gap: 30px;
 }
 
 .bannerLeft {
-  background-image: url("https://www.dhiraagu.com.mv/sites/default/files/2023-10/web-banner-samsung-foldflip-min-1920x1080.jpg");
-  background-position: cover;
+  background-image: url("https://imageio.forbes.com/specials-images/imageserve/631822a69a253fdf6ab586d8/0x0.jpg?format=jpg&height=900&width=1600&fit=bounds");
+  background-position: center;
   background-size: cover;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   padding: 30px;
   gap: 10px;
-    border-radius: 15px;
-
+  border-radius: 15px;
 }
 
 .bannerRight {
-  background-image: url("https://www.teamcomputers.com/images/microsoftsurface/images/surface-laptop-4/primary-banner-2.jpg");
-  background-position: cover;
-  background-size: contain;
+  background-image: url("https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Pixel_Watch_2_social.width-1300.png");
+  background-position: center;
+  background-size: cover;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
