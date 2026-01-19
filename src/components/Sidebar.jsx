@@ -26,9 +26,9 @@ const links = [
   { to: "/profile", label: "Profile", icon: <BsHouseDoorFill size={20} /> },
   { to: "/order", label: "My Orders", icon: <BsBagCheck size={20} /> },
   { to: "/return-cancel", label: "Return/Cancel", icon: <MdCancel size={20} /> },
-  { to: "/payments", label: "Payments", icon: <FaCreditCard size={20} /> },
-  { to: "/password-change", label: "Password Change", icon: <RiLockPasswordFill size={20} /> },
-  { to: "/notification", label: "Settings", icon: <FiSettings size={20} /> },
+  // { to: "/payments", label: "Payments", icon: <FaCreditCard size={20} /> },
+  // { to: "/password-change", label: "Password Change", icon: <RiLockPasswordFill size={20} /> },
+  // { to: "/notification", label: "Settings", icon: <FiSettings size={20} /> },
 ];
 
 const Sidebar = () => {
