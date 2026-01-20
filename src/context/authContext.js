@@ -205,6 +205,7 @@ export const AuthProvider = ({ children }) => {
         console.error("Fetch cart error:", error.message);
       }
       setLoading(false);
+      return data;
     },
     []
   );
@@ -356,7 +357,8 @@ export const AuthProvider = ({ children }) => {
   };
 
 const placeOrder = async (data, stripe) => {
-  if (!memoizedUser || cart.length === 0) return;
+  const carts = await fetchCartItems(memoizedUser.id);
+  if (!memoizedUser || carts.length === 0) return;
   
   console.log('max');
   
@@ -413,7 +415,7 @@ const placeOrder = async (data, stripe) => {
     const orderId = orderData.id;
 
     // Prepare order items
-    const orderItems = cart.map((item) => ({
+    const orderItems = carts.map((item) => ({
       order_id: orderId,
       product_id: item.product_id,
       quantity: item.quantity,
@@ -459,7 +461,7 @@ const placeOrder = async (data, stripe) => {
       sendOrderEmail(
         user.full_name || user.name,
         data.email,
-        cart,
+        carts,
         data.address,
         data.amount,
         orderId,

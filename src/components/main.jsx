@@ -24,7 +24,7 @@ const Home = () => {
         <div className="heroMain">
         <div className="sectionleft">
          
-          <div className=" d-flex flex-column align-items-center justify-content-center text-center">
+          {/* <div className=" d-flex flex-column align-items-center justify-content-center text-center">
             <p>New Season Arrivals</p>
             <span className="mb-4">
               Discover our latest collection and best deals of the season.
@@ -34,10 +34,10 @@ const Home = () => {
               <h5>Discover More</h5>
             </Link>
             </div>
-        </div>
+        </div> */}
         </div>
         <div className="sectionright">
-          <Canvas
+          {/* <Canvas
             className="canvasModel"
             camera={{ position: [0, 5, 15], fov: 50 }}
           >
@@ -58,9 +58,9 @@ const Home = () => {
             />
 
             <Model color={tshirtColor} />
-          </Canvas>
+          </Canvas> */}
           <div className="heroColorBtn">
-            <button
+            {/* <button
               onClick={() => changeColor("#353933")}
               style={{ backgroundColor: "#353933" }}
             ></button>
@@ -75,7 +75,7 @@ const Home = () => {
             <button
               onClick={() => changeColor("red")}
               style={{ backgroundColor: "red" }}
-            ></button>
+            ></button> */}
           </div>
         </div>
       </div>

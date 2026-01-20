@@ -23,18 +23,15 @@
 }
 
 .collectionLeft {
-  background-image: url("https://mir-s3-cdn-cf.behance.net/project_modules/1400/f3832e180145769.6505ae76214ca.jpg");
-  background-size: cover;
-  background-position: center center;
+  background-image: url("https://www.apple.com/v/iphone-17/d/images/meta/iphone-17_overview__d4o74q28yjma_og.png?202511201617");
+  background-size: contain;
+  background-position: center;
   padding: 30px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   background-color: #eff0f1;
-    border-radius: 15px;
-
-
-
+  border-radius: 15px;
   opacity: 0;
   transform: scale(1.1) translateY(30px);
   transition: all 1.2s ease-in-out;

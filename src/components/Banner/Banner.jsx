@@ -43,12 +43,12 @@ const Banner = () => {
           </h5>
         </div>
         <div className="bannerRight">
-          <h6 className="bannerh6" style={{ color: "black" }}>
+          {/* <h6 className="bannerh6" style={{ color: "black" }}>
             Starting At $1499
-          </h6>
-          <h3 className="bannerh3" style={{ color: "black" }}>
+          </h6> */}
+          {/* <h3 className="bannerh3" style={{ color: "black" }}>
             Microsoft Surface Duo
-          </h3>
+          </h3> */}
           <h5 className="bannerh5">
             <Link to="/shop" onClick={scrollToTop} style={{ color: "black" }}>
               Shop Now

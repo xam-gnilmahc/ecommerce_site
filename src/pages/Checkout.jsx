@@ -111,7 +111,7 @@ const Checkout = () => {
 
       const totalAmount = Math.round(subtotal + shipping);
       const paymentData = {
-        paymentMethodId: token.id,
+        token: token.id,
         amount: totalAmount,
         name,
         email,
@@ -139,7 +139,7 @@ const Checkout = () => {
 
         let status = "success";
 
-        if (result.message != "Payment successful") {
+        if (result.message != "Payment successful") {         
           status = "failed";
           toast.error("Payment processing failed.");
           return;
