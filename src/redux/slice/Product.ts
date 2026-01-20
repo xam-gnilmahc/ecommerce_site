@@ -15,6 +15,7 @@ export const fetchProducts = createAsyncThunk<Product[], void, { rejectValue: st
         const { data, error } = await supabase
           .from('products')
           .select('*', { count: 'exact' })
+          .eq('brand', 'Apple')
           .range(start, start + batchSize - 1);
 
         if (error) {

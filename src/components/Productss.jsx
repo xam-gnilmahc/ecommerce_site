@@ -44,8 +44,11 @@ const Products = () => {
 
   // Fetch all products on mount
   useEffect(() => {
+  if (products.length === 0) {
     dispatch(fetchProducts());
-  }, [dispatch]);
+  }
+}, [dispatch, products.length]);
+
 
   // Update local product state when products load
   useEffect(() => {
@@ -134,13 +137,7 @@ const Products = () => {
     <div className="shopDetailsProducts">
       <div className="shopDetailsProductsContainer">
         {currentPosts.length === 0 ? (
-          <div className="text-center">
-            <h3 style={{ color: "#333", fontSize: "1.5rem", marginBottom: 10 }}>
-              No products found
-            </h3>
-            <p style={{ color: "#666", fontSize: "1rem" }}>
-              Try changing your filters or search criteria.
-            </p>
+          <div className="no-products">
           </div>
         ) : (
           currentPosts.map((product) => (
@@ -158,7 +155,7 @@ const Products = () => {
                     />
                   </div>
                 )}
-                <Link to={`/product/${product.id}`}>
+                <Link to={`/product/${product.id}`} preventScrollReset>
                   <img
                     src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${product.banner_url}`}
                     alt={product.name}

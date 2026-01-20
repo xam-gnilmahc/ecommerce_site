@@ -1,3 +1,99 @@
+/* Centered “No products found” */
+.no-products {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px; /* space for vertical centering */
+  text-align: center;
+  gap: 10px;
+  font-family: Arial, sans-serif;
+}
+
+.no-products h3 {
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.no-products p {
+  font-size: 1rem;
+  color: #666;
+}
+
+/* Product grid responsive */
+.shopDetailsProductsContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 30px;
+  justify-items: center; /* center each product */
+}
+
+/* Product images */
+.sdProductImages {
+  width: 100%;
+  max-width: 250px;
+  height: 250px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.sdProductImages img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: all 0.3s ease;
+}
+
+.sdProductContainer h4 {
+  margin-top: 10px;
+  text-align: center;
+}
+
+/* Sticker positioning */
+.sticker {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+}
+
+.sticker img {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 991px) {
+  .sdProductImages {
+    max-width: 200px;
+    height: 200px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .shopDetailsProductsContainer {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  }
+  .sdProductImages {
+    max-width: 180px;
+    height: 180px;
+  }
+}
+
+@media screen and (max-width: 450px) {
+  .shopDetailsProductsContainer {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  }
+  .sdProductImages {
+    max-width: 140px;
+    height: 140px;
+  }
+}
+
 .shopDetails {
   padding: 0 160px;
   margin-top: 30px;
