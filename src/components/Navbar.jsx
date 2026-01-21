@@ -28,7 +28,7 @@ const Navbar = () => {
     if (user?.id) {
       dispatch(fetchTotalCart(user.id));
     }
-  }, [dispatch, totalCart]);
+  }, [user]);
 
   useEffect(() => {
     function handleClickOutside(event) {
