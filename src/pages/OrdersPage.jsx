@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/authContext";
 import { Link, useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
-import LottieLoader from "../components/LottieLoader";
-import ordersPage from "./ordersPage.css";
 import { HiLocationMarker } from "react-icons/hi"; // or choose another icon
 import { FaTruck } from 'react-icons/fa';
+import Skeleton from "react-loading-skeleton";
+import "./ordersPage.css";
 const STATUSES = [
   "All",
   "Pending",
@@ -42,8 +42,8 @@ const OrdersPage = () => {
     filterStatus === "All"
       ? orders
       : orders.filter(
-          (o) => o.status.toLowerCase() === filterStatus.toLowerCase()
-        );
+        (o) => o.status.toLowerCase() === filterStatus.toLowerCase()
+      );
 
   // Dummy refund handler
   const handleRefund = (orderId) => {
@@ -66,8 +66,8 @@ const OrdersPage = () => {
               status === "All"
                 ? orders.length
                 : orders.filter(
-                    (o) => o.status.toLowerCase() === status.toLowerCase()
-                  ).length;
+                  (o) => o.status.toLowerCase() === status.toLowerCase()
+                ).length;
 
             const isActive = filterStatus === status;
 
@@ -75,9 +75,8 @@ const OrdersPage = () => {
               <button
                 key={status}
                 onClick={() => setFilterStatus(status)}
-                className={`btn btn-sm d-flex align-items-center ${
-                  isActive ? "btn-dark text-white" : "btn-outline-secondary"
-                }`}
+                className={`btn btn-sm d-flex align-items-center ${isActive ? "btn-dark text-white" : "btn-outline-secondary"
+                  }`}
                 style={{
                   borderRadius: "20px",
                   fontWeight: 500,
@@ -93,7 +92,67 @@ const OrdersPage = () => {
         </div>
 
         {loading ? (
-          <LottieLoader />
+          <div className="row g-3 px-2">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <div key={index} className="col-12 col-sm-6">
+                <div
+                  className="border h-100 d-flex flex-column p-2"
+                  style={{
+                    borderRadius: "1rem",
+                    minHeight: "270px",
+                  }}
+                >
+                  {/* Header */}
+                  <div className="d-flex justify-content-between px-2 pt-2 mb-2">
+                    <Skeleton width={60} height={12} />
+                    <Skeleton width={80} height={12} />
+                  </div>
+
+                  {/* Route */}
+                  <div className="d-flex justify-content-between px-2 pt-2 mb-2 gap-2">
+                    <Skeleton width={120} height={20} />
+                    <Skeleton width={120} height={20} />
+                  </div>
+
+                  {/* Product List */}
+                  <div
+                    className="d-flex flex-wrap gap-2 px-2 py-1 mt-2"
+                    style={{ flexGrow: 1 }}
+                  >
+                    {Array.from({ length: 2 }).map((_, idx) => (
+                      <div
+                        key={idx}
+                        className="d-flex rounded p-1"
+                        style={{
+                          flex: "1 1 calc(50% - 10px)",
+                          maxWidth: "calc(50% - 10px)",
+                          minWidth: "140px",
+                          gap: "6px",
+                        }}
+                      >
+                        <Skeleton
+                          width={80}
+                          height={80}
+                          style={{ flexShrink: 0, borderRadius: "0.5rem" }}
+                        />
+                        <div className="flex-grow-1 d-flex flex-column justify-content-center gap-1">
+                          <Skeleton width="100%" height={12} />
+                          <Skeleton width="60%" height={12} />
+                          <Skeleton width="40%" height={12} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Footer */}
+                  <div className="d-flex justify-content-between align-items-center px-2 py-2 mt-2">
+                    <Skeleton width={80} height={14} />
+                    <Skeleton width={50} height={28} />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         ) : filteredOrders.length === 0 ? (
           <div className="text-center mt-5">
             <h4>No Orders Found</h4>
@@ -105,166 +164,166 @@ const OrdersPage = () => {
             </Link>
           </div>
         ) : (
-         <div
-  className="row g-3 bg-white overflow-auto px-2"
-  style={{
-    maxHeight: "75vh", // better on all devices
-    overflowY: "auto",
-    scrollbarWidth: "thin",
-  }}
->
+          <div
+            className="row g-3 bg-white overflow-auto px-2"
+            style={{
+              maxHeight: "75vh", // better on all devices
+              overflowY: "auto",
+              scrollbarWidth: "thin",
+            }}
+          >
 
-          {filteredOrders.map((order) => {
-            const shippingAddress = parseAddress(order.shipping_address);
-            const destination = `${shippingAddress?.addressLine1}, ${shippingAddress?.country}` || "Destination";
-        
-            return (
-              <div
-                key={order.id}
-                className="col-12 col-sm-6"
-                onClick={() => navigate(`/orders/${order.id}`)}
-                style={{ cursor: "pointer" }}
-              >
+            {filteredOrders.map((order) => {
+              const shippingAddress = parseAddress(order.shipping_address);
+              const destination = `${shippingAddress?.addressLine1}, ${shippingAddress?.country}` || "Destination";
+
+              return (
                 <div
-                  className="border h-100 d-flex flex-column"
-                  style={{
-                    borderRadius: "1rem",
-                    borderColor: "#ddd",
-                    minHeight: "270px",
-                  }}
+                  key={order.id}
+                  className="col-12 col-sm-6"
+                  onClick={() => navigate(`/orders/${order.id}`)}
+                  style={{ cursor: "pointer" }}
                 >
-                  {/* Card Body */}
-                  <div className="card-body d-flex flex-column" style={{ flex: 1 }}>
-                    {/* Header */}
-                    <div className="d-flex justify-content-between px-2 pt-2 align-items-start flex-wrap">
-                      <div className="d-flex flex-column">
-                        <span className="text-muted tiny">Order ID</span>
-                        <span className="fw-bold tiny">#{order.id}</span>
-                      </div>
-                      <div className="d-flex align-items-center gap-1">
-                        <div className="py-0 px-2 rounded-pill border bg-white">
-                          <span className="text-muted tiny me-1">Est:</span>
-                          <span className="fw-bold tiny">{formatDate(order.order_date)}</span>
+                  <div
+                    className="border h-100 d-flex flex-column"
+                    style={{
+                      borderRadius: "1rem",
+                      borderColor: "#ddd",
+                      minHeight: "270px",
+                    }}
+                  >
+                    {/* Card Body */}
+                    <div className="card-body d-flex flex-column" style={{ flex: 1 }}>
+                      {/* Header */}
+                      <div className="d-flex justify-content-between px-2 pt-2 align-items-start flex-wrap">
+                        <div className="d-flex flex-column">
+                          <span className="text-muted tiny">Order ID</span>
+                          <span className="fw-bold tiny">#{order.id}</span>
                         </div>
-                        <span
-                          className={`bg-${getStatusColor(order.status)} rounded-pill p-1 text-white`}
-                          style={{ fontSize: "0.6rem", padding: "2px 6px" }}
-                        >
-                          {order.status}
-                        </span>
-                      </div>
-                    </div>
-        
-                    {/* Route */}
-                    <div
-                      className="d-flex justify-content-between px-2 pt-2 align-items-center flex-nowrap overflow-auto gap-2"
-                      style={{ flexShrink: 0 }}
-                    >
-                      <div className="d-flex align-items-center border rounded-pill p-1 bg-white" style={{ minWidth: "130px" }}>
-                        <FaTruck className="me-1 t  tiny" />
-                        <span className="tiny fw-bold text-muted">Kathmandu, Nepal</span>
+                        <div className="d-flex align-items-center gap-1">
+                          <div className="py-0 px-2 rounded-pill border bg-white">
+                            <span className="text-muted tiny me-1">Est:</span>
+                            <span className="fw-bold tiny">{formatDate(order.order_date)}</span>
+                          </div>
+                          <span
+                            className={`bg-${getStatusColor(order.status)} rounded-pill p-1 text-white`}
+                            style={{ fontSize: "0.6rem", padding: "2px 6px" }}
+                          >
+                            {order.status}
+                          </span>
+                        </div>
                       </div>
 
-                      <span className="text-muted">••••••••</span>
+                      {/* Route */}
+                      <div
+                        className="d-flex justify-content-between px-2 pt-2 align-items-center flex-nowrap overflow-auto gap-2"
+                        style={{ flexShrink: 0 }}
+                      >
+                        <div className="d-flex align-items-center border rounded-pill p-1 bg-white" style={{ minWidth: "130px" }}>
+                          <FaTruck className="me-1 t  tiny" />
+                          <span className="tiny fw-bold text-muted">Kathmandu, Nepal</span>
+                        </div>
 
-                      <div className="d-flex align-items-center border rounded-pill p-1 bg-white" style={{ minWidth: "130px" }}>
-                        <HiLocationMarker className="me-1 text-dark tiny" />
-                        <span className="tiny fw-bold text-muted">{destination}</span>
+                        <span className="text-muted">••••••••</span>
+
+                        <div className="d-flex align-items-center border rounded-pill p-1 bg-white" style={{ minWidth: "130px" }}>
+                          <HiLocationMarker className="me-1 text-dark tiny" />
+                          <span className="tiny fw-bold text-muted">{destination}</span>
+                        </div>
                       </div>
-                    </div>
 
-                    {/* Product List */}
-                    <div
-                      className="d-flex flex-wrap gap-2 px-2 py-1 ml-2 mr-2 mt-2 border  overflow-auto"
-                      style={{
-                        flexGrow: 1,
-                        maxHeight: "150px",
-                        borderTopLeftRadius:"1rem",
-                        borderTopRightRadius:"1rem",
-                        scrollbarWidth: "none", /* Firefox */
-                        msOverflowStyle: "none", /* IE and Edge */
-                      }}
-                      onScroll={e => e.currentTarget.style.scrollbarWidth = 'none'}
-                    >
-                      {order.order_items?.map((item, index) => (
-                        <div
-                          key={index}
-                          className="d-flex rounded p-1 bg-white"
-                          style={{
-                            flex: "1 1 calc(50% - 10px)",
-                            maxWidth: "calc(50% - 10px)",
-                            minWidth: "140px",
-                            alignItems: "center",
-                            gap: "6px",
-                          }}
-                        >
+                      {/* Product List */}
+                      <div
+                        className="d-flex flex-wrap gap-2 px-2 py-1 ml-2 mr-2 mt-2 border  overflow-auto"
+                        style={{
+                          flexGrow: 1,
+                          maxHeight: "150px",
+                          borderTopLeftRadius: "1rem",
+                          borderTopRightRadius: "1rem",
+                          scrollbarWidth: "none", /* Firefox */
+                          msOverflowStyle: "none", /* IE and Edge */
+                        }}
+                        onScroll={e => e.currentTarget.style.scrollbarWidth = 'none'}
+                      >
+                        {order.order_items?.map((item, index) => (
+                          <div
+                            key={index}
+                            className="d-flex rounded p-1 bg-white"
+                            style={{
+                              flex: "1 1 calc(50% - 10px)",
+                              maxWidth: "calc(50% - 10px)",
+                              minWidth: "140px",
+                              alignItems: "center",
+                              gap: "6px",
+                            }}
+                          >
                             <div
-  style={{ flex: "0 0 100px" }}
-  className="overflow-hidden"
->
-  <img
-    src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.products.banner_url}`}
-    alt={item.products.name}
-    className="img-fluid rounded bg-light p-2 transition-all"
-    style={{
-      width: "80px",
-      height: "80px",
-      objectFit: "contain",
-      transition: "transform 0.3s ease, box-shadow 0.3s ease",
-    }}
-    onMouseOver={(e) => {
-      e.currentTarget.style.transform = "scale(1.05)";
-      e.currentTarget.style.boxShadow = "0 4px 10px rgba(0,0,0,0.1)";
-    }}
-    onMouseOut={(e) => {
-      e.currentTarget.style.transform = "scale(1)";
-      e.currentTarget.style.boxShadow = "none";
-    }}
-  />
-</div>
-                          <div className="d-flex flex-column justify-content-center" style={{ flex: 1 }}>
-                            <div className="fw-bold  text-muted tiny d-none d-sm-block">{item.products?.name}</div>
-                            <div className="text-muted tiny fw-bold">${item.price_each} x {item.quantity}</div>
-                            <div className="text-muted tiny fw-bold">
-                              ${(item.price_each * item.quantity).toFixed(2)}
+                              style={{ flex: "0 0 100px" }}
+                              className="overflow-hidden"
+                            >
+                              <img
+                                src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.products.banner_url}`}
+                                alt={item.products.name}
+                                className="img-fluid rounded bg-light p-2 transition-all"
+                                style={{
+                                  width: "80px",
+                                  height: "80px",
+                                  objectFit: "contain",
+                                  transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                                }}
+                                onMouseOver={(e) => {
+                                  e.currentTarget.style.transform = "scale(1.05)";
+                                  e.currentTarget.style.boxShadow = "0 4px 10px rgba(0,0,0,0.1)";
+                                }}
+                                onMouseOut={(e) => {
+                                  e.currentTarget.style.transform = "scale(1)";
+                                  e.currentTarget.style.boxShadow = "none";
+                                }}
+                              />
+                            </div>
+                            <div className="d-flex flex-column justify-content-center" style={{ flex: 1 }}>
+                              <div className="fw-bold  text-muted tiny d-none d-sm-block">{item.products?.name}</div>
+                              <div className="text-muted tiny fw-bold">${item.price_each} x {item.quantity}</div>
+                              <div className="text-muted tiny fw-bold">
+                                ${(item.price_each * item.quantity).toFixed(2)}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
-        
-                    {/* Footer */}
-                    <div
-                      className="d-flex justify-content-between align-items-center px-2 py-2 bg-light"
-                      style={{
-                        borderBottomLeftRadius: "1rem",
-                        borderBottomRightRadius: "1rem",
-                      }}
-                    >
-                      <div>
-                        <span className="fw-bold tiny">${order.total_amount.toLocaleString()}</span>
-                        <span className="text-muted tiny"> ({order.order_items?.length} items)</span>
+                        ))}
                       </div>
-                      <button
-                        className="btn btn-dark btn-xs px-3 py-1 rounded-pill"
-                        style={{ fontSize: "0.7rem" }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/orders/${order.id}`);
+
+                      {/* Footer */}
+                      <div
+                        className="d-flex justify-content-between align-items-center px-2 py-2 bg-light"
+                        style={{
+                          borderBottomLeftRadius: "1rem",
+                          borderBottomRightRadius: "1rem",
                         }}
                       >
-                        Details
-                      </button>
+                        <div>
+                          <span className="fw-bold tiny">${order.total_amount.toLocaleString()}</span>
+                          <span className="text-muted tiny"> ({order.order_items?.length} items)</span>
+                        </div>
+                        <button
+                          className="btn btn-dark btn-xs px-3 py-1 rounded-pill"
+                          style={{ fontSize: "0.7rem" }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/orders/${order.id}`);
+                          }}
+                        >
+                          Details
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-        
+              );
+            })}
+          </div>
 
-        
+
+
         )}
       </main>
 

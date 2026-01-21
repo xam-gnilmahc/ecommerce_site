@@ -72,7 +72,8 @@ const Navbar = () => {
             <ul className="mb-2">
               <li><NavLink to="/" end>Home</NavLink></li>
               <li><NavLink to="/shop">Shop</NavLink></li>
-              <li
+              <li><NavLink to="/order">Orders</NavLink></li>
+              {/* <li
                 className={`nav-item category-dropdown ${isOpen ? 'open' : ''}`}
                 onMouseEnter={() => setIsOpen(true)}
                 onMouseLeave={() => setIsOpen(false)}
@@ -92,7 +93,7 @@ const Navbar = () => {
                     </ul>
                   </div>
                 </div>
-              </li>
+              </li> */}
             </ul>
           </div>
         </div>
@@ -111,7 +112,7 @@ const Navbar = () => {
             <>
               <NotificationPage embedded={true} />
               <span className="text-muted small me-2">Hi, <strong>{user?.full_name}</strong></span>
-              <NavLink to="/profile" className="me-2 d-flex align-items-center">
+              <NavLink to="/order" className="me-2 d-flex align-items-center">
                 {user.picture ? (
                   <img src={user.picture} alt="Profile" style={{
                     width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover"
@@ -165,7 +166,7 @@ const Navbar = () => {
           </div>
           <div className="mobile-menuFooter">
             <div className="mobile-menuFooterLogin">
-              <Link to="/profile" onClick={toggleMobileMenu}>
+              <Link to="/order" onClick={toggleMobileMenu}>
                 <FaRegUser style={{ margin: 0 }} />
                 <p style={{ margin: 0 }}>My Account</p>
               </Link>

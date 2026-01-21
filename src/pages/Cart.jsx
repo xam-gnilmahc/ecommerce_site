@@ -77,7 +77,7 @@ const Cart = () => {
                       />
 
                       <div className="cart-item-details">
-                        <h6 title={item.products.name}>{item.products.name}</h6>
+                        <h6  title={item.products.name}>{item.products.name}</h6>
                         <p>
                           {item.products.description.length > 80
                             ? item.products.description.slice(0, 80) + "..."

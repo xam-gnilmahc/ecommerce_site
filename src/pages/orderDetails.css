@@ -1,5 +1,34 @@
 /* Pulse animation for current step */
 /* Loader */
+/* Hide everything except invoice while printing */
+/* Hide everything except invoice while printing */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .print-area,
+  .print-area * {
+    visibility: visible;
+  }
+
+  .print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}
+
+@media print {
+  .invoice-wrapper {
+    border: none !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}
+
 .loading-container {
     text-align: center;
     margin: 5rem 0;

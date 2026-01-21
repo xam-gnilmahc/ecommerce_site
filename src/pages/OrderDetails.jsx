@@ -4,9 +4,7 @@ import { useAuth } from "../context/authContext";
 import { FiArrowLeft } from "react-icons/fi";
 import "./orderDetails.css";
 import Sidebar from "../components/Sidebar";
-import LottieLoader from "../components/LottieLoader";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
+import Skeleton from "react-loading-skeleton";
 import { FaCcVisa, FaGooglePay, FaApplePay } from "react-icons/fa";
 
 import {
@@ -37,7 +35,7 @@ import toast from "react-hot-toast";
 const OrderDetailsPage = () => {
   const { orderId } = useParams();
   const navigate = useNavigate();
-  const { getOrderDetails, user, loading, updateOrder } = useAuth();
+  const { getOrderDetails, user, orderLoading, updateOrder } = useAuth();
   const [paymentLoading, setLoading] = useState(false); // Add loading state
   const [order, setOrder] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -84,31 +82,11 @@ const OrderDetailsPage = () => {
     }
   };
 
-  const handlePrint = () => {
-    const printContents =
-      `
-  <div>
-    <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
-      <div>
-        <img src="data:image/png;base64,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" alt="Company Logo" style="height: 60px;" />
-      </div>
-      <div>
-        <h1 style="font-size: 3rem; font-weight: bold; color: #333;">
-          INVOICE
-        </h1>
-      </div>
-    </div>
-    <!-- other invoice content -->
-  </div>
-` + designRef.current.innerHTML;
+const handlePrint = () => {
+  if (!designRef.current) return;
+  window.print();
+};
 
-    const originalContents = document.body.innerHTML;
-
-    document.body.innerHTML = printContents;
-    window.print();
-    document.body.innerHTML = originalContents;
-    window.location.reload();
-  };
 
   const parseAddress = (addressStr) => {
     try {
@@ -117,10 +95,18 @@ const OrderDetailsPage = () => {
       return null;
     }
   };
+  const fetchedRef = useRef(false);
 
   useEffect(() => {
-    (async () => setOrder(await getOrderDetails(orderId)))();
-  }, [orderId]);
+    console.log(fetchedRef.current);
+    if (!fetchedRef.current) {
+      (async () => {
+        const data = await getOrderDetails(orderId);
+        setOrder(data);
+        fetchedRef.current = true;
+      })();
+    }
+  }, []);
 
   const steps = [
     "Pending",
@@ -258,82 +244,156 @@ const OrderDetailsPage = () => {
         <main className="flex-grow-1 p-4" style={{ marginLeft: "280px" }}>
           <div>
             {/* Header with Back Arrow and Order ID */}
-            <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-2 gap-3">
-              {/* Left side - Heading and Breadcrumb */}
-              <div>
-                <h2 className="order-id m-0">
-                  Orders Details # <span>{order?.id}</span>
-                </h2>
-                <small className="text-muted d-block mt-1">
-                  Dashboard / Order Details
-                </small>
-              </div>
+            {!orderLoading && (
+              <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-2 gap-3">
+                {/* Left side - Heading and Breadcrumb */}
+                <div>
+                  <h2 className="order-id m-0">
+                    Orders Details # <span>{order?.id}</span>
+                  </h2>
+                  <small className="text-muted d-block mt-1">
+                    Dashboard / Order Details
+                  </small>
+                </div>
 
-              {/* Right side - Buttons */}
-              <div className="d-flex flex-wrap gap-2">
-                {order?.status !== "Cancelled" && (
-                  <>
-                    {order?.status !== "Delivered" && (
+                {/* Right side - Buttons */}
+                <div className="d-flex flex-wrap gap-2">
+                  {order?.status !== "Cancelled" && (
+                    <>
+                      {order?.status !== "Delivered" && (
+                        <button
+                          type="button"
+                          className="btn"
+                          style={{ backgroundColor: "#333", color: "#fff" }}
+                          onClick={() => setCancelShow(true)}
+                        >
+                          Cancel
+                        </button>
+                      )}
+
                       <button
-                        type="button"
+                        className="btn btn-outline-secondary"
+                        onClick={handlePrint}
+                      >
+                        <i className="bi bi-receipt-cutoff" />
+                        Invoice
+                      </button>
+
+                      <button
                         className="btn"
                         style={{ backgroundColor: "#333", color: "#fff" }}
-                        onClick={() => setCancelShow(true)}
+                        onClick={() => navigate(`/track/${order.id}`)}
                       >
-                        Cancel
+                        <i className="bi bi-truck" />
+                        Track
                       </button>
-                    )}
+                    </>
+                  )}
 
-                    <button
-                      className="btn btn-outline-secondary"
-                      onClick={handlePrint}
-                    >
-                      <i className="bi bi-receipt-cutoff" />
-                      Invoice
-                    </button>
-
-                    <button
-                      className="btn"
-                      style={{ backgroundColor: "#333", color: "#fff" }}
-                      onClick={() => navigate(`/track/${order.id}`)}
-                    >
-                      <i className="bi bi-truck" />
-                      Track
-                    </button>
-                  </>
-                )}
-
-                {order?.status === "Cancelled" && (
-                  <>
-                    <button className="btn btn-outline-danger" disabled>
-                      Order Cancelled
-                    </button>
-                    <button
-                      className="btn btn-outline-secondary"
-                      onClick={handlePrint}
-                    >
-                      <i className="bi bi-receipt-cutoff" />
-                      Invoice
-                    </button>
-                  </>
-                )}
+                  {order?.status === "Cancelled" && (
+                    <>
+                      <button className="btn btn-outline-danger" disabled>
+                        Order Cancelled
+                      </button>
+                      <button
+                        className="btn btn-outline-secondary"
+                        onClick={handlePrint}
+                      >
+                        <i className="bi bi-receipt-cutoff" />
+                        Invoice
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
+
             {/* Header Buttons */}
 
-            {loading || !order ? (
-              <LottieLoader />
+            {orderLoading || !order ? (
+              <div className="row g-4">
+                {/* Header Skeleton */}
+                <div className="col-12 mb-3">
+                  <Skeleton width={300} height={30} />
+                  <Skeleton width={150} height={15} className="mt-2" />
+                </div>
+
+                {/* Shipping Info Skeleton */}
+                <div className="col-12 col-md-8 col-lg-5">
+                  <Skeleton width={200} height={20} />
+                  <div className="d-flex gap-2 mt-2">
+                    <Skeleton width={80} height={30} />
+                    <Skeleton width={80} height={30} />
+                  </div>
+                </div>
+                <div className="col-6 col-md-2">
+                  <Skeleton width={120} height={15} />
+                  <Skeleton width={80} height={20} className="mt-1" />
+                </div>
+                <div className="col-6 col-md-2">
+                  <Skeleton width={120} height={15} />
+                  <Skeleton width={80} height={20} className="mt-1" />
+                </div>
+                <div className="col-6 col-md-2">
+                  <Skeleton width={100} height={15} />
+                  <Skeleton width={50} height={20} className="mt-1" />
+                </div>
+
+                {/* Timeline / Shipment / Payment Skeleton */}
+                {Array.from({ length: 3 }).map((_, idx) => (
+                  <div key={idx} className="col-md-4">
+                    <div className="p-4 border rounded bg-white h-100">
+                      <Skeleton width={150} height={20} className="mb-3" />
+                      {Array.from({ length: 3 }).map((_, i) => (
+                        <Skeleton key={i} width="100%" height={15} className="mb-2" />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+
+                {/* Items Skeleton */}
+                <div className="col-12">
+                  <div className="card p-4 mb-4 border rounded">
+                    <Skeleton width={150} height={20} className="mb-3" />
+                    <div className="row g-3">
+                      {Array.from({ length: 2 }).map((_, idx) => (
+                        <div key={idx} className="col-md-6">
+                          <div className="d-flex align-items-center bg-light gap-2 rounded p-3">
+                            <Skeleton width={80} height={60} />
+                            <div className="flex-grow-1">
+                              <Skeleton width="80%" height={15} className="mb-1" />
+                              <Skeleton width="60%" height={12} className="mb-1" />
+                              <Skeleton width="40%" height={12} />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Order Summary Skeleton */}
+                <div className="col-12">
+                  <div className="card p-4 rounded" style={{ minHeight: "250px" }}>
+                    <Skeleton width={200} height={25} className="mb-3" />
+                    {Array.from({ length: 4 }).map((_, idx) => (
+                      <Skeleton key={idx} width="100%" height={15} className="mb-2" />
+                    ))}
+                    <Skeleton width={120} height={20} className="mt-3" />
+                  </div>
+                </div>
+              </div>
             ) : (
               <>
                 <div
-                  className="border m-1  p-4"
+                  className="print-area invoice-wrapper border m-1  p-4"
                   ref={designRef}
                   style={{ borderRadius: "1rem" }}
                 >
                   <div className=" mb-4 p-4">
                     <div className="row gy-4 align-items-center">
                       {/* Shipping Info */}
-                      <div className="col-12 col-md-8 col-lg-5">
+                      <div className="col-12 col-md-12 col-lg-6">
                         <h6 className="fw-semibold mb-2 d-flex align-items-center">
                           <FaShippingFast className="me-2" />
                           {order.status === "Cancelled"
@@ -370,7 +430,7 @@ const OrderDetailsPage = () => {
                       </div>
 
                       {/* Estimated Arrival */}
-                      <div className="col-6 col-md-2 text-center text-md-start">
+                      <div className="col-6 col-md-4  col-lg-2 text-center text-md-start">
                         <p className="text-muted small mb-1">
                           {order.status === "Cancelled" ? (
                             <>
@@ -394,7 +454,7 @@ const OrderDetailsPage = () => {
                       </div>
 
                       {/* Delivered In */}
-                      <div className="col-6 col-md-2 text-center text-md-start">
+                      <div className="col-6 col-md-4 col-lg-2 text-center text-md-start">
                         <p className="text-muted small mb-1">
                           <FaClock className="me-2" />
                           Delivered in
@@ -441,7 +501,7 @@ const OrderDetailsPage = () => {
                         )}
                       </div>
 
-                      <div className="col-6 col-md-2 text-center text-md-start">
+                      <div className="col-6 col-md-4 col-lg-2 text-center text-md-start">
                         <p className="text-muted small mb-1">
                           <FaClock className="me-2" />
                           Status
@@ -457,7 +517,7 @@ const OrderDetailsPage = () => {
                   <div className="row g-4 mb-4">
                     {/* Timeline */}
                     {order.status != "Cancelled" ? (
-                      <div className="col-md-4">
+                      <div className="col-4 col-md-6 col-lg-6">
                         <div className="p-4 border rounded bg-white h-100">
                           <h6 className="fw-semibold mb-3 d-flex align-items-center">
                             <FaBox className="me-2 text-secondary" />
@@ -488,7 +548,7 @@ const OrderDetailsPage = () => {
                         </div>
                       </div>
                     ) : (
-                      <div className="col-md-4">
+                      <div className="col-4 col-md-6 col-lg-6">
                         <div className="p-4 border rounded bg-white h-100">
                           <h6 className="fw-semibold mb-3 d-flex align-items-center">
                             <FaShippingFast className="me-2 text-secondary" />
@@ -500,7 +560,7 @@ const OrderDetailsPage = () => {
                         </div>
                       </div>
                     )}
-                    <div className="col-md-4">
+                    <div className="col-4 col-md-6 col-lg-6">
                       <div className="p-4 border rounded bg-white h-100">
                         <h6 className="fw-semibold mb-3 d-flex align-items-center">
                           <FaShippingFast className="me-2 text-secondary" />
@@ -536,7 +596,7 @@ const OrderDetailsPage = () => {
                       </div>
                     </div>
                     {/* Payment */}
-                    <div className="col-md-4">
+                    <div className="col-4 col-md-6 col-lg-6">
                       <div className="p-3 border rounded  h-100">
                         <h6 className="fw-semibold mb-3 d-flex align-items-center small">
                           <FaFileInvoice className="me-2 text-secondary" />

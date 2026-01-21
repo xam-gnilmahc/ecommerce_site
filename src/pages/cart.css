@@ -4,6 +4,7 @@
   min-height: 80vh;
 }
 
+
 .cart-items {
   background: #f9f9f9;
   padding: 1rem;
@@ -66,9 +67,7 @@
 .cart-item-details h6 {
   font-weight: 600;
   font-size: 1rem;
-  white-space: nowrap;      /* single line */
-  overflow: hidden;
-  text-overflow: ellipsis;  /* ... if too long */
+  word-wrap: break-word;     /* break long words if needed */
 }
 
 .cart-item-details p {

@@ -2,11 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/authContext";
 import { Link, useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
-import LottieLoader from "../components/LottieLoader";
-import ordersPage from "./ordersPage.css";
 import { HiLocationMarker } from "react-icons/hi"; // or choose another icon
 import { FaTruck } from 'react-icons/fa';
-
+import Skeleton from "react-loading-skeleton";
+import "./ordersPage.css"
 const CancelledOrderPage = () => {
   const { fetchUserCancelledOrders, loading } = useAuth();
   const [orders, setOrders] = useState([]);
@@ -43,7 +42,67 @@ const CancelledOrderPage = () => {
 
 
         {loading ? (
-          <LottieLoader />
+            <div className="row g-3 px-2">
+                      {Array.from({ length: 6 }).map((_, index) => (
+                        <div key={index} className="col-12 col-sm-6">
+                          <div
+                            className="border h-100 d-flex flex-column p-2"
+                            style={{
+                              borderRadius: "1rem",
+                              minHeight: "270px",
+                            }}
+                          >
+                            {/* Header */}
+                            <div className="d-flex justify-content-between px-2 pt-2 mb-2">
+                              <Skeleton width={60} height={12} />
+                              <Skeleton width={80} height={12} />
+                            </div>
+          
+                            {/* Route */}
+                            <div className="d-flex justify-content-between px-2 pt-2 mb-2 gap-2">
+                              <Skeleton width={120} height={20} />
+                              <Skeleton width={120} height={20} />
+                            </div>
+          
+                            {/* Product List */}
+                            <div
+                              className="d-flex flex-wrap gap-2 px-2 py-1 mt-2"
+                              style={{ flexGrow: 1 }}
+                            >
+                              {Array.from({ length: 2 }).map((_, idx) => (
+                                <div
+                                  key={idx}
+                                  className="d-flex rounded p-1"
+                                  style={{
+                                    flex: "1 1 calc(50% - 10px)",
+                                    maxWidth: "calc(50% - 10px)",
+                                    minWidth: "140px",
+                                    gap: "6px",
+                                  }}
+                                >
+                                  <Skeleton
+                                    width={80}
+                                    height={80}
+                                    style={{ flexShrink: 0, borderRadius: "0.5rem" }}
+                                  />
+                                  <div className="flex-grow-1 d-flex flex-column justify-content-center gap-1">
+                                    <Skeleton width="100%" height={12} />
+                                    <Skeleton width="60%" height={12} />
+                                    <Skeleton width="40%" height={12} />
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+          
+                            {/* Footer */}
+                            <div className="d-flex justify-content-between align-items-center px-2 py-2 mt-2">
+                              <Skeleton width={80} height={14} />
+                              <Skeleton width={50} height={28} />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
         ) : orders.length === 0 ? (
           <div className="text-center mt-5">
             <h4>No Cancelled Orders Found</h4>

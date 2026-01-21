@@ -30,6 +30,7 @@ export const AuthProvider = ({ children }) => {
   const [access_token, setToken] = useState(null);
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [orderLoading, setOrderLoading] = useState(false);
   const [processed, setProcessed] = useState(false);
 
   const memoizedUser = useMemo(() => user, [user]);
@@ -57,60 +58,56 @@ export const AuthProvider = ({ children }) => {
   }, [user?.id]);
 
   // Check if user exists in Supabase or create/update
-  const handleUserInSupabase = useMemo(
-    () => async (authenticatedUser) => {
-      try {
-        setLoading(true);
-        const { data, error } = await supabase
-          .from("users")
-          .select("*")
-          .eq("email", authenticatedUser.email)
-          .single();
+const handleUserInSupabase = async (authenticatedUser) => {
+  try {
+    setLoading(true);
 
-        if (!data) {
-          const { data: insertData, error: insertError } = await supabase
-            .from("users")
-            .insert([
-              {
-                id: authenticatedUser.id,
-                email: authenticatedUser.email || "null",
-                name: authenticatedUser.full_name || "null",
-                created_at: new Date(),
-                profile:authenticatedUser.picture || null
-              },
-            ])
-            .select();
+    const { data } = await supabase
+      .from("users")
+      .select("*")
+      .eq("email", authenticatedUser.email)
+      .single();
 
-          if (insertError) {
-            console.error("Error inserting user:", insertError.message);
-          } else {
-            console.log("User inserted:");
-          }
-        } else {
-          const { data: updateData, error: updateError } = await supabase
-            .from("users")
-            .update({
-              email: authenticatedUser.email ,
-              name: authenticatedUser.full_name,
-              profile: authenticatedUser.picture || null
-            })
-            .eq("email", authenticatedUser.email);
+    if (!data) {
+      const { error: insertError } = await supabase
+        .from("users")
+        .insert([
+          {
+            id: authenticatedUser.id,
+            email: authenticatedUser.email || "null",
+            name: authenticatedUser.full_name || "null",
+            created_at: new Date(),
+            profile: authenticatedUser.picture || null,
+          },
+        ]);
 
-          if (updateError) {
-            console.error("Error updating user:", updateError.message);
-          } else {
-            console.log("User updated:");
-          }
-        }
-        setLoading(false);
-        setProcessed(true);
-      } catch (error) {
-        console.error("Error handling user in Supabase:", error.message);
-        setLoading(false);
+      if (insertError) {
+        console.error("Error inserting user:", insertError.message);
       }
-    },
-    []
-  );
+    } else {
+      const { error: updateError } = await supabase
+        .from("users")
+        .update({
+          email: authenticatedUser.email,
+          name: authenticatedUser.full_name,
+          profile: authenticatedUser.picture || null,
+        })
+        .eq("email", authenticatedUser.email);
+
+      if (updateError) {
+        console.error("Error updating user:", updateError.message);
+      }
+    }
+
+    setProcessed(true);
+  } catch (error) {
+    console.error("Error handling user in Supabase:", error.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
 
  useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
@@ -448,16 +445,6 @@ const placeOrder = async (data, stripe) => {
         },
       ]),
 
-      sendNotification({
-        channel: `user-${memoizedUser?.id}`,
-        event: "order-placed",
-        message: {
-          orderId,
-          message: `Your order <a href="/orders/${orderId}" target="_blank" rel="noopener noreferrer" style="color:#0d6efd; text-decoration:underline;">#${orderId}</a> has been placed successfully. Thank you for shopping with us`,
-          type: 0,
-        },
-      }),
-
       sendOrderEmail(
         user.full_name || user.name,
         data.email,
@@ -467,6 +454,16 @@ const placeOrder = async (data, stripe) => {
         orderId,
         deliveryDate.toISOString()
       ),
+
+      sendNotification({
+        channel: `user-${memoizedUser?.id}`,
+        event: "order-placed",
+        message: {
+          orderId,
+          message: `Your order <a href="/orders/${orderId}" target="_blank" rel="noopener noreferrer" style="color:#0d6efd; text-decoration:underline;">#${orderId}</a> has been placed successfully. Thank you for shopping with us`,
+          type: 0,
+        },
+      }),
 
       removeFromCartAfterOrder(),
     ]);
@@ -594,7 +591,7 @@ const placeOrder = async (data, stripe) => {
   };
 
   const getOrderDetails = async (orderId) => {
-    setLoading(true);
+    setOrderLoading(true);
     try {
       const { data, error: orderError } = await supabase
         .from("orders")
@@ -638,7 +635,7 @@ const placeOrder = async (data, stripe) => {
       console.error("Error fetching order details:", error.message);
       throw error;
     } finally {
-      setLoading(false);
+      setOrderLoading(false);
     }
   };
 
@@ -810,6 +807,7 @@ const placeOrder = async (data, stripe) => {
         access_token,
         loading,
         setLoading,
+        orderLoading,
         placeOrder,
         fetchUserOrders,
         getOrderDetails,
