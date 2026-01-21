@@ -44,11 +44,11 @@ const Products = () => {
 
   // Fetch all products on mount
   useEffect(() => {
-  if (products.length === 0) {
-    dispatch(fetchProducts());
-  }
-}, [dispatch, products.length]);
-
+    if (products.length === 0) {
+      dispatch(fetchProducts());
+    }
+  }, [dispatch, products.length]);
+  
 
   // Update local product state when products load
   useEffect(() => {
@@ -75,7 +75,7 @@ const Products = () => {
       setCurrentPage(1);
     } else if (searchStatus === "failed" || searchStatus === "idle") {
       setDisplayProducts(allProducts);
-      setCurrentPage(1);
+    setCurrentPage(1);
     }
   }, [searchResults, searchStatus, allProducts]);
 
@@ -162,7 +162,7 @@ const Products = () => {
                   />
                 </Link>
                 <h4
-                  className="bg-light"
+                  className="bg-light position-absolute w-100 text-center"
                   onClick={() => handleAddToCart(product)}
                   style={{ cursor: "pointer" }}
                 >
@@ -258,7 +258,7 @@ const Products = () => {
           </div>
 
           <div className="row">
-            {productsLoading || searchStatus === "loading" ? (
+            {productsLoading || searchStatus === "loading" || filterStatus === "loading" ? (
               <LoadingSkeleton />
             ) : (
               <ProductList />

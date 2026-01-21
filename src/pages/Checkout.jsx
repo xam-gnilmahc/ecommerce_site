@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Country, State } from "country-state-city";
+import Skeleton from "react-loading-skeleton";
 import {
   useStripe,
   useElements,
@@ -9,14 +10,13 @@ import {
   Elements,
 } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-import axios from "axios";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/authContext"; // adjust path if needed
 import LottieLoader from "../components/LottieLoader";
-import { supabase } from "../supaBaseClient";
 import "./Animation.css";
 import "./checkout.css";
-import {FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { fetchTotalCart } from "../redux/slice/userCart.ts";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import Navbar from "../components/Navbar";
 import { useAppDispatch } from "../redux/index.ts";
 import {
@@ -28,16 +28,16 @@ const stripePromise = loadStripe(
 );
 
 const Checkout = () => {
-    const { user, placeOrder} =
-      useAuth();
-      const dispatch = useAppDispatch();
+  const { user, placeOrder } =
+    useAuth();
+  const dispatch = useAppDispatch();
       const { items: cart, fetchLoading:loading } = useSelector((state) => state.addToCart);
-    
-        useEffect(() => {
-          if (user?.id) {
-            dispatch(fetchCartItems(user.id));
-          }
-        }, []);
+
+  useEffect(() => {
+    if (user?.id) {
+      dispatch(fetchCartItems(user.id));
+    }
+  }, []);
 
   const elements = useElements();
   const stripe = useStripe();
@@ -56,7 +56,7 @@ const Checkout = () => {
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [show, setShow] = useState(false);
   const [shippingMethod, setShippingMethod] = useState("free");
-    const [showPromo, setShowPromo] = useState(false);
+  const [showPromo, setShowPromo] = useState(false);
   // Handle Country Change
   const handleCountryChange = (country) => {
     setSelectedCountry(country);
@@ -71,6 +71,7 @@ const Checkout = () => {
   // Handle form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // Set loading to true when payment is being processed
 
     if (!stripe || !elements) {
       console.log("Stripe.js hasn't loaded yet.");
@@ -119,8 +120,6 @@ const Checkout = () => {
         comment: "Payment for order",
       };
 
-      setLoading(true); // Set loading to true when payment is being processed
-
       try {
         const response = await fetch(
           "https://fzliiwigydluhgbuvnmr.supabase.co/functions/v1/smart-handler",
@@ -139,20 +138,22 @@ const Checkout = () => {
 
         let status = "success";
 
-        if (result.message != "Payment successful") {         
+        if (result.message != "Payment successful") {
           status = "failed";
-          toast.error("Payment processing failed.");
+          toast.error(result?.error || "Payment processing failed.");
           return;
         }
 
-       const orderId = await placeOrder({ 
-          ...paymentData, 
+        const orderId = await placeOrder({
+          ...paymentData,
           payment_status: status,
-          shippingMethod 
+          shippingMethod
         }, result);
 
         if (orderId) {
-          setShow(true); // ✅ Only show after order placement is successful
+          dispatch(fetchTotalCart(user.id)); // Update cart total
+          setShow(true); // Only show after order placement is successful
+          toast.success("Payment processed successfully!");
         }
       } catch (err) {
         console.log(err);
@@ -183,14 +184,80 @@ const Checkout = () => {
 
   return (
     <>
-    <Navbar/>
+      <Navbar />
       <div className="container my-4 py-3">
         {/* <h1 className="text-center mb-4">Checkout</h1>
         <hr /> */}
         <div className="row">
           {loading ? (
-            <LottieLoader />
-          ) : cart.length ? (
+            <>
+              {/* Left Form Skeleton */}
+              <div className="col-12 col-lg-8">
+                <Skeleton height={30} width="40%" className="mb-3" /> {/* Delivery Info Header */}
+                <div className="row g-3 mb-3">
+                  <div className="col-md-6">
+                    <Skeleton height={40} />
+                  </div>
+                  <div className="col-md-6">
+                    <Skeleton height={40} />
+                  </div>
+                  <div className="col-md-6 mt-2">
+                    <Skeleton height={40} />
+                  </div>
+                  <div className="col-md-6 mt-2">
+                    <Skeleton height={40} />
+                  </div>
+                  <div className="col-md-4 mt-2">
+                    <Skeleton height={40} />
+                  </div>
+                  <div className="col-md-4 mt-2">
+                    <Skeleton height={40} />
+                  </div>
+                  <div className="col-md-4 mt-2">
+                    <Skeleton height={40} />
+                  </div>
+                </div>
+
+                {/* Shipping Method Skeleton */}
+                <Skeleton height={25} width="30%" className="mb-2" />
+                <div className="d-flex gap-3 mb-3">
+                  <Skeleton height={60} width="50%" />
+                  <Skeleton height={60} width="50%" />
+                </div>
+
+                {/* Payment Method Skeleton */}
+                <Skeleton height={30} width="25%" className="mb-2" />
+                <Skeleton height={50} className="mb-3" />
+                <Skeleton height={120} className="mb-3" /> {/* Card input box */}
+                <Skeleton height={50} width="100%" /> {/* Submit button */}
+              </div>
+
+              {/* Right Cart Summary Skeleton */}
+              <div className="col-md-4">
+                <Skeleton height={25} width="50%" className="mb-3" /> {/* Summary title */}
+                {Array(5)
+                  .fill(0)
+                  .map((_, idx) => (
+                    <div
+                      key={idx}
+                      className="d-flex mb-3 align-items-center"
+                      style={{ minHeight: "60px" }}
+                    >
+                      <Skeleton height={60} width={60} />
+                      <div className="ms-2 w-100">
+                        <Skeleton height={15} width="80%" className="mb-2" />
+                        <Skeleton height={15} width="60%" className="mb-1" />
+                        <Skeleton height={15} width="40%" />
+                      </div>
+                    </div>
+                  ))}
+                <Skeleton height={30} width="80%" className="mb-1" /> {/* Promo */}
+                <Skeleton height={30} width="50%" className="mb-1" /> {/* Products total */}
+                <Skeleton height={30} width="50%" className="mb-1" /> {/* Shipping */}
+                <Skeleton height={30} width="50%" /> {/* Total */}
+              </div>
+            </>
+          ) : cart.length && show === false ? (
             <>
               {/* Main form section */}
               <div className="col-12 col-lg-8">
@@ -277,119 +344,117 @@ const Checkout = () => {
                               />
                             </div>
                             <div className="row g-3">
-      <div className="col-md-4">
-        <label className="form-label" style={{ color: "#6c757d" }}>
-          Zip Code
-        </label>
-        <input
-          type="text"
-          className="form-control w-full"
-          style={{ color: "#6c757d" }}
-          value={zipCode}
-          onChange={(e) => setZipCode(e.target.value)}
-          required
-        />
-      </div>
-      <div className="col-md-4">
-        <label className="form-label" style={{ color: "#6c757d" }}>
-          Country
-        </label>
-        <select
-          className="form-select w-full"
-          style={{ color: "#6c757d" }}
-          value={selectedCountry}
-          onChange={(e) => handleCountryChange(e.target.value)}
-          required
-        >
-          <option value="">Select Country</option>
-          {Country.getAllCountries().map((country) => (
-            <option key={country.isoCode} value={country.isoCode}>
-              {country.name}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div className="col-md-4">
-        <label className="form-label" style={{ color: "#6c757d" }}>
-          State
-        </label>
-        <select
-          style={{ color: "#6c757d" }}
-          className="form-select w-full"
-          value={selectedState}
-          onChange={(e) => handleStateChange(e.target.value)}
-          required
-        >
-          <option value="">Select State</option>
-          {states.map((state) => (
-            <option key={state.isoCode} value={state.isoCode}>
-              {state.name}
-            </option>
-          ))}
-        </select>
-      </div>
-    </div>
+                              <div className="col-md-4">
+                                <label className="form-label" style={{ color: "#6c757d" }}>
+                                  Zip Code
+                                </label>
+                                <input
+                                  type="text"
+                                  className="form-control w-full"
+                                  style={{ color: "#6c757d" }}
+                                  value={zipCode}
+                                  onChange={(e) => setZipCode(e.target.value)}
+                                  required
+                                />
+                              </div>
+                              <div className="col-md-4">
+                                <label className="form-label" style={{ color: "#6c757d" }}>
+                                  Country
+                                </label>
+                                <select
+                                  className="form-select w-full"
+                                  style={{ color: "#6c757d" }}
+                                  value={selectedCountry}
+                                  onChange={(e) => handleCountryChange(e.target.value)}
+                                  required
+                                >
+                                  <option value="">Select Country</option>
+                                  {Country.getAllCountries().map((country) => (
+                                    <option key={country.isoCode} value={country.isoCode}>
+                                      {country.name}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                              <div className="col-md-4">
+                                <label className="form-label" style={{ color: "#6c757d" }}>
+                                  State
+                                </label>
+                                <select
+                                  style={{ color: "#6c757d" }}
+                                  className="form-select w-full"
+                                  value={selectedState}
+                                  onChange={(e) => handleStateChange(e.target.value)}
+                                  required
+                                >
+                                  <option value="">Select State</option>
+                                  {states.map((state) => (
+                                    <option key={state.isoCode} value={state.isoCode}>
+                                      {state.name}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
-                <div className="col-12 pt-2">
-  <h6 className="mb-3" style={{ color: "#000" }}>Shipping Method</h6>
-  <div className="d-flex gap-3">
-    {/* Free Shipping Option */}
-    <label
-      className={`border rounded p-3 flex-fill text-start ${
-        shippingMethod === "free" ? "border-dark bg-light" : "border-secondary"
-      }`}
-      style={{ cursor: "pointer", minWidth: "160px" }}
-    >
-      <div className="d-flex justify-content-between align-items-center mb-1">
-        <div className="form-check m-0">
-          <input
-            className="form-check-input"
-            type="radio"
-            name="shipping"
-            id="shippingFree"
-            value="free"
-            checked={shippingMethod === "free"}
-            onChange={() => setShippingMethod("free")}
-          />
-          <label className="form-check-label ms-2" htmlFor="shippingFree">
-            Free Shipping
-          </label>
-        </div>
-        <strong>$0</strong>
-      </div>
-      <div className="text-muted ps-4">7–20 Days</div>
-    </label>
+                      <div className="col-12 pt-2">
+                        <h6 className="mb-3" style={{ color: "#000" }}>Shipping Method</h6>
+                        <div className="d-flex gap-3">
+                          {/* Free Shipping Option */}
+                          <label
+                            className={`border rounded p-3 flex-fill text-start ${shippingMethod === "free" ? "border-dark bg-light" : "border-secondary"
+                              }`}
+                            style={{ cursor: "pointer", minWidth: "160px" }}
+                          >
+                            <div className="d-flex justify-content-between align-items-center mb-1">
+                              <div className="form-check m-0">
+                                <input
+                                  className="form-check-input"
+                                  type="radio"
+                                  name="shipping"
+                                  id="shippingFree"
+                                  value="free"
+                                  checked={shippingMethod === "free"}
+                                  onChange={() => setShippingMethod("free")}
+                                />
+                                <label className="form-check-label ms-2" htmlFor="shippingFree">
+                                  Free Shipping
+                                </label>
+                              </div>
+                              <strong>$0</strong>
+                            </div>
+                            <div className="text-muted ps-4">7–20 Days</div>
+                          </label>
 
-    {/* Express Shipping Option */}
-    <label
-      className={`border rounded p-3 flex-fill text-start ${
-        shippingMethod === "express" ? "border-dark bg-light" : "border-secondary"
-      }`}
-      style={{ cursor: "pointer", minWidth: "160px" }}
-    >
-      <div className="d-flex justify-content-between align-items-center mb-1">
-        <div className="form-check m-0">
-          <input
-            className="form-check-input"
-            type="radio"
-            name="shipping"
-            id="shippingExpress"
-            value="express"
-            checked={shippingMethod === "express"}
-            onChange={() => setShippingMethod("express")}
-          />
-          <label className="form-check-label ms-2" htmlFor="shippingExpress">
-            Express Shipping
-          </label>
-        </div>
-        <strong>$30</strong>
-      </div>
-      <div className="text-muted ps-4">1–3 Days</div>
-    </label>
-  </div>
-</div>
+                          {/* Express Shipping Option */}
+                          <label
+                            className={`border rounded p-3 flex-fill text-start ${shippingMethod === "express" ? "border-dark bg-light" : "border-secondary"
+                              }`}
+                            style={{ cursor: "pointer", minWidth: "160px" }}
+                          >
+                            <div className="d-flex justify-content-between align-items-center mb-1">
+                              <div className="form-check m-0">
+                                <input
+                                  className="form-check-input"
+                                  type="radio"
+                                  name="shipping"
+                                  id="shippingExpress"
+                                  value="express"
+                                  checked={shippingMethod === "express"}
+                                  onChange={() => setShippingMethod("express")}
+                                />
+                                <label className="form-check-label ms-2" htmlFor="shippingExpress">
+                                  Express Shipping
+                                </label>
+                              </div>
+                              <strong>$30</strong>
+                            </div>
+                            <div className="text-muted ps-4">1–3 Days</div>
+                          </label>
+                        </div>
+                      </div>
 
 
                       {/* 3. Payment Method */}
@@ -533,15 +598,15 @@ const Checkout = () => {
                           disabled={loading || !stripe}
                         >
                           {paymentLoading
-                            ?(
+                            ? (
                               <>
                                 <span
-                                className="spinner-border spinner-border-sm me-2"
-                                role="status"
-                                aria-hidden="true"
-                              ></span>
+                                  className="spinner-border spinner-border-sm me-2"
+                                  role="status"
+                                  aria-hidden="true"
+                                ></span>
                                 Submitting Payment...
-                             </>
+                              </>
                             )
                             : "Submit Payment"}
                         </button>
@@ -552,7 +617,7 @@ const Checkout = () => {
               </div>
 
               {/* Order Summary on Right */}
-              <div className="col-md-4 order-summary pt-5 ">
+              <div className="col-md-4 ">
                 <div className="bg-white border border-gray-200 rounded-3 p-4">
                   <h5 className="mb-4 text-lg font-semibold text-gray-800">
                     📦 Order Summary
@@ -562,7 +627,7 @@ const Checkout = () => {
                     <div
                       className="mx-auto"
                       style={{
-                        maxHeight: "790px",
+                        maxHeight: "600px",
                         overflowX: "auto",
                       }}
                     >
@@ -624,25 +689,25 @@ const Checkout = () => {
 
                     {/* Order Summary */}
                     <ul className="list-group list-group-flush mt-3">
-                        <div
-                                      onClick={() => setShowPromo(!showPromo)}
-                                      className=" d-flex justify-content-between px-3"
-                                      style={{ userSelect: "none" }}
-                                    >
-                                      <span>Do you have a promo code?</span>
-                                      {showPromo ? <FaChevronUp /> : <FaChevronDown />}
-                                    </div>
-                      
-                                    {/* Promo code input */}
-                                    {showPromo && (
-                                      <div className="mb-1">
-                                        <input
-                                          type="text"
-                                          className="form-control rounded ms-3 me-5"
-                                          placeholder="Enter promo code"
-                                        />
-                                      </div>
-                                    )}
+                      <div
+                        onClick={() => setShowPromo(!showPromo)}
+                        className=" d-flex justify-content-between px-3"
+                        style={{ userSelect: "none" }}
+                      >
+                        <span>Do you have a promo code?</span>
+                        {showPromo ? <FaChevronUp /> : <FaChevronDown />}
+                      </div>
+
+                      {/* Promo code input */}
+                      {showPromo && (
+                        <div className="mb-1">
+                          <input
+                            type="text"
+                            className="form-control rounded ms-3 me-5"
+                            placeholder="Enter promo code"
+                          />
+                        </div>
+                      )}
                       <li
                         className="list-group-item d-flex justify-content-between"
                         style={{ color: "#6c757d" }}
@@ -677,113 +742,112 @@ const Checkout = () => {
           )}
         </div>
         {show && (
-          <div
-            className="modal fade show d-block"
-            tabIndex="-1"
-            role="dialog"
-            style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
-          >
-            <div className="modal-dialog modal-dialog-centered" role="document">
-              <div
-                className="modal-content animate-fade-in border-0 position-relative"
-                style={{
-                  borderRadius: "1rem",
-                  boxShadow: "0 0.75rem 1.5rem rgba(0, 0, 0, 0.15)",
-                  overflow: "hidden",
-                }}
-              >
-                {/* ✅ Success Lottie Animation */}
-                <div
-                  className="position-absolute top-0 start-50 translate-middle-x"
-                  style={{
-                    width: "1000px",
-                    height: "100px",
-                    zIndex: 1,
-                    marginTop: "-50px",
-                  }}
-                >
-                  <LottieLoader useAlt={true} />
-                </div>
+          <>
+          </>
+        //   <div
+        //     className="modal fade show d-block"
+        //     tabIndex="-1"
+        //     role="dialog"
+        //     style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
+        //   >
+        //     <div className="modal-dialog modal-dialog-centered" role="document">
+        //       <div
+        //         className="modal-content animate-fade-in border-0 position-relative"
+        //         style={{
+        //           borderRadius: "1rem",
+        //           boxShadow: "0 0.75rem 1.5rem rgba(0, 0, 0, 0.15)",
+        //           overflow: "hidden",
+        //         }}
+        //       >
+        //         <div
+        //           className="position-absolute top-0 start-50 translate-middle-x"
+        //           style={{
+        //             width: "1000px",
+        //             height: "100px",
+        //             zIndex: 1,
+        //             marginTop: "-50px",
+        //           }}
+        //         >
+        //           <LottieLoader useAlt={true} />
+        //         </div>
 
-                {/* ✅ Header */}
-                <div
-                  className="modal-header border-0 d-flex justify-content-between align-items-center"
-                  style={{ zIndex: 2 }}
-                >
-                  <h5 className="modal-title text-dark fw-semibold m-0">
-                    Thank You, {user.full_name || name}!
-                  </h5>
-                  <button
-                    type="button"
-                    className="btn-close"
-                    onClick={closeModal}
-                    style={{ zIndex: 3 }}
-                  ></button>
-                </div>
+        //         <div
+        //           className="modal-header border-0 d-flex justify-content-between align-items-center"
+        //           style={{ zIndex: 2 }}
+        //         >
+        //           <h5 className="modal-title text-dark fw-semibold m-0">
+        //             Thank You, {user.full_name || name}!
+        //           </h5>
+        //           <button
+        //             type="button"
+        //             className="btn-close"
+        //             onClick={closeModal}
+        //             style={{ zIndex: 3 }}
+        //           ></button>
+        //         </div>
 
-                {/* ✅ Body Content */}
-                <div className="modal-body px-4 text-center">
-                  <div className="mb-3">
-                    <i className="bi bi-check-circle-fill text-success fs-1"></i>
-                  </div>
+        //         <div className="modal-body px-4 text-center">
+        //           <div className="mb-3">
+        //             <i className="bi bi-check-circle-fill text-success fs-1"></i>
+        //           </div>
 
-                  <h6 className="text-success fw-bold mb-2">
-                    Payment Successful!
-                  </h6>
-                  <p className="text-muted mb-4">
-                    Your order has been placed successfully. We'll start
-                    preparing it right away!
-                  </p>
+        //           <h6 className="text-success fw-bold mb-2">
+        //             Payment Successful!
+        //           </h6>
+        //           <p className="text-muted mb-4">
+        //             Your order has been placed successfully. We'll start
+        //             preparing it right away!
+        //           </p>
 
-                  <hr
-                    className="my-4"
-                    style={{
-                      height: "0",
-                      backgroundColor: "transparent",
-                      opacity: ".75",
-                      borderTop: "2px dashed #9e9e9e",
-                    }}
-                  />
-                  <ul className="list-group list-group-flush text-start">
-                    <li className="list-group-item d-flex justify-content-between text-muted">
-                      Estimated Delivery
-                      { shippingMethod === "free" ? (
-                        <>
-                         <span>7 - 20 business days</span>
-                        </>
+        //           <hr
+        //             className="my-4"
+        //             style={{
+        //               height: "0",
+        //               backgroundColor: "transparent",
+        //               opacity: ".75",
+        //               borderTop: "2px dashed #9e9e9e",
+        //             }}
+        //           />
+        //           <ul className="list-group list-group-flush text-start">
+        //             <li className="list-group-item d-flex justify-content-between text-muted">
+        //               Estimated Delivery
+        //               {shippingMethod === "free" ? (
+        //                 <>
+        //                   <span>7 - 20 business days</span>
+        //                 </>
 
-                      ):(
-                        <>
-                        <span>1 - 3 business days</span>
-                        </>
+        //               ) : (
+        //                 <>
+        //                   <span>1 - 3 business days</span>
+        //                 </>
 
-                      )}
-                    </li>
-                    <li className="list-group-item d-flex justify-content-between text-muted">
-                      Payment Status
-                      <span className="text-success fw-semibold">
-                        Confirmed
-                      </span>
-                    </li>
-                  </ul>
-                </div>
+        //               )}
+        //             </li>
+        //             <li className="list-group-item d-flex justify-content-between text-muted">
+        //               Payment Status
+        //               <span className="text-success fw-semibold">
+        //                 Confirmed
+        //               </span>
+        //             </li>
+        //           </ul>
+        //         </div>
 
-                {/* ✅ Footer */}
-                {/* <div className="modal-footer border-0 d-flex justify-content-center pb-4">
-          <button
-            className="btn bg-success"
-            style={{
-              color: "#fff",
-              borderRadius: "2rem",
-              padding: "0.6rem 1.5rem",
-            }}
-          >
-            Track Your Order
-          </button>
-        </div> */}
-              </div>
-            </div>
-          </div>
+        //         {/* Footer */}
+        //         {/* <div className="modal-footer border-0 d-flex justify-content-center pb-4">
+        //   <button
+        //     className="btn bg-success"
+        //     style={{
+        //       color: "#fff",
+        //       borderRadius: "2rem",
+        //       padding: "0.6rem 1.5rem",
+        //     }}
+        //   >
+        //     Track Your Order
+        //   </button>
+        // </div> */}
+        //       </div>
+        //     </div>
+        //   </div>
         )}
       </div>
     </>

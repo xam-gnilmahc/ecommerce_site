@@ -14,46 +14,15 @@ const Filter = ({ onApplyFilters }) => {
   const [selectedCategory, setSelectedCategory] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedBrands, setSelectedBrands] = useState([]);
-  const [brandsData] = useState([
+
+  const brandsData = [
     { name: "Apple", count: 24 },
     { name: "Google", count: 3 },
     { name: "Vivo", count: 1 },
     { name: "Samsung", count: 12 },
     { name: "Redmi", count: 14 },
     { name: "Huawei", count: 5 },
-  ]);
-
-  const handleColorChange = (color) => {
-    setSelectedColors((prevColors) =>
-      prevColors.includes(color)
-        ? prevColors.filter((c) => c !== color)
-        : [...prevColors, color]
-    );
-  };
-
-  const handleBrandChange = (brand) => {
-    setSelectedBrands((prevBrands) =>
-      prevBrands.includes(brand)
-        ? prevBrands.filter((b) => b !== brand)
-        : [...prevBrands, brand]
-    );
-  };
-
-  const handleCategoryChange = (size) => {
-    setSelectedCategory((prevSizes) =>
-      prevSizes.includes(size)
-        ? prevSizes.filter((s) => s !== size)
-        : [...prevSizes, size]
-    );
-  };
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
-
-  const filteredBrands = brandsData.filter((brand) =>
-    brand.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  ];
 
   const filterCategories = [
     "Mobile",
@@ -79,166 +48,165 @@ const Filter = ({ onApplyFilters }) => {
   ];
 
   const handleApplyFilters = () => {
-    const filters = {
+    onApplyFilters({
       brands: selectedBrands,
       priceRange: value,
       category: selectedCategory,
       colors: selectedColors,
-    };
-
-    console.log(filters);
-    onApplyFilters(filters);
+    });
   };
 
+  const filteredBrands = brandsData.filter((b) =>
+    b.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Accordion common props
+  const accordionProps = {
+    defaultExpanded: true,
+    disableGutters: true,
+    elevation: 0,
+    square: true,
+    sx: {
+      boxShadow: "none",
+      border: "none",
+      "&:before": { display: "none" },
+    },
+  };
+
+  const accordionSummarySX = {
+    padding: 0,
+    margin: 0,
+    minHeight: 0,
+    "& .MuiAccordionSummary-content": {
+      margin: 0,
+    },
+  };
+
+  const accordionDetailsSX = { padding: 0, margin: 0 };
+
   return (
-    <div className="filterSection">
-      {/* Colors */}
-      <Accordion defaultExpanded disableGutters elevation={0}>
-        <AccordionSummary
-          expandIcon={<IoIosArrowDown size={20} />}
-          aria-controls="colors-content"
-          id="colors-header"
-          sx={{ padding: 0, marginBottom: 2 }}
-        >
+    <aside className="filterSection">
+      {/* COLORS */}
+      <Accordion {...accordionProps}>
+        <AccordionSummary expandIcon={<IoIosArrowDown />} sx={accordionSummarySX}>
           <h5 className="filterHeading">Colors</h5>
         </AccordionSummary>
-        <AccordionDetails sx={{ padding: 0 }}>
+        <AccordionDetails sx={accordionDetailsSX}>
           <div className="filterColorBtn">
-            {filterColors.map((color, index) => (
+            {filterColors.map((color) => (
               <button
-                key={index}
-                className={`colorButton ${
-                  selectedColors.includes(color) ? "selected" : ""
-                }`}
+                key={color}
                 style={{ backgroundColor: color }}
-                onClick={() => handleColorChange(color)}
-                aria-label={`Select color ${color}`}
+                className={selectedColors.includes(color) ? "selected" : ""}
+                onClick={() =>
+                  setSelectedColors((prev) =>
+                    prev.includes(color)
+                      ? prev.filter((c) => c !== color)
+                      : [...prev, color]
+                  )
+                }
               />
             ))}
           </div>
         </AccordionDetails>
       </Accordion>
 
-      {/* Categories */}
-      <Accordion defaultExpanded disableGutters elevation={0}>
-        <AccordionSummary
-          expandIcon={<IoIosArrowDown size={20} />}
-          aria-controls="category-content"
-          id="category-header"
-          sx={{ padding: 0, marginBottom: 2 }}
-        >
+      {/* CATEGORY */}
+      <Accordion {...accordionProps}>
+        <AccordionSummary expandIcon={<IoIosArrowDown />} sx={accordionSummarySX}>
           <h5 className="filterHeading">Category</h5>
         </AccordionSummary>
-        <AccordionDetails sx={{ padding: 0 }}>
+        <AccordionDetails sx={accordionDetailsSX}>
           <div className="sizeButtons">
-            {filterCategories.map((category, index) => (
+            {filterCategories.map((cat) => (
               <button
-                key={index}
+                key={cat}
                 className={`sizeButton ${
-                  selectedCategory.includes(category) ? "selected" : ""
+                  selectedCategory.includes(cat) ? "selected" : ""
                 }`}
-                onClick={() => handleCategoryChange(category)}
+                onClick={() =>
+                  setSelectedCategory((prev) =>
+                    prev.includes(cat)
+                      ? prev.filter((c) => c !== cat)
+                      : [...prev, cat]
+                  )
+                }
               >
-                {category}
+                {cat}
               </button>
             ))}
           </div>
         </AccordionDetails>
       </Accordion>
 
-      {/* Brands */}
-      <Accordion defaultExpanded disableGutters elevation={0}>
-        <AccordionSummary
-          expandIcon={<IoIosArrowDown size={20} />}
-          aria-controls="brands-content"
-          id="brands-header"
-          sx={{ padding: 0, marginBottom: 2 }}
-        >
+      {/* BRANDS */}
+      <Accordion {...accordionProps}>
+        <AccordionSummary expandIcon={<IoIosArrowDown />} sx={accordionSummarySX}>
           <h5 className="filterHeading">Brands</h5>
         </AccordionSummary>
-        <AccordionDetails sx={{ padding: 0 }}>
+        <AccordionDetails sx={accordionDetailsSX}>
           <div className="searchBar">
-            <BiSearch className="searchIcon" size={20} color={"#767676"} />
+            <BiSearch className="searchIcon" />
             <input
-              type="text"
               placeholder="Search brands"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="brandList">
-            {filteredBrands.length > 0 ? (
-              filteredBrands.map((brand, index) => (
-                <div className="brandItem" key={index}>
+            {filteredBrands.length ? (
+              filteredBrands.map((brand) => (
+                <label className="brandItem" key={brand.name}>
                   <input
                     type="checkbox"
-                    name="brand"
-                    id={`brand-${index}`}
-                    className="brandRadio"
-                    onChange={() => handleBrandChange(brand.name)}
                     checked={selectedBrands.includes(brand.name)}
+                    onChange={() =>
+                      setSelectedBrands((prev) =>
+                        prev.includes(brand.name)
+                          ? prev.filter((b) => b !== brand.name)
+                          : [...prev, brand.name]
+                      )
+                    }
                   />
-                  <label htmlFor={`brand-${index}`} className="brandLabel">
-                    {brand.name}
-                  </label>
-                  <span className="brandCount">{brand.count}</span>
-                </div>
+                  <span>{brand.name}</span>
+                  <small>{brand.count}</small>
+                </label>
               ))
             ) : (
-              <div className="notFoundMessage">No brands found</div>
+              <p className="notFoundMessage">No brands found</p>
             )}
           </div>
         </AccordionDetails>
       </Accordion>
 
-      {/* Price */}
-      <Accordion defaultExpanded disableGutters elevation={0}>
-        <AccordionSummary
-          expandIcon={<IoIosArrowDown size={20} />}
-          aria-controls="price-content"
-          id="price-header"
-          sx={{ padding: 0, marginBottom: 2 }}
-        >
+      {/* PRICE */}
+      <Accordion {...accordionProps}>
+        <AccordionSummary expandIcon={<IoIosArrowDown />} sx={accordionSummarySX}>
           <h5 className="filterHeading">Price</h5>
         </AccordionSummary>
-        <AccordionDetails sx={{ padding: 0 }}>
+        <AccordionDetails sx={accordionDetailsSX}>
           <Slider
-            getAriaLabel={() => "Price range"}
             value={value}
-            onChange={handleChange}
+            onChange={(e, val) => setValue(val)}
             min={0}
             max={10000}
             valueLabelDisplay="auto"
-            valueLabelFormat={(val) => `$${val}`}
-            sx={{
-              color: "#0B2472",
-              "& .MuiSlider-thumb": {
-                backgroundColor: "white",
-                border: "2px solid #0B2472",
-                width: 18,
-                height: 18,
-              },
-              "& .MuiSlider-rail": {
-                opacity: 0.5,
-                backgroundColor: "#282828",
-              },
-            }}
           />
-          <div className="filterSliderPrice">
+          <div className="priceRange">
             <p>
-              Min Price: <span>${value[0]}</span>
+              Min: <span>${value[0]}</span>
             </p>
             <p>
-              Max Price: <span>${value[1]}</span>
+              Max: <span>${value[1]}</span>
             </p>
           </div>
         </AccordionDetails>
       </Accordion>
 
-      <button onClick={handleApplyFilters} className="applyFilterBtn">
+      <button className="applyFilterBtn" onClick={handleApplyFilters}>
         Apply Filters
       </button>
-    </div>
+    </aside>
   );
 };
 

@@ -1,11 +1,52 @@
+/* Container adjustments for responsive layout */
+.order-summary {
+  max-height: 75vh;      /* limit height for scrolling */
+  overflow-y: auto;       /* enable vertical scroll */
+  overflow-x: hidden;     /* hide horizontal scroll */
+  padding: 1rem;
+  background-color: #fff;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  scrollbar-width: none;   /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+
+.order-summary::-webkit-scrollbar {
+  width: 0;               /* Chrome, Safari, Opera */
+  background: transparent;
+}
+
+/* Mobile adjustments */
 @media (max-width: 767.98px) {
-    .order-summary {
-      margin-top: 1rem;
-    }
-    
-    .payment-method {
-        border: none !important;
-        padding: 0 !important;
-      }
+  .order-summary {
+    max-height: none;      /* allow full height on mobile */
+    overflow: visible;
+    margin-top: 1rem;
+    padding: 0.75rem;
   }
-  
+
+  .payment-method {
+    border: none !important;
+    padding: 0 !important;
+  }
+
+  .shipping-method-label {
+    min-width: auto !important;
+  }
+}
+
+/* Optional: smooth scrolling for desktop */
+.order-summary {
+  -webkit-overflow-scrolling: touch; 
+}
+
+/* Styling for individual order items */
+.order-summary .card-body > div {
+  border-bottom: 1px solid #ddd;
+  padding: 0.5rem 0;
+}
+
+.order-summary .card-body img {
+  border-radius: 5px;
+  object-fit: contain;
+}

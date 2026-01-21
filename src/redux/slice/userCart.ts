@@ -72,7 +72,7 @@ export const fetchTotalCart = createAsyncThunk(
 
 export const addToCart = createAsyncThunk(
   'cart/addToCart',
-  async ({ userId, product }, { rejectWithValue, dispatch }) => {
+  async ({ userId, product }:{ userId: any; product: any }, { rejectWithValue, dispatch }) => {
     try {
       const { data: existingItem, error: selectError } = await supabase
         .from('cart')
@@ -113,7 +113,7 @@ export const addToCart = createAsyncThunk(
           .single();
 
         if (updateError) return rejectWithValue(updateError.message);
-
+        toast.success('Product has been updated!');
         await dispatch(fetchTotalCart(userId));
         return updated;
       }
@@ -126,7 +126,7 @@ export const addToCart = createAsyncThunk(
 
 export const removeItemDirectlyFromCart = createAsyncThunk(
   'cart/removeItemDirectlyFromCart',
-  async ({ userId, productId }, { rejectWithValue, dispatch }) => {
+  async ({ userId, productId }: { userId: any; productId: any }, { rejectWithValue, dispatch }) => {
     try {
       const { data: existingItem, error: findError } = await supabase
         .from('cart')
@@ -158,7 +158,7 @@ export const removeItemDirectlyFromCart = createAsyncThunk(
 
 export const removeFromCart = createAsyncThunk(
   'cart/removeFromCart',
-  async ({ userId, product }, { rejectWithValue, dispatch }) => {
+  async ({ userId, product }: { userId: any; product: any }, { rejectWithValue, dispatch }) => {
     try {
       const { data: existingItem, error: selectError } = await supabase
         .from('cart')
