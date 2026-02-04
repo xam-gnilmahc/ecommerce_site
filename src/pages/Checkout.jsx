@@ -24,7 +24,7 @@ import {
 } from "../redux/slice/userCart.ts";
 // Stripe Publishable Key
 const stripePromise = loadStripe(
-  "pk_test_51PGec42K0njal9PzJzzxwBOVszXOkqMCBcovRYFChW727EsjLGJ9sWMvztGAGnnmVAtquHDgSllxMryuvfgnv87D00nc9a1Yp7"
+  ""
 );
 
 const Checkout = () => {
