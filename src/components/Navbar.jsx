@@ -70,7 +70,7 @@ const Navbar = () => {
 
           <div className="linkContainer">
             <ul className="mb-2">
-              <li><NavLink to="/" end>Home</NavLink></li>
+              <li><NavLink to="/">Home</NavLink></li>
               <li><NavLink to="/shop">Shop</NavLink></li>
               <li><NavLink to="/order">Orders</NavLink></li>
               {/* <li
