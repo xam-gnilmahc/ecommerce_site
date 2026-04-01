@@ -16,7 +16,6 @@ import { fetchProducts } from "../redux/slice/Product.ts";
 import { searchProducts } from "../redux/slice/searchProduct.ts";
 import { fetchFilteredProducts } from "../redux/slice/filterProduct.ts";
 import { addToCart } from "../redux/slice/userCart.ts";
-import { RootState } from "../redux/index.ts";
 import "./Products.css";
 
 const Products = () => {
@@ -33,13 +32,13 @@ const Products = () => {
 
   // Redux selectors
   const { products, loading: productsLoading } = useSelector(
-    (state: RootState) => state.product
+    (state) => state.product
   );
   const { results: searchResults, status: searchStatus } = useSelector(
-    (state: RootState) => state.search
+    (state) => state.search
   );
   const { filteredProducts, status: filterStatus } = useSelector(
-    (state: RootState) => state.filterProduct
+    (state) => state.filterProduct
   );
 
   // Fetch all products on mount
@@ -48,7 +47,6 @@ const Products = () => {
       dispatch(fetchProducts());
     }
   }, [dispatch, products.length]);
-  
 
   // Update local product state when products load
   useEffect(() => {
@@ -75,7 +73,7 @@ const Products = () => {
       setCurrentPage(1);
     } else if (searchStatus === "failed" || searchStatus === "idle") {
       setDisplayProducts(allProducts);
-    setCurrentPage(1);
+      setCurrentPage(1);
     }
   }, [searchResults, searchStatus, allProducts]);
 
@@ -138,20 +136,18 @@ const Products = () => {
       <div className="shopDetailsProductsContainer">
         {currentPosts.length === 0 ? (
           <div className="no-products">
+            <h3>No Products Found</h3>
+            <p>Try adjusting your filters or search criteria</p>
           </div>
         ) : (
           currentPosts.map((product) => (
             <div key={product.id} className="sdProductContainer">
-              <div className="sdProductImages position-relative">
+              <div className="sdProductImages">
                 {product.sticker && (
-                  <div
-                    className="position-absolute top-0 end-0 bg-transparent px-4"
-                    style={{ zIndex: 1 }}
-                  >
+                  <div className="product-sticker">
                     <img
                       src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/sticker/${product.sticker}`}
                       alt="Sticker"
-                      style={{ width: 50, height: 50, objectFit: "contain" }}
                     />
                   </div>
                 )}
@@ -161,36 +157,35 @@ const Products = () => {
                     alt={product.name}
                   />
                 </Link>
-                <h4
-                  className="bg-light position-absolute w-100 text-center"
+                <button
+                  className="add-to-cart-button"
                   onClick={() => handleAddToCart(product)}
-                  style={{ cursor: "pointer" }}
                 >
                   Add to Cart
-                </h4>
+                </button>
               </div>
               <div className="sdProductInfo">
                 <div className="sdProductCategoryWishlist">
                   <p>{product.category}</p>
                   <FiHeart
+                    className="wishlist-icon"
                     onClick={() => handleWishlistToggle(product.id)}
                     style={{
-                      color: wishList[product.id] ? "#0d6efd" : "#767676", // or "#0d6efd" for both
-                      cursor: "pointer",
+                      color: wishList[product.id] ? "#0d6efd" : "#767676",
                     }}
                   />
                 </div>
                 <div className="sdProductNameInfo">
-                  <h5>{product.name.substring(0, 35)}</h5>
+                  <h5>{product.name}</h5>
                 </div>
-                <p>${product.amount}</p>
+                <p className="product-price">${product.amount}</p>
                 <div className="sdProductRatingReviews">
                   <div className="sdProductRatingStar">
                     {[...Array(5)].map((_, i) => (
                       <FaStar key={i} color="#FEC78A" size={10} />
                     ))}
                   </div>
-                  <span>{product.reviews_count}</span>
+                  <span>({product.reviews_count})</span>
                 </div>
               </div>
             </div>
@@ -227,8 +222,8 @@ const Products = () => {
               role="button"
               tabIndex={0}
             >
-              <IoFilterSharp style={{ margin: 0 }} />
-              <p style={{ margin: 0 }}>Filter</p>
+              <IoFilterSharp />
+              <p>Filter</p>
             </div>
 
             <div className="shopDetailsSort">
