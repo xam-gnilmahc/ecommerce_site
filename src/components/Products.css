@@ -1,6 +1,6 @@
 /* Shop Details Container */
 .shopDetails {
-  padding: 40px 200px;
+  padding: 40px 160px;
   margin-top: 30px;
 }
 
@@ -509,10 +509,17 @@
 
 /* Responsive Design */
 
+/* Large Devices (1210px and below) */
+@media screen and (max-width: 1210px) {
+  .shopDetails {
+    padding: 40px 60px;
+  }
+}
+
 /* Tablet (768px to 991px) */
 @media screen and (max-width: 991px) {
   .shopDetails {
-    padding: 30px 80px;
+    padding: 30px 60px;
   }
 
   .shopDetailMain {
@@ -549,7 +556,7 @@
 /* Mobile (480px to 767px) */
 @media screen and (max-width: 768px) {
   .shopDetails {
-    padding: 20px 30px;
+    padding: 20px 20px;
     margin-top: 20px;
   }
 
@@ -607,7 +614,7 @@
 /* Small Mobile (320px to 479px) */
 @media screen and (max-width: 479px) {
   .shopDetails {
-    padding: 15px 15px;
+    padding: 20px 15px;
     margin-top: 15px;
   }
 
