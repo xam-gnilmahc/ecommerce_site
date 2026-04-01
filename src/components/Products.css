@@ -1,6 +1,6 @@
 /* Shop Details Container */
 .shopDetails {
-  padding: 40px 160px;
+  padding: 40px 200px;
   margin-top: 30px;
 }
 
@@ -10,12 +10,13 @@
 }
 
 .shopDetails__left {
-  width: 25%;
+  width: 22%;
   flex-shrink: 0;
+  min-width: 250px;
 }
 
 .shopDetails__right {
-  width: 75%;
+  width: 78%;
   display: flex;
   flex-direction: column;
   gap: 40px;
@@ -171,7 +172,6 @@
   width: 100%;
   aspect-ratio: 1;
   overflow: hidden;
-  background-color: #f9f9f9;
   border-radius: 8px;
   display: flex;
   justify-content: center;
@@ -192,7 +192,8 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  padding: 10px;
+  padding: 15px;
+  max-width: 100%;
   transition: transform 0.3s ease;
 }
 
@@ -511,7 +512,7 @@
 /* Tablet (768px to 991px) */
 @media screen and (max-width: 991px) {
   .shopDetails {
-    padding: 30px 50px;
+    padding: 30px 80px;
   }
 
   .shopDetailMain {
@@ -548,7 +549,7 @@
 /* Mobile (480px to 767px) */
 @media screen and (max-width: 768px) {
   .shopDetails {
-    padding: 20px 20px;
+    padding: 20px 30px;
     margin-top: 20px;
   }
 
