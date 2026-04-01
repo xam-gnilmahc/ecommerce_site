@@ -1,7 +1,7 @@
 /* Shop Details Container */
 .shopDetails {
-  padding: 40px 160px;
-  margin-top: 30px;
+  padding: 20px 160px;
+  margin-top: 0;
 }
 
 .shopDetailMain {
@@ -512,7 +512,7 @@
 /* Large Devices (1210px and below) */
 @media screen and (max-width: 1210px) {
   .shopDetails {
-    padding: 40px 60px;
+    padding: 20px 60px;
   }
 }
 
@@ -557,7 +557,6 @@
 @media screen and (max-width: 768px) {
   .shopDetails {
     padding: 20px 20px;
-    margin-top: 20px;
   }
 
   .shopDetailMain {
@@ -615,7 +614,6 @@
 @media screen and (max-width: 479px) {
   .shopDetails {
     padding: 20px 15px;
-    margin-top: 15px;
   }
 
   .shopDetailMain {
