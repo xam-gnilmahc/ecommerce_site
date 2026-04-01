@@ -27,8 +27,8 @@ const Filter = ({ onApplyFilters }) => {
   const filterCategories = [
     "Mobile",
     "Laptop",
-    "Earbuds",
     "Watch",
+    "Earbuds",
     "Tablet",
     "Monitor",
     "Keyboard",
