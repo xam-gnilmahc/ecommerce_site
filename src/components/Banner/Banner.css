@@ -1,102 +1,189 @@
 .banner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 380px;
+  margin: 60px 160px;
+  gap: 24px;
   opacity: 0;
   transform: translateY(50px);
   transition: all 1s ease;
-  border-radius: 10px;
 }
 
 .banner.in-view {
   opacity: 1;
   transform: translateY(0);
 }
-.banner {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  height: 24.875rem;
-  margin:2rem;
-  grid-gap: 30px;
+
+.bannerLeft,
+.bannerRight {
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 40px;
+  gap: 16px;
+  border-radius: var(--radius-xl);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  transition: all var(--transition-base);
+}
+
+.bannerLeft::before,
+.bannerRight::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 1;
 }
 
 .bannerLeft {
   background-image: url("https://imageio.forbes.com/specials-images/imageserve/631822a69a253fdf6ab586d8/0x0.jpg?format=jpg&height=900&width=1600&fit=bounds");
-  background-position: center;
-  background-size: cover;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 30px;
-  gap: 10px;
-  border-radius: 15px;
 }
 
 .bannerRight {
   background-image: url("https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Pixel_Watch_2_social.width-1300.png");
-  background-position: center;
-  background-size: cover;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 30px;
-  gap: 10px;
-    border-radius: 15px;
+}
 
+.bannerLeft:hover,
+.bannerRight:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
 }
 
 /* text style */
 
+.bannerLeft > *,
+.bannerRight > * {
+  position: relative;
+  z-index: 2;
+}
+
 .bannerh6 {
-  color: var(--color, rgb(20, 17, 17));
+  color: rgba(255, 255, 255, 0.9);
   text-transform: uppercase;
-  font-weight: 600;
-  font-size: 17px;
+  font-weight: var(--font-weight-semibold);
+  font-size: 14px;
+  letter-spacing: 1px;
 }
 
 .bannerh3 {
-  color: var(--color, rgb(21, 9, 9));
-  font-size: 27px;
-  font-weight: 600;
+  color: white;
+  font-size: 32px;
+  font-weight: var(--font-weight-bold);
+  line-height: 1.2;
 }
 
 .bannerh5 {
-  font-size: 15px;
+  font-size: 14px;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .bannerh5 a {
   text-decoration: none;
-  color: none;
+  color: white;
   position: relative;
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: var(--color-accent);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-base);
+  letter-spacing: 0.5px;
 }
 
-.bannerh5 a::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -5px;
-  width: 50%;
-  border-bottom: 2px solid rgb(49, 27, 27);
-  transition: width 0.2s ease;
+.bannerh5 a:hover {
+  background-color: #d63c2f;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(232, 76, 61, 0.3);
 }
 
-.bannerh5 a:hover::after {
-  width: 100%;
-}
-
-@media screen and (max-width: 1210px) {
+@media screen and (max-width: 1024px) {
   .banner {
-    grid-gap: 30px;
-    padding: 0 60px;
-    height: 20rem;
-    margin: 50px 0px;
+    margin: 40px 60px;
+    min-height: 320px;
+    gap: 20px;
+  }
+
+  .bannerLeft,
+  .bannerRight {
+    padding: 30px;
+  }
+
+  .bannerh3 {
+    font-size: 28px;
+  }
+
+  .bannerh6 {
+    font-size: 13px;
   }
 }
 
-@media screen and (max-width: 450px) {
+@media screen and (max-width: 768px) {
   .banner {
-    padding: 15px;
     grid-template-columns: 1fr;
-    grid-gap: 10px;
-    height: 35rem;
+    margin: 30px 40px;
+    min-height: auto;
+    gap: 16px;
+  }
+
+  .bannerLeft,
+  .bannerRight {
+    padding: 30px;
+    min-height: 250px;
+  }
+
+  .bannerh3 {
+    font-size: 24px;
+  }
+
+  .bannerh5 a {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .banner {
+    margin: 20px 15px;
+    gap: 12px;
+  }
+
+  .bannerLeft,
+  .bannerRight {
+    padding: 20px;
+    min-height: 220px;
+  }
+
+  .bannerh6 {
+    font-size: 12px;
+  }
+
+  .bannerh3 {
+    font-size: 20px;
+  }
+
+  .bannerh5 a {
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+}
+
+@media screen and (max-width: 320px) {
+  .banner {
+    margin: 15px 10px;
+  }
+
+  .bannerLeft,
+  .bannerRight {
+    padding: 15px;
+    min-height: 180px;
+  }
+
+  .bannerh3 {
+    font-size: 18px;
   }
 }

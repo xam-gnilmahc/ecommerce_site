@@ -1,35 +1,32 @@
-
-
-/* Assuming your navbar has a fixed width or is full width */
+/* Category dropdown menu */
 .category-dropdown .category-popup {
   visibility: hidden;
   opacity: 0;
-       /* full width of the navbar container */
-  max-width: 100%;      /* prevent overflow */
-  background-color: rgb(253, 253, 253);
-  color: #6993ce;
+  max-width: 100%;
+  background-color: var(--color-bg-white);
+  border-top: 3px solid var(--color-accent);
   text-align: center;
-  border-radius: 0;      /* remove rounding if you want flush edges */
+  border-radius: 0;
   position: absolute;
   z-index: 9999;
-  top: 100%;             /* place just below the navbar */
+  top: 100%;
   left: 0;
-  /* box-shadow removed as requested */
   white-space: normal;
-  transition: visibility 0.2s ease, opacity 0.2s ease;
+  transition: visibility var(--transition-base), opacity var(--transition-base);
+  box-shadow: var(--shadow-md);
 }
-
 
 .category-dropdown .category-popup .content {
-  padding: 20px;
+  padding: 24px 20px;
 }
+
 .category-dropdown:hover .category-popup,
 .category-dropdown.open .category-popup {
   visibility: visible;
   opacity: 1;
 }
 
-/* Optional: style the list inside so it looks nice in wide layout */
+/* Category list layout */
 .category-popup ul {
   display: flex;
   flex-wrap: wrap;
@@ -37,17 +34,27 @@
   padding: 0;
   margin: 0;
   list-style: none;
+  gap: 16px;
 }
 
 .category-popup ul li {
-  flex: 1 1 140px; /* flexible items, minimum width 150px */
+  flex: 1 1 140px;
   text-align: center;
 }
 
 .category-popup ul li a {
-  color: #aad5f5;
+  color: var(--color-dark);
   text-decoration: none;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
+  transition: color var(--transition-base);
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  display: block;
+}
+
+.category-popup ul li a:hover {
+  color: var(--color-accent);
+  background-color: var(--color-accent-pale);
 }
 
 
@@ -56,11 +63,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 160px;
+  padding: 14px 160px;
   z-index: 10;
-  background-color: rgb(253, 253, 253);
+  background-color: var(--color-bg-white);
   position: sticky;
   top: 0;
+  border-bottom: 1px solid var(--color-lighter-gray);
+  box-shadow: var(--shadow-sm);
 }
 @keyframes fadeSlideIn {
   0% {
@@ -102,10 +111,11 @@
 
 .linkContainer ul li a {
   text-decoration: none;
-  color: #1b1b1b;
+  color: var(--color-dark);
   font-size: 14px;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   position: relative;
+  transition: color var(--transition-base);
 }
 
 .linkContainer ul li a::after {
@@ -115,12 +125,17 @@
   left: 0;
   width: 0;
   height: 2px;
-  background-color: #857ae7;
-  transition: width 0.3s ease-out;
+  background-color: var(--color-accent);
+  transition: width var(--transition-base);
+  border-radius: var(--radius-sm);
+}
+
+.linkContainer ul li a:hover {
+  color: var(--color-accent);
 }
 
 .linkContainer ul li a:hover::after {
-  width: 60%;
+  width: 70%;
   transition-delay: 0.1s;
 }
 
@@ -136,7 +151,15 @@
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  color: black;
+  color: var(--color-dark);
+  transition: color var(--transition-base);
+  padding: 8px;
+  border-radius: var(--radius-md);
+}
+
+.iconContainer a:hover {
+  color: var(--color-accent);
+  background-color: var(--color-accent-pale);
 }
 
 .mobile-nav {
@@ -152,16 +175,22 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 20px 60px;
+    padding: 14px 60px;
     position: relative;
     z-index: 10;
-    background-color: 'red';
+    background-color: var(--color-bg-white);
+    border-bottom: 1px solid var(--color-lighter-gray);
+    box-shadow: var(--shadow-sm);
   }
 }
 
 @media screen and (max-width: 450px) {
   .mobile-nav {
-    padding: 20px 15px;
+    padding: 12px 15px;
+  }
+
+  .mobile-menuSearchBar {
+    padding: 16px;
   }
 }
 
@@ -170,19 +199,20 @@
 .mobile-menu {
   display: flex;
   flex-direction: column;
-  gap: 60px;
+  gap: 40px;
   height: 100vh;
-  background-color: #fff;
+  background-color: var(--color-bg-white);
   position: absolute;
   top: 68px;
   right: 0;
   width: 100%;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
   opacity: 0;
   transform: translateY(-100%);
-  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+  transition: transform var(--transition-slow), opacity var(--transition-slow);
   z-index: 9;
-  border-top: 1px solid #e4e4e4;
+  border-top: 2px solid var(--color-accent);
+  padding-top: 20px;
 }
 
 .mobile-menu.open {
@@ -200,9 +230,9 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 10px 20px;
-  border: 1px solid #e4e4e4;
-  border-radius: 5px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-lighter-gray);
+  border-radius: var(--radius-md);
 }
 
 .mobile-menuSearchBarContainer input {
@@ -210,31 +240,49 @@
   width: 100%;
   font-size: 14px;
   outline: none;
+  background: transparent;
+  color: var(--color-dark);
+}
+
+.mobile-menuSearchBarContainer input::placeholder {
+  color: var(--color-light-gray);
 }
 
 .mobile-menuSearchBarContainer a {
   text-decoration: none;
-  color: black;
+  color: var(--color-accent);
   display: flex;
   align-items: center;
+  transition: color var(--transition-base);
+}
+
+.mobile-menuSearchBarContainer a:hover {
+  color: #d63c2f;
 }
 
 .mobile-menuList ul {
   list-style-type: none;
   padding: 0;
   margin: 0;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--color-lighter-gray);
 }
 
 .mobile-menuList ul li {
-  padding: 10px 20px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--color-bg-gray);
 }
 
 .mobile-menuList ul li a {
   text-decoration: none;
-  color: #1b1b1b;
+  color: var(--color-dark);
   font-size: 16px;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
+  transition: color var(--transition-base);
+  display: block;
+}
+
+.mobile-menuList ul li a:hover {
+  color: var(--color-accent);
 }
 
 .mobile-menuFooter {

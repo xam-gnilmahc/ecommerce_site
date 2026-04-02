@@ -5,6 +5,7 @@ import "font-awesome/css/font-awesome.min.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "swiper/css";
 import "swiper/css/navigation";
+import "./styles/globals.css";
 
 import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
