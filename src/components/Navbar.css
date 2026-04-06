@@ -4,10 +4,10 @@
 .category-dropdown .category-popup {
   visibility: hidden;
   opacity: 0;
-       /* full width of the navbar container */
+    /* full width of the navbar container */
   max-width: 100%;      /* prevent overflow */
-  background-color: rgb(253, 253, 253);
-  color: #6993ce;
+  background-color: var(--surface);
+  color: var(--primary);
   text-align: center;
   border-radius: 0;      /* remove rounding if you want flush edges */
   position: absolute;
@@ -56,9 +56,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 160px;
+  padding: 10px clamp(16px, 8vw, 160px);
   z-index: 10;
-  background-color: rgb(253, 253, 253);
+  background-color: var(--surface);
   position: sticky;
   top: 0;
 }
@@ -102,7 +102,7 @@
 
 .linkContainer ul li a {
   text-decoration: none;
-  color: #1b1b1b;
+  color: var(--text);
   font-size: 14px;
   font-weight: 600;
   position: relative;
@@ -115,7 +115,7 @@
   left: 0;
   width: 0;
   height: 2px;
-  background-color: #857ae7;
+  background-color: var(--primary);
   transition: width 0.3s ease-out;
 }
 
@@ -136,7 +136,7 @@
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  color: black;
+  color: var(--text);
 }
 
 .mobile-nav {
@@ -155,7 +155,7 @@
     padding: 20px 60px;
     position: relative;
     z-index: 10;
-    background-color: 'red';
+    background-color: var(--surface);
   }
 }
 

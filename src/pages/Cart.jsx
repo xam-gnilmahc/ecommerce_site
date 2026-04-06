@@ -150,7 +150,7 @@ const Cart = () => {
                     <span>${Math.round(subtotal)}</span>
                   </li>
                 </ul>
-                <Link to="/checkout" className="btn btn-dark w-100">
+                <Link to="/checkout" className="btn btn-primary w-100">
                   Checkout
                 </Link>
               </div>

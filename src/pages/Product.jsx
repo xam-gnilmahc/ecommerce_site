@@ -329,7 +329,6 @@ const Product = () => {
                     navigate("/login");
                     return;
                   }
-                  toast.success("Added to cart");
                   addProduct(product);
                 }}
               >

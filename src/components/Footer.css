@@ -1,6 +1,6 @@
-.footer {
-    padding: 30px 160px;
-    background-color: #e4e4e4;
+  .footer {
+    padding: 30px clamp(16px, 8vw, 160px);
+    background-color: var(--surface);
     margin-top: 50px;
     display: flex;
     flex-direction: column;
@@ -76,7 +76,7 @@
   }
   
   .links_container ul li a {
-    color: black;
+    color: var(--text);
     text-decoration: none;
     font-size: 14px;
     position: relative;
@@ -89,7 +89,7 @@
     left: 0;
     width: 0;
     height: 2px;
-    background-color: black;
+    background-color: var(--text);
     transition: width 0.3s ease-out;
   }
   
@@ -128,8 +128,8 @@
   
   .footer_right form button {
     padding: 10px 20px;
-    background-color: white;
-    color: black;
+    background-color: var(--bg);
+    color: var(--text);
     border: none;
     cursor: pointer;
     text-transform: uppercase;
@@ -159,7 +159,7 @@
     justify-content: space-between;
     align-items: center;
     margin-top: 20px;
-    border-top: 1px solid #cfcdcd;
+    border-top: 1px solid var(--border);
     padding-top: 30px;
     gap: 20px;
   }

@@ -1,22 +1,27 @@
+/* ─── Scroll-in animation ───────────────────────────────────── */
 .banner {
   opacity: 0;
   transform: translateY(50px);
   transition: all 1s ease;
-  border-radius: 10px;
 }
 
 .banner.in-view {
   opacity: 1;
   transform: translateY(0);
 }
+
+/* ─── Two-column banner grid ────────────────────────────────── */
 .banner {
   display: grid;
   grid-template-columns: 1fr 1fr;
   height: 24.875rem;
-  margin:2rem;
-  grid-gap: 30px;
+  margin: 0 2rem 2rem;
+  gap: 24px;
+  border-radius: 15px;
+  overflow: hidden;
 }
 
+/* ─── Individual Panels ─────────────────────────────────────── */
 .bannerLeft {
   background-image: url("https://imageio.forbes.com/specials-images/imageserve/631822a69a253fdf6ab586d8/0x0.jpg?format=jpg&height=900&width=1600&fit=bounds");
   background-position: center;
@@ -24,8 +29,8 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding: 30px;
-  gap: 10px;
+  padding: 28px;
+  gap: 8px;
   border-radius: 15px;
 }
 
@@ -36,46 +41,49 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding: 30px;
-  gap: 10px;
-    border-radius: 15px;
-
+  padding: 28px;
+  gap: 8px;
+  border-radius: 15px;
 }
 
-/* text style */
-
+/* ─── Text styles ───────────────────────────────────────────── */
 .bannerh6 {
-  color: var(--color, rgb(20, 17, 17));
   text-transform: uppercase;
   font-weight: 600;
-  font-size: 17px;
+  font-size: 14px;
+  color: #000;
+  margin: 0;
 }
 
 .bannerh3 {
-  color: var(--color, rgb(21, 9, 9));
-  font-size: 27px;
-  font-weight: 600;
+  font-size: 24px;
+  font-weight: 700;
+  color: #000;
+  margin: 0;
 }
 
+/* CTA link — matches Cart/Checkout dark style */
 .bannerh5 {
-  font-size: 15px;
+  font-size: 13px;
   text-transform: uppercase;
   font-weight: 600;
+  margin: 0;
 }
 
 .bannerh5 a {
   text-decoration: none;
-  color: none;
+  color: #212529;
   position: relative;
+  display: inline-block;
 }
 
 .bannerh5 a::after {
   content: "";
   position: absolute;
   left: 0;
-  bottom: -5px;
+  bottom: -4px;
   width: 50%;
-  border-bottom: 2px solid rgb(49, 27, 27);
+  border-bottom: 2px solid #212529;
   transition: width 0.2s ease;
 }
 
@@ -83,20 +91,86 @@
   width: 100%;
 }
 
-@media screen and (max-width: 1210px) {
+/* ─── Breakpoints ───────────────────────────────────────────── */
+
+/* Large tablet: 1024px – 1209px */
+@media screen and (max-width: 1209px) {
   .banner {
-    grid-gap: 30px;
-    padding: 0 60px;
     height: 20rem;
-    margin: 50px 0px;
+    margin: 0 1rem 1.5rem;
+    gap: 16px;
+  }
+
+  .bannerLeft,
+  .bannerRight {
+    padding: 22px;
   }
 }
 
-@media screen and (max-width: 450px) {
+/* Tablet: 769px – 1023px */
+@media screen and (max-width: 1023px) {
   .banner {
-    padding: 15px;
+    height: 18rem;
+    gap: 14px;
+  }
+
+  .bannerh3 {
+    font-size: 20px;
+  }
+}
+
+/* Tablet/mobile: up to 768px */
+@media screen and (max-width: 768px) {
+  .banner {
+    height: 16rem;
+    margin: 0 0.75rem 1.25rem;
+    gap: 12px;
+  }
+
+  .bannerLeft,
+  .bannerRight {
+    padding: 18px;
+  }
+
+  .bannerh3 {
+    font-size: 18px;
+  }
+
+  .bannerh6 {
+    font-size: 12px;
+  }
+}
+
+/* Mobile: stack at 560px */
+@media screen and (max-width: 560px) {
+  .banner {
     grid-template-columns: 1fr;
-    grid-gap: 10px;
-    height: 35rem;
+    height: auto;
+    margin: 0 0.75rem 1rem;
+    gap: 12px;
+  }
+
+  .bannerLeft,
+  .bannerRight {
+    height: 200px;
+    border-radius: 12px;
+  }
+
+  .bannerh3 {
+    font-size: 20px;
+  }
+}
+
+/* Small phones: up to 390px */
+@media screen and (max-width: 390px) {
+  .banner {
+    margin: 0 0.5rem 0.75rem;
+    gap: 10px;
+  }
+
+  .bannerLeft,
+  .bannerRight {
+    height: 180px;
+    padding: 16px;
   }
 }

@@ -404,7 +404,7 @@ const Checkout = () => {
                         <div className="d-flex gap-3">
                           {/* Free Shipping Option */}
                           <label
-                            className={`border rounded p-3 flex-fill text-start ${shippingMethod === "free" ? "border-dark bg-light" : "border-secondary"
+                           className={`border rounded p-3 flex-fill text-start ${shippingMethod === "free" ? "border-primary bg-primary bg-opacity-10" : "border-secondary"
                               }`}
                             style={{ cursor: "pointer", minWidth: "160px" }}
                           >
@@ -430,7 +430,7 @@ const Checkout = () => {
 
                           {/* Express Shipping Option */}
                           <label
-                            className={`border rounded p-3 flex-fill text-start ${shippingMethod === "express" ? "border-dark bg-light" : "border-secondary"
+                           className={`border rounded p-3 flex-fill text-start ${shippingMethod === "express" ? "border-primary bg-primary bg-opacity-10" : "border-secondary"
                               }`}
                             style={{ cursor: "pointer", minWidth: "160px" }}
                           >
@@ -594,7 +594,7 @@ const Checkout = () => {
                       <div className="col-12 pt-4">
                         <button
                           type="submit"
-                          className="btn btn-dark w-100"
+                          className="btn btn-primary w-100"
                           disabled={loading || !stripe}
                         >
                           {paymentLoading
@@ -735,7 +735,7 @@ const Checkout = () => {
           ) : (
             <div className="col-12 text-center py-5 bg-light">
               <h4 className="mb-4">No item in Cart</h4>
-              <Link to="/" className="btn btn-outline-dark">
+              <Link to="/" className="btn btn-outline-primary">
                 <i className="fa fa-arrow-left"></i> Continue Shopping
               </Link>
             </div>

@@ -99,7 +99,7 @@ export const addToCart = createAsyncThunk(
 
         if (insertError) return rejectWithValue(insertError.message);
 
-        toast.success('Product added to cart!');
+        toast.success('Added to cart');
         await dispatch(fetchTotalCart(userId));
         return inserted;
       } else {
@@ -113,7 +113,7 @@ export const addToCart = createAsyncThunk(
           .single();
 
         if (updateError) return rejectWithValue(updateError.message);
-        toast.success('Product has been updated!');
+        toast.success('Cart updated!');
         await dispatch(fetchTotalCart(userId));
         return updated;
       }
