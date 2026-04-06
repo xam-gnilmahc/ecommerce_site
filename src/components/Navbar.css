@@ -4,7 +4,7 @@
   opacity: 0;
   max-width: 100%;
   background-color: var(--color-bg-white);
-  border-top: 3px solid var(--color-accent);
+  border-top: 3px solid var(--color-primary);
   text-align: center;
   border-radius: 0;
   position: absolute;
@@ -53,8 +53,8 @@
 }
 
 .category-popup ul li a:hover {
-  color: var(--color-accent);
-  background-color: var(--color-accent-pale);
+  color: var(--color-primary);
+  background-color: var(--color-primary-pale);
 }
 
 
@@ -125,13 +125,13 @@
   left: 0;
   width: 0;
   height: 2px;
-  background-color: var(--color-accent);
+  background-color: var(--color-primary);
   transition: width var(--transition-base);
   border-radius: var(--radius-sm);
 }
 
 .linkContainer ul li a:hover {
-  color: var(--color-accent);
+  color: var(--color-primary);
 }
 
 .linkContainer ul li a:hover::after {
@@ -158,8 +158,8 @@
 }
 
 .iconContainer a:hover {
-  color: var(--color-accent);
-  background-color: var(--color-accent-pale);
+  color: var(--color-primary);
+  background-color: var(--color-primary-pale);
 }
 
 .mobile-nav {
@@ -211,7 +211,7 @@
   transform: translateY(-100%);
   transition: transform var(--transition-slow), opacity var(--transition-slow);
   z-index: 9;
-  border-top: 2px solid var(--color-accent);
+  border-top: 2px solid var(--color-primary);
   padding-top: 20px;
 }
 
@@ -250,14 +250,14 @@
 
 .mobile-menuSearchBarContainer a {
   text-decoration: none;
-  color: var(--color-accent);
+  color: var(--color-primary);
   display: flex;
   align-items: center;
   transition: color var(--transition-base);
 }
 
 .mobile-menuSearchBarContainer a:hover {
-  color: #d63c2f;
+  color: var(--color-accent);
 }
 
 .mobile-menuList ul {
@@ -282,7 +282,7 @@
 }
 
 .mobile-menuList ul li a:hover {
-  color: var(--color-accent);
+  color: var(--color-primary);
 }
 
 .mobile-menuFooter {

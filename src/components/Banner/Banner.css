@@ -89,16 +89,16 @@
   position: relative;
   display: inline-block;
   padding: 10px 20px;
-  background-color: var(--color-accent);
+  background-color: var(--color-primary);
   border-radius: var(--radius-md);
   transition: all var(--transition-base);
   letter-spacing: 0.5px;
 }
 
 .bannerh5 a:hover {
-  background-color: #d63c2f;
+  background-color: var(--color-accent);
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(232, 76, 61, 0.3);
+  box-shadow: 0 6px 12px rgba(0, 136, 255, 0.3);
 }
 
 @media screen and (max-width: 1024px) {

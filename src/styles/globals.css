@@ -3,20 +3,21 @@
    ======================================== */
 
 :root {
-  /* Primary Colors - Modern Navy & Teal */
-  --color-primary: #1a3a52;           /* Deep navy for headers, buttons */
-  --color-primary-light: #2d5a7b;     /* Lighter navy for hover states */
-  --color-primary-pale: #f0f4f8;      /* Very light navy background */
+  /* Primary Colors - Modern Blue */
+  --color-primary: #0055cc;           /* Vibrant blue for headers, buttons */
+  --color-primary-light: #0066ff;     /* Lighter blue for hover states */
+  --color-primary-dark: #003d99;      /* Darker blue for darker backgrounds */
+  --color-primary-pale: #e6f0ff;      /* Very light blue background */
 
-  /* Accent Colors - Vibrant Coral Red */
-  --color-accent: #e84c3d;            /* Main accent/CTA */
-  --color-accent-light: #f5a89a;      /* Light accent backgrounds */
-  --color-accent-pale: #fde8e5;       /* Very light accent background */
+  /* Accent Colors - Bright Cyan/Teal */
+  --color-accent: #0088ff;            /* Main accent/CTA - Bright blue */
+  --color-accent-light: #66b3ff;      /* Light accent backgrounds */
+  --color-accent-pale: #e6f3ff;       /* Very light accent background */
 
-  /* Secondary Colors - Sage Green */
-  --color-secondary: #6b9e7f;         /* Secondary accent */
-  --color-secondary-light: #a8cba8;   /* Light secondary */
-  --color-secondary-pale: #ecf1ed;    /* Very light secondary background */
+  /* Secondary Colors - Deep Blue */
+  --color-secondary: #003d99;         /* Secondary accent */
+  --color-secondary-light: #0055cc;   /* Light secondary */
+  --color-secondary-pale: #e6f0ff;    /* Very light secondary background */
 
   /* Neutral Colors */
   --color-dark: #1b1b1b;              /* Dark text/borders */

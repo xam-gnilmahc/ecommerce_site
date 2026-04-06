@@ -44,7 +44,7 @@
   position: absolute;
   top: 12px;
   right: 12px;
-  background: var(--color-accent-pale);
+  background: #ffebee;
   border: 1px solid var(--color-lighter-gray);
   border-radius: 50%;
   width: 36px;
@@ -53,15 +53,15 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: var(--color-accent);
+  color: #d32f2f;
   transition: all var(--transition-base);
   font-weight: bold;
 }
 
 .remove-btn:hover {
-  background: var(--color-accent);
+  background: #d32f2f;
   color: white;
-  border-color: var(--color-accent);
+  border-color: #d32f2f;
 }
 
 .cart-item-inner {
@@ -106,14 +106,14 @@
 
 .rating i {
   margin-right: 2px;
-  color: var(--color-accent);
+  color: var(--color-primary);
   font-size: 12px;
 }
 
 .cart-item-price {
   font-size: 16px;
   font-weight: var(--font-weight-bold);
-  color: var(--color-accent);
+  color: var(--color-primary);
 }
 
 /* Quantity controls */
@@ -143,7 +143,7 @@
 }
 
 .qty-btn:hover {
-  background: var(--color-accent);
+  background: var(--color-primary);
   color: white;
 }
 

@@ -212,7 +212,7 @@
 
 /* Submit button */
 .checkout-btn {
-  background: var(--color-accent);
+  background: var(--color-primary);
   color: white;
   border: none;
   padding: 14px 40px;
@@ -227,7 +227,7 @@
 }
 
 .checkout-btn:hover {
-  background: #d63c2f;
+  background: var(--color-accent);
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
