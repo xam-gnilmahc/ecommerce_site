@@ -322,17 +322,16 @@ const ratingColors = {
           <div className="userReviewBottomContent" style={{ marginBottom: "30px" }}>
                           <p>{review.comment}</p>
                         </div>
-                      <div
-  className="position-absolute d-flex align-items-center gap-2"
-  style={{ bottom: "0", right: "0" }}
->
-  <div className="p-1  me-1">
-    <FaThumbsUp size={16} className="text-secondary" />
-  </div>
-  <div className="p-1 rounded ">
-    <FaThumbsDown size={16} className="text-secondary" />
-  </div>
-</div>
+                      <div className="review-actions">
+                        <button className="review-action-btn">
+                          <FaThumbsUp size={14} />
+                          <span>Helpful</span>
+                        </button>
+                        <button className="review-action-btn">
+                          <FaThumbsDown size={14} />
+                          <span>Not Helpful</span>
+                        </button>
+                      </div>
 
       </div>
     </div>
@@ -370,88 +369,35 @@ const ratingColors = {
                           onChange={(e) => setReview(e.target.value)}
                         />
                         <div
+                          className={`drag-drop-zone ${dragActive ? "active" : ""}`}
                           onDragEnter={handleDrag}
                           onDragLeave={handleDrag}
                           onDragOver={handleDrag}
                           onDrop={handleDrop}
-                          style={{
-                            border: dragActive
-                              ? "2px dashed #4f46e5"
-                              : "2px dashed #ccc",
-                            borderRadius: "10px",
-                            padding: "20px",
-                            textAlign: "center",
-                            backgroundColor: dragActive ? "#f0f4ff" : "#fafafa",
-                            marginTop: "10px",
-                            position: "relative",
-                            transition: "0.3s ease",
-                          }}
                         >
                         <input
                           type="file"
                           accept="image/*,video/*"
                           id="uploadInput"
                           multiple
-                          style={{ display: "none" }}
                           onChange={(e) => handleFileChange(e.target.files)}
                         />
 
-                          <label
-                            htmlFor="uploadInput"
-                            style={{ cursor: "pointer" }}
-                          >
-                            <p
-                              style={{
-                                margin: 0,
-                                color: "#555",
-                                fontSize: "14px",
-                              }}
-                            >
-                              Drag & drop an image or video here, or{" "}
-                              <span
-                                style={{ color: "#4f46e5", fontWeight: 500 }}
-                              >
-                                click to browse
-                              </span>
-                            </p>
-                          </label>
+                        <label htmlFor="uploadInput">
+                          <p>
+                            Drag & drop an image or video here, or{" "}
+                            <span>click to browse</span>
+                          </p>
+                        </label>
                         </div>
                         {mediaFiles.length > 0 && (
-  <div
-    style={{
-      display: "flex",
-      gap: "10px",
-      flexWrap: "wrap",
-      marginTop: "15px",
-    }}
-  >
+  <div className="file-preview-grid">
     {mediaFiles.map((media, index) => (
-      <div
-        key={index}
-        style={{
-          position: "relative",
-          width: "150px",
-          height: "150px",
-          borderRadius: "10px",
-          overflow: "hidden",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "#f8f8f8", // optional: subtle bg so empty spaces don't show white
-        }}
-      >
+      <div key={index} className="file-preview-item">
         <div
+          className="file-delete-btn"
           onClick={() => handleDeleteFile(index)}
-          style={{
-            position: "absolute",
-            top: "5px",
-            right: "5px",
-            cursor: "pointer",
-            zIndex: 10,
-            backgroundColor: "rgba(255,255,255,0.7)",
-            borderRadius: "50%",
-            padding: "2px",
-          }}
+          title="Delete file"
         >
           <DeleteIcon fontSize="small" />
         </div>
@@ -459,23 +405,11 @@ const ratingColors = {
           <img
             src={media.preview}
             alt="preview"
-            style={{
-              width: "100%",
-              height: "100%",
-              borderRadius: "8px",
-              objectFit: "contain",
-            }}
           />
         ) : (
           <video
             ref={(el) => (videoRefs.current[index] = el)}
             src={media.preview}
-            style={{
-              width: "100%",
-              height: "100%",
-              borderRadius: "8px",
-              objectFit: "contain",
-            }}
             controls
           />
         )}
