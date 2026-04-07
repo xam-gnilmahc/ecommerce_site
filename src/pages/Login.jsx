@@ -102,18 +102,6 @@ const Login = () => {
               />
 
               <div className="loginSignUpForgetPass">
-              <div className="form-check d-flex align-items-center">
-                <input
-                  type="checkbox"
-                  className="form-check-input me-2 brandRadio"
-                  id="rememberMe"
-                  style={{ transform: "scale(0.85)", cursor: "pointer" }}
-                />
-                <label className="form-check-label mb-0" htmlFor="rememberMe" style={{ fontSize: "0.9rem" }}>
-                  Remember me
-                </label>
-              </div>
-
                 <p style={{ margin : 0}}>
                   <Link to="/forgot-password">Lost password?</Link>
                 </p>
