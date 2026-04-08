@@ -20,14 +20,14 @@
 }
 
 .productAdditionalInfo {
-  padding: 0 160px;
-  margin: 85px 0;
+  padding: 0 120px;
+  margin: 8px 0 6px 0; /* tightened top and bottom spacing */
 }
 
 .productAdditonalInfoContainer {
   display: flex;
   flex-direction: column;
-  gap: 60px;
+  gap: 12px; /* tighter grouping between major sections */
 }
 
 .aiTabs {
@@ -192,10 +192,10 @@
 }
 
 .aiTabReviewContainer h2 {
-  font-size: 28px;
+    font-size: 24px;
   font-weight: 700;
   color: var(--text-dark);
-  margin: 0;
+    margin: 0 0 8px 0;
 }
 
 /* Review Stats Cards */
@@ -210,12 +210,13 @@
 .aiTabReviewContainer .border {
   border: 1px solid var(--border-color) !important;
   background-color: var(--card-bg);
-  box-shadow: var(--shadow-sm);
-  transition: all 0.3s ease;
+  /* removed drop shadows for a flatter product detail look */
+  box-shadow: none;
+  transition: all 0.15s ease;
 }
 
 .aiTabReviewContainer .border:hover {
-  box-shadow: var(--shadow-md);
+  /* subtle border change only */
   border-color: var(--primary-light) !important;
 }
 
@@ -251,13 +252,18 @@
   display: flex;
   flex-direction: column;
   gap: 0;
-  margin-bottom: 20px;
+  margin-bottom: 5px;
+  max-height: 450px; /* fixed height for review list */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: y mandatory; /* snap to full review items */
+  padding-right: 6px; /* avoid content under scrollbar */
 }
 
 .userReviews > div {
-  padding: 24px 0;
-  border-bottom: 1px solid var(--border-color);
-  transition: background-color 0.3s ease;
+  padding: 10px 0; /* ensure consistent item height for snapping */
+  transition: background-color 0.18s ease;
+  scroll-snap-align: start; /* snap each review to top */
 }
 
 .userReviews > div:hover {
@@ -274,11 +280,11 @@
 }
 
 .userReviewImg img {
-  width: 56px;
-  height: 56px;
+    width: 48px;
+    height: 48px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid var(--border-color);
+    border: 1px solid var(--border-color);
 }
 
 .userReviewContent {
@@ -321,7 +327,7 @@
 }
 
 .userReviewBottomContent {
-  margin: 16px 0 20px 0;
+    margin: 8px 0 12px 0; /* tighten comment spacing */
 }
 
 .userReviewBottomContent p {
@@ -334,17 +340,17 @@
 
 /* Helpful/Unhelpful Buttons */
 .review-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px; /* reduce vertical gap below review */
 }
 
 .review-action-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 8px; /* smaller buttons */
   background-color: transparent;
   border: 1px solid var(--border-color);
   border-radius: 6px;
@@ -369,11 +375,66 @@
 .userNewReview {
   display: flex;
   flex-direction: column;
-  gap: 32px;
-  padding: 40px 0;
-  border-top: 2px solid var(--border-color);
-  margin-top: 40px;
+  gap: 8px;
+  padding: 10px 0;
 }
+
+.review-add-button {
+    padding: 8px 12px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  box-shadow: none;
+}
+
+/* Modal for adding a review */
+.review-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: flex;
+    align-items: flex-start; /* stick modal near top */
+    justify-content: center;
+    z-index: 1200;
+    padding: 20px;
+}
+
+.review-modal {
+    width: 100%;
+    max-width: 680px;
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 14px 16px; /* more compact form */
+    box-shadow: none;
+    border: 1px solid var(--border-color);
+    position: relative;
+    margin-top: 6vh; /* distance from top of viewport */
+}
+
+.review-modal h5 {
+  margin: 0 0 12px 0;
+  font-size: 18px;
+}
+
+.modal-close {
+  position: absolute;
+  right: 12px;
+  top: 8px;
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.modal-body { display:flex; flex-direction:column; gap:12px; }
+.modal-row label { font-weight:600; font-size:13px; margin-bottom:6px; display:block; }
+.modal-row textarea.form-control { width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); resize:vertical; }
+.modal-actions { display:flex; gap:10px; justify-content:flex-end; margin-top:8px; }
+.modal-submit { background:var(--primary); color:white; border:none; padding:10px 16px; border-radius:8px; cursor:pointer; font-weight:700; }
+.modal-cancel { background:transparent; border:1px solid var(--border-color); padding:10px 14px; border-radius:8px; cursor:pointer; }
 
 .userNewReviewMessage {
   display: flex;
@@ -508,13 +569,13 @@
 
 /* Drag and Drop Area */
 .drag-drop-zone {
-  border: 2px dashed var(--border-color);
-  border-radius: var(--radius);
-  padding: 32px 24px;
-  text-align: center;
-  background-color: var(--bg-muted);
-  transition: all 0.3s ease;
-  cursor: pointer;
+    border: 2px dashed var(--border-color);
+    border-radius: 8px;
+    padding: 16px 14px; /* smaller drop area */
+    text-align: center;
+    background-color: var(--bg-muted);
+    transition: all 0.16s ease;
+    cursor: pointer;
 }
 
 .drag-drop-zone.active {
@@ -540,24 +601,24 @@
 
 /* File Preview Grid */
 .file-preview-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 16px;
-  margin-top: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* smaller previews */
+    gap: 12px;
+    margin-top: 12px;
 }
 
 .file-preview-item {
-  position: relative;
-  border-radius: var(--radius);
-  overflow: hidden;
-  background-color: var(--bg-muted);
-  aspect-ratio: 1;
-  box-shadow: var(--shadow-sm);
-  transition: all 0.3s ease;
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: var(--bg-muted);
+    aspect-ratio: 1;
+    box-shadow: none;
+    transition: all 0.16s ease;
 }
 
 .file-preview-item:hover {
-  box-shadow: var(--shadow-md);
+  box-shadow: none;
 }
 
 .file-preview-item img,
@@ -568,19 +629,98 @@
   border-radius: var(--radius);
 }
 
-.file-delete-btn {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  background-color: rgba(255, 255, 255, 0.9);
-  border-radius: 50%;
-  padding: 4px;
+/* Review media thumbnails inside listing */
+.review-media-grid {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.review-media-thumb {
+  width: 64px;
+  height: 64px;
+  padding: 0;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  border-radius: 8px;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+}
+
+.review-media-thumb img,
+.review-media-thumb video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* Media viewer modal */
+.media-viewer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
-  box-shadow: var(--shadow-sm);
+  z-index: 1600;
+  padding: 16px;
+}
+
+.media-viewer {
+  width: 100%;
+  max-width: 1000px;
+  max-height: 90vh;
+  background: transparent;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.viewer-content { max-width: 100%; max-height: 80vh; display:flex; align-items:center; justify-content:center; }
+.viewer-img {
+  /* clamp viewer size to a reasonable desktop max but still responsive */
+  max-width: clamp(320px, 80vw, 900px);
+  max-height: clamp(240px, 75vh, 700px);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 8px;
+}
+.viewer-video {
+  max-width: clamp(320px, 80vw, 900px);
+  max-height: clamp(240px, 75vh, 700px);
+  border-radius: 8px;
+}
+
+.viewer-close { position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: none; font-size: 22px; padding: 6px 10px; border-radius: 6px; cursor: pointer; }
+.viewer-controls { position: absolute; left: 12px; right: 12px; top: 50%; transform: translateY(-50%); display:flex; justify-content:space-between; pointer-events: none; }
+.viewer-prev, .viewer-next { pointer-events: auto; background: rgba(255,255,255,0.9); border: none; font-size: 28px; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
+
+@media (max-width: 768px) {
+  .review-media-thumb { width: 52px; height: 52px; }
+  .review-modal { max-width: 95%; padding: 14px; }
+  .viewer-img, .viewer-video { max-width: 95vw; max-height: 70vh; }
+}
+
+.file-delete-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    padding: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.12s ease;
+    box-shadow: none;
 }
 
 .file-delete-btn:hover {
