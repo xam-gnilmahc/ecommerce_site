@@ -244,13 +244,13 @@ const cartSlice = createSlice({
         if ('removedId' in action.payload) {
           const index = state.items.findIndex(item => item.id === action.payload.removedId);
           if (index !== -1) {
-            state.items.splice(index, 1); // ✅ directly remove the item
+            state.items.splice(index, 1); //directly remove the item
           }
         } else {
           const updated = action.payload;
           const index = state.items.findIndex(item => item.product_id === updated.product_id);
           if (index !== -1) {
-            state.items[index] = updated; // ✅ update item in place
+            state.items[index] = updated; //update item in place
           }
         }
       })

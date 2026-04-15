@@ -13,6 +13,7 @@ import {
   fetchCartItems,
   removeItemDirectlyFromCart,
 } from "../redux/slice/userCart.ts";
+import { trackAddToCart } from "../utils/tracking";
 import Navbar from "../components/Navbar.jsx";
 
 const Cart = () => {
@@ -24,10 +25,13 @@ const Cart = () => {
     if (user?.id) dispatch(fetchCartItems(user.id));
   }, [dispatch, cart.length]);
 
-  const updateItemQuantity = (product, action) => {
+  const updateItemQuantity = async (product, action) => {
     if (!user) return;
-    if (action === "increase") dispatch(addToCart({ userId: user.id, product }));
-    else if (action === "decrease") dispatch(removeFromCart({ userId: user.id, product }));
+    if (action === "increase") {
+      dispatch(addToCart({ userId: user.id, product }));
+      // track increase as add-to-cart
+      trackAddToCart(dispatch, user?.id, product);
+    } else if (action === "decrease") dispatch(removeFromCart({ userId: user.id, product }));
   };
 
   const handleRemoveFromCart = (product) => {

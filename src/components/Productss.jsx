@@ -5,6 +5,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/authContext";
+import { supabase } from "../supaBaseClient";
 import Filters from "./Filter";
 import Pagination from "./Pagination";
 import SearchBar from "./SearchBar";
@@ -13,8 +14,10 @@ import { FaStar } from "react-icons/fa";
 import { FiHeart } from "react-icons/fi";
 import { useAppDispatch } from "../redux/index.ts";
 import { fetchProducts } from "../redux/slice/Product.ts";
+import { fetchUserRecommendations } from "../redux/slice/userRecommendation.ts";
 import { searchProducts } from "../redux/slice/searchProduct.ts";
 import { fetchFilteredProducts } from "../redux/slice/filterProduct.ts";
+import { trackAddToCart, trackSearch } from '../utils/tracking';
 import { addToCart } from "../redux/slice/userCart.ts";
 import "./Products.css";
 
@@ -41,14 +44,13 @@ const Products = () => {
     (state) => state.filterProduct
   );
 
-  // Fetch all products on mount
   useEffect(() => {
     if (products.length === 0) {
-      dispatch(fetchProducts());
+      dispatch(fetchUserRecommendations(user?.id));
     }
   }, [dispatch, products.length]);
 
-  // Update local product state when products load
+  // Update local product state when products load (used as fallback)
   useEffect(() => {
     if (!productsLoading && products.length > 0) {
       setAllProducts(products);
@@ -56,9 +58,31 @@ const Products = () => {
     }
   }, [productsLoading, products]);
 
+  // Listen for recommendation slice updates and use them when available
+  const { recommendations, status: recStatus } = useSelector(
+    (state) => state.userRecommendations
+  );
+
+  useEffect(() => {
+    if (recStatus === 'loading') return; // wait
+
+    if (recStatus === 'success' && recommendations && recommendations.length > 0) {
+      setAllProducts(recommendations);
+      setDisplayProducts(recommendations);
+      setCurrentPage(1);
+    }
+
+    if (recStatus === 'success' && (!recommendations || recommendations.length === 0)) {
+      // No recommendations for this user — ensure we have products
+      if (products.length === 0) {
+        dispatch(fetchProducts());
+      }
+    }
+  }, [recStatus, recommendations, dispatch, products.length]);
+
   // Update filtered products from filters
   useEffect(() => {
-    if (filterStatus !== "loading" && filteredProducts) {
+    if (filterStatus === "success") {
       setDisplayProducts(filteredProducts);
       setCurrentPage(1);
     }
@@ -66,14 +90,11 @@ const Products = () => {
 
   // Handle search status changes: clear displayProducts on loading, set results on success, reset on fail/idle
   useEffect(() => {
-    if (searchStatus === "loading") {
-      setDisplayProducts([]); // Clear to avoid flicker
-    } else if (searchStatus === "success") {
+    if (searchStatus === "success") {
       setDisplayProducts(searchResults.length > 0 ? searchResults : []);
       setCurrentPage(1);
     } else if (searchStatus === "failed" || searchStatus === "idle") {
       setDisplayProducts(allProducts);
-      setCurrentPage(1);
     }
   }, [searchResults, searchStatus, allProducts]);
 
@@ -83,13 +104,15 @@ const Products = () => {
   const currentPosts = displayProducts.slice(indexOfFirstPost, indexOfLastPost);
 
   // Event handlers
-  const handleAddToCart = (product) => {
+  const handleAddToCart = async (product) => {
     if (!user) {
       toast.error("Please login to add products to cart.");
       navigate("/login");
       return;
     }
     dispatch(addToCart({ userId: user.id, product }));
+    // non-blocking: fire-and-forget tracking for logged-in users
+    await trackAddToCart(dispatch, user?.id, product);
   };
 
   const handleWishlistToggle = (productId) => {
@@ -104,11 +127,13 @@ const Products = () => {
     setCurrentPage(1);
   };
 
-  const handleSearch = (searchValue) => {
+  const handleSearch = async (searchValue) => {
     const trimmed = searchValue.toLowerCase().trim();
     if (trimmed === "") {
       setDisplayProducts(allProducts);
     } else {
+      // track search only for logged-in users
+      await trackSearch(dispatch, user?.id, trimmed);
       dispatch(searchProducts(trimmed));
     }
     setCurrentPage(1);
@@ -129,6 +154,12 @@ const Products = () => {
       ))}
     </>
   );
+
+  const isLoading =
+  productsLoading ||
+  recStatus === "loading" ||
+  (searchStatus === "loading" && searchResults.length === 0) ||
+  (filterStatus === "loading" && filteredProducts.length === 0);
 
   // Products display component
   const ProductList = () => (
@@ -253,11 +284,7 @@ const Products = () => {
           </div>
 
           <div className="row">
-            {productsLoading || searchStatus === "loading" || filterStatus === "loading" ? (
-              <LoadingSkeleton />
-            ) : (
-              <ProductList />
-            )}
+            {isLoading ? <LoadingSkeleton /> : <ProductList />}
           </div>
 
           <Pagination

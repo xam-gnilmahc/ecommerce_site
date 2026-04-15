@@ -22,6 +22,7 @@ import { useAppDispatch } from "../redux/index.ts";
 import {
   fetchCartItems,
 } from "../redux/slice/userCart.ts";
+import { trackPurchase } from "../utils/tracking";
 // Stripe Publishable Key
 const stripePromise = loadStripe(
   "pk_test_51PGec42K0njal9PzJzzxwBOVszXOkqMCBcovRYFChW727EsjLGJ9sWMvztGAGnnmVAtquHDgSllxMryuvfgnv87D00nc9a1Yp7"
@@ -152,6 +153,8 @@ const Checkout = () => {
 
         if (orderId) {
           dispatch(fetchTotalCart(user.id)); // Update cart total
+          // track purchase (order-level + per-item bulk)
+          await trackPurchase(dispatch, user?.id, { id: orderId, items: cart });
           setShow(true); // Only show after order placement is successful
           toast.success("Payment processed successfully!");
         }

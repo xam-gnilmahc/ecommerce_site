@@ -18,7 +18,6 @@ const SearchBar = ({ onSearch }) => {
     setLoading(true);
 
     if (typingTimeout) clearTimeout(typingTimeout);
-
     const timeout = setTimeout(() => {
       setLoading(false);
       if (onSearch) onSearch(inputValue);

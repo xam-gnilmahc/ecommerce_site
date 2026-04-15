@@ -6,6 +6,8 @@ import React, {
   useMemo,
 } from "react";
 import { supabase } from "../supaBaseClient";
+import recalcUserInterest from '../service/recalcUserInterest';
+import populateUserRecommendations from '../service/populateUserRecommendations';
 import { sendOrderEmail, sendDeliveryEmail ,sendNotification} from "../service/emailService";
 import { useNavigate } from "react-router-dom";
 import Pusher from 'pusher-js';
@@ -123,53 +125,69 @@ const handleUserInSupabase = async (authenticatedUser) => {
       authListener.subscription.unsubscribe();
     };
   }, []);
-  
-  //  useEffect(() => {
-  //   // Fallback: try restoring session from localStorage manually
-  //   const restoreSession = async () => {
-  //     // Supabase stores the session under a key like this:
-  //     const key = Object.keys(localStorage).find((k) =>
-  //       k.startsWith("sb-") && k.endsWith("-auth-token")
-  //     );
-  
-  //     if (key) {
-  //       try {
-  //         const sessionRaw = localStorage.getItem(key);
-  //         if (sessionRaw) {
-  //           const session = JSON.parse(sessionRaw);
-  //           if (session?.access_token && session?.user) {
-  //             setUser({ ...session.user.user_metadata, id: session.user.id });
-  //             setToken(session.access_token);
-  //           }
-  //         }
-  //       } catch (err) {
-  //         console.error("Failed to restore session:", err);
-  //       }
-  //     }
-  
-  //     setLoading(false);
-  //   };
-  
-  //   restoreSession();
-  
-  // }, []);
 
+  // Periodically recalc the current user's interest on the backend.
+  // Runs once immediately after login and then every minute while the user is logged in.
+  // Non-blocking and guarded against overlapping runs.
+  useEffect(() => {
+    if (!user?.id) return undefined;
 
+    let running = false;
+    let cancelled = false;
 
+    const runRecalc = async () => {
+      if (running || cancelled) return;
+      running = true;
+      try {
+        // fire-and-forget; recalcUserInterest uses Supabase RPC
+        await recalcUserInterest(user.id);
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.warn('recalcUserInterest failed', err);
+      } finally {
+        running = false;
+      }
+    };
 
-  // // // Fetch cart items when user is set
-  // useEffect(() => {
-  //   const updateUserData = async () => {
-  //     if (user && user.id) {
-  //       if (!memoizedProcessed) {
-  //         await handleUserInSupabase(user);
-  //       }
-  //       await fetchCartItems(user.id);
-  //     }
-  //   };
+    const intervalId = setInterval(() => {
+      void runRecalc();
+    }, 30 * 1000); // 30 seconds
 
-  //   updateUserData();
-  // }, [user, handleUserInSupabase, memoizedProcessed]);
+    return () => {
+      cancelled = true;
+      clearInterval(intervalId);
+    };
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (!user?.id) return undefined;
+
+    let running = false;
+    let cancelled = false;
+
+    const runRecalc = async () => {
+      if (running || cancelled) return;
+      running = true;
+      try {
+        // fire-and-forget; populateUserRecommendations uses Supabase RPC
+        await populateUserRecommendations(user.id);
+      } catch (err) {
+        // eslint-disable-next-line no-console 
+        console.warn('populateUserRecommendations failed', err);
+      } finally {
+        running = false;
+      }
+    };
+
+    const intervalId = setInterval(() => {
+      void runRecalc();
+    }, 60 * 1000); // 60 seconds
+
+    return () => {
+      cancelled = true;
+      clearInterval(intervalId);
+    };
+  }, [user?.id]);
 
   const logout = () => {
     localStorage.clear();
@@ -290,68 +308,6 @@ const handleUserInSupabase = async (authenticatedUser) => {
     await fetchCartItems(memoizedUser.id);
   };
 
-  const insertReviewWithAttachments = async ({
-    productId,
-    rating,
-    reviewText,
-    files,
-  }) => {
-    try {
-      // 1. Insert the review
-      const { data: review, error: reviewError } = await supabase
-        .from("reviews")
-        .insert([
-          {
-            user_id: user.id,
-            product_id: productId,
-            rating,
-            review: reviewText,
-          },
-        ])
-        .select()
-        .single();
-
-      if (reviewError) throw reviewError;
-
-      const attachments = [];
-
-      for (const file of files) {
-        const filePath = `${Date.now()}-${file.name}`;
-
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from("attachments")
-          .upload(filePath, file);
-
-        if (uploadError) throw uploadError;
-
-        // Get public URL from Supabase
-        const { data: publicUrlData } = supabase.storage
-          .from("attachments")
-          .getPublicUrl(filePath);
-
-        const publicUrl = publicUrlData.publicUrl;
-
-        attachments.push({
-          review_id: review.id,
-          file_url: publicUrl,
-          file_name: file.name,
-        });
-      }
-      // 3. Insert attachments metadata into the attachments table
-      if (attachments.length > 0) {
-        const { error: attachInsertError } = await supabase
-          .from("review_attachments")
-          .insert(attachments);
-
-        if (attachInsertError) throw attachInsertError;
-      }
-
-      return true;
-    } catch (error) {
-      console.error("Error inserting review with attachments:", error.message);
-      throw error;
-    }
-  };
 
 const placeOrder = async (data, stripe) => {
   const carts = await fetchCartItems(memoizedUser.id);
@@ -499,7 +455,6 @@ const placeOrder = async (data, stripe) => {
     return [];
   }
 };
-
 
   // Inside AppContextProvider or export separately
   const fetchUserOrders = async () => {
