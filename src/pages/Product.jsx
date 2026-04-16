@@ -48,7 +48,13 @@ const Product = () => {
             *,
             product_items(id, size, sku_number, color),
             product_images(id, image_url, is_primary),
-            product_reviews(id, user_id, picture, comment, rating, created_at)
+            product_reviews(id, user_id, picture, comment, rating, created_at,
+            users (
+              id,
+              name,
+              email,
+              profile
+            ))
           `
           )
           .eq("id", id)
@@ -63,6 +69,7 @@ const Product = () => {
 
 
       const productData = await fetchProductById(id);
+      console.log('productData', productData);
       setProduct(productData);
       if (user) {
         // use helper which maps to 'view' type
@@ -476,19 +483,6 @@ const Product = () => {
         <div className="row my-5 py-5">
           <div className="d-md-block">
             <AdditionalInfo product_reviews={product?.product_reviews} />
-            {/* <div className="relatedProducts d-none d-md-block">
-              <h2>
-                RELATED <span>PRODUCTS</span>
-              </h2>
-            </div>
-            <div className=" d-none d-md-block">
-              {similarProducts.length > 0 ?? (
-                <>
-                  {loading2 ? <Loading2 /> : <ShowSimilarProduct />}
-                </>
-
-              )}
-            </div> */}
           </div>
         </div>
       </div>

@@ -1,7 +1,7 @@
   .footer {
     padding: 30px clamp(16px, 8vw, 160px);
     background-color: var(--surface);
-    margin-top: 50px;
+    margin-top: 10px;
     display: flex;
     flex-direction: column;
     gap: 100px;
