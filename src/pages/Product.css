@@ -15,7 +15,7 @@
 }
 
 .productSection{
-  padding: 40px 24px;
+  padding: 10px 24px;
   background: transparent;
 }
 
@@ -143,4 +143,3 @@
   .productCartBtn button{ padding:10px 28px; }
   .productName h1{ font-size:20px; }
 }
-
