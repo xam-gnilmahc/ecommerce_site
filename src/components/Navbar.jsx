@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { NavLink, Link } from "react-router-dom";
+import { NavLink, Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import { useAppDispatch } from "../redux/index.ts";
 import { fetchTotalCart } from "../redux/slice/userCart.ts";
@@ -13,6 +13,7 @@ import logo from "./assets/logo.png";
 import "./Navbar.css";
 import SearchBar from "./SearchBar";
 import NotificationPage from "../pages/NotificationPage";
+import { FiSearch } from "react-icons/fi";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -20,9 +21,21 @@ const Navbar = () => {
   const [notifOpen, setNotifOpen] = useState(false);
   const notifRef = useRef();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [search, setSearch] = useState("");
 
   const { totalCart } = useSelector((state: RootState) => state.addToCart);
+
+  // ✅ detect route
+  const isSearchPage = location.pathname === "/search";
+  const searchQuery = new URLSearchParams(location.search).get("q") || "";
+
+  useEffect(() => {
+    setSearch(searchQuery);
+  }, [searchQuery]);
 
   useEffect(() => {
     if (user?.id) {
@@ -50,81 +63,85 @@ const Navbar = () => {
     document.body.style.overflow = mobileMenuOpen ? "auto" : "hidden";
   };
 
+  const handleSearch = (e) => {
+    if (e.key === "Enter") {
+      const value = search.trim();
+      if (!value) return;
+
+      navigate(`/search?q=${encodeURIComponent(value)}`);
+    }
+  };
+
+
   return (
     <>
       <div className="navBar">
         <div className="logoLinkContainer">
           <div className="logoContainer">
             <NavLink to="/" className="d-flex align-items-center gap-2">
-              <img src={logo} alt="Logo" style={{ width: "100px", height: "60px", objectFit: "contain" }} />
-              <span className="dev-badge" style={{
-                background: "linear-gradient(135deg, #0d6efd, #6610f2)",
-                color: "#fff", fontSize: "12px", padding: "3px 10px",
-                borderRadius: "20px", marginLeft: "12px", fontWeight: "600",
-                boxShadow: "0 2px 6px rgba(0,0,0,0.2)", letterSpacing: "0.5px"
-              }}>
-                DEV MODE
-              </span>
+              <img
+                src={logo}
+                alt="Logo"
+                style={{
+                  width: "100px",
+                  height: "60px",
+                  objectFit: "contain",
+                }}
+              />
             </NavLink>
           </div>
 
-          <div className="linkContainer">
-            <ul className="mb-2">
-              <li><NavLink to="/">Home</NavLink></li>
-              <li><NavLink to="/shop">Shop</NavLink></li>
-              <li><NavLink to="/order">Orders</NavLink></li>
-              {/* <li
-                className={`nav-item category-dropdown ${isOpen ? 'open' : ''}`}
-                onMouseEnter={() => setIsOpen(true)}
-                onMouseLeave={() => setIsOpen(false)}
-                onClick={togglePopup}>
-                <Link className="nav-item">Categories</Link>
-                <div className="category-popup">
-                  <div className="content pe-5">
-                    <ul>
-                      {[
-                        'Mobile', 'Laptop', 'Tablet', 'Smartwatch', 'Earbuds', 'Headphones',
-                        'Desktop', 'Monitor', 'Keyboard', 'Mouse', 'Charger', 'Power Bank',
-                        'Camera', 'Tripod', 'Drone', 'Printer', 'Scanner', 'Speaker', 'Projector',
-                        'USB Cable', 'SD Card', 'Router', 'VR Headset', 'Game Console', 'TV'
-                      ].map((item, index) => (
-                        <li key={index}><Link to="/">{item}</Link></li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </li> */}
-            </ul>
-          </div>
         </div>
+
+        {isSearchPage && (
+          <div className="navbar-search">
+            <div className="search-box">
+              <FiSearch className="search-icon" />
+              <input
+                type="text"
+                placeholder="Search for products..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onKeyDown={handleSearch}
+              />
+            </div>
+          </div>
+        )}
 
         <div className="d-flex align-items-center gap-2">
           {!user ? (
             <>
               <NavLink to="/login" className="btn btn-outline-dark btn-sm">
-                <i className="fa fa-sign-in-alt me-1" /> Login
+                Login
               </NavLink>
               <NavLink to="/register" className="btn btn-outline-dark btn-sm">
-                <i className="fa fa-user-plus me-1" /> Register
+                Register
               </NavLink>
             </>
           ) : (
             <>
               <NotificationPage embedded={true} />
-              <span className="text-muted small me-2">Hi, <strong>{user?.full_name}</strong></span>
+
               <NavLink to="/order" className="me-2 d-flex align-items-center">
                 {user.picture ? (
-                  <img src={user.picture} alt="Profile" style={{
-                    width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover"
-                  }} title={user.picture} />
-                ) : <FaRegUser size={20} color="black" />}
+                  <img
+                    src={user.picture}
+                    alt="Profile"
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                    }}
+                  />
+                ) : (
+                  <FaRegUser size={20} />
+                )}
               </NavLink>
+
               <NavLink to="/cart" className="me-2">
-               <Badge
-                  badgeContent={totalCart || "0"}
-                  color="primary"
-                  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}>
-                  <RiShoppingBagLine size={22} color="black" />
+                <Badge badgeContent={totalCart || "0"} color="primary">
+                  <RiShoppingBagLine size={22} />
                 </Badge>
               </NavLink>
             </>
@@ -132,6 +149,7 @@ const Navbar = () => {
         </div>
       </div>
 
+      {/* MOBILE NAV */}
       <nav>
         <div className="mobile-nav">
           {mobileMenuOpen ? (
@@ -139,58 +157,58 @@ const Navbar = () => {
           ) : (
             <RiMenu2Line size={22} onClick={toggleMobileMenu} />
           )}
+
           <div className="logoContainer">
-            <Link to="/"><img src={logo} alt="Logo" /></Link>
+            <Link to="/">
+              <img src={logo} alt="Logo" />
+            </Link>
           </div>
+
           <Link to="/cart">
-           <Badge
-          badgeContent={totalCart || "0"}
-          color="primary"
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}>
-          <RiShoppingBagLine size={22} color="black" />
-        </Badge>
+            <Badge badgeContent={totalCart || "0"} color="primary">
+              <RiShoppingBagLine size={22} />
+            </Badge>
           </Link>
         </div>
 
         <div className={`mobile-menu ${mobileMenuOpen ? "open" : ""}`}>
           <div className="mobile-menuTop">
-            <div className="mobile-menuSearchBar">
-              <SearchBar onSearch={() => {}} />
-            </div>
-            <div className="mobile-menuList">
-              <ul>
-                <li><Link to="/" onClick={toggleMobileMenu}>HOME</Link></li>
-                <li><Link to="/shop" onClick={toggleMobileMenu}>SHOP</Link></li>
-              </ul>
-            </div>
+
+            {/* ✅ MOBILE SEARCH ONLY ON /search */}
+            {isSearchPage && (
+              <div className="mobile-search">
+                <input
+                  type="text"
+                  placeholder="Search products..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  onKeyDown={handleSearch}
+                />
+              </div>
+            )}
           </div>
+
           <div className="mobile-menuFooter">
             <div className="mobile-menuFooterLogin">
               <Link to="/order" onClick={toggleMobileMenu}>
-                <FaRegUser style={{ margin: 0 }} />
-                <p style={{ margin: 0 }}>My Account</p>
+                <FaRegUser />
+                <p>My Account</p>
               </Link>
             </div>
 
             {!user ? (
               <div className="d-flex gap-2">
                 <NavLink to="/login" className="btn btn-outline-dark btn-sm">
-                  <i className="fa fa-sign-in-alt me-1" /> Login
+                  Login
                 </NavLink>
                 <NavLink to="/register" className="btn btn-outline-dark btn-sm">
-                  <i className="fa fa-user-plus me-1" /> Register
+                  Register
                 </NavLink>
               </div>
             ) : (
-              <>
-                <span className="text-muted small me-2">
-                  Hi, <strong>{user?.full_name}</strong>
-                </span>
-                <button onClick={logout} className="btn btn-sm rounded-pill p-2"
-                  style={{ backgroundColor: "#333", color: "#fff", maxWidth: '120px' }}>
-                  <i className="fa fa-sign-out-alt me-1" /> Logout
-                </button>
-              </>
+              <button onClick={logout} className="btn btn-dark btn-sm">
+                Logout
+              </button>
             )}
           </div>
         </div>

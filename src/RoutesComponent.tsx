@@ -38,7 +38,7 @@ const RoutesComponent = () => (
     {/* Public/Guest Layout */}
     <Route element={<GuestLayout />}>
       <Route path="/" element={<Home />} />
-      <Route path="/shop" element={<Products />} />
+      <Route path="/search" element={<Products />} />
       <Route path="/product/:id" element={<Product />} />
       <Route path="/about" element={<AboutPage />} />
       <Route path="/contact" element={<ContactPage />} />

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Filter.css";
 
 import Accordion from "@mui/material/Accordion";
@@ -8,13 +8,22 @@ import { IoIosArrowDown } from "react-icons/io";
 import { BiSearch } from "react-icons/bi";
 import Slider from "@mui/material/Slider";
 
-const Filter = ({ onApplyFilters }) => {
+const Filter = ({ onApplyFilters, searchQuery }) => {
   const [value, setValue] = useState([0, 2000]);
   const [selectedColors, setSelectedColors] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedBrands, setSelectedBrands] = useState([]);
-
+  
+  useEffect(() => {
+  if (searchQuery) {
+    setSelectedBrands([]);
+    setSelectedCategory([]);
+    setSelectedColors([]);
+    setSearchTerm("");
+    setValue([0, 2000]);
+  }
+}, [searchQuery]);
   const brandsData = [
     { name: "Apple", count: 24 },
     { name: "Google", count: 3 },
@@ -22,7 +31,7 @@ const Filter = ({ onApplyFilters }) => {
     { name: "Samsung", count: 12 },
     { name: "Redmi", count: 14 },
     { name: "Huawei", count: 5 },
-  ];
+  ];   
 
   const filterCategories = [
     "Mobile",
