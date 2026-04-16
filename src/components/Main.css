@@ -6,29 +6,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #000;
+
+  background: #000; /* fallback only */
 }
 
-.bgVideo {
-  position: absolute;
-  top: 0;
-  left: 0;
-
-  width: 100%;
-  height: 100%;
-
-  object-fit: cover;
-
-  z-index: 0;
-  transform: scale(1.1);
-}
-
-/* dark overlay */
-.overlay {
-  position: absolute;
-  inset: 0;
-
-}
+/* VIDEO */
 .bgVideo {
   position: absolute;
   top: 0;
@@ -42,13 +24,12 @@
   transform: scale(1.1);
 
   opacity: 0;
-  animation: videoFade 1s ease forwards;
+  transition: opacity 0.8s ease;
 }
 
-@keyframes videoFade {
-  to {
-    opacity: 1;
-  }
+/* show video after load */
+.bgVideo.show {
+  opacity: 1;
 }
 
 /* content */
@@ -61,13 +42,13 @@
   padding: 24px;
   color: #fff;
 
-  animation: fadeUp 1.2s ease-out;
+  animation: fadeUp 1s ease-out;
 }
 
 @keyframes fadeUp {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(25px);
   }
   to {
     opacity: 1;
@@ -88,13 +69,12 @@
   margin-bottom: 25px;
 }
 
-/* search wrapper */
+/* search */
 .heroSearchBox {
   display: flex;
   justify-content: center;
 }
 
-/* input (clean white focus style) */
 .heroSearchBox input {
   width: 90%;
   max-width: 650px;
@@ -110,11 +90,9 @@
   color: #111;
 
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.25);
-
   transition: all 0.25s ease;
 }
 
-/* focus */
 .heroSearchBox input:focus {
   transform: translateY(-2px);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
