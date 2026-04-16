@@ -13,6 +13,7 @@ import { FaStar, FaCartPlus } from "react-icons/fa";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { addToCart } from "../../redux/slice/userCart.ts";
 import { useAppDispatch } from "../../redux/index.ts";
+import { trackAddToCart } from "../../utils/tracking";
 
 import { supabase } from "../../supaBaseClient";
 import toast from "react-hot-toast";
@@ -30,6 +31,8 @@ const BestSelling = () => {
 
   const addProduct = async (product) => {
     dispatch(addToCart({ userId: user.id, product }));
+    // track add-to-cart for logged-in users
+    trackAddToCart(dispatch, user?.id, product);
   };
 
   const handleWishlistClick = (productID) => {

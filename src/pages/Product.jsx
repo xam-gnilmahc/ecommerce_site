@@ -17,6 +17,7 @@ import { PiShareNetworkLight } from "react-icons/pi";
 import AdditionalInfo from "../components/AdditionalInfo";
 import { addToCart } from "../redux/slice/userCart.ts";
 import { useAppDispatch } from "../redux/index.ts";
+import { trackProductPreview, trackAddToCart } from "../utils/tracking";
 const Product = () => {
   const { id } = useParams();
   const [product, setProduct] = useState([]);
@@ -28,8 +29,10 @@ const Product = () => {
 
   const dispatch = useAppDispatch();
 
-  const addProduct = (product) => {
-    dispatch(addToCart({ userId: user.id, product }));
+  const addProduct = async (product) => {
+    dispatch(addToCart({ userId: user?.id, product }));
+    // track add-to-cart for logged-in users
+    await trackAddToCart(dispatch, user?.id, product);
   };
 
   useEffect(() => {
@@ -68,6 +71,11 @@ const Product = () => {
       const productData = await fetchProductById(id);
       console.log('productData', productData);
       setProduct(productData);
+      if (user) {
+        // use helper which maps to 'view' type
+        await trackProductPreview(dispatch, user?.id, productData);
+      }
+
       setLoading(false);
 
       if (productData) {

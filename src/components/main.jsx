@@ -1,30 +1,34 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Main.css";
 
 const Home = () => {
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  const [search, setSearch] = useState("");
+  const navigate = useNavigate();
+
+  const handleSearch = (e) => {
+    if (e.key === "Enter") {
+      if (!search.trim()) return;
+      navigate(`/search?q=${encodeURIComponent(search.trim())}`);
+    }
   };
 
   return (
-    <div className="heroMain">
-      <div className="sectionleft">
-        <p>New Season Arrivals</p>
-        <h1>
-          Google
-          <br />
-          Pixel 7 Pro
-        </h1>
-        <span className="hero-subtitle">
-          Discover our latest collection and best deals of the season.
-        </span>
-        <div className="heroLink">
-          <Link to="/product" onClick={scrollToTop}>
-            <h5>Discover More</h5>
-          </Link>
+    <div className="heroSearchFull">
+      <div className="heroContent">
+        <h1>Find Your Perfect Tech</h1>
+        <p>Mobiles • Laptops • Accessories • Deals</p>
+
+        <div className="heroSearchBox">
+          <input
+            type="text"
+            placeholder="Search products..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={handleSearch}
+          />
         </div>
       </div>
-      <div className="sectionright" />
     </div>
   );
 };

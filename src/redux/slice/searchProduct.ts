@@ -45,6 +45,59 @@ export const searchProducts = createAsyncThunk<
   }
 );
 
+// export const searchProducts = createAsyncThunk<
+//   Product[],
+//   string,
+//   { rejectValue: string }
+// >(
+//   'search/searchProducts',
+//   async (searchTerm, { rejectWithValue }) => {
+//     try {
+//       const trimmed = searchTerm.trim();
+
+//       if (!trimmed) {
+//         return rejectWithValue('Empty search');
+//       }
+
+//       // split full sentence into words
+//       const words = trimmed.split(' ').filter(Boolean);
+
+//       // build multiple OR conditions for better matching
+//       const orFilters = words
+//         .map(
+//           (word) =>
+//             `name.ilike.%${word}%,brand.ilike.%${word}%,type.ilike.%${word}%,category.ilike.%${word}%`
+//         )
+//         .join(',');
+
+//       const { data, error } = await supabase
+//         .from('products')
+//         .select('*')
+//         .or(orFilters)
+//         .limit(1000);
+
+//       if (error) return rejectWithValue(error.message);
+//       if (!data) return rejectWithValue('No products found');
+
+//       // better ranking (name match first)
+//       const sorted = [...data].sort((a, b) => {
+//         const aName = a.name?.toLowerCase() || '';
+//         const bName = b.name?.toLowerCase() || '';
+//         const q = trimmed.toLowerCase();
+
+//         const aScore = aName.includes(q) ? 2 : 0;
+//         const bScore = bName.includes(q) ? 2 : 0;
+
+//         return bScore - aScore;
+//       });
+
+//       return sorted;
+//     } catch {
+//       return rejectWithValue('Unexpected error while searching products.');
+//     }
+//   }
+// );
+
 const searchSlice = createSlice({
   name: 'search',
   initialState,
