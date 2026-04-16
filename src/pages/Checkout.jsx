@@ -86,6 +86,7 @@ const Checkout = () => {
         "Card element is not mounted properly. Please reload and try again."
       );
       toast.error("Use card payment gate way.");
+      setLoading(false);
       return;
     }
 
@@ -94,6 +95,7 @@ const Checkout = () => {
     if (error) {
       setPaymentError(error.message);
       toast.error(`Payment failed: ${error.message}`);
+      setLoading(false);
     } else {
       let subtotal = 0;
       let shipping = shippingMethod === "free" ? 0 : 30;

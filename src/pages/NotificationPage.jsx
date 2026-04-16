@@ -171,7 +171,7 @@ const NotificationPage = () => {
         }
       >
         <div style={{ position: "relative" }}>
-          {open ? <IoIosNotifications size={30} /> : <FiBell size={25} />}
+          {open ? <IoIosNotifications size={30} color="#6e81c6ff"/> : <FiBell size={25} />}
           {unreadCount > 0 && (
             <span
               className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-black"
