@@ -4,6 +4,7 @@ import "./Main.css";
 
 const Home = () => {
   const [search, setSearch] = useState("");
+  const [loaded, setLoaded] = useState(false);
   const navigate = useNavigate();
 
   const handleSearch = (e) => {
@@ -15,9 +16,15 @@ const Home = () => {
 
   return (
     <div className="heroSearchFull">
-      
-      {/* 🎬 VIDEO BACKGROUND */}
-      <video className="bgVideo" autoPlay loop muted playsInline  poster="/video/preview.jpg">
+      <video
+        className={`bgVideo ${loaded ? "show" : ""}`}
+        autoPlay
+        loop
+        muted
+        playsInline
+        poster="/video/preview.jpg"
+        onLoadedData={() => setLoaded(true)}
+      >
         <source src="/video/lol.mp4" type="video/mp4" />
       </video>
 
