@@ -15,6 +15,16 @@ const Home = () => {
 
   return (
     <div className="heroSearchFull">
+      
+      {/* 🎬 VIDEO BACKGROUND */}
+      <video className="bgVideo" autoPlay loop muted playsInline  poster="/video/preview.jpg">
+        <source src="/video/lol.mp4" type="video/mp4" />
+      </video>
+
+      {/* overlay */}
+      <div className="overlay" />
+
+      {/* content */}
       <div className="heroContent">
         <h1>Find Your Perfect Tech</h1>
         <p>Mobiles • Laptops • Accessories • Deals</p>
