@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import "./Main.css";
 
 const videos = [
-  "/video/pod.mp4",
   "/video/lol.mp4",
   "/video/tablet.mp4",
 ];
@@ -37,6 +36,7 @@ const Home = () => {
           loop
           muted
           playsInline
+          preload="none" 
           onLoadedData={() => setLoaded(true)}
         >
           <source src={currentVideo} type="video/mp4" />
