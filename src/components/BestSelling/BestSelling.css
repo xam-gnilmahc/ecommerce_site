@@ -2,26 +2,23 @@
   transition: transform 0.3s ease;
 }
 
-.lpImageContainer img.lpImage:hover {
-  transform: scale(0.9);
-  cursor: pointer;
-}
-
 .limitedProductSection {
   margin: 40px 0;
-  padding: 0px 160px;
+  padding: 0px clamp(16px, 8vw, 160px);
 }
 
 .limitedProductSection h2 {
   text-transform: uppercase;
-  font-size: 35px;
-  font-weight: 500;
+  font-size: 28px;
+  font-weight: 600;
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
+  color: var(--text);
 }
 
 .limitedProductSection h2 span {
   font-weight: 700;
+  color: var(--primary);
 }
 
 .limitedProductSlider {
@@ -37,13 +34,13 @@
 }
 
 .swiper-button svg {
-  background-color: white;
-  border: 1px solid #e4e4e4;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
   display: flex;
   border-radius: 50%;
   padding: 8px;
   outline: none;
-  color: #767676;
+  color: var(--muted);
 }
 
 .image-swiper-button-prev {
@@ -57,47 +54,52 @@
 .lpImageContainer {
   position: relative;
   width: 100%;
-  height: 210px;
+  height: 230px;
   overflow: hidden;
-  -webkit-transition: all 0.2s cubic-bezier(0.99, 0.99, 0, 0.61);
-  transition: 0.3s linear;
-  -moz-transition: 0.3s linear;
-  -o-transition: 0.3s linear;
+  transition: transform 0.25s ease;
 }
 
 .lpImage {
-  position: absolute;
-  width: 80%;
-  height: 80%;
-  top: 0;
-  left: 0;
-  overflow: hidden;
-  margin: 0 auto;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
+  padding: 15px;
+  max-width: 100%;
+  transition: transform 0.3s ease;
 }
 
-.lpContainer h4 {
-  position: relative;
-  top: 320px;
-  text-align: center;
-  padding: 10px;
-  background-color: rgb(253, 253, 253);
-  transition: all 0.2s cubic-bezier(0.99, 0.99, 0, 0.61);
-  margin: 0 10px;
+.lpImage:hover {
+  transform: scale(1.05);
+}
+
+.lp-add-to-cart {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, var(--primary), var(--primary-600));
+  color: var(--surface);
+  border: none;
+  padding: 12px 10px;
+  border-radius: 0 0 8px 8px;
   text-transform: uppercase;
-  font-weight: 500;
-  font-size: 14px;
+  font-weight: 600;
+  font-size: 13px;
   cursor: pointer;
+  box-shadow: 0 8px 20px rgba(51, 71, 255, 0.12);
+  transition: transform 0.25s ease, opacity 0.12s ease;
+  transform: translateY(100%);
+  z-index: 10;
 }
 
-.lpContainer:hover h4 {
-  top: 160px;
-}
+.lp-add-to-cart:active { transform: translateY(calc(100% - 1px)); }
+
+/* Reveal the button when hovering the product card (same effect as product listing) */
 
 .limitedProductInfo {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .lpCategoryWishlist {
@@ -108,8 +110,8 @@
 }
 
 .lpCategoryWishlist p {
-  color: #767676;
-  font-size: 14px;
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .productNameInfo {
@@ -120,14 +122,15 @@
 
 .productNameInfo a {
   text-decoration: none;
-  color: black;
+  color: inherit;
 }
 
-.productNameInfo h5 {
-  font-weight: 400;
-  font-size: 16px;
-  text-align: left;
+.productNameInfo .product-price {
+  color: var(--primary);
+  font-weight: 500;
+  margin: 4px 0 0 0;
 }
+
 
 .productRatingReviews {
   display: flex;
@@ -135,7 +138,7 @@
 }
 
 .productRatingReviews span {
-  color: #767676;
+  color: var(--muted);
   font-size: 14px;
 }
 
@@ -222,11 +225,11 @@
 
   .swiper-button svg {
     background-color: white;
-    border: 1px solid #e4e4e4;
+  border: 1px solid var(--border);
     display: flex;
     border-radius: 50%;
     padding: 6px;
     outline: none;
-    color: #767676;
+  color: var(--muted);
   }
 }
