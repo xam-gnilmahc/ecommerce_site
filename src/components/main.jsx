@@ -1,11 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Main.css";
+
+const videos = [
+  "/video/pod.mp4",
+  "/video/lol.mp4",
+  "/video/tablet.mp4",
+];
 
 const Home = () => {
   const [search, setSearch] = useState("");
   const [loaded, setLoaded] = useState(false);
+  const [currentVideo, setCurrentVideo] = useState("");
   const navigate = useNavigate();
+
+  // pick random ONLY once (on refresh)
+  useEffect(() => {
+    const randomVideo =
+      videos[Math.floor(Math.random() * videos.length)];
+    setCurrentVideo(randomVideo);
+  }, []);
 
   const handleSearch = (e) => {
     if (e.key === "Enter") {
@@ -16,17 +30,18 @@ const Home = () => {
 
   return (
     <div className="heroSearchFull">
-      <video
-        className={`bgVideo ${loaded ? "show" : ""}`}
-        autoPlay
-        loop
-        muted
-        playsInline
-        poster="/video/preview.jpg"
-        onLoadedData={() => setLoaded(true)}
-      >
-        <source src="/video/lol.mp4" type="video/mp4" />
-      </video>
+      {currentVideo && (
+        <video
+          className={`bgVideo ${loaded ? "show" : ""}`}
+          autoPlay
+          loop
+          muted
+          playsInline
+          onLoadedData={() => setLoaded(true)}
+        >
+          <source src={currentVideo} type="video/mp4" />
+        </video>
+      )}
 
       {/* overlay */}
       <div className="overlay" />

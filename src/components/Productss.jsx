@@ -197,8 +197,8 @@ const Products = () => {
                   />
                 </div>
 
-                <h5>{product.name}</h5>
-                <p>${product.amount}</p>
+                <div className="product-title">{product.name}</div>
+                <p className="product-price">${product.amount}</p>
 
                 <div className="sdProductRatingStar">
                   {[...Array(5)].map((_, i) => (

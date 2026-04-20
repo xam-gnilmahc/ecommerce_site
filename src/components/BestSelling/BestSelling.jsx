@@ -132,22 +132,20 @@ const BestSelling = () => {
                           className="lpImage"
                         />
                       </Link>
-                      <h4
+                      <button
+                        className="lp-add-to-cart"
                         onClick={() => {
                           if (!user) {
                             toast.error("Please login to add products to cart.");
                             navigate("/login");
                             return;
-                          }         
+                          }
                           addProduct(product);
                         }}
+                        aria-label={`Add ${product.name} to cart`}
                       >
                         Add to Cart
-                      </h4>
-                    </div>
-
-                    <div className="lpProductImagesCart">
-                      <FaCartPlus />
+                      </button>
                     </div>
 
                     <div className="limitedProductInfo">
@@ -156,23 +154,23 @@ const BestSelling = () => {
                         <FiHeart
                           onClick={() => handleWishlistClick(product.id)}
                           style={{
-                            color: wishList[product.id] ? "red" : "#767676",
+                            color: wishList[product.id] ? "red" : "var(--muted)",
                             cursor: "pointer",
                           }}
                         />
                       </div>
                       <div className="productNameInfo">
                         <Link to="/Product" onClick={scrollToTop}>
-                          <h5>{product.name}</h5>
+                          <div className="product-title">{product.name}</div>
                         </Link>
-                        <p>${product.amount}</p>
+                        <p className="product-price">${product.amount}</p>
                         <div className="productRatingReviews">
                           <div className="productRatingStar">
                             {Array.from({ length: 5 }, (_, i) => (
                               <FaStar
                                 key={i}
                                 color={
-                                  i < product.rating ? "#FEC78A" : "#e4e5e9"
+                                  i < product.rating ? "#FEC78A" : "var(--border)"
                                 }
                                 size={10}
                               />

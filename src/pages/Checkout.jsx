@@ -25,7 +25,7 @@ import {
 import { trackPurchase } from "../utils/tracking";
 // Stripe Publishable Key
 const stripePromise = loadStripe(
-  "pk_test_51PGec42K0njal9PzJzzxwBOVszXOkqMCBcovRYFChW727EsjLGJ9sWMvztGAGnnmVAtquHDgSllxMryuvfgnv87D00nc9a1Yp7"
+  "pk_test_51TN3nmCgcdDcdyhzt0ZVbDM3VaZK12ReZAXDwZPFRM62Zmt75hwJvQqXxeqm1C0FSm4EYFZoBrGgNiVKQ8iEuJdx000TlKifsq"
 );
 
 const Checkout = () => {

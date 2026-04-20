@@ -8,8 +8,6 @@ import toast from "react-hot-toast";
 import { useAuth } from "../context/authContext"; // adjust path if needed
 import { useNavigate } from "react-router-dom";
 import "./Product.css";
-import { GoChevronLeft } from "react-icons/go";
-import { GoChevronRight } from "react-icons/go";
 import Tooltip from "@mui/material/Tooltip";
 import Zoom from "@mui/material/Zoom";
 import { FiHeart } from "react-icons/fi";
@@ -18,13 +16,20 @@ import AdditionalInfo from "../components/AdditionalInfo";
 import { addToCart } from "../redux/slice/userCart.ts";
 import { useAppDispatch } from "../redux/index.ts";
 import { trackProductPreview, trackAddToCart } from "../utils/tracking";
+import GooglePayButton from '@google-pay/button-react';
+import { fetchTotalCart } from "../redux/slice/userCart.ts";
+import { trackPurchase } from "../utils/tracking";
+
+import { buildPaymentRequest, getUpdatedPaymentData } from '../components/GooglePlay.jsx';
 const Product = () => {
   const { id } = useParams();
   const [product, setProduct] = useState([]);
   const [similarProducts, setSimilarProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loading2, setLoading2] = useState(false);
-  const { user } = useAuth(); // get user from context
+  const [orderLoading, setOrderLoading] = useState(false);
+  const { user, placeOrderSingle } = useAuth(); // get user from context
+  const [paymentRequest, setPaymentRequest] = useState(null);
   const navigate = useNavigate();
 
   const dispatch = useAppDispatch();
@@ -34,6 +39,99 @@ const Product = () => {
     // track add-to-cart for logged-in users
     await trackAddToCart(dispatch, user?.id, product);
   };
+
+  async function handleLoadPaymentData(paymentData) {
+    
+    setOrderLoading(true);
+    const parsedToken = JSON.parse(
+      paymentData.paymentMethodData.tokenizationData.token
+    );
+
+    const address = {
+      addressLine1: paymentData.shippingAddress.address1,
+      addressLine2: paymentData.shippingAddress.address2 || null,
+      country: paymentData.shippingAddress.countryCode,
+      state: paymentData.shippingAddress.administrativeArea,
+      city: paymentData.shippingAddress.locality,
+      zipCode: paymentData.shippingAddress.postalCode,
+    };
+
+    const finalData = {
+      token: parsedToken.id,
+      amount: product.amount,
+      name: user.name,
+      email: user.email,
+      address,
+      comment: "Payment for order",
+    };
+
+    try {
+      const response = await fetch(
+        "https://fzliiwigydluhgbuvnmr.supabase.co/functions/v1/smart-handler",
+        {
+          method: "POST",
+          headers: {
+            Authorization:
+              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6bGlpd2lneWRsdWhnYnV2bm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE5MjkxNTMsImV4cCI6MjA1NzUwNTE1M30.w3Y7W14lmnD-gu2U4dRjqIhy7JZpV9RUmv8-1ybQ92w", // Your Bearer Token
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(finalData),
+        }
+      );
+
+      const result = await response.json();
+
+      let status = "success";
+
+      if (result.message != "Payment successful") {
+        status = "failed";
+        toast.error(result?.error || "Payment processing failed.");
+        setOrderLoading(false);
+        return;
+      }
+
+      const orderId = await placeOrderSingle(
+        {
+          ...finalData,
+          payment_status: status,
+          shippingMethod: "free",
+        },
+        result,
+        product,
+        quantity
+      );
+
+      if (orderId) {
+        dispatch(fetchTotalCart(user.id)); // Update cart total
+        // track purchase (order-level + per-item bulk)
+        await trackPurchase(dispatch, user?.id, { id: orderId });
+        toast.success("Payment processed successfully!");
+      }
+    } catch (err) {
+      console.log(err);
+      const errorMessage =
+        err.response?.data?.errors?.error_message ||
+        err.response?.data?.message ||
+        "Payment failed";
+      toast.error(`Payment error: ${errorMessage}`);
+    } finally {
+      setOrderLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (!product || !product.amount) return;
+
+    const newRequest = buildPaymentRequest([
+      {
+        label: product.name,
+        price: product.amount.toString(),
+        type: "LINE_ITEM",
+      },
+    ]);
+
+    setPaymentRequest(newRequest);
+  }, [product]);
 
   useEffect(() => {
     const getProduct = async () => {
@@ -237,7 +335,7 @@ const Product = () => {
             </div>
           </div>
           <div className="productName">
-            <h1>{product.name}</h1>
+            <div className="product-page-title">{product.name}</div>
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "100px" }}>
 
@@ -262,7 +360,7 @@ const Product = () => {
             </p>
           </div>
 
-          <h6>Description : </h6>
+          <h3 className="product-section-title">Description</h3>
           <p className="productDescription text-muted">
             {product.description?.substring(0, 200)}
           </p>
@@ -336,20 +434,39 @@ const Product = () => {
               />
               <button onClick={increment}>+</button>
             </div>
-            <div className="productCartBtn">
-              <button
-                onClick={() => {
-                  if (!user) {
-                    toast.error("Please login to add products to cart.");
-                    navigate("/login");
-                    return;
-                  }
-                  addProduct(product);
-                }}
-              >
-                Add to Cart
-              </button>
-            </div>
+          </div>
+          {paymentRequest && user && (
+            orderLoading ? (
+              <div className="paymentProcessing" style={{ padding: 12, borderRadius: 6, background: '#f8f9fa', textAlign: 'center' }}>
+                <div style={{ fontWeight: 600, marginBottom: 6 }}>Processing payment…</div>
+                <div style={{ fontSize: 13, color: '#666' }}>This may take a few seconds — please do not close the window.</div>
+              </div>
+            ) : (
+              <GooglePayButton
+                environment="TEST"
+                buttonSizeMode="fill"
+                paymentRequest={paymentRequest}
+                onLoadPaymentData={handleLoadPaymentData}
+                onError={(error) => console.error(error)}
+                onPaymentDataChanged={(paymentData) =>
+                  getUpdatedPaymentData(paymentRequest, paymentData)
+                }
+              />
+            )
+          )}
+          <div className="productCartBtn">
+            <button
+              onClick={() => {
+                if (!user) {
+                  toast.error("Please login to add products to cart.");
+                  navigate("/login");
+                  return;
+                }
+                addProduct(product);
+              }}
+            >
+              Add to Cart
+            </button>
           </div>
           <div className="productWishShare">
             <div className="productWishList">
