@@ -436,12 +436,7 @@ const Product = () => {
             </div>
           </div>
           {paymentRequest && user && (
-            orderLoading ? (
-              <div className="paymentProcessing" style={{ padding: 12, borderRadius: 6, background: '#f8f9fa', textAlign: 'center' }}>
-                <div style={{ fontWeight: 600, marginBottom: 6 }}>Processing payment…</div>
-                <div style={{ fontSize: 13, color: '#666' }}>This may take a few seconds — please do not close the window.</div>
-              </div>
-            ) : (
+            (
               <GooglePayButton
                 environment="TEST"
                 buttonSizeMode="fill"
@@ -595,6 +590,16 @@ const Product = () => {
   };
   return (
     <>
+      
+      {orderLoading && (
+        <div className="payment-overlay">
+          <div className="payment-loader-box">
+            <div className="payment-spinner"></div>
+            <h3>Processing Payment...</h3>
+            <p>Please do not refresh or click anything</p>
+          </div>
+        </div>
+      )}
       <div className="productSection">
         <div className=" productShowCase">{loading ? <Loading /> : <ShowProduct />}</div>
         <div className="row my-5 py-5">
