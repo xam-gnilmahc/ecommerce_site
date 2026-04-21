@@ -2,14 +2,14 @@ export const shippingOptions = [
   {
     id: "free",
     label: "Free shipping",
-    description: "Arrives in 5 to 7 days",
+    description: "Arrives in 7 to 20 days",
     price: 0,
   },
   {
     id: "express",
     label: "Express shipping",
-    description: "$5.00 - Arrives in 1 to 3 days",
-    price: 5,
+    description: "$3.00 - Arrives in 1 to 3 days",
+    price: 3,
   },
 ];
 

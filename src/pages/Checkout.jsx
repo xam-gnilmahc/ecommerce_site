@@ -10,40 +10,30 @@ import {
   Elements,
 } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
+import GooglePayButton from '@google-pay/button-react';
+import { buildPaymentRequest, getUpdatedPaymentData } from '../components/GooglePlay.jsx';
 import toast from "react-hot-toast";
 import { useAuth } from "../context/authContext"; // adjust path if needed
-import LottieLoader from "../components/LottieLoader";
 import "./Animation.css";
 import "./checkout.css";
 import { fetchTotalCart } from "../redux/slice/userCart.ts";
-import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import Navbar from "../components/Navbar";
 import { useAppDispatch } from "../redux/index.ts";
-import {
-  fetchCartItems,
-} from "../redux/slice/userCart.ts";
+import { fetchCartItems, } from "../redux/slice/userCart.ts";
 import { trackPurchase } from "../utils/tracking";
-// Stripe Publishable Key
-const stripePromise = loadStripe(
-  "pk_test_51TN3nmCgcdDcdyhzt0ZVbDM3VaZK12ReZAXDwZPFRM62Zmt75hwJvQqXxeqm1C0FSm4EYFZoBrGgNiVKQ8iEuJdx000TlKifsq"
-);
+import { processCardPayment, processGooglePay } from "../service/googlePayService";
+
+const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_URL);
 
 const Checkout = () => {
-  const { user, placeOrder } =
-    useAuth();
+  const { user, placeOrder } = useAuth();
   const dispatch = useAppDispatch();
-      const { items: cart, fetchLoading:loading } = useSelector((state) => state.addToCart);
-
-  useEffect(() => {
-    if (user?.id) {
-      dispatch(fetchCartItems(user.id));
-    }
-  }, []);
-
-  const elements = useElements();
   const stripe = useStripe();
+  const elements = useElements();
 
-  // Shipping Information States
+  const { items: cart, fetchLoading: loading } = useSelector((state) => state.addToCart);
+
+  // States for form fields, loading, payment method, etc.
   const [email, setEmail] = useState(user?.email || "");
   const [name, setName] = useState(user?.full_name || "");
   const [addressLine1, setAddressLine1] = useState("");
@@ -52,147 +42,152 @@ const Checkout = () => {
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedState, setSelectedState] = useState("");
   const [states, setStates] = useState([]);
-  const [paymentError, setPaymentError] = useState("");
-  const [paymentLoading, setLoading] = useState(false); // Add loading state
-  const [paymentMethod, setPaymentMethod] = useState("card");
+  const [paymentLoading, setPaymentLoading] = useState(false); // Add loading state
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const [paymentRequest, setPaymentRequest] = useState(null);
   const [show, setShow] = useState(false);
   const [shippingMethod, setShippingMethod] = useState("free");
   const [showPromo, setShowPromo] = useState(false);
-  // Handle Country Change
-  const handleCountryChange = (country) => {
-    setSelectedCountry(country);
-    setStates(State.getStatesOfCountry(country)); // Update states based on country
+
+  const getSubtotal = () => cart.reduce((sum, item) => sum + item.amount * item.quantity, 0);
+
+  const getShipping = () => (shippingMethod === "free" ? 0 : 3);
+
+  const getAddress = () => ({
+    addressLine1,
+    addressLine2,
+    country: selectedCountry,
+    state: selectedState,
+    zipCode,
+  });
+
+  const handleOrderSuccess = async (orderId) => {
+    if (!orderId) return;
+
+    dispatch(fetchTotalCart(user.id));
+    await trackPurchase(dispatch, user?.id, { id: orderId, items: cart });
+
+    setShow(true);
+    toast.success("Payment successful!");
   };
 
-  // Handle State Change
+  const handlePaymentError = (result) => {
+    if (result.message !== "Payment successful") {
+      toast.error(result?.error || "Payment processing failed.");
+      return true;
+    }
+    return false;
+  };
+
+  // ---------------- FETCH CART ----------------
+  useEffect(() => {
+    if (user?.id) {
+      dispatch(fetchCartItems(user.id));
+    }
+  }, [user?.id]);
+
+  // ---------------- COUNTRY ----------------
+  const handleCountryChange = (country) => {
+    setSelectedCountry(country);
+    setStates(State.getStatesOfCountry(country));
+  };
+
   const handleStateChange = (state) => {
     setSelectedState(state);
   };
 
-  // Handle form submit
+  // ---------------- CARD PAYMENT ----------------
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // Set loading to true when payment is being processed
+    setPaymentLoading(true);
 
-    if (!stripe || !elements) {
-      console.log("Stripe.js hasn't loaded yet.");
-      return;
-    }
+    try {
+      const subtotal = getSubtotal();
+      const totalAmount = Math.round(subtotal + getShipping());
 
-    const cardElement = elements.getElement(CardElement);
-
-    if (!cardElement) {
-      setPaymentError(
-        "Card element is not mounted properly. Please reload and try again."
+      const { finalData, result } = await processCardPayment(
+        stripe,
+        elements,
+        {
+          amount: totalAmount,
+          name,
+          email,
+          address: getAddress(),
+        }
       );
-      toast.error("Use card payment gate way.");
-      setLoading(false);
-      return;
-    }
 
-    const { token, error } = await stripe.createToken(cardElement);
+      if (handlePaymentError(result)) return;
 
-    if (error) {
-      setPaymentError(error.message);
-      toast.error(`Payment failed: ${error.message}`);
-      setLoading(false);
-    } else {
-      let subtotal = 0;
-      let shipping = shippingMethod === "free" ? 0 : 30;
-      let totalItems = 0;
-      cart.map((item) => {
-        subtotal += item.amount * item.quantity;
-        totalItems += item.quantity;
-      });
+      const orderId = await placeOrder(
+        { ...finalData, payment_status: "success", shippingMethod },
+        result
+      );
 
-      const address = {
-        addressLine1,
-        addressLine2,
-        country: selectedCountry,
-        state: selectedState,
-        zipCode,
-      };
-
-      const totalAmount = Math.round(subtotal + shipping);
-      const paymentData = {
-        token: token.id,
-        amount: totalAmount,
-        name,
-        email,
-        address,
-        comment: "Payment for order",
-      };
-
-      try {
-        const response = await fetch(
-          "https://fzliiwigydluhgbuvnmr.supabase.co/functions/v1/smart-handler",
-          {
-            method: "POST",
-            headers: {
-              Authorization:
-                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6bGlpd2lneWRsdWhnYnV2bm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE5MjkxNTMsImV4cCI6MjA1NzUwNTE1M30.w3Y7W14lmnD-gu2U4dRjqIhy7JZpV9RUmv8-1ybQ92w", // Your Bearer Token
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(paymentData),
-          }
-        );
-
-        const result = await response.json();
-
-        let status = "success";
-
-        if (result.message != "Payment successful") {
-          status = "failed";
-          toast.error(result?.error || "Payment processing failed.");
-          return;
-        }
-
-        const orderId = await placeOrder({
-          ...paymentData,
-          payment_status: status,
-          shippingMethod
-        }, result);
-
-        if (orderId) {
-          dispatch(fetchTotalCart(user.id)); // Update cart total
-          // track purchase (order-level + per-item bulk)
-          await trackPurchase(dispatch, user?.id, { id: orderId, items: cart });
-          setShow(true); // Only show after order placement is successful
-          toast.success("Payment processed successfully!");
-        }
-      } catch (err) {
-        console.log(err);
-        const errorMessage =
-          err.response?.data?.errors?.error_message ||
-          err.response?.data?.message ||
-          "Payment failed";
-        setPaymentError(errorMessage);
-        toast.error(`Payment error: ${errorMessage}`);
-      } finally {
-        setLoading(false);
-      }
+      await handleOrderSuccess(orderId);
+    } catch (err) {
+      toast.error(err.message || "Something went wrong.");
+    } finally {
+      setPaymentLoading(false);
     }
   };
 
-  let subtotal = 0;
-  let shipping = shippingMethod === "free" ? 0 : 30;
-  let totalItems = 0;
-  cart.map((item) => {
-    return (subtotal += item.amount * item.quantity);
-  });
+  // ---------------- GOOGLE PAY ----------------
+  const handleLoadPaymentData = async (paymentData) => {
+    setPaymentLoading(true);
 
-  cart.map((item) => {
-    return (totalItems += item.quantity);
-  });
+    try {
+      const subtotal = getSubtotal();
+      const gpayShippingId = paymentData.shippingOptionData?.id;
+      const totalAmount = Math.round(subtotal + (gpayShippingId == "free" ? 0 : 3));
 
-  const closeModal = () => setShow(false);
+      const { finalData, result } = await processGooglePay(paymentData, {
+        amount: totalAmount,
+        name: user?.name || user?.full_name,
+        email: user?.email || email,
+      });
+
+      if (handlePaymentError(result)) return;
+
+      const orderId = await placeOrder(
+        { ...finalData, payment_status: "success", shippingMethod: gpayShippingId == "free" ? "free" : "express" },
+        result
+      );
+
+      await handleOrderSuccess(orderId);
+    } catch (err) {
+      toast.error(err.message || "Something went wrong.");
+    } finally {
+      setPaymentLoading(false);
+    }
+  };
+
+  // ---------------- GOOGLE PAY REQUEST ----------------
+  useEffect(() => {
+    if (!cart?.length) return;
+
+    const displayItems = cart.map((item) => ({
+      label: item.products.name,
+      price: (item.amount * item.quantity).toFixed(2),
+      type: "LINE_ITEM",
+    }));
+
+    setPaymentRequest(buildPaymentRequest(displayItems));
+  }, [cart]);
+
 
   return (
     <>
+      {paymentLoading && (
+        <div className="payment-overlay">
+          <div className="payment-loader-box">
+            <div className="payment-spinner"></div>
+            <h3>Processing Payment...</h3>
+            <p>Please do not refresh or click anything</p>
+          </div>
+        </div>
+      )}
       <Navbar />
       <div className="container my-4 py-3">
-        {/* <h1 className="text-center mb-4">Checkout</h1>
-        <hr /> */}
         <div className="row">
           {loading ? (
             <>
@@ -206,41 +201,13 @@ const Checkout = () => {
                   <div className="col-md-6">
                     <Skeleton height={40} />
                   </div>
-                  <div className="col-md-6 mt-2">
-                    <Skeleton height={40} />
-                  </div>
-                  <div className="col-md-6 mt-2">
-                    <Skeleton height={40} />
-                  </div>
-                  <div className="col-md-4 mt-2">
-                    <Skeleton height={40} />
-                  </div>
-                  <div className="col-md-4 mt-2">
-                    <Skeleton height={40} />
-                  </div>
-                  <div className="col-md-4 mt-2">
-                    <Skeleton height={40} />
-                  </div>
                 </div>
-
-                {/* Shipping Method Skeleton */}
-                <Skeleton height={25} width="30%" className="mb-2" />
-                <div className="d-flex gap-3 mb-3">
-                  <Skeleton height={60} width="50%" />
-                  <Skeleton height={60} width="50%" />
-                </div>
-
-                {/* Payment Method Skeleton */}
-                <Skeleton height={30} width="25%" className="mb-2" />
-                <Skeleton height={50} className="mb-3" />
-                <Skeleton height={120} className="mb-3" /> {/* Card input box */}
-                <Skeleton height={50} width="100%" /> {/* Submit button */}
               </div>
 
               {/* Right Cart Summary Skeleton */}
               <div className="col-md-4">
                 <Skeleton height={25} width="50%" className="mb-3" /> {/* Summary title */}
-                {Array(5)
+                {Array(2)
                   .fill(0)
                   .map((_, idx) => (
                     <div
@@ -256,7 +223,6 @@ const Checkout = () => {
                       </div>
                     </div>
                   ))}
-                <Skeleton height={30} width="80%" className="mb-1" /> {/* Promo */}
                 <Skeleton height={30} width="50%" className="mb-1" /> {/* Products total */}
                 <Skeleton height={30} width="50%" className="mb-1" /> {/* Shipping */}
                 <Skeleton height={30} width="50%" /> {/* Total */}
@@ -269,276 +235,189 @@ const Checkout = () => {
                 <div className="">
                   <form onSubmit={handleSubmit}>
                     <div className="row g-4">
-                      {/* 1. Contact Information */}
-                      <div className="col-12">
-                        <h5 className="mb-3" style={{ color: "#000" }}>
-                          Delivery Information
-                        </h5>
-                        <div className="">
-                          <div className="row g-3">
-                            <div className="col-12 col-md-6">
-                              <label
-                                className="form-label"
-                                style={{ color: "#6c757d" }}
-                              >
-                                Email
-                              </label>
-                              <input
-                                type="email"
-                                className="form-control"
-                                value={email}
-                                style={{ color: "#6c757d" }}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                              />
-                            </div>
-                            <div className="col-12 col-md-6">
-                              <label
-                                className="form-label"
-                                style={{ color: "#6c757d" }}
-                              >
-                                Name
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                value={name}
-                                style={{ color: "#6c757d" }}
-                                onChange={(e) => setName(e.target.value)}
-                                required
-                              />
-                            </div>
-                          </div>
-
-                          {/* 2. Delivery Method */}
-
-                          <div className="row g-3 mt-2">
-                            <div className="col-12 col-md-6">
-                              <label
-                                className="form-label"
-                                style={{ color: "#6c757d" }}
-                              >
-                                Address Line 1
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                value={addressLine1}
-                                style={{ color: "#6c757d" }}
-                                onChange={(e) =>
-                                  setAddressLine1(e.target.value)
-                                }
-                                required
-                              />
-                            </div>
-                            <div className="col-12 col-md-6">
-                              <label
-                                className="form-label"
-                                style={{ color: "#6c757d" }}
-                              >
-                                Address Line 2
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                style={{ color: "#6c757d" }}
-                                value={addressLine2}
-                                onChange={(e) =>
-                                  setAddressLine2(e.target.value)
-                                }
-                              />
-                            </div>
-                            <div className="row g-3">
-                              <div className="col-md-4">
-                                <label className="form-label" style={{ color: "#6c757d" }}>
-                                  Zip Code
-                                </label>
-                                <input
-                                  type="text"
-                                  className="form-control w-full"
-                                  style={{ color: "#6c757d" }}
-                                  value={zipCode}
-                                  onChange={(e) => setZipCode(e.target.value)}
-                                  required
-                                />
+                      {/* Contact Information */}
+                      {paymentMethod === 'card' && (
+                        <>
+                          <div className="col-12">
+                            <h5 className="mb-3" style={{ color: "#000" }}>
+                              Delivery Information
+                            </h5>
+                            <div className="">
+                              <div className="row g-3">
+                                <div className="col-12 col-md-6">
+                                  <label className="form-label" style={{ color: "#6c757d" }}>
+                                    Email
+                                  </label>
+                                  <input type="email" className="form-control" value={email} style={{ color: "#6c757d" }} onChange={(e) => setEmail(e.target.value)} required/>
+                                </div>
+                                <div className="col-12 col-md-6">
+                                  <label className="form-label" style={{ color: "#6c757d" }}>
+                                    Name
+                                  </label>
+                                  <input type="text" className="form-control" value={name} style={{ color: "#6c757d" }} onChange={(e) => setName(e.target.value)} required/>
+                                </div>
                               </div>
-                              <div className="col-md-4">
-                                <label className="form-label" style={{ color: "#6c757d" }}>
-                                  Country
-                                </label>
-                                <select
-                                  className="form-select w-full"
-                                  style={{ color: "#6c757d" }}
-                                  value={selectedCountry}
-                                  onChange={(e) => handleCountryChange(e.target.value)}
-                                  required
-                                >
-                                  <option value="">Select Country</option>
-                                  {Country.getAllCountries().map((country) => (
-                                    <option key={country.isoCode} value={country.isoCode}>
-                                      {country.name}
-                                    </option>
-                                  ))}
-                                </select>
-                              </div>
-                              <div className="col-md-4">
-                                <label className="form-label" style={{ color: "#6c757d" }}>
-                                  State
-                                </label>
-                                <select
-                                  style={{ color: "#6c757d" }}
-                                  className="form-select w-full"
-                                  value={selectedState}
-                                  onChange={(e) => handleStateChange(e.target.value)}
-                                  required
-                                >
-                                  <option value="">Select State</option>
-                                  {states.map((state) => (
-                                    <option key={state.isoCode} value={state.isoCode}>
-                                      {state.name}
-                                    </option>
-                                  ))}
-                                </select>
+
+                              {/* 2. Delivery Method */}
+
+                              <div className="row g-3 mt-2">
+                                <div className="col-12 col-md-6">
+                                  <label className="form-label" style={{ color: "#6c757d" }}>
+                                    Address Line 1
+                                  </label>
+                                  <input type="text" className="form-control" value={addressLine1} style={{ color: "#6c757d" }}
+                                    onChange={(e) =>
+                                      setAddressLine1(e.target.value)
+                                    }
+                                    required
+                                  />
+                                </div>
+                                <div className="col-12 col-md-6">
+                                  <label className="form-label" style={{ color: "#6c757d" }}>
+                                    Address Line 2
+                                  </label>
+                                  <input
+                                    type="text" className="form-control" style={{ color: "#6c757d" }} value={addressLine2}
+                                    onChange={(e) =>
+                                      setAddressLine2(e.target.value)
+                                    }
+                                  />
+                                </div>
+                                <div className="row g-3">
+                                  <div className="col-md-4">
+                                    <label className="form-label" style={{ color: "#6c757d" }}>
+                                      Zip Code
+                                    </label>
+                                    <input
+                                      type="text" className="form-control w-full" style={{ color: "#6c757d" }} value={zipCode}
+                                      onChange={(e) => setZipCode(e.target.value)}
+                                      required
+                                    />
+                                  </div>
+                                  <div className="col-md-4">
+                                    <label className="form-label" style={{ color: "#6c757d" }}>
+                                      Country
+                                    </label>
+                                    <select className="form-select w-full" style={{ color: "#6c757d" }} value={selectedCountry}
+                                      onChange={(e) => handleCountryChange(e.target.value)}
+                                      required
+                                    >
+                                      <option value="">Select Country</option>
+                                      {Country.getAllCountries().map((country) => (
+                                        <option key={country.isoCode} value={country.isoCode}>
+                                          {country.name}
+                                        </option>
+                                      ))}
+                                    </select>
+                                  </div>
+                                  <div className="col-md-4">
+                                    <label className="form-label" style={{ color: "#6c757d" }}>
+                                      State
+                                    </label>
+                                    <select style={{ color: "#6c757d" }} className="form-select w-full" value={selectedState}
+                                      onChange={(e) => handleStateChange(e.target.value)}
+                                      required
+                                    >
+                                      <option value="">Select State</option>
+                                      {states.map((state) => (
+                                        <option key={state.isoCode} value={state.isoCode}>
+                                          {state.name}
+                                        </option>
+                                      ))}
+                                    </select>
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      </div>
-                      <div className="col-12 pt-2">
-                        <h6 className="mb-3" style={{ color: "#000" }}>Shipping Method</h6>
-                        <div className="d-flex gap-3">
-                          {/* Free Shipping Option */}
-                          <label
-                           className={`border rounded p-3 flex-fill text-start ${shippingMethod === "free" ? "border-primary bg-primary bg-opacity-10" : "border-secondary"
-                              }`}
-                            style={{ cursor: "pointer", minWidth: "160px" }}
-                          >
-                            <div className="d-flex justify-content-between align-items-center mb-1">
-                              <div className="form-check m-0">
-                                <input
-                                  className="form-check-input"
-                                  type="radio"
-                                  name="shipping"
-                                  id="shippingFree"
-                                  value="free"
-                                  checked={shippingMethod === "free"}
-                                  onChange={() => setShippingMethod("free")}
-                                />
-                                <label className="form-check-label ms-2" htmlFor="shippingFree">
-                                  Free Shipping
-                                </label>
-                              </div>
-                              <strong>$0</strong>
-                            </div>
-                            <div className="text-muted ps-4">7–20 Days</div>
-                          </label>
+                          <div className="col-12 pt-2">
+                            <h6 className="mb-3" style={{ color: "#000" }}>Shipping Method</h6>
+                            <div className="d-flex gap-3">
+                              {/* Free Shipping Option */}
+                              <label
+                                className={`border rounded p-3 flex-fill text-start ${shippingMethod === "free" ? "border-primary bg-primary bg-opacity-10" : "border-secondary"
+                                  }`}
+                                style={{ cursor: "pointer", minWidth: "160px" }}
+                              >
+                                <div className="d-flex justify-content-between align-items-center mb-1">
+                                  <div className="form-check m-0">
+                                    <input className="form-check-input" type="radio"  name="shipping"  id="shippingFree" value="free" checked={shippingMethod === "free"} onChange={() => setShippingMethod("free")}/>
+                                    <label className="form-check-label ms-2" htmlFor="shippingFree">
+                                      Free Shipping
+                                    </label>
+                                  </div>
+                                  <strong>$0</strong>
+                                </div>
+                                <div className="text-muted ps-4">7–20 Days</div>
+                              </label>
 
-                          {/* Express Shipping Option */}
-                          <label
-                           className={`border rounded p-3 flex-fill text-start ${shippingMethod === "express" ? "border-primary bg-primary bg-opacity-10" : "border-secondary"
-                              }`}
-                            style={{ cursor: "pointer", minWidth: "160px" }}
-                          >
-                            <div className="d-flex justify-content-between align-items-center mb-1">
-                              <div className="form-check m-0">
-                                <input
-                                  className="form-check-input"
-                                  type="radio"
-                                  name="shipping"
-                                  id="shippingExpress"
-                                  value="express"
-                                  checked={shippingMethod === "express"}
-                                  onChange={() => setShippingMethod("express")}
-                                />
-                                <label className="form-check-label ms-2" htmlFor="shippingExpress">
-                                  Express Shipping
-                                </label>
-                              </div>
-                              <strong>$30</strong>
+                              {/* Express Shipping Option */}
+                              <label
+                                className={`border rounded p-3 flex-fill text-start ${shippingMethod === "express" ? "border-primary bg-primary bg-opacity-10" : "border-secondary"
+                                  }`}
+                                style={{ cursor: "pointer", minWidth: "160px" }}
+                              >
+                                <div className="d-flex justify-content-between align-items-center mb-1">
+                                  <div className="form-check m-0">
+                                    <input className="form-check-input" type="radio" name="shipping" id="shippingExpress" value="express" checked={shippingMethod === "express"} onChange={() => setShippingMethod("express")} />
+                                    <label className="form-check-label ms-2" htmlFor="shippingExpress">
+                                      Express Shipping
+                                    </label>
+                                  </div>
+                                  <strong>$3</strong>
+                                </div>
+                                <div className="text-muted ps-4">1–3 Days</div>
+                              </label>
                             </div>
-                            <div className="text-muted ps-4">1–3 Days</div>
-                          </label>
-                        </div>
-                      </div>
-
+                          </div>
+                        </>
+                      )}
 
                       {/* 3. Payment Method */}
                       <div className="col-12 pt-4">
                         <h5 className="mb-3" style={{ color: "#000" }}>
                           Payment Method
                         </h5>
-                        <div className=" payment-method">
-                          <div className="d-flex  gap-3">
-                            {/* Cash on Delivery */}
-                            <label
-                              style={{
-                                cursor: "pointer",
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "10px",
-                              }}
-                            >
-                              <input
-                                type="radio"
-                                name="payment"
-                                value="cod"
-                                checked={paymentMethod === "cod"}
-                                onChange={() => setPaymentMethod("cod")}
-                                style={{ accentColor: "#0d6efd" }} // Blue circle color for checked radio
-                              />
-                              <span>Cash on Delivery</span>
-                            </label>
 
-                            {/* Card Payment */}
-                            <label
-                              style={{
-                                cursor: "pointer",
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "10px",
-                              }}
-                            >
-                              <input
-                                type="radio"
-                                name="payment"
-                                value="card"
-                                checked={paymentMethod === "card"}
-                                onChange={() => setPaymentMethod("card")}
-                                style={{ accentColor: "#0d6efd" }}
-                              />
-                              <span>Card</span>
-                            </label>
-
-                            {/* Google Pay */}
-                            {/* <label
-            style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "10px" }}
-          >
-            <input
-              type="radio"
-              name="payment"
-              value="googlePay"
-              checked={paymentMethod === "googlePay"}
-              onChange={() => setPaymentMethod("googlePay")}
-              style={{ accentColor: "#0d6efd" }}
-            />
-            <span>Google Pay</span>
-          </label> */}
-
-                            {/* Apple Pay */}
-                            {/* <label
-            style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "10px" }}
-          >
-            <input
-              type="radio"
-              name="payment"
-              value="applePay"
-              checked={paymentMethod === "applePay"}
-              onChange={() => setPaymentMethod("applePay")}
-              style={{ accentColor: "#0d6efd" }}
-            />
-            <span>Apple Pay</span>
-          </label> */}
+                        <div className="payment-grid">
+                          {/* CARD */}
+                          <div
+                            onClick={() => setPaymentMethod("card")}
+                            className={`payment-card ${paymentMethod === "card" ? "active" : ""}`}
+                          >
+                            <div className="payment-content">
+                              <div>
+                                <h6>💳 Card</h6>
+                                <p>Pay securely with your card</p>
+                              </div>
+                              {paymentMethod === "card" && <div className="check">✓</div>}
+                            </div>
                           </div>
+
+                          {/* GOOGLE PAY */}
+                          <div
+                            onClick={() => setPaymentMethod("googlePay")}
+                            className={`payment-card ${paymentMethod === "googlePay" ? "active" : ""}`}
+                          >
+                            <div className="payment-content">
+                              <div>
+                                <h6>🟢 Google Pay</h6>
+                                <p>Fast checkout with Google</p>
+                              </div>
+                              {paymentMethod === "googlePay" && <div className="check">✓</div>}
+                            </div>
+                          </div>
+
+                        </div>
+
+                        <div className="payment-method">
+
+                          {/* Prompt when no payment method selected */}
+                          {paymentMethod === "" && (
+                            <p className="text-muted mt-3">
+                              Choose how you’d like to pay: Card or Google Pay.
+                            </p>
+                          )}
 
                           {/* Conditional payment fields */}
                           {paymentMethod === "card" && (
@@ -557,65 +436,62 @@ const Checkout = () => {
                                   },
                                 }}
                               />
-                              <p
-                                className="mt-2"
-                                style={{ fontSize: "0.9rem", color: "#6c757d" }}
-                              >
+                              <p className="mt-2" style={{ fontSize: "0.9rem", color: "#6c757d" }}>
                                 Test Card Numbers: <br />
                                 - 4242 4242 4242 4242 (Visa) <br />
-                                - 5555 5555 5555 4444 (Mastercard) <br />- 3782
-                                8224 6310 005 (American Express)
+                                - 5555 5555 5555 4444 (Mastercard) <br />- 3782 8224 6310 005 (American Express)
                               </p>
                             </div>
                           )}
-                          {paymentMethod === "cod" && (
-                            <div
-                              className="px-3 py-3"
-                              style={{
-                                marginTop: "-0.75rem",
-                                marginBottom: "1rem",
-                              }}
-                            >
-                              <h6 className="fw-bold text-warning mb-2">
-                                Cash on Delivery Unavailable
-                              </h6>
-                              <p className="text-muted mb-1">
-                                For some reason, Cash on Delivery is not
-                                available at the moment.
-                              </p>
-                              <p className="text-muted mb-0">
-                                Please proceed with a secure card payment to
-                                complete your order.
-                              </p>
+
+                          {paymentMethod === "applePay" && <p>Apple Pay button will be here.</p>}
+
+                          {paymentMethod === "googlePay" && (
+                            <div className="mt-4">
+                              {paymentRequest ? (
+                                user ? (
+                                  <GooglePayButton
+                                    environment="TEST"
+                                    buttonSizeMode="fill"
+                                    paymentRequest={paymentRequest}
+                                    onLoadPaymentData={handleLoadPaymentData}
+                                    onError={(error) => console.error(error)}
+                                    onPaymentDataChanged={(paymentData) => getUpdatedPaymentData(paymentRequest, paymentData)}
+                                  />
+                                ) : (
+                                  <p className="text-muted">Please login to use Google Pay.</p>
+                                )
+                              ) : (
+                                <p className="text-muted">Preparing payment...</p>
+                              )}
                             </div>
-                          )}
-                          {paymentMethod === "applePay" && (
-                            <p>Apple Pay button will be here.</p>
                           )}
                         </div>
                       </div>
 
                       {/* Submit */}
-                      <div className="col-12 pt-4">
-                        <button
-                          type="submit"
-                          className="btn btn-primary w-100"
-                          disabled={loading || !stripe}
-                        >
-                          {paymentLoading
-                            ? (
-                              <>
-                                <span
-                                  className="spinner-border spinner-border-sm me-2"
-                                  role="status"
-                                  aria-hidden="true"
-                                ></span>
-                                Submitting Payment...
-                              </>
-                            )
-                            : "Submit Payment"}
-                        </button>
-                      </div>
+                      {paymentMethod === 'card' && (
+                        <div className="col-12 pt-4">
+                          <button
+                            type="submit"
+                            className="btn btn-primary w-100"
+                            disabled={loading || !stripe}
+                          >
+                            {paymentLoading
+                              ? (
+                                <>
+                                  <span
+                                    className="spinner-border spinner-border-sm me-2"
+                                    role="status"
+                                    aria-hidden="true"
+                                  ></span>
+                                  Submitting Payment...
+                                </>
+                              )
+                              : "Submit Payment"}
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </form>
                 </div>
@@ -691,46 +567,19 @@ const Checkout = () => {
                         </div>
                       ))}
                     </div>
-
                     {/* Order Summary */}
                     <ul className="list-group list-group-flush mt-3">
-                      <div
-                        onClick={() => setShowPromo(!showPromo)}
-                        className=" d-flex justify-content-between px-3"
-                        style={{ userSelect: "none" }}
-                      >
-                        <span>Do you have a promo code?</span>
-                        {showPromo ? <FaChevronUp /> : <FaChevronDown />}
-                      </div>
-
-                      {/* Promo code input */}
-                      {showPromo && (
-                        <div className="mb-1">
-                          <input
-                            type="text"
-                            className="form-control rounded ms-3 me-5"
-                            placeholder="Enter promo code"
-                          />
-                        </div>
-                      )}
-                      <li
-                        className="list-group-item d-flex justify-content-between"
-                        style={{ color: "#6c757d" }}
-                      >
-                        Products ({totalItems}){" "}
-                        <span>${Math.round(subtotal)}</span>
+                      <li className="list-group-item d-flex justify-content-between" style={{ color: "#6c757d" }}>
+                        Products ({cart.reduce((s, i) => s + i.quantity, 0)})
+                        <span>${Math.round(getSubtotal())}</span>
                       </li>
-                      <li
-                        className="list-group-item d-flex justify-content-between"
-                        style={{ color: "#6c757d" }}
-                      >
-                        Shipping <span>${shipping}</span>
+                      <li className="list-group-item d-flex justify-content-between" style={{ color: "#6c757d" }}>
+                        Shipping
+                        <span>${getShipping()}</span>
                       </li>
-                      <li
-                        className="list-group-item d-flex justify-content-between fw-bold"
-                        style={{ color: "#000" }}
-                      >
-                        Total <span>${Math.round(subtotal + shipping)}</span>
+                      <li className="list-group-item d-flex justify-content-between fw-bold" style={{ color: "#000" }}>
+                        Total
+                        <span>${Math.round(getSubtotal() + getShipping())}</span>
                       </li>
                     </ul>
                   </div>
@@ -746,114 +595,6 @@ const Checkout = () => {
             </div>
           )}
         </div>
-        {show && (
-          <>
-          </>
-        //   <div
-        //     className="modal fade show d-block"
-        //     tabIndex="-1"
-        //     role="dialog"
-        //     style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
-        //   >
-        //     <div className="modal-dialog modal-dialog-centered" role="document">
-        //       <div
-        //         className="modal-content animate-fade-in border-0 position-relative"
-        //         style={{
-        //           borderRadius: "1rem",
-        //           boxShadow: "0 0.75rem 1.5rem rgba(0, 0, 0, 0.15)",
-        //           overflow: "hidden",
-        //         }}
-        //       >
-        //         <div
-        //           className="position-absolute top-0 start-50 translate-middle-x"
-        //           style={{
-        //             width: "1000px",
-        //             height: "100px",
-        //             zIndex: 1,
-        //             marginTop: "-50px",
-        //           }}
-        //         >
-        //           <LottieLoader useAlt={true} />
-        //         </div>
-
-        //         <div
-        //           className="modal-header border-0 d-flex justify-content-between align-items-center"
-        //           style={{ zIndex: 2 }}
-        //         >
-        //           <h5 className="modal-title text-dark fw-semibold m-0">
-        //             Thank You, {user.full_name || name}!
-        //           </h5>
-        //           <button
-        //             type="button"
-        //             className="btn-close"
-        //             onClick={closeModal}
-        //             style={{ zIndex: 3 }}
-        //           ></button>
-        //         </div>
-
-        //         <div className="modal-body px-4 text-center">
-        //           <div className="mb-3">
-        //             <i className="bi bi-check-circle-fill text-success fs-1"></i>
-        //           </div>
-
-        //           <h6 className="text-success fw-bold mb-2">
-        //             Payment Successful!
-        //           </h6>
-        //           <p className="text-muted mb-4">
-        //             Your order has been placed successfully. We'll start
-        //             preparing it right away!
-        //           </p>
-
-        //           <hr
-        //             className="my-4"
-        //             style={{
-        //               height: "0",
-        //               backgroundColor: "transparent",
-        //               opacity: ".75",
-        //               borderTop: "2px dashed #9e9e9e",
-        //             }}
-        //           />
-        //           <ul className="list-group list-group-flush text-start">
-        //             <li className="list-group-item d-flex justify-content-between text-muted">
-        //               Estimated Delivery
-        //               {shippingMethod === "free" ? (
-        //                 <>
-        //                   <span>7 - 20 business days</span>
-        //                 </>
-
-        //               ) : (
-        //                 <>
-        //                   <span>1 - 3 business days</span>
-        //                 </>
-
-        //               )}
-        //             </li>
-        //             <li className="list-group-item d-flex justify-content-between text-muted">
-        //               Payment Status
-        //               <span className="text-success fw-semibold">
-        //                 Confirmed
-        //               </span>
-        //             </li>
-        //           </ul>
-        //         </div>
-
-        //         {/* Footer */}
-        //         {/* <div className="modal-footer border-0 d-flex justify-content-center pb-4">
-        //   <button
-        //     className="btn bg-success"
-        //     style={{
-        //       color: "#fff",
-        //       borderRadius: "2rem",
-        //       padding: "0.6rem 1.5rem",
-        //     }}
-        //   >
-        //     Track Your Order
-        //   </button>
-        // </div> */}
-        //       </div>
-        //     </div>
-        //   </div>
-        )}
       </div>
     </>
   );
