@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import { Link, useParams } from "react-router-dom";
-import Marquee from "react-fast-marquee";
 import { supabase } from "../supaBaseClient";
-import { Footer, Navbar } from "../components";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/authContext"; // adjust path if needed
 import { useNavigate } from "react-router-dom";
@@ -21,12 +19,12 @@ import { fetchTotalCart } from "../redux/slice/userCart.ts";
 import { trackPurchase } from "../utils/tracking";
 
 import { buildPaymentRequest, getUpdatedPaymentData } from '../components/GooglePlay.jsx';
+import { processGooglePay } from '../service/googlePayService';
+import { shippingOptions } from '../config/ShippingOptions.jsx';
 const Product = () => {
   const { id } = useParams();
   const [product, setProduct] = useState([]);
-  const [similarProducts, setSimilarProducts] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [loading2, setLoading2] = useState(false);
   const [orderLoading, setOrderLoading] = useState(false);
   const { user, placeOrderSingle } = useAuth(); // get user from context
   const [paymentRequest, setPaymentRequest] = useState(null);
@@ -36,65 +34,43 @@ const Product = () => {
 
   const addProduct = async (product) => {
     dispatch(addToCart({ userId: user?.id, product }));
-    // track add-to-cart for logged-in users
     await trackAddToCart(dispatch, user?.id, product);
   };
 
   async function handleLoadPaymentData(paymentData) {
-    
     setOrderLoading(true);
-    const parsedToken = JSON.parse(
-      paymentData.paymentMethodData.tokenizationData.token
-    );
-
-    const address = {
-      addressLine1: paymentData.shippingAddress.address1,
-      addressLine2: paymentData.shippingAddress.address2 || null,
-      country: paymentData.shippingAddress.countryCode,
-      state: paymentData.shippingAddress.administrativeArea,
-      city: paymentData.shippingAddress.locality,
-      zipCode: paymentData.shippingAddress.postalCode,
-    };
-
-    const finalData = {
-      token: parsedToken.id,
-      amount: product.amount,
-      name: user.name,
-      email: user.email,
-      address,
-      comment: "Payment for order",
-    };
 
     try {
-      const response = await fetch(
-        "https://fzliiwigydluhgbuvnmr.supabase.co/functions/v1/smart-handler",
-        {
-          method: "POST",
-          headers: {
-            Authorization:
-              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6bGlpd2lneWRsdWhnYnV2bm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE5MjkxNTMsImV4cCI6MjA1NzUwNTE1M30.w3Y7W14lmnD-gu2U4dRjqIhy7JZpV9RUmv8-1ybQ92w", // Your Bearer Token
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(finalData),
+      // determine shipping price if provided by Google Pay
+      const gpayShippingId = paymentData.shippingOptionData?.id;
+      let shippingPrice = 0;
+      let shippingMethodSelected = 'free';
+      if (gpayShippingId) {
+        const opt = shippingOptions.find((o) => o.id === gpayShippingId);
+        if (opt) {
+          shippingPrice = opt.price;
+          shippingMethodSelected = gpayShippingId;
         }
-      );
+      }
 
-      const result = await response.json();
+      const totalAmount = Number(product.amount) + shippingPrice;
 
-      let status = "success";
+      const { finalData, result } = await processGooglePay(paymentData, {
+        amount: totalAmount,
+        name: user?.name || user?.full_name,
+        email: user?.email,
+      });
 
       if (result.message != "Payment successful") {
-        status = "failed";
         toast.error(result?.error || "Payment processing failed.");
-        setOrderLoading(false);
         return;
       }
 
       const orderId = await placeOrderSingle(
         {
           ...finalData,
-          payment_status: status,
-          shippingMethod: "free",
+          payment_status: "success",
+          shippingMethod: shippingMethodSelected,
         },
         result,
         product,
@@ -103,17 +79,11 @@ const Product = () => {
 
       if (orderId) {
         dispatch(fetchTotalCart(user.id)); // Update cart total
-        // track purchase (order-level + per-item bulk)
         await trackPurchase(dispatch, user?.id, { id: orderId });
         toast.success("Payment processed successfully!");
       }
     } catch (err) {
-      console.log(err);
-      const errorMessage =
-        err.response?.data?.errors?.error_message ||
-        err.response?.data?.message ||
-        "Payment failed";
-      toast.error(`Payment error: ${errorMessage}`);
+      toast.error(err.message || "Something went wrong.");
     } finally {
       setOrderLoading(false);
     }
@@ -136,73 +106,44 @@ const Product = () => {
   useEffect(() => {
     const getProduct = async () => {
       setLoading(true);
-      setLoading2(true);
 
-      const fetchProductById = async (id) => {
-        const { data, error } = await supabase
-          .from("products")
-          .select(
-            `
-            *,
-            product_items(id, size, sku_number, color),
-            product_images(id, image_url, is_primary),
-            product_reviews(id, user_id, picture, comment, rating, created_at,
-            users (
-              id,
-              name,
-              email,
-              profile
-            ))
-          `
+      const { data, error } = await supabase
+        .from("products")
+        .select(`
+          *,
+          product_items(id, size, sku_number, color),
+          product_images(id, image_url, is_primary),
+          product_reviews(
+            id,
+            user_id,
+            picture,
+            comment,
+            rating,
+            created_at,
+            users(id, name, email, profile)
           )
-          .eq("id", id)
-          .single();
+        `)
+        .eq("id", id)
+        .single();
 
-        if (error) {
-          console.error("Error fetching product by ID:", error);
-          return null;
-        }
-        return data;
-      };
+      if (error) {
+        console.error(error);
+        toast.error("Failed to load product");
+        setLoading(false);
+        return;
+      }
 
+      setProduct(data);
 
-      const productData = await fetchProductById(id);
-      console.log('productData', productData);
-      setProduct(productData);
       if (user) {
-        // use helper which maps to 'view' type
-        await trackProductPreview(dispatch, user?.id, productData);
+        await trackProductPreview(dispatch, user.id, data);
       }
 
       setLoading(false);
-
-      if (productData) {
-        const fetchProductByCategory = async () => {
-          const { data, error } = await supabase
-            .from("products")
-            .select(
-              `
-              *
-            `
-            )
-            .eq("category", productData.category)
-            .range(0, 20);
-
-          if (error) {
-            console.error("Error fetching product by ID:", error);
-            return null;
-          }
-          return data;
-        };
-        const data = await fetchProductByCategory();
-        setSimilarProducts(data);
-      }
-
-      setLoading2(false);
     };
 
     getProduct();
-  }, []);
+  }, [id]);
 
   const [activeImage, setActiveImage] = useState("");
 
@@ -492,105 +433,8 @@ const Product = () => {
     );
   };
 
-  const Loading2 = () => {
-    return (
-      <>
-        <div className="my-4 py-4">
-          <div className="d-flex">
-            <div className="mx-4">
-              <Skeleton height={400} width={250} />
-            </div>
-            <div className="mx-4">
-              <Skeleton height={400} width={250} />
-            </div>
-            <div className="mx-4">
-              <Skeleton height={400} width={250} />
-            </div>
-            <div className="mx-4">
-              <Skeleton height={400} width={250} />
-            </div>
-          </div>
-        </div>
-      </>
-    );
-  };
-
-  const ShowSimilarProduct = () => {
-    return (
-      <>
-        {/* <div className="related-products-wrapper">
-          <div className="related-products-grid">
-            {similarProducts.slice(0, 4).map((item) => {
-              return (
-                <div key={item.id} className="rpContainer">
-                  <div className="rpImages">
-                    <img
-                      src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.banner_url}`}
-                      alt="Card"
-                      className="rpFrontImg"
-                      style={{
-                        width: "100%",
-                        maxHeight: "300px",
-                        objectFit: "contain",
-                        transition: "transform 0.3s ease",
-                      }}
-                    />
-                    <img
-                      src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.banner_url}`}
-                      alt="Card"
-                      className="rpBackImg"
-                      style={{
-                        width: "100%",
-                        maxHeight: "300px",
-                        objectFit: "contain",
-                        transition: "transform 0.3s ease",
-                      }}
-                    />
-                    <h4
-                      onClick={() => {
-                        if (!user) {
-                          toast.error("Please login to add products to cart.");
-                          navigate("/login");
-                          return;
-                        }
-                        toast.success("Added to cart");
-                        addProduct(product);
-                      }}
-                    >
-                      Add to Cart
-                    </h4>
-                  </div>
-                  <div className="relatedProductInfo">
-                    <h5>{item.name.substring(0, 20)}</h5>
-                    <p className="productRatingReviews">
-                      {Array.from({ length: 5 }, (_, i) => {
-                        const rating = item?.rating || 0;
-                        if (rating >= i + 1) {
-                          return <i key={i} className="fa fa-star text-warning"></i>;
-                        } else if (rating >= i + 0.5) {
-                          return (
-                            <i key={i} className="fa fa-star-half-o text-warning"></i>
-                          );
-                        } else {
-                          return <i key={i} className="fa fa-star-o text-warning"></i>;
-                        }
-                      })}
-                      <span> ({item?.rating || 0} / 5)</span>
-                    </p>
-                    <p>${item.amount}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div> */}
-
-      </>
-    );
-  };
   return (
     <>
-      
       {orderLoading && (
         <div className="payment-overlay">
           <div className="payment-loader-box">
