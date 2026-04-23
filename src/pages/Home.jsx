@@ -11,9 +11,9 @@ function Home() {
       {/* <HeroSection/> */}
       <Main/>
       <BestSelling/>
-      {/* <CollectionBox/> */}
+      <CollectionBox/>
       <DealTimer/>
-      <Banner/>
+      {/* <Banner/> */}
 
     </>
   )

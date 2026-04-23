@@ -13,11 +13,30 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px clamp(16px, 8vw, 160px);
-  background: #ffffff;
-  border-bottom: 1px solid var(--border);
+  /* Apply glassmorphism look */
+  background: rgba(255,255,255,0.6);
+  border-bottom: 1px solid rgba(255,255,255,0.35);
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  box-shadow: 0 6px 20px rgba(16,24,40,0.06);
   position: sticky;
   top: 0;
   z-index: 1000;
+  border-radius: 0 0 10px 10px;
+}
+
+/* When user scrolls add a fixed class (JS toggles it). We set fixed positioning
+   to top:0 across the viewport and expand to full width. The placeholder div
+   in JSX prevents layout jump. */
+.navBar.fixed {
+  position: fixed;
+  left: 0;
+  right: 0;
+  width: 100%;
+  top: 0;
+  z-index: 2000;
+  border-radius: 0;
+  box-shadow: 0 12px 40px rgba(16,24,40,0.12);
 }
 
 /* LOGO */
@@ -41,7 +60,7 @@
   align-items: center;
   width: 100%;
   max-width: 520px;
-  background: var(--primary-soft);
+  background: rgba(255,255,255,0.55);
   border-radius: 50px;
   padding: 12px 18px;
   border: 1px solid transparent;

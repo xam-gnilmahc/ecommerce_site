@@ -26,6 +26,9 @@ const Navbar = () => {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [isSticky, setIsSticky] = useState(false);
+  const [navHeight, setNavHeight] = useState(0);
+  const navRef = useRef(null);
 
   const { totalCart } = useSelector((state: RootState) => state.addToCart);
 
@@ -59,9 +62,25 @@ const Navbar = () => {
 
   const togglePopup = () => setIsOpen((prev) => !prev);
   const toggleMobileMenu = () => {
-    setMobileMenuOpen(!mobileMenuOpen);
-    document.body.style.overflow = mobileMenuOpen ? "auto" : "hidden";
+    setMobileMenuOpen((prev) => {
+      const next = !prev;
+      // prevent background scroll when mobile menu is open
+      document.body.style.overflow = next ? "hidden" : "auto";
+      return next;
+    });
   };
+
+  useEffect(() => {
+    // measure nav height for placeholder to avoid content jump when fixed
+    if (navRef.current) setNavHeight(navRef.current.offsetHeight || 0);
+
+    const onScroll = () => {
+      setIsSticky(window.scrollY > 40);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const handleSearch = (e) => {
     if (e.key === "Enter") {
@@ -75,7 +94,7 @@ const Navbar = () => {
 
   return (
     <>
-      <div className="navBar">
+  <div ref={navRef} className={`navBar ${isSticky ? 'fixed' : ''}`}>
         <div className="logoLinkContainer">
           <div className="logoContainer">
             <NavLink to="/" className="d-flex align-items-center gap-2">
@@ -148,6 +167,9 @@ const Navbar = () => {
           )}
         </div>
       </div>
+
+  {/* placeholder to prevent content jump when navbar becomes fixed */}
+  {isSticky && <div style={{ height: navHeight }} aria-hidden />}
 
       {/* MOBILE NAV */}
       <nav>

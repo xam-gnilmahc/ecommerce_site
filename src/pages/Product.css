@@ -54,7 +54,7 @@
 
 .productSection{
   padding: 10px 24px;
-  background: transparent;
+  background: transparent ;
 }
 
 .productShowCase{
@@ -71,6 +71,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding-top: 20px;
 }
 
 /* active image wrapper */
