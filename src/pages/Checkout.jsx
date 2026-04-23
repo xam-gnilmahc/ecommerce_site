@@ -232,7 +232,7 @@ const Checkout = () => {
             <>
               {/* Main form section */}
               <div className="col-12 col-lg-8">
-                <div className="">
+                <div className="checkout-form glass-card p-4">
                   <form onSubmit={handleSubmit}>
                     <div className="row g-4">
                       {/* Contact Information */}
@@ -499,7 +499,7 @@ const Checkout = () => {
 
               {/* Order Summary on Right */}
               <div className="col-md-4 ">
-                <div className="bg-white border border-gray-200 rounded-3 p-4">
+                <div className="order-summary p-4">
                   <h5 className="mb-4 text-lg font-semibold text-gray-800">
                     📦 Order Summary
                   </h5>

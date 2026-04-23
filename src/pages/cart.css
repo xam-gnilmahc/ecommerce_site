@@ -6,13 +6,17 @@
 
 
 .cart-items {
-  background: #f9f9f9;
+  background: rgba(255,255,255,0.62);
+  border: 1px solid rgba(255,255,255,0.35);
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
   padding: 1rem;
   border-radius: 12px;
   max-height: 70vh;          /* limit height for scroll */
   overflow-y: auto;           /* vertical scroll */
   overflow-x: hidden;         /* hide horizontal scroll */
   -webkit-overflow-scrolling: touch; /* smooth scroll on mobile */
+  box-shadow: 0 10px 30px rgba(16,24,40,0.06);
 
   /* Hide vertical scrollbar */
   scrollbar-width: none;       /* Firefox */
@@ -26,26 +30,30 @@
 
 
 .cart-item {
-  background: #fff;
+  background: rgba(255,255,255,0.6);
+  border: 1px solid rgba(255,255,255,0.36);
   padding: 1rem;
   border-radius: 12px;
   margin-bottom: 1rem;
   position: relative;
+  box-shadow: 0 8px 24px rgba(16,24,40,0.06);
+  backdrop-filter: blur(6px);
 }
 
 .remove-btn {
   position: absolute;
   top: 10px;
   right: 10px;
-  background: #ffe5e5;
-  border: none;
+  background: rgba(255, 230, 230, 0.9);
+  border: 1px solid rgba(255,200,200,0.6);
   border-radius: 50%;
-  width: 30px;
-  height: 30px;
+  width: 34px;
+  height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  box-shadow: 0 6px 18px rgba(16,24,40,0.06);
 }
 
 .cart-item-inner {
@@ -58,6 +66,9 @@
   width: 100px;
   height: 100px;
   object-fit: contain;
+  background: rgba(255,255,255,0.5);
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(16,24,40,0.04);
 }
 
 .cart-item-details {
@@ -90,22 +101,24 @@
   gap: 5px;
 }
 .qty-btn {
-  width: 35px;
-  height: 35px;
-  background: #f0f0f0;
-  border: none;
+  width: 36px;
+  height: 36px;
+  background: rgba(255,255,255,0.9);
+  border: 1px solid rgba(220,220,220,0.6);
+  border-radius: 8px;
   outline: none;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
   font-weight: bold;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   user-select: none;
-  transition: background 0.2s;
+  transition: background 0.18s, transform 0.08s;
 }
 .qty-btn:hover {
-  background: #e8f0fe;
+  transform: translateY(-2px);
+  background: rgba(240,248,255,0.95);
 }
 .quantity-control span {
   width: 40px;
@@ -115,11 +128,14 @@
 
 /* Order Summary */
 .order-summary {
-  background: #f9f9f9;
+  background: rgba(255,255,255,0.64);
+  border: 1px solid rgba(255,255,255,0.36);
   padding: 1rem;
   border-radius: 12px;
   max-height: 80vh;
   overflow-y: auto;
+  box-shadow: 0 12px 36px rgba(16,24,40,0.08);
+  backdrop-filter: blur(8px);
 }
 .order-summary h5 {
   font-weight: 600;
@@ -154,8 +170,9 @@
 
 /* Skeleton */
 .skeleton-card {
-  background: #eee;
+  background: linear-gradient(90deg, rgba(240,240,240,0.9), rgba(230,230,230,0.85));
   animation: pulse 1.5s infinite ease-in-out;
+  border-radius: 10px;
 }
 
 @keyframes pulse {

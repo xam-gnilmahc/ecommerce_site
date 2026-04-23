@@ -2,8 +2,7 @@
   opacity: 0;
   transform: translateY(50px);
   transition: all 1s ease;
-  padding: 2rem;
-  border-radius: 10px;
+  padding: 4px;
 }
 
 .collection.in-view {
@@ -16,22 +15,33 @@
 .collection {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-gap: 30px;
-  height: 30rem;
-  padding: 0 160px;
+  grid-gap: 10px;
+  /* use explicit row sizing so cards are taller on desktop but still responsive */
+  grid-auto-rows: 32rem; /* desktop row height */
+  padding: 0 120px;
   margin: 85px 0;
 }
 
+/* ensure each direct child fills the grid row height */
+.collection > div {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+
 .collectionLeft {
-  background-image: url("https://www.apple.com/v/iphone-17/d/images/meta/iphone-17_overview__d4o74q28yjma_og.png?202511201617");
-  background-size: contain;
+  background-image: url("https://consumer.huawei.com/dam/content/dam/huawei-cbg-site/ecommerce/kw/2026/01/X7/Big-Card/Mate-X7-Rojo-N%C3%A9bula.jpg");
+  background-size: cover;
   background-position: center;
   padding: 30px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  background-color: #eff0f1;
-  border-radius: 15px;
+  /* keep image-only panels — do not add solid background colors */
+  border-radius: 12px;
+  position: relative;
   opacity: 0;
   transform: scale(1.1) translateY(30px);
   transition: all 1.2s ease-in-out;
@@ -40,7 +50,6 @@
   opacity: 1;
   transform: scale(1) translateY(0);
 }
-
 
 .col-link {
   display: flex;
@@ -67,21 +76,20 @@
 .collectionRight {
   display: grid;
   grid-template-rows: 1fr 1fr;
-  grid-gap: 30px;
+  grid-gap: 10px;
 }
 
 .collectionTop {
-  background-image: url("https://inctablet.co.uk/wp-content/uploads/2024/09/Banner_2.png");
+  background-image: url("https://www.gadgetguy.com.au/wp-content/uploads/2023/10/Apple-iMac-M3-announcement.jpg");
   background-size:cover;
   background-position: center;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   padding: 30px;
-  background-color: #eff0f1;
-    border-radius: 15px;
-
-
+  /* keep image-only panels — do not add solid background colors */
+  border-radius: 12px;
+  position: relative;
   opacity: 0;
   transform: scale(1.1) translateY(30px);
   transition: all 1.2s ease-in-out;
@@ -96,7 +104,7 @@
 .collectionBottom {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-gap: 30px;
+  grid-gap: 10px;
 }
 
 .box1 {
@@ -107,10 +115,9 @@
   flex-direction: column;
   justify-content: flex-end;
   padding: 30px;
-  background-color: #eff0f1;
-    border-radius: 15px;
-
-
+  /* keep image-only panels — do not add solid background colors */
+  border-radius: 12px;
+  position: relative;
   opacity: 0;
   transform: scale(1.1) translateY(30px);
   transition: all 1.2s ease-in-out;
@@ -122,7 +129,12 @@
 }
 
 .box2 {
-  background-color: #f4e5e0;
+  background-image:url("https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/og-airpods-max-202409?wid=1200&hei=630&fmt=jpeg&qlt=95&.v=1724144125817");
+  background-size: cover;
+  background-position: center;
+  /* keep image-only panels — do not add solid background colors */
+  border-radius: 12px;
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -162,12 +174,13 @@
     grid-template-columns: 1fr;
     grid-gap: 30px;
     padding: 0 60px;
-    height: auto;
+    /* smaller row height for tablet */
+    grid-auto-rows: 22rem;
   }
 
   .collectionLeft {
     background-position: top center;
-    height: 150px;
+    height: auto;
   }
 }
 
@@ -175,6 +188,7 @@
   .collection {
     padding: 0 15px;
     grid-gap: 10px;
+    grid-auto-rows: 18rem; /* mobile stacked row height */
   }
 
   .collectionRight {
@@ -183,7 +197,7 @@
   }
 
   .collectionTop {
-    height: 150px;
+    height: auto;
   }
 
   .collectionBottom {
@@ -193,10 +207,12 @@
   .box1 {
     background-position: center top;
     background-size: cover;
-    height: 150px;
+    height: auto;
+    min-height: 120px;
   }
 
   .box2 {
-    height: 150px;
+    height: auto;
+    min-height: 120px;
   }
 }

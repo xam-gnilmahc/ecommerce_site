@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./CollectionBox.css";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const CollectionBox = () => {
   const boxRef = useRef(null);
@@ -20,10 +21,8 @@ const CollectionBox = () => {
   }, []);
 
   return (
-    <div
-      ref={boxRef}
-      className={`collection ${inView ? "in-view" : ""}`}
-    >
+    <div ref={boxRef} className={`collection ${inView ? "in-view" : ""}`}>
+      {/* Row 1, Col 1 */}
       <div className="collectionLeft in-view">
         <p className="col-p">Hot List</p>
         <h3 className="col-h3">
@@ -36,45 +35,42 @@ const CollectionBox = () => {
         </div>
       </div>
 
-      <div className="collectionRight ">
-        <div className="collectionTop in-view">
-          <p className="col-p">Hot List</p>
-          <h3 className="col-h3">
-            <span>Ipad</span> Collection
-          </h3>
-          <div className="col-link">
-            <Link to="/shop" onClick={scrollToTop}>
-              <h5>Shop Now</h5>
-            </Link>
-          </div>
+      {/* Row 1, Col 2 */}
+      <div className="collectionTop in-view">
+        <p className="col-p">Hot List</p>
+        <h3 className="col-h3">
+          <span>Ipad</span> Collection
+        </h3>
+        <div className="col-link">
+          <Link to="/shop" onClick={scrollToTop}>
+            <h5>Shop Now</h5>
+          </Link>
         </div>
+      </div>
 
-        <div className="collectionBottom ">
-          <div className="box1 in-view">
-            <p className="col-p">Hot List</p>
-            <h3 className="col-h3">
-              <span>Watch</span> Collection
-            </h3>
-            <div className="col-link">
-              <Link to="/shop" onClick={scrollToTop}>
-                <h5>Shop Now</h5>
-              </Link>
-            </div>
-          </div>
+      {/* Row 2, Col 1 */}
+      <div className="box1 in-view">
+        <p className="col-p">Hot List</p>
+        <h3 className="col-h3">
+          <span>Watch</span> Collection
+        </h3>
+        <div className="col-link">
+          <Link to="/shop" onClick={scrollToTop}>
+            <h5>Shop Now</h5>
+          </Link>
+        </div>
+      </div>
 
-          <div className="box2">
-            <h3 className="col-h3">
-              <span>E-gift</span> Cards
-            </h3>
-            <p className="col-p">
-              Surprise someone with the gift they really want.
-            </p>
-            <div className="col-link">
-              <Link to="/shop" onClick={scrollToTop}>
-                <h5>Shop Now</h5>
-              </Link>
-            </div>
-          </div>
+      {/* Row 2, Col 2 */}
+      <div className="box2 in-view">
+        <h3 className="col-h3">
+          <span>E-gift</span> Cards
+        </h3>
+        <p className="col-p">Surprise someone with the gift they really want.</p>
+        <div className="col-link">
+          <Link to="/shop" onClick={scrollToTop}>
+            <h5>Shop Now</h5>
+          </Link>
         </div>
       </div>
     </div>

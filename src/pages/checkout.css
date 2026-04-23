@@ -6,12 +6,62 @@
 }
 
 .payment-card {
-  border: 2px solid #e5e7eb;
+  border: 1px solid rgba(255,255,255,0.35);
   border-radius: 12px;
   padding: 16px;
   cursor: pointer;
   transition: all 0.2s ease;
-  background: #fff;
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 30px rgba(16,24,40,0.06);
+}
+
+/* Checkout form panel */
+.checkout-form {
+  padding: 20px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.6);
+  border: 1px solid rgba(255,255,255,0.36);
+  box-shadow: 0 10px 30px rgba(16,24,40,0.06);
+  backdrop-filter: blur(8px);
+}
+
+/* Input / select styles inside the checkout form for better contrast and spacing */
+.checkout-form input[type="text"],
+.checkout-form input[type="email"],
+.checkout-form input[type="tel"],
+.checkout-form .form-control,
+.checkout-form select,
+.checkout-form .form-select {
+  background: rgba(255,255,255,0.9);
+  border: 1px solid rgba(0,0,0,0.06);
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: var(--text);
+  box-shadow: none;
+}
+
+.checkout-form input:focus, .checkout-form select:focus, .checkout-form .form-control:focus {
+  outline: 0;
+  box-shadow: 0 6px 24px rgba(37,99,235,0.08);
+  border-color: rgba(37,99,235,0.6);
+}
+
+/* Make the primary CTA more prominent in checkout */
+.checkout-form .btn.btn-primary {
+  background: var(--primary);
+  border: none;
+  padding: 12px 18px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(37,99,235,0.12);
+  font-weight: 700;
+}
+
+.checkout-form .btn.btn-primary[disabled],
+.checkout-form .btn.btn-primary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  filter: grayscale(10%);
 }
 
 .payment-card:hover {
@@ -21,8 +71,8 @@
 
 .payment-card.active {
   border-color: #0d6efd;
-  background: rgba(13, 110, 253, 0.05);
-  box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.1);
+  background: linear-gradient(180deg, rgba(13,110,253,0.06), rgba(255,255,255,0.4));
+  box-shadow: 0 6px 28px rgba(13, 110, 253, 0.06);
 }
 
 .payment-content {
@@ -52,11 +102,20 @@
   overflow-y: auto;       /* enable vertical scroll */
   overflow-x: hidden;     /* hide horizontal scroll */
   padding: 1rem;
-  background-color: #fff;
+  background: rgba(255,255,255,0.62);
   border-radius: 12px;
-  border: 1px solid #ddd;
+  border: 1px solid rgba(255,255,255,0.35);
+  backdrop-filter: blur(8px);
   scrollbar-width: none;   /* Firefox */
   -ms-overflow-style: none; /* IE 10+ */
+}
+
+/* Sticky order summary on desktop so totals remain visible */
+@media (min-width: 992px) {
+  .order-summary {
+    position: sticky;
+    top: 96px; /* adjust if your navbar height is different */
+  }
 }
 
 .order-summary::-webkit-scrollbar {

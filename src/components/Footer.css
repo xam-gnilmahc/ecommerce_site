@@ -1,10 +1,14 @@
   .footer {
     padding: 30px clamp(16px, 8vw, 160px);
-    background-color: var(--surface);
+    /* glassy footer */
+    background: rgba(255,255,255,0.6);
+    border: 1px solid rgba(255,255,255,0.35);
+    backdrop-filter: blur(8px);
     margin-top: 10px;
     display: flex;
     flex-direction: column;
     gap: 100px;
+    box-shadow: 0 8px 30px rgba(16,24,40,0.06);
   }
   
   .footer__container {
