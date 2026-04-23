@@ -380,35 +380,48 @@ const Checkout = () => {
                         </h5>
 
                         <div className="payment-grid">
-                          {/* CARD */}
-                          <div
-                            onClick={() => setPaymentMethod("card")}
-                            className={`payment-card ${paymentMethod === "card" ? "active" : ""}`}
-                          >
-                            <div className="payment-content">
-                              <div>
-                                <h6>💳 Card</h6>
-                                <p>Pay securely with your card</p>
-                              </div>
-                              {paymentMethod === "card" && <div className="check">✓</div>}
-                            </div>
-                          </div>
+  {/* CARD */}
+  <div
+    onClick={() => setPaymentMethod("card")}
+    className={`payment-card ${paymentMethod === "card" ? "active" : ""}`}
+  >
+    <div className="payment-content">
+      <div className="d-flex align-items-center gap-2">
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/179/179457.png"
+          alt="card"
+          width="22"
+        />
+        <div>
+          <h6 className="mb-0">Card</h6>
+          <small className="text-muted">Visa / Master / Amex</small>
+        </div>
+      </div>
+      {paymentMethod === "card" && <div className="check">✓</div>}
+    </div>
+  </div>
 
-                          {/* GOOGLE PAY */}
-                          <div
-                            onClick={() => setPaymentMethod("googlePay")}
-                            className={`payment-card ${paymentMethod === "googlePay" ? "active" : ""}`}
-                          >
-                            <div className="payment-content">
-                              <div>
-                                <h6>🟢 Google Pay</h6>
-                                <p>Fast checkout with Google</p>
-                              </div>
-                              {paymentMethod === "googlePay" && <div className="check">✓</div>}
-                            </div>
-                          </div>
-
-                        </div>
+  {/* GOOGLE PAY */}
+  <div
+    onClick={() => setPaymentMethod("googlePay")}
+    className={`payment-card ${paymentMethod === "googlePay" ? "active" : ""}`}
+  >
+    <div className="payment-content">
+      <div className="d-flex align-items-center gap-2">
+        <img
+          src="https://toppng.com/uploads/preview/google-pay-gpay-logo-11530962961mwws81tde9.png"
+          alt="gpay"
+          width="22"
+        />
+        <div>
+          <h6 className="mb-0">Google Pay</h6>
+          <small className="text-muted">Fast & Secure</small>
+        </div>
+      </div>
+      {paymentMethod === "googlePay" && <div className="check">✓</div>}
+    </div>
+  </div>
+</div>
 
                         <div className="payment-method">
 
@@ -498,8 +511,8 @@ const Checkout = () => {
               </div>
 
               {/* Order Summary on Right */}
-              <div className="col-md-4 ">
-                <div className="order-summary p-4">
+              <div className="col-12 col-lg-4">
+                <div className="order-summary">
                   <h5 className="mb-4 text-lg font-semibold text-gray-800">
                     📦 Order Summary
                   </h5>
@@ -544,7 +557,7 @@ const Checkout = () => {
                               {/* Product Name */}
                               <span
                                 className="fw-bold"
-                                style={{ color: "#000", color: "#6c757d" }}
+                                style={{ color: "#6c757d" }}
                               >
                                 {item.products.name}
                               </span>

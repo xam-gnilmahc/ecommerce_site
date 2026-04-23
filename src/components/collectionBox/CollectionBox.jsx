@@ -1,78 +1,112 @@
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 import "./CollectionBox.css";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
 const CollectionBox = () => {
-  const boxRef = useRef(null);
-  const [inView, setInView] = useState(false);
-
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => setInView(entry.isIntersecting),
-      { threshold: 0.3 } // adjust as needed
-    );
-    if (boxRef.current) observer.observe(boxRef.current);
-    return () => observer.disconnect();
-  }, []);
+  const cardVariant = {
+    hidden: { opacity: 0, y: 60, scale: 1.05 },
+    show: (i) => ({
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        delay: i * 0.15,
+        duration: 0.8,
+        ease: "easeOut",
+      },
+    }),
+  };
 
   return (
-    <div ref={boxRef} className={`collection ${inView ? "in-view" : ""}`}>
-      {/* Row 1, Col 1 */}
-      <div className="collectionLeft in-view">
+    <div className="collection">
+      {/* iPhone */}
+      <motion.div
+        className="collectionLeft"
+        custom={0}
+        variants={cardVariant}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, amount: 0.3 }}
+      >
         <p className="col-p">Hot List</p>
         <h3 className="col-h3">
           <span>Iphone</span> Collection
         </h3>
+
         <div className="col-link">
           <Link to="/shop" onClick={scrollToTop}>
-            <h5>Shop Now</h5>
+            <span className="shop-link">Shop Now</span>
           </Link>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Row 1, Col 2 */}
-      <div className="collectionTop in-view">
+      {/* iPad */}
+      <motion.div
+        className="collectionTop"
+        custom={1}
+        variants={cardVariant}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, amount: 0.3 }}
+      >
         <p className="col-p">Hot List</p>
         <h3 className="col-h3">
           <span>Ipad</span> Collection
         </h3>
+
         <div className="col-link">
           <Link to="/shop" onClick={scrollToTop}>
-            <h5>Shop Now</h5>
+            <span className="shop-link">Shop Now</span>
           </Link>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Row 2, Col 1 */}
-      <div className="box1 in-view">
+      {/* Watch */}
+      <motion.div
+        className="box1"
+        custom={2}
+        variants={cardVariant}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, amount: 0.3 }}
+      >
         <p className="col-p">Hot List</p>
         <h3 className="col-h3">
           <span>Watch</span> Collection
         </h3>
+
         <div className="col-link">
           <Link to="/shop" onClick={scrollToTop}>
-            <h5>Shop Now</h5>
+            <span className="shop-link">Shop Now</span>
           </Link>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Row 2, Col 2 */}
-      <div className="box2 in-view">
+      {/* Gift */}
+      <motion.div
+        className="box2"
+        custom={3}
+        variants={cardVariant}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, amount: 0.3 }}
+      >
         <h3 className="col-h3">
           <span>E-gift</span> Cards
         </h3>
         <p className="col-p">Surprise someone with the gift they really want.</p>
+
         <div className="col-link">
           <Link to="/shop" onClick={scrollToTop}>
-            <h5>Shop Now</h5>
+            <span className="shop-link">Shop Now</span>
           </Link>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

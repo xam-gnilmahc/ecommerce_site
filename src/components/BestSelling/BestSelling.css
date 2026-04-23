@@ -1,235 +1,364 @@
-.lpImageContainer img.lpImage {
-  transition: transform 0.3s ease;
-}
+/* =========================
+   BEST SELLING - PREMIUM UI
+========================= */
 
 .limitedProductSection {
-  margin: 40px 0;
-  padding: 0px clamp(16px, 8vw, 160px);
+  margin: 80px 0;
+  padding: 0 clamp(16px, 6vw, 120px);
 }
 
-.limitedProductSection h2 {
-  text-transform: uppercase;
-  font-size: 28px;
-  font-weight: 600;
-  text-align: center;
-  margin-bottom: 18px;
-  color: var(--text);
-}
+/* heading */
 
-.limitedProductSection h2 span {
+.limitedProductSection h5 {
+  font-size: 34px;
   font-weight: 700;
-  color: var(--primary);
+  margin-bottom: 35px;
+  color: #111827;
+  letter-spacing: -0.5px;
 }
+
+.limitedProductSection h5 span {
+  color: #c19a6b;
+}
+
+/* =========================
+   SWIPER NAVIGATION
+========================= */
 
 .limitedProductSlider {
   position: relative;
 }
 
 .swiper-button {
-  display: flex;
   position: absolute;
-  top: calc(50% - 12px);
-  z-index: 10;
+  top: 42%;
+  z-index: 20;
   cursor: pointer;
 }
 
-.swiper-button svg {
-  background-color: var(--surface);
-  border: 1px solid var(--border);
-  display: flex;
-  border-radius: 50%;
-  padding: 8px;
-  outline: none;
-  color: var(--muted);
-}
-
 .image-swiper-button-prev {
-  left: -15px;
+  left: -22px;
 }
 
 .image-swiper-button-next {
-  right: -15px;
+  right: -22px;
 }
+
+.swiper-button svg {
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+
+  border-radius: 50%;
+  background: white;
+
+  color: #111827;
+
+  border: 1px solid #e5e7eb;
+
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+
+  transition: all 0.3s ease;
+}
+
+.swiper-button svg:hover {
+  transform: scale(1.08);
+  background: #111827;
+  color: white;
+}
+
+/* =========================
+   PRODUCT CARD
+========================= */
+
+.lpContainer {
+  background: white;
+
+  border-radius: 22px;
+
+  overflow: hidden;
+
+  border: 1px solid #f1f5f9;
+
+  transition: all 0.35s ease;
+
+  height: 100%;
+}
+
+.lpContainer:hover {
+  transform: translateY(-8px);
+
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+}
+
+/* =========================
+   IMAGE SECTION
+========================= */
 
 .lpImageContainer {
   position: relative;
+
   width: 100%;
-  height: 230px;
+  height: 260px;
+
   overflow: hidden;
-  transition: transform 0.25s ease;
+
+  background: #f8fafc;
 }
 
 .lpImage {
   width: 100%;
   height: 100%;
+
   object-fit: contain;
-  padding: 15px;
-  max-width: 100%;
-  transition: transform 0.3s ease;
+
+  padding: 24px;
+
+  transition: transform 0.45s ease;
 }
 
-.lpImage:hover {
-  transform: scale(1.05);
+.lpContainer:hover .lpImage {
+  transform: scale(1.08);
 }
+
+/* subtle overlay */
+
+.lpImageContainer::after {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.12),
+    transparent
+  );
+
+  opacity: 0;
+
+  transition: 0.3s ease;
+}
+
+.lpContainer:hover .lpImageContainer::after {
+  opacity: 1;
+}
+
+/* =========================
+   ADD TO CART BUTTON
+========================= */
 
 .lp-add-to-cart {
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(90deg, var(--primary), var(--primary-600));
-  color: var(--surface);
+
+  left: 15px;
+  right: 15px;
+  bottom: 15px;
+
+  background: #111827;
+  color: white;
+
   border: none;
-  padding: 12px 10px;
-  border-radius: 0 0 8px 8px;
-  text-transform: uppercase;
-  font-weight: 600;
+  border-radius: 12px;
+
+  padding: 13px;
+
   font-size: 13px;
+  font-weight: 600;
+
+  letter-spacing: 1px;
+  text-transform: uppercase;
+
   cursor: pointer;
-  box-shadow: 0 8px 20px rgba(51, 71, 255, 0.12);
-  transition: transform 0.25s ease, opacity 0.12s ease;
-  transform: translateY(100%);
-  z-index: 10;
+
+  transform: translateY(80px);
+  opacity: 0;
+
+  transition: all 0.35s ease;
 }
 
-.lp-add-to-cart:active { transform: translateY(calc(100% - 1px)); }
+.lpContainer:hover .lp-add-to-cart {
+  transform: translateY(0);
+  opacity: 1;
+}
 
-/* Reveal the button when hovering the product card (same effect as product listing) */
+.lp-add-to-cart:hover {
+  background: #c19a6b;
+}
+
+/* =========================
+   PRODUCT INFO
+========================= */
 
 .limitedProductInfo {
+  padding: 18px;
+
   display: flex;
   flex-direction: column;
-  gap: 8px;
+
+  gap: 10px;
 }
+
+/* category + wishlist */
 
 .lpCategoryWishlist {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 10px;
 }
 
 .lpCategoryWishlist p {
-  color: var(--muted);
-  font-size: 13px;
+  font-size: 12px;
+
+  text-transform: uppercase;
+  letter-spacing: 1px;
+
+  color: #94a3b8;
+
+  margin: 0;
 }
+
+/* wishlist icon */
+
+.lpCategoryWishlist svg {
+  font-size: 18px;
+
+  color: #64748b;
+
+  cursor: pointer;
+
+  transition: 0.3s ease;
+}
+
+.lpCategoryWishlist svg:hover {
+  transform: scale(1.15);
+
+  color: #c19a6b !important;
+}
+
+/* =========================
+   PRODUCT CONTENT
+========================= */
 
 .productNameInfo {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+
+  gap: 8px;
 }
 
 .productNameInfo a {
   text-decoration: none;
-  color: inherit;
 }
 
-.productNameInfo .product-price {
-  color: var(--primary);
-  font-weight: 500;
-  margin: 4px 0 0 0;
+/* title */
+
+.product-title {
+  font-size: 17px;
+  font-weight: 600;
+
+  color: #111827;
+
+  line-height: 1.4;
+
+  transition: 0.3s ease;
 }
 
+.product-title:hover {
+  color: #c19a6b;
+}
+
+/* price */
+
+.product-price {
+  font-size: 18px;
+  font-weight: 700;
+
+  color: #111827;
+
+  margin: 0;
+}
+
+/* =========================
+   RATING
+========================= */
 
 .productRatingReviews {
   display: flex;
-  gap: 10px;
+  align-items: center;
+
+  gap: 8px;
 }
 
 .productRatingReviews span {
-  color: var(--muted);
-  font-size: 14px;
+  font-size: 13px;
+
+  color: #64748b;
 }
 
 .productRatingStar {
   display: flex;
   align-items: center;
-  gap: 3px;
+
+  gap: 2px;
 }
 
-.lpProductImagesCart {
-  display: none;
-}
+/* =========================
+   RESPONSIVE
+========================= */
 
 @media screen and (max-width: 1210px) {
   .limitedProductSection {
-    padding: 0px 60px;
+    padding: 0 40px;
   }
 
-  .lpContainer h4 {
+  .lpImageContainer {
+    height: 220px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .limitedProductSection h5 {
+    font-size: 28px;
+  }
+
+  .swiper-button {
     display: none;
   }
 
-  .lpProductImagesCart {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    border-radius: 50%;
-    padding: 5px;
-    z-index: 8;
-    color: gray;
+  .lpImageContainer {
+    height: 210px;
+  }
+
+  .product-title {
+    font-size: 15px;
   }
 }
 
 @media screen and (max-width: 450px) {
   .limitedProductSection {
-    padding: 0px 15px;
+    padding: 0 15px;
   }
 
-  .limitedProductSection h2 {
-    font-size: 25px;
+  .limitedProductSection h5 {
+    font-size: 24px;
+    margin-bottom: 20px;
   }
 
   .lpImageContainer {
-    width: 100%;
-    height: 200px;
+    height: 180px;
   }
 
-  .image-swiper-button-prev {
-    left: -10px;
+  .limitedProductInfo {
+    padding: 14px;
   }
 
-  .image-swiper-button-next {
-    right: -10px;
-  }
-}
-
-@media screen and (max-width: 320px) {
-  .lpImageContainer {
-    width: 100%;
-    height: 170px;
+  .product-price {
+    font-size: 16px;
   }
 
-  .productNameInfo h5 {
-    font-size: 14px;
-  }
-
-  .productRatingReviews {
-    display: flex;
-    gap: 5px;
-  }
-
-  .productRatingReviews span {
+  .lp-add-to-cart {
     font-size: 12px;
-  }
-
-  .productRatingStar {
-    display: flex;
-    align-items: center;
-    gap: 2px;
-  }
-
-  .swiper-button svg {
-    background-color: white;
-  border: 1px solid var(--border);
-    display: flex;
-    border-radius: 50%;
-    padding: 6px;
-    outline: none;
-  color: var(--muted);
+    padding: 11px;
   }
 }

@@ -1,78 +1,102 @@
-/* Container adjustments for responsive layout */
+/* =========================
+   CHECKOUT BASE
+   ========================= */
+
+.checkout {
+  padding: 50px 120px;
+}
+
+/* remove unwanted effects */
+.glass-card {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* =========================
+   TYPOGRAPHY (KEEP BLUE)
+   ========================= */
+
+.checkout-form h5,
+.checkout-form h6 {
+  color: var(--bs-primary);
+  font-weight: 600;
+}
+
+/* =========================
+   FORM FIX
+   ========================= */
+
+.checkout-form {
+  padding: 1.5rem;
+}
+
+.checkout-form .form-control,
+.checkout-form .form-select {
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  box-shadow: none !important;
+}
+
+.checkout-form .form-control:focus,
+.checkout-form .form-select:focus {
+  border-color: var(--bs-primary);
+  outline: none;
+  box-shadow: none !important;
+}
+
+.checkout-form .form-label {
+  color: #6c757d;
+}
+
+/* =========================
+   SHIPPING CARDS
+   ========================= */
+
+.checkout-form label.border {
+  border: 1px solid #dee2e6 !important;
+  border-radius: 10px;
+  background: transparent !important;
+  transition: 0.2s ease;
+  cursor: pointer;
+}
+
+.checkout-form label.border:hover {
+  border-color: var(--bs-primary) !important;
+}
+
+.checkout-form label.border-primary {
+  border: 2px solid var(--bs-primary) !important;
+  background: rgba(13,110,253,0.05) !important;
+}
+
+/* =========================
+   PAYMENT GRID
+   ========================= */
+
 .payment-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, 1fr);
   gap: 12px;
 }
 
 .payment-card {
-  border: 1px solid rgba(255,255,255,0.35);
-  border-radius: 12px;
-  padding: 16px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  background: rgba(255,255,255,0.6);
-  backdrop-filter: blur(8px);
-  box-shadow: 0 8px 30px rgba(16,24,40,0.06);
-}
-
-/* Checkout form panel */
-.checkout-form {
-  padding: 20px;
-  border-radius: 12px;
-  background: rgba(255,255,255,0.6);
-  border: 1px solid rgba(255,255,255,0.36);
-  box-shadow: 0 10px 30px rgba(16,24,40,0.06);
-  backdrop-filter: blur(8px);
-}
-
-/* Input / select styles inside the checkout form for better contrast and spacing */
-.checkout-form input[type="text"],
-.checkout-form input[type="email"],
-.checkout-form input[type="tel"],
-.checkout-form .form-control,
-.checkout-form select,
-.checkout-form .form-select {
-  background: rgba(255,255,255,0.9);
-  border: 1px solid rgba(0,0,0,0.06);
-  padding: 10px 12px;
+  border: 1px solid #dee2e6;
   border-radius: 10px;
-  color: var(--text);
-  box-shadow: none;
-}
-
-.checkout-form input:focus, .checkout-form select:focus, .checkout-form .form-control:focus {
-  outline: 0;
-  box-shadow: 0 6px 24px rgba(37,99,235,0.08);
-  border-color: rgba(37,99,235,0.6);
-}
-
-/* Make the primary CTA more prominent in checkout */
-.checkout-form .btn.btn-primary {
-  background: var(--primary);
-  border: none;
-  padding: 12px 18px;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(37,99,235,0.12);
-  font-weight: 700;
-}
-
-.checkout-form .btn.btn-primary[disabled],
-.checkout-form .btn.btn-primary:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  filter: grayscale(10%);
+  padding: 14px;
+  cursor: pointer;
+  transition: 0.2s ease;
 }
 
 .payment-card:hover {
-  border-color: #0d6efd;
-  transform: translateY(-2px);
+  border-color: var(--bs-primary);
 }
 
 .payment-card.active {
-  border-color: #0d6efd;
-  background: linear-gradient(180deg, rgba(13,110,253,0.06), rgba(255,255,255,0.4));
-  box-shadow: 0 6px 28px rgba(13, 110, 253, 0.06);
+  border: 2px solid var(--bs-primary);
+  background: rgba(13,110,253,0.05);
 }
 
 .payment-content {
@@ -81,118 +105,114 @@
   align-items: center;
 }
 
-.payment-card h6 {
-  margin: 0;
-  font-weight: 600;
+.payment-card .check {
+  color: var(--bs-primary);
 }
 
-.payment-card p {
-  margin: 0;
-  font-size: 13px;
-  color: #6c757d;
+/* =========================
+   STRIPE BOX
+   ========================= */
+
+.payment-method .mt-4 {
+  border: 1px solid #dee2e6;
+  border-radius: 10px;
+  padding: 15px;
 }
 
-.check {
-  font-size: 18px;
-  color: #0d6efd;
-  font-weight: bold;
-}
+/* =========================
+   ORDER SUMMARY (FIXED + RESPONSIVE)
+   ========================= */
+
 .order-summary {
-  max-height: 75vh;      /* limit height for scrolling */
-  overflow-y: auto;       /* enable vertical scroll */
-  overflow-x: hidden;     /* hide horizontal scroll */
-  padding: 1rem;
-  background: rgba(255,255,255,0.62);
+  border: 1px solid #dee2e6;
   border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.35);
-  backdrop-filter: blur(8px);
-  scrollbar-width: none;   /* Firefox */
-  -ms-overflow-style: none; /* IE 10+ */
+  padding: 20px;
+  background: transparent;
+  width: 100%;
+  max-width: 420px;
 }
 
-/* Sticky order summary on desktop so totals remain visible */
+.order-summary h5 {
+  color: var(--bs-primary);
+}
+
+/* sticky only desktop */
 @media (min-width: 992px) {
   .order-summary {
     position: sticky;
-    top: 96px; /* adjust if your navbar height is different */
+    top: 20px;
   }
 }
 
-.order-summary::-webkit-scrollbar {
-  width: 0;               /* Chrome, Safari, Opera */
-  background: transparent;
+/* product list */
+.order-summary ul li {
+  padding: 10px 0;
+  border-bottom: 1px dashed #e9ecef;
 }
 
-/* Mobile adjustments */
-@media (max-width: 767.98px) {
+.order-summary ul li.total {
+  border-top: 2px solid var(--bs-primary);
+  font-weight: 700;
+}
+
+/* =========================
+   BUTTON
+   ========================= */
+
+.btn-primary {
+  background-color: var(--bs-primary) !important;
+  border-color: var(--bs-primary) !important;
+}
+
+.btn-primary:hover {
+  filter: brightness(0.95);
+}
+
+/* =========================
+   RESPONSIVE FIX
+   ========================= */
+
+/* TABLET */
+@media (max-width: 992px) {
+  .checkout {
+    padding: 30px 20px;
+  }
+
   .order-summary {
-    max-height: none;      /* allow full height on mobile */
-    overflow: visible;
-    margin-top: 1rem;
-    padding: 0.75rem;
-  }
-
-  .payment-method {
-    border: none !important;
-    padding: 0 !important;
-  }
-
-  .shipping-method-label {
-    min-width: auto !important;
+    max-width: 100%;
   }
 }
 
-/* Optional: smooth scrolling for desktop */
-.order-summary {
-  -webkit-overflow-scrolling: touch; 
+/* MOBILE */
+@media (max-width: 768px) {
+
+  .payment-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .checkout-form {
+    padding: 1rem;
+  }
+
+  .order-summary {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .payment-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
 }
 
-/* Styling for individual order items */
-.order-summary .card-body > div {
-  border-bottom: 1px solid #ddd;
-  padding: 0.5rem 0;
-}
+/* SMALL MOBILE */
+@media (max-width: 480px) {
+  .checkout {
+    padding: 20px 12px;
+  }
 
-.order-summary .card-body img {
-  border-radius: 5px;
-  object-fit: contain;
-}
-
-
-.payment-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  backdrop-filter: blur(10px);
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 99999;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  pointer-events: all;
-}
-
-.payment-loader-box {
-  text-align: center;
-  color: white;
-}
-
-.payment-spinner {
-  width: 60px;
-  height: 60px;
-  border: 6px solid rgba(255,255,255,0.3);
-  border-top: 6px solid white;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 20px;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+  .payment-card {
+    padding: 12px;
   }
 }
