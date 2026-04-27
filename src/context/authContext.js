@@ -793,7 +793,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-    const bestSellingProduct = async () => {
+  const bestSellingProduct = async () => {
       const { data, error } = await supabase
         .from("best_selling_product")
         .select(`*, products:product_id (

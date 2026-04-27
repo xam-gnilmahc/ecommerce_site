@@ -36,7 +36,6 @@ const PaymentSetupPage = () => {
       ...paymentOptions,
       ...(paymentOptions.card ? { cardDetails } : {}),
     };
-    console.log('Saving:', dataToSave);
     alert('Payment method saved!');
   };
 

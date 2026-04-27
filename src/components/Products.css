@@ -2,6 +2,20 @@
    PAGE WRAPPER
 ========================= */
 
+.skeletonCard {
+  pointer-events: none;
+}
+
+/* image skeleton fix */
+.skeletonCard .sdProductImages {
+  background: #f5f5f5;
+}
+
+/* smooth shimmer feel */
+.skeletonCard span {
+  display: block;
+}
+
 .shopDetails {
   padding: 30px clamp(16px, 6vw, 120px);
 }
@@ -58,9 +72,6 @@
   /* soft premium shadow */
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.10);
 }
-/* =========================
-   IMAGE WRAPPER (MAIN FIX)
-========================= */
 
 .sdProductImages {
   position: relative;

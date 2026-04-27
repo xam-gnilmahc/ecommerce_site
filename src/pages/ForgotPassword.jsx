@@ -20,7 +20,6 @@ const ForgotPassword = () => {
       const { error } = await supabase.auth.resetPasswordForEmail(email);
       if (error) {
         toast.error("Error sending password reset email");
-        console.log(error.message);
         setError("Error sending password reset email: " + error.message);
       } else {
         toast.success("Password reset email sent. Please check your inbox");

@@ -1,5 +1,5 @@
 /* =========================
-   FILTER WRAPPER (CLEAN)
+   BASE (DESKTOP)
 ========================= */
 
 .filterSection {
@@ -9,48 +9,86 @@
 
   padding: 10px 0;
   max-width: 320px;
+
+  position: relative;
+  height: auto;
+
+  background: transparent;
+  box-shadow: none;
+}
+
+/* hide mobile button on desktop */
+.mobileFilterBtn {
+  display: none;
+}
+
+/* overlay hidden on desktop */
+.filterOverlay {
+  display: none;
 }
 
 /* =========================
-   HEADINGS (SOFT STYLE)
+   HEADER
+========================= */
+
+.filterHeader {
+  display: none;
+  justify-content: space-between;
+  align-items: center;
+
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.filterHeader h4 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.closeBtn {
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* =========================
+   HEADING
 ========================= */
 
 .filterHeading {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
-  letter-spacing: 0.3px;
-  color: #111;
+  color: #111827;
   margin: 0;
-  text-transform: capitalize;
 }
 
 /* =========================
-   MUI ACCORDION CLEAN RESET
+   ACCORDION RESET
 ========================= */
 
 .MuiAccordion-root {
+  background: transparent !important;
   box-shadow: none !important;
   border: none !important;
-  background: transparent !important;
   margin: 0 !important;
+}
+
+.MuiAccordion-root::before {
+  display: none !important;
 }
 
 .MuiAccordionSummary-root {
   padding: 0 !important;
-  min-height: 40px !important;
+  min-height: 42px !important;
 }
 
 .MuiAccordionDetails-root {
-  padding: 8px 0 !important;
-}
-
-/* remove divider line */
-.MuiAccordion-root:before {
-  display: none !important;
+  padding: 10px 0 !important;
 }
 
 /* =========================
-   COLORS (CLEAN DOT STYLE)
+   COLORS
 ========================= */
 
 .filterColorBtn {
@@ -60,16 +98,12 @@
 }
 
 .filterColorBtn button {
-  width: 26px;
-  height: 26px;
-
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   border: none;
-
   cursor: pointer;
-
-  transition: 0.2s ease;
-  position: relative;
+  transition: 0.25s ease;
 }
 
 .filterColorBtn button:hover {
@@ -77,35 +111,29 @@
 }
 
 .filterColorBtn button.selected {
-  outline: 2px solid #0d6efd;
-  outline-offset: 2px;
+  outline: 2px solid #111827;
+  outline-offset: 3px;
 }
 
 /* =========================
-   CATEGORY (CHIP STYLE)
+   CATEGORY
 ========================= */
 
 .sizeButtons {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
 }
 
 .sizeButton {
-  padding: 6px 12px;
-
+  padding: 8px 14px;
+  border: none;
   border-radius: 999px;
-
-  border: 1px solid transparent;
-
   background: #f3f4f6;
-
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
-
   cursor: pointer;
-
-  transition: 0.2s ease;
+  transition: 0.25s ease;
 }
 
 .sizeButton:hover {
@@ -113,59 +141,59 @@
 }
 
 .sizeButton.selected {
-  background: #0d6efd;
+  background: #111827;
   color: white;
 }
 
 /* =========================
-   SEARCH (MINIMAL)
+   SEARCH
 ========================= */
 
 .searchBar {
   position: relative;
-  margin-top: 8px;
+  margin-top: 10px;
 }
 
 .searchBar input {
   width: 100%;
-  padding: 10px 36px 10px 12px;
+  padding: 12px 40px 12px 14px;
 
-  border: none;
-  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
 
-  background: #f3f4f6;
-
+  background: #f9fafb;
   font-size: 13px;
 
   outline: none;
+  transition: 0.25s ease;
 }
 
 .searchBar input:focus {
-  background: #fff;
-  box-shadow: 0 0 0 2px rgba(13,110,253,0.15);
+  border-color: #111827;
+  background: white;
 }
 
 .searchIcon {
   position: absolute;
-  right: 10px;
+  right: 14px;
   top: 50%;
   transform: translateY(-50%);
-  color: #999;
+  color: #6b7280;
 }
 
 /* =========================
-   BRANDS (CLEAN LIST)
+   BRAND LIST
 ========================= */
 
 .brandList {
-  max-height: 200px;
-  overflow-y: auto;
-
-  margin-top: 10px;
-
+  margin-top: 12px;
   display: flex;
   flex-direction: column;
   gap: 6px;
+
+  max-height: 220px;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
 .brandItem {
@@ -173,11 +201,11 @@
   align-items: center;
   gap: 10px;
 
-  padding: 6px 6px;
-
-  border-radius: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
 
   cursor: pointer;
+  transition: 0.2s ease;
 }
 
 .brandItem:hover {
@@ -187,77 +215,161 @@
 .brandItem input {
   width: 16px;
   height: 16px;
-  accent-color: #0d6efd;
 }
 
 .brandItem span {
   font-size: 13px;
-  color: #111;
+  color: #111827;
 }
 
 .brandItem small {
   margin-left: auto;
-  font-size: 11px;
-  color: #888;
+  color: #6b7280;
 }
 
 /* =========================
-   PRICE (CLEAN TEXT)
+   PRICE
 ========================= */
 
 .priceRange {
   display: flex;
   justify-content: space-between;
+  margin-top: 12px;
 
-  font-size: 12px;
+  font-size: 13px;
+  color: #4b5563;
+}
 
-  margin-top: 10px;
-
-  color: #666;
+.priceRange span {
+  font-weight: 600;
+  color: #111827;
 }
 
 /* =========================
-   APPLY BUTTON (MODERN)
+   APPLY BUTTON
 ========================= */
 
 .applyFilterBtn {
-  margin-top: 10px;
-
   width: 100%;
+  padding: 14px;
 
-  padding: 12px;
+  border: none;
+  border-radius: 14px;
+
+  background: #111827;
+  color: white;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.applyFilterBtn:hover {
+  transform: translateY(-2px);
+  opacity: 0.95;
+}
+
+/* =========================
+   MOBILE STYLES
+========================= */
+
+@media (max-width: 992px) {
+
+  /* show filter button */
+ .mobileFilterBtn {
+  display: block;
+  width: 100%;
+  padding: 12px 14px;
 
   border: none;
   border-radius: 12px;
 
-  background: #0d6efd;
+  background: #111827;
   color: white;
 
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
 
   cursor: pointer;
 
-  transition: 0.2s ease;
+  margin-bottom: 12px;
 }
 
-.applyFilterBtn:hover {
-  background: #0b5ed7;
-  transform: translateY(-2px);
+  /* overlay */
+  .filterOverlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 1999;
+  }
+
+  /* drawer */
+  .filterSection {
+    position: fixed;
+    top: 0;
+    left: -100%;
+
+    width: 85%;
+    max-width: 340px;
+    height: 100vh;
+
+    background: white;
+    z-index: 2000;
+
+    padding: 16px;
+
+    overflow-y: auto;
+
+    transition: left 0.35s ease;
+    box-shadow: 10px 0 30px rgba(0,0,0,0.12);
+  }
+
+  .filterSection.active {
+    left: 0;
+  }
+
+  .filterHeader {
+    display: flex;
+  }
+
+  .sizeButton {
+    flex: 1 1 calc(50% - 8px);
+    text-align: center;
+  }
+
+  .brandList {
+    max-height: 180px;
+  }
 }
 
 /* =========================
-   MOBILE
+   SMALL MOBILE
 ========================= */
 
-@media (max-width: 768px) {
+@media (max-width: 480px) {
+
   .filterSection {
-    max-width: 100%;
-    padding: 0;
+    padding: 14px;
+  }
+
+  .searchBar input {
+    font-size: 12px;
+  }
+
+  .sizeButton {
+    font-size: 12px;
+    padding: 10px;
   }
 
   .applyFilterBtn {
-    position: sticky;
-    bottom: 10px;
+    font-size: 13px;
+    padding: 13px;
+  }
+
+  .brandItem span {
+    font-size: 12px;
   }
 }

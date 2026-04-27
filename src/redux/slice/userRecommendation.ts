@@ -21,10 +21,8 @@ export const fetchUserRecommendations = createAsyncThunk<Product[], string, { re
 
       const ids = recs.map((r) => r.product_id).filter(Boolean);
 
-      console.log('Recommended product IDs for user', userId, ids);
-
       if (ids.length === 0) return [];
-
+          
       // Fetch full product records for the recommended ids
       const { data: products, error: prodErr } = await supabase
         .from('products')

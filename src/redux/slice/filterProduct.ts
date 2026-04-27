@@ -32,7 +32,6 @@ export const fetchFilteredProducts = createAsyncThunk<
       if (filters.priceRange && filters.priceRange.length === 2) {
         const min = Number(filters.priceRange[0]);
         const max = Number(filters.priceRange[1]);
-        console.log('Filtering products with amount between:', min, max);
         query = query.gte('amount', min).lte('amount', max);
       }
 

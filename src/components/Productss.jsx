@@ -147,16 +147,51 @@ const Products = () => {
       (productsLoading || recStatus === "loading")) ||
     filterStatus === "loading";
 
-  // SKELETON
-  const LoadingSkeleton = () => (
-    <>
-      {[...Array(postsPerPage)].map((_, idx) => (
-        <div key={idx} className="col-md-4 col-sm-6 col-12 mb-4">
-          <Skeleton height={400} />
-        </div>
-      ))}
-    </>
+  const LoadingSkeleton = () => {
+  return (
+    <div className="shopDetailsProducts">
+      <div className="shopDetailsProductsContainer">
+
+        {Array.from({ length: postsPerPage }).map((_, idx) => (
+          <div key={idx} className="sdProductContainer skeletonCard">
+
+            {/* IMAGE */}
+            <div className="sdProductImages">
+              <Skeleton height="100%" width="100%" />
+            </div>
+
+            {/* INFO */}
+            <div className="sdProductInfo">
+
+              <div className="sdProductCategoryWishlist">
+                <Skeleton width={60} height={10} />
+                <Skeleton circle width={18} height={18} />
+              </div>
+
+              <div className="product-title">
+                <Skeleton width="90%" />
+                <Skeleton width="70%" />
+              </div>
+
+              <div className="product-price">
+                <Skeleton width={80} />
+              </div>
+
+              <div className="sdProductRatingStar">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Skeleton key={i} width={10} height={10} />
+                ))}
+                <Skeleton width={40} />
+              </div>
+
+            </div>
+          </div>
+        ))}
+
+      </div>
+    </div>
   );
+};
 
   // PRODUCTS
   const ProductList = () => (
