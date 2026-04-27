@@ -406,7 +406,7 @@ export const AuthProvider = ({ children }) => {
           user.full_name || user.name,
           data.email,
           carts,
-          `${address.addressLine1 || ""} ${address.addressLine2 || ""}, ${address.state || ""}, ${address.country || ""} - ${address.zipCode || ""}`,
+          `${data.address.addressLine1 || ""} ${data.address.addressLine2 || ""}, ${data.address.state || ""}, ${data.address.country || ""} - ${data.address.zipCode || ""}`,
           data.amount,
           orderId,
           deliveryDate.toISOString()
