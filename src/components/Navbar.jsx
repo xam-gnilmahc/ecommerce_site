@@ -30,9 +30,9 @@ const Navbar = () => {
   const [navHeight, setNavHeight] = useState(0);
   const navRef = useRef(null);
 
-  const { totalCart } = useSelector((state: RootState) => state.addToCart);
+  const { totalCart } = useSelector((state) => state.addToCart);
 
-  // ✅ detect route
+  // detect route
   const isSearchPage = location.pathname === "/search";
   const searchQuery = new URLSearchParams(location.search).get("q") || "";
 

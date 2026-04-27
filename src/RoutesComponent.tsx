@@ -48,7 +48,7 @@ const RoutesComponent = () => (
       <Route path="/update-password" element={<UpdatePassword />} />
       <Route path="/order-details" element={<OrderDetailsSheet />} />
       <Route path="/terms" element={<TermsandConditions />} />
-      <Route path="/cronjob" element={<CronJob />} />
+      {/* <Route path="/cronjob" element={<CronJob />} /> */}
       <Route path="*" element={<PageNotFound />} />
     </Route>
 
