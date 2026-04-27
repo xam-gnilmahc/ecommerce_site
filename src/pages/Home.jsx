@@ -8,6 +8,19 @@ import Banner from "../components/Banner/Banner";
 function Home() {
   return (
     <>
+      <div
+      style={{
+        background: "#fff3cd",
+        color: "#856404",
+        border: "1px solid #ffeeba",
+        padding: "12px 14px",
+        fontSize: "13px",
+        fontWeight: "500",
+        textAlign: "center",
+      }}
+    >
+      ⚠️ This is a demo website. No real transactions are processed.
+    </div>
       {/* <HeroSection/> */}
       <Main/>
       <BestSelling/>
