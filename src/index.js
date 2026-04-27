@@ -29,7 +29,7 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <BrowserRouter>
-  {/* <ChatBot/> */}
+  <ChatBot/>
     <ScrollToTop>
       <Provider store={store}>
         <AuthProvider>
