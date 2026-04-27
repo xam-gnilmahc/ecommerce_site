@@ -20,6 +20,7 @@ import Popup from "./pages/Popup";
 import { AuthProvider } from "./context/authContext";
 import { PageHeaderProvider } from "./context/PageHeaderContext.tsx";
 import ChatBot from "./pages/ChatBot.jsx"
+import "./index.css";
 
 
 import RoutesComponent from "./RoutesComponent.tsx"; // Move all <Routes> into this separate file for clarity
@@ -28,7 +29,7 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <BrowserRouter>
-  <ChatBot/>
+  {/* <ChatBot/> */}
     <ScrollToTop>
       <Provider store={store}>
         <AuthProvider>

@@ -178,12 +178,12 @@ const Products = () => {
                   />
                 </Link>
 
-                <button
+                {/* <button
                   className="add-to-cart-button"
                   onClick={() => handleAddToCart(product)}
                 >
                   Add to Cart
-                </button>
+                </button> */}
               </div>
 
               <div className="sdProductInfo">
@@ -232,14 +232,6 @@ const Products = () => {
             paginate={setCurrentPage}
             currentPage={currentPage}
           />
-
-          <div className={`filterDrawer ${isDrawerOpen ? "open" : ""}`}>
-            <div className="drawerHeader">
-              <p>Filter By</p>
-              <IoClose onClick={() => setIsDrawerOpen(false)} size={26} />
-            </div>
-            <Filters onApplyFilters={handleFilterChange} />
-          </div>
         </div>
       </div>
     </div>

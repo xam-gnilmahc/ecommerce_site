@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import "./Main.css";
 
-const videos = ["/video/lol.mp4", "/video/tablet.mp4"];
+const videos = ["/video/lol.mp4"];
 
 const Home = () => {
   const [search, setSearch] = useState("");
