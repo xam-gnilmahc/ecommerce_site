@@ -39,7 +39,7 @@ const CollectionBox = () => {
         </h3>
 
         <div className="col-link">
-          <Link to="/shop" onClick={scrollToTop}>
+          <Link to="/search" onClick={scrollToTop}>
             <span className="shop-link">Shop Now</span>
           </Link>
         </div>
@@ -60,7 +60,7 @@ const CollectionBox = () => {
         </h3>
 
         <div className="col-link">
-          <Link to="/shop" onClick={scrollToTop}>
+          <Link to="/search" onClick={scrollToTop}>
             <span className="shop-link">Shop Now</span>
           </Link>
         </div>
@@ -81,7 +81,7 @@ const CollectionBox = () => {
         </h3>
 
         <div className="col-link">
-          <Link to="/shop" onClick={scrollToTop}>
+          <Link to="/search" onClick={scrollToTop}>
             <span className="shop-link">Shop Now</span>
           </Link>
         </div>
@@ -102,7 +102,7 @@ const CollectionBox = () => {
         <p className="col-p">Surprise someone with the gift they really want.</p>
 
         <div className="col-link">
-          <Link to="/shop" onClick={scrollToTop}>
+          <Link to="/search" onClick={scrollToTop}>
             <span className="shop-link">Shop Now</span>
           </Link>
         </div>
