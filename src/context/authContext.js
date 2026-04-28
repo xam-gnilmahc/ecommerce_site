@@ -321,6 +321,7 @@ export const AuthProvider = ({ children }) => {
     orderType = "cart",
     itemsCount = 0,
     carts = [],
+    singleOrderProduct = null,
   }) => {
     try {
       const today = new Date();
@@ -409,7 +410,8 @@ export const AuthProvider = ({ children }) => {
           `${data.address.addressLine1 || ""} ${data.address.addressLine2 || ""}, ${data.address.state || ""}, ${data.address.country || ""} - ${data.address.zipCode || ""}`,
           data.amount,
           trackingCode,
-          deliveryDate.toISOString()
+          deliveryDate.toLocaleDateString(),
+          singleOrderProduct
         ),
 
         sendNotification({
@@ -487,6 +489,7 @@ export const AuthProvider = ({ children }) => {
         removeCart: false,
         orderType: "single",
         itemsCount: quantity,
+        singleOrderProduct: product,
       });
 
       return orderId;
