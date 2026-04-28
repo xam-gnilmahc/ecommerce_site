@@ -365,24 +365,93 @@
   }
 }
 
+/* =========================
+   📱 MOBILE FIXED STATUS TABS
+========================= */
+
 @media (max-width: 768px) {
+
+  /* MAIN */
   .orders-main {
     margin-left: 0;
     padding: 16px;
+    padding-top: 140px; /* space for fixed tabs */
   }
 
-  .orders-grid {
-    grid-template-columns: 1fr;
-  }
-
+  /* HEADER */
   .orders-header {
     flex-direction: column;
     align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 18px;
   }
 
+  /* FIXED STATUS BAR */
+  .orders-tabs {
+    position: fixed;
+    top:0; /* adjust if navbar height different */
+    left: 0;
+    right: 0;
+
+    z-index: 2000;
+
+    background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    padding: 12px 16px;
+
+    display: flex;
+    gap: 10px;
+
+    overflow-x: auto;
+    white-space: nowrap;
+
+    border-bottom: 1px solid #e5e7eb;
+
+    scrollbar-width: none;
+  }
+
+  .orders-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* TAB BUTTON */
+  .tab-btn {
+    flex-shrink: 0;
+  }
+
+  /* GRID */
+  .orders-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  /* SHIPPING */
   .shipping-box {
     flex-direction: column;
     align-items: flex-start;
+    gap: 10px;
+  }
+
+  .shipping-line {
+    width: 100%;
+  }
+
+  /* CARD */
+  .modern-order-card {
+    border-radius: 14px;
+    padding: 16px;
+  }
+
+  /* PRODUCT */
+  .product-item {
+    align-items: flex-start;
+  }
+
+  .product-item strong {
+    margin-left: auto;
+    font-size: 0.85rem;
   }
 }
 
