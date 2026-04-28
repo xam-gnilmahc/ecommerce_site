@@ -5,9 +5,10 @@ export async function sendOrderEmail(
   address,
   cartTotal,
   orderId,
-  orderDate
+  orderDate,
+  singleOrderProduct,
 ) {
-  const payload = { userName, userEmail, cartList, address, cartTotal,orderId,orderDate };
+  const payload = { userName, userEmail, cartList, address, cartTotal,orderId,orderDate, singleOrderProduct };
   
   try {
     const res = await fetch(
