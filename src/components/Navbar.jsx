@@ -172,69 +172,107 @@ const Navbar = () => {
   {isSticky && <div style={{ height: navHeight }} aria-hidden />}
 
       {/* MOBILE NAV */}
-      <nav>
-        <div className="mobile-nav">
-          {mobileMenuOpen ? (
-            <MdOutlineClose size={22} onClick={toggleMobileMenu} />
-          ) : (
-            <RiMenu2Line size={22} onClick={toggleMobileMenu} />
-          )}
+      {/* MOBILE NAV */}
+<nav>
+  <div className="mobile-nav">
+    {mobileMenuOpen ? (
+      <MdOutlineClose size={22} onClick={toggleMobileMenu} />
+    ) : (
+      <RiMenu2Line size={22} onClick={toggleMobileMenu} />
+    )}
 
-          <div className="logoContainer">
-            <Link to="/">
-              <img src={logo} alt="Logo" />
-            </Link>
+    <div className="logoContainer">
+      <Link to="/">
+        <img src={logo} alt="Logo" />
+      </Link>
+    </div>
+
+    <Link to="/cart">
+      <Badge badgeContent={totalCart || "0"} color="primary">
+        <RiShoppingBagLine size={22} />
+      </Badge>
+    </Link>
+  </div>
+
+  {/* OVERLAY */}
+  {mobileMenuOpen && (
+    <div
+      className="mobile-overlay"
+      onClick={() => setMobileMenuOpen(false)}
+    />
+  )}
+
+  {/* MOBILE MENU */}
+  <div className={`mobile-menu ${mobileMenuOpen ? "open" : ""}`}>
+    <div
+      className="mobile-menu-content"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="mobile-menuTop">
+
+        {/* CLOSE BUTTON */}
+        <div
+          className="mobile-close"
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          <MdOutlineClose size={28} />
+        </div>
+
+        {/* MOBILE SEARCH ONLY ON /search */}
+        {isSearchPage && (
+          <div className="mobile-search">
+            <input
+              type="text"
+              placeholder="Search products..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={handleSearch}
+            />
           </div>
+        )}
+      </div>
 
-          <Link to="/cart">
-            <Badge badgeContent={totalCart || "0"} color="primary">
-              <RiShoppingBagLine size={22} />
-            </Badge>
+      <div className="mobile-menuFooter">
+        <div className="mobile-menuFooterLogin">
+          <Link to="/order" onClick={toggleMobileMenu}>
+            <FaRegUser />
+            <p>My Account</p>
           </Link>
         </div>
 
-        <div className={`mobile-menu ${mobileMenuOpen ? "open" : ""}`}>
-          <div className="mobile-menuTop">
+        {!user ? (
+          <div className="d-flex gap-2">
+            <NavLink
+              to="/login"
+              className="btn btn-outline-dark btn-sm"
+              onClick={toggleMobileMenu}
+            >
+              Login
+            </NavLink>
 
-            {/* ✅ MOBILE SEARCH ONLY ON /search */}
-            {isSearchPage && (
-              <div className="mobile-search">
-                <input
-                  type="text"
-                  placeholder="Search products..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  onKeyDown={handleSearch}
-                />
-              </div>
-            )}
+            <NavLink
+              to="/register"
+              className="btn btn-outline-dark btn-sm"
+              onClick={toggleMobileMenu}
+            >
+              Register
+            </NavLink>
           </div>
-
-          <div className="mobile-menuFooter">
-            <div className="mobile-menuFooterLogin">
-              <Link to="/order" onClick={toggleMobileMenu}>
-                <FaRegUser />
-                <p>My Account</p>
-              </Link>
-            </div>
-
-            {!user ? (
-              <div className="d-flex gap-2">
-                <NavLink to="/login" className="btn btn-outline-dark btn-sm">
-                  Login
-                </NavLink>
-                <NavLink to="/register" className="btn btn-outline-dark btn-sm">
-                  Register
-                </NavLink>
-              </div>
-            ) : (
-              <button onClick={logout} className="btn btn-dark btn-sm">
-                Logout
-              </button>
-            )}
-          </div>
-        </div>
-      </nav>
+        ) : (
+          <button
+            onClick={() => {
+              logout();
+              setMobileMenuOpen(false);
+            }}
+            className="btn btn-dark btn-sm"
+          >
+            Logout
+          </button>
+        )}
+      </div>
+    </div>
+  </div>
+</nav>
     </>
   );
 };

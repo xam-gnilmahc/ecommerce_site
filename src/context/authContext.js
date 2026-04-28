@@ -307,7 +307,7 @@ export const AuthProvider = ({ children }) => {
   // Helper: generate unique tracking code
   const generateTrackingCode = () => {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    return `ORD-${Array.from({ length: 6 }, () =>
+    return `ORD-${Array.from({ length: 8 }, () =>
       chars[Math.floor(Math.random() * chars.length)]
     ).join("")}`;
   };
@@ -408,7 +408,7 @@ export const AuthProvider = ({ children }) => {
           carts,
           `${data.address.addressLine1 || ""} ${data.address.addressLine2 || ""}, ${data.address.state || ""}, ${data.address.country || ""} - ${data.address.zipCode || ""}`,
           data.amount,
-          orderId,
+          trackingCode,
           deliveryDate.toISOString()
         ),
 

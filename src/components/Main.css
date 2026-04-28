@@ -1,28 +1,26 @@
 /* =========================
-   HERO SECTION
+   HERO SECTION (APPLE STYLE)
 ========================= */
 
 .heroSearchFull {
   position: relative;
-
   height: 90vh;
-
   overflow: hidden;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  background: #000;
+  background: #f5f5f7; /* Apple-like base */
 
   margin-bottom: 60px;
 }
 
 /* =========================
-   VIDEO
+   BACKGROUND IMAGE
 ========================= */
 
-.bgVideo {
+.bgImage {
   position: absolute;
   inset: 0;
 
@@ -30,22 +28,25 @@
   height: 100%;
 
   object-fit: cover;
+  object-position: center;
 
-  transform: scale(1.08);
+  transform: scale(1);
 
   opacity: 0;
 
   transition: opacity 1s ease;
 
   z-index: 0;
+
+  animation: subtleZoom 18s ease-in-out infinite alternate;
 }
 
-.bgVideo.show {
+.bgImage.show {
   opacity: 1;
 }
 
 /* =========================
-   OVERLAY
+   OVERLAY (APPLE STYLE LIGHT GLASS)
 ========================= */
 
 .overlay {
@@ -54,15 +55,15 @@
 
   background: linear-gradient(
     to bottom,
-    rgba(0, 0, 0, 0.35),
-    rgba(0, 0, 0, 0.7)
+    rgba(245, 245, 247, 0.2),
+    rgba(0, 0, 0, 0.35)
   );
 
   z-index: 1;
 }
 
 /* =========================
-   CONTENT
+   HERO CONTENT
 ========================= */
 
 .heroContent {
@@ -76,52 +77,58 @@
 
   text-align: center;
 
-  color: white;
+  color: #1d1d1f; /* Apple dark text */
+
+  animation: fadeUp 1s ease-out;
 }
 
-/* tag */
+/* =========================
+   TAG (CLEAN APPLE STYLE)
+========================= */
 
 .heroTag {
-  color: #c19a6b;
+  color: #0071e3; /* Apple blue */
 
   text-transform: uppercase;
 
-  letter-spacing: 4px;
+  letter-spacing: 3px;
 
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
 
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 
-/* title */
+/* =========================
+   TITLE
+========================= */
 
 .heroContent h1 {
-  font-size: clamp(42px, 8vw, 82px);
+  font-size: clamp(40px, 7vw, 78px);
 
-  font-weight: 800;
+  font-weight: 700;
 
-  line-height: 1;
+  line-height: 1.05;
 
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 
-  letter-spacing: -2px;
+  color: #1d1d1f;
 }
 
-/* subtitle */
+/* =========================
+   SUB TEXT
+========================= */
 
 .heroSubText {
   font-size: 18px;
 
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(29, 29, 31, 0.75);
 
-  margin-bottom: 40px;
-
-  font-weight: 400;
+  margin-bottom: 38px;
 }
 
 /* =========================
-   SEARCH BOX
+   SEARCH BOX (APPLE GLASS STYLE)
 ========================= */
 
 .heroSearchBox {
@@ -133,19 +140,19 @@
   width: 100%;
   max-width: 720px;
 
-  height: 68px;
+  height: 62px;
 
-  padding: 0 28px;
+  padding: 0 26px;
 
   border-radius: 999px;
 
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(0, 0, 0, 0.1);
 
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.7);
 
-  backdrop-filter: blur(14px);
+  backdrop-filter: blur(20px);
 
-  color: white;
+  color: #1d1d1f;
 
   font-size: 16px;
 
@@ -153,23 +160,43 @@
 
   transition: all 0.3s ease;
 
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
-
-/* placeholder */
 
 .heroSearchBox input::placeholder {
-  color: rgba(255, 255, 255, 0.65);
+  color: rgba(0, 0, 0, 0.4);
 }
 
-/* focus */
-
 .heroSearchBox input:focus {
-  border-color: rgba(255, 255, 255, 0.4);
+  border-color: #0071e3;
+
+  box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.15);
 
   transform: translateY(-2px);
+}
 
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+/* =========================
+   ANIMATIONS
+========================= */
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes subtleZoom {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.06);
+  }
 }
 
 /* =========================
@@ -182,7 +209,7 @@
   }
 
   .heroContent h1 {
-    font-size: 48px;
+    font-size: 46px;
   }
 
   .heroSubText {
@@ -190,7 +217,7 @@
   }
 
   .heroSearchBox input {
-    height: 58px;
+    height: 56px;
     font-size: 15px;
   }
 }
@@ -201,24 +228,17 @@
   }
 
   .heroContent h1 {
-    font-size: 38px;
-  }
-
-  .heroTag {
-    font-size: 11px;
-    letter-spacing: 3px;
+    font-size: 36px;
   }
 
   .heroSubText {
     font-size: 14px;
-    margin-bottom: 28px;
+    margin-bottom: 26px;
   }
 
   .heroSearchBox input {
-    height: 52px;
-
-    padding: 0 20px;
-
+    height: 50px;
+    padding: 0 18px;
     font-size: 14px;
   }
 }

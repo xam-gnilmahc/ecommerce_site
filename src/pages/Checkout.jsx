@@ -187,11 +187,6 @@ const Checkout = () => {
         </div>
       )}
       <Navbar />
-
-       <div className="demo-warning">
-      ⚠️ This is a demo checkout page. No real money will be charged.
-      Please use Stripe test card numbers only.
-    </div>
       <div className="container my-4 py-3">
         <div className="row">
           {loading ? (
