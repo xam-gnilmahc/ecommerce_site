@@ -4,37 +4,64 @@ import { NavLink, Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import { useAppDispatch } from "../redux/index.ts";
 import { fetchTotalCart } from "../redux/slice/userCart.ts";
-import { RootState } from "../redux/index.ts";
 import Badge from "@mui/material/Badge";
-import { RiShoppingBagLine, RiMenu2Line } from "react-icons/ri";
-import { FaRegUser } from "react-icons/fa6";
+
+import {
+  RiShoppingBagLine,
+  RiMenu2Line,
+} from "react-icons/ri";
+
+import {
+  FaRegUser,
+  FaChevronDown,
+  FaBoxOpen,
+  FaCog,
+  FaSignOutAlt,
+} from "react-icons/fa";
+
 import { MdOutlineClose } from "react-icons/md";
-import logo from "./assets/logo.png";
-import "./Navbar.css";
-import SearchBar from "./SearchBar";
-import NotificationPage from "../pages/NotificationPage";
 import { FiSearch } from "react-icons/fi";
+
+import logo from "./assets/logo.png";
+
+import "./Navbar.css";
+
+import NotificationPage from "../pages/NotificationPage";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
-  const [isOpen, setIsOpen] = useState(false);
-  const [notifOpen, setNotifOpen] = useState(false);
-  const notifRef = useRef();
+
   const dispatch = useAppDispatch();
+
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] =
+    useState(false);
+
+  const [profileOpen, setProfileOpen] =
+    useState(false);
+
   const [search, setSearch] = useState("");
+
   const [isSticky, setIsSticky] = useState(false);
+
   const [navHeight, setNavHeight] = useState(0);
+
   const navRef = useRef(null);
 
-  const { totalCart } = useSelector((state) => state.addToCart);
+  const profileRef = useRef(null);
 
-  // detect route
-  const isSearchPage = location.pathname === "/search";
-  const searchQuery = new URLSearchParams(location.search).get("q") || "";
+  const { totalCart } = useSelector(
+    (state) => state.addToCart
+  );
+
+  const isSearchPage =
+    location.pathname === "/search";
+
+  const searchQuery =
+    new URLSearchParams(location.search).get("q") ||
+    "";
 
   useEffect(() => {
     setSearch(searchQuery);
@@ -47,120 +74,212 @@ const Navbar = () => {
   }, [user]);
 
   useEffect(() => {
-    function handleClickOutside(event) {
-      if (notifRef.current && !notifRef.current.contains(event.target)) {
-        setNotifOpen(false);
+    const handleClickOutside = (e) => {
+      if (
+        profileRef.current &&
+        !profileRef.current.contains(e.target)
+      ) {
+        setProfileOpen(false);
       }
-    }
-    if (notifOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [notifOpen]);
+    };
 
-  const togglePopup = () => setIsOpen((prev) => !prev);
-  const toggleMobileMenu = () => {
-    setMobileMenuOpen((prev) => {
-      const next = !prev;
-      // prevent background scroll when mobile menu is open
-      document.body.style.overflow = next ? "hidden" : "auto";
-      return next;
-    });
-  };
+    document.addEventListener(
+      "mousedown",
+      handleClickOutside
+    );
+
+    return () =>
+      document.removeEventListener(
+        "mousedown",
+        handleClickOutside
+      );
+  }, []);
 
   useEffect(() => {
-    // measure nav height for placeholder to avoid content jump when fixed
-    if (navRef.current) setNavHeight(navRef.current.offsetHeight || 0);
+    if (navRef.current) {
+      setNavHeight(navRef.current.offsetHeight);
+    }
 
     const onScroll = () => {
       setIsSticky(window.scrollY > 40);
     };
 
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    window.addEventListener("scroll", onScroll);
+
+    return () =>
+      window.removeEventListener("scroll", onScroll);
   }, []);
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen((prev) => {
+      const next = !prev;
+
+      document.body.style.overflow = next
+        ? "hidden"
+        : "auto";
+
+      return next;
+    });
+  };
 
   const handleSearch = (e) => {
     if (e.key === "Enter") {
       const value = search.trim();
+
       if (!value) return;
 
-      navigate(`/search?q=${encodeURIComponent(value)}`);
+      navigate(
+        `/search?q=${encodeURIComponent(value)}`
+      );
     }
   };
 
-
   return (
     <>
-  <div ref={navRef} className={`navBar ${isSticky ? 'fixed' : ''}`}>
-        <div className="logoLinkContainer">
-          <div className="logoContainer">
-            <NavLink to="/" className="d-flex align-items-center gap-2">
-              <img
-                src={logo}
-                alt="Logo"
-                style={{
-                  width: "100px",
-                  height: "60px",
-                  objectFit: "contain",
-                }}
-              />
-            </NavLink>
-          </div>
-
+      <div
+        ref={navRef}
+        className={`navBar ${
+          isSticky ? "fixed" : ""
+        }`}
+      >
+        {/* LEFT */}
+        <div className="logoContainer">
+          <Link to="/">
+            <img src={logo} alt="Logo" />
+          </Link>
         </div>
 
+        {/* SEARCH */}
         {isSearchPage && (
           <div className="navbar-search">
             <div className="search-box">
               <FiSearch className="search-icon" />
+
               <input
                 type="text"
                 placeholder="Search for products..."
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) =>
+                  setSearch(e.target.value)
+                }
                 onKeyDown={handleSearch}
               />
             </div>
           </div>
         )}
 
-        <div className="d-flex align-items-center gap-2">
+        {/* RIGHT */}
+        <div className="nav-right">
           {!user ? (
             <>
-              <NavLink to="/login" className="btn btn-outline-dark btn-sm">
+              <NavLink
+                to="/login"
+                className="nav-btn"
+              >
                 Login
               </NavLink>
-              <NavLink to="/register" className="btn btn-outline-dark btn-sm">
+
+              <NavLink
+                to="/register"
+                className="nav-btn"
+              >
                 Register
               </NavLink>
             </>
           ) : (
             <>
-              <NotificationPage embedded={true} />
+              <NotificationPage embedded />
 
-              <NavLink to="/order" className="me-2 d-flex align-items-center">
-                {user.picture ? (
-                  <img
-                    src={user.picture}
-                    alt="Profile"
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      borderRadius: "50%",
-                      objectFit: "cover",
-                    }}
+              {/* PROFILE DROPDOWN */}
+              <div
+                className="profile-dropdown"
+                ref={profileRef}
+              >
+                <button
+                  className="profile-trigger"
+                  onClick={() =>
+                    setProfileOpen(
+                      !profileOpen
+                    )
+                  }
+                >
+                  {user.picture ? (
+                    <img
+                      src={user.picture}
+                      alt="profile"
+                      className="profile-avatar"
+                    />
+                  ) : (
+                    <FaRegUser size={18} />
+                  )}
+
+                  <FaChevronDown
+                    className={`arrow ${
+                      profileOpen
+                        ? "rotate"
+                        : ""
+                    }`}
                   />
-                ) : (
-                  <FaRegUser size={20} />
-                )}
-              </NavLink>
+                </button>
 
-              <NavLink to="/cart" className="me-2">
-                <Badge badgeContent={totalCart || "0"} color="primary">
-                  <RiShoppingBagLine size={22} />
+                {profileOpen && (
+                  <div className="profile-menu">
+                    <button
+                      onClick={() => {
+                        navigate("/order");
+
+                        setProfileOpen(
+                          false
+                        );
+                      }}
+                    >
+                      <FaBoxOpen />
+                      Orders
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        navigate(
+                          "/settings"
+                        );
+
+                        setProfileOpen(
+                          false
+                        );
+                      }}
+                    >
+                      <FaCog />
+                      Settings
+                    </button>
+
+                    <button
+                      className="logout-btn"
+                      onClick={() => {
+                        logout();
+
+                        setProfileOpen(
+                          false
+                        );
+                      }}
+                    >
+                      <FaSignOutAlt />
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* CART */}
+              <NavLink to="/cart">
+                <Badge
+                  badgeContent={
+                    totalCart || "0"
+                  }
+                  color="primary"
+                >
+                  <RiShoppingBagLine
+                    size={22}
+                  />
                 </Badge>
               </NavLink>
             </>
@@ -168,111 +287,159 @@ const Navbar = () => {
         </div>
       </div>
 
-  {/* placeholder to prevent content jump when navbar becomes fixed */}
-  {isSticky && <div style={{ height: navHeight }} aria-hidden />}
-
-      {/* MOBILE NAV */}
-      {/* MOBILE NAV */}
-<nav>
-  <div className="mobile-nav">
-    {mobileMenuOpen ? (
-      <MdOutlineClose size={22} onClick={toggleMobileMenu} />
-    ) : (
-      <RiMenu2Line size={22} onClick={toggleMobileMenu} />
-    )}
-
-    <div className="logoContainer">
-      <Link to="/">
-        <img src={logo} alt="Logo" />
-      </Link>
-    </div>
-
-    <Link to="/cart">
-      <Badge badgeContent={totalCart || "0"} color="primary">
-        <RiShoppingBagLine size={22} />
-      </Badge>
-    </Link>
-  </div>
-
-  {/* OVERLAY */}
-  {mobileMenuOpen && (
-    <div
-      className="mobile-overlay"
-      onClick={() => setMobileMenuOpen(false)}
-    />
-  )}
-
-  {/* MOBILE MENU */}
-  <div className={`mobile-menu ${mobileMenuOpen ? "open" : ""}`}>
-    <div
-      className="mobile-menu-content"
-      onClick={(e) => e.stopPropagation()}
-    >
-      <div className="mobile-menuTop">
-
-        {/* CLOSE BUTTON */}
+      {isSticky && (
         <div
-          className="mobile-close"
-          onClick={() => setMobileMenuOpen(false)}
-        >
-          <MdOutlineClose size={28} />
-        </div>
+          style={{ height: navHeight }}
+        />
+      )}
 
-        {/* MOBILE SEARCH ONLY ON /search */}
-        {isSearchPage && (
-          <div className="mobile-search">
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              onKeyDown={handleSearch}
+      {/* MOBILE NAV */}
+      <nav>
+        <div className="mobile-nav">
+          {mobileMenuOpen ? (
+            <MdOutlineClose
+              size={22}
+              onClick={
+                toggleMobileMenu
+              }
             />
-          </div>
-        )}
-      </div>
+          ) : (
+            <RiMenu2Line
+              size={22}
+              onClick={
+                toggleMobileMenu
+              }
+            />
+          )}
 
-      <div className="mobile-menuFooter">
-        <div className="mobile-menuFooterLogin">
-          <Link to="/order" onClick={toggleMobileMenu}>
-            <FaRegUser />
-            <p>My Account</p>
+          <div className="logoContainer">
+            <Link to="/">
+              <img
+                src={logo}
+                alt="logo"
+              />
+            </Link>
+          </div>
+
+          <Link to="/cart">
+            <Badge
+              badgeContent={
+                totalCart || "0"
+              }
+              color="primary"
+            >
+              <RiShoppingBagLine
+                size={22}
+              />
+            </Badge>
           </Link>
         </div>
 
-        {!user ? (
-          <div className="d-flex gap-2">
-            <NavLink
-              to="/login"
-              className="btn btn-outline-dark btn-sm"
-              onClick={toggleMobileMenu}
-            >
-              Login
-            </NavLink>
-
-            <NavLink
-              to="/register"
-              className="btn btn-outline-dark btn-sm"
-              onClick={toggleMobileMenu}
-            >
-              Register
-            </NavLink>
-          </div>
-        ) : (
-          <button
-            onClick={() => {
-              logout();
-              setMobileMenuOpen(false);
-            }}
-            className="btn btn-dark btn-sm"
-          >
-            Logout
-          </button>
+        {mobileMenuOpen && (
+          <div
+            className="mobile-overlay"
+            onClick={() =>
+              setMobileMenuOpen(false)
+            }
+          />
         )}
-      </div>
-    </div>
-  </div>
-</nav>
+
+        <div
+          className={`mobile-menu ${
+            mobileMenuOpen
+              ? "open"
+              : ""
+          }`}
+        >
+          <div className="mobile-menu-content">
+            <div>
+              <div
+                className="mobile-close"
+                onClick={() =>
+                  setMobileMenuOpen(false)
+                }
+              >
+                <MdOutlineClose
+                  size={28}
+                />
+              </div>
+
+              {isSearchPage && (
+                <div className="mobile-search">
+                  <input
+                    type="text"
+                    placeholder="Search..."
+                    value={search}
+                    onChange={(e) =>
+                      setSearch(
+                        e.target.value
+                      )
+                    }
+                    onKeyDown={
+                      handleSearch
+                    }
+                  />
+                </div>
+              )}
+            </div>
+
+            <div className="mobile-menuFooter">
+              <Link
+                to="/order"
+                onClick={
+                  toggleMobileMenu
+                }
+              >
+                Orders
+              </Link>
+
+              <Link
+                to="/settings"
+                onClick={
+                  toggleMobileMenu
+                }
+              >
+                Settings
+              </Link>
+
+              {user ? (
+                <button
+                  className="mobile-logout"
+                  onClick={() => {
+                    logout();
+
+                    setMobileMenuOpen(
+                      false
+                    );
+                  }}
+                >
+                  Logout
+                </button>
+              ) : (
+                <div className="mobile-auth">
+                  <NavLink
+                    to="/login"
+                    onClick={
+                      toggleMobileMenu
+                    }
+                  >
+                    Login
+                  </NavLink>
+
+                  <NavLink
+                    to="/register"
+                    onClick={
+                      toggleMobileMenu
+                    }
+                  >
+                    Register
+                  </NavLink>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </nav>
     </>
   );
 };

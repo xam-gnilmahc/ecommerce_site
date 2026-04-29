@@ -1,16 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
-import Sidebar from "../components/Sidebar";
 import Skeleton from "react-loading-skeleton";
 import toast from "react-hot-toast";
 
 import {
-  FaTruck,
-  FaBoxOpen,
-  FaCheckCircle,
-  FaClock,
-  FaShippingFast,
   FaMapMarkerAlt,
   FaUser,
   FaFileInvoice,
@@ -26,548 +20,199 @@ const OrderDetailsPage = () => {
   const { orderId } = useParams();
   const navigate = useNavigate();
 
-  const { getOrderDetails, user, updateOrder } = useAuth();
+  const { getOrderDetails, user } = useAuth();
 
   const [loading, setLoading] = useState(true);
-  const [paymentLoading, setPaymentLoading] = useState(false);
   const [order, setOrder] = useState(null);
-  const [cancelShow, setCancelShow] = useState(false);
-  const [refundReason, setRefundReason] = useState("");
-  const [selectedReason, setSelectedReason] = useState("");
 
-  const fetchedRef = useRef(false);
   const designRef = useRef();
 
-  const predefinedReasons = [
-    "Wrong item delivered",
-    "Item damaged",
-    "Late delivery",
-    "Changed my mind",
-    "Other",
-  ];
-
   useEffect(() => {
-    if (fetchedRef.current) return;
-
-    fetchedRef.current = true;
-
-    const loadOrder = async () => {
-      try {
-        setLoading(true);
-
-        const data = await getOrderDetails(orderId);
-
-        setOrder(data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
+    const load = async () => {
+      setLoading(true);
+      const data = await getOrderDetails(orderId);
+      setOrder(data);
+      setLoading(false);
     };
 
-    loadOrder();
+    load();
   }, [orderId]);
 
-  const parseAddress = (addressStr) => {
+  const parseAddress = (str) => {
     try {
-      return JSON.parse(addressStr);
+      return JSON.parse(str);
     } catch {
       return null;
     }
   };
 
-  const shippingAddress = parseAddress(order?.shipping_address);
+  const address = parseAddress(order?.shipping_address);
 
-  const handlePrint = () => {
-    if (!designRef.current) return;
-    window.print();
+  const getPaymentIcon = (m) => {
+    if (m === 0) return <FaCcVisa />;
+    if (m === 1) return <FaGooglePay />;
+    if (m === 2) return <FaApplePay />;
+    return <FaMoneyBillWave />;
   };
 
-  const getPaymentIcon = (method) => {
-    switch (method) {
-      case 0:
-        return <FaCcVisa className="fs-4 text-primary" />;
-
-      case 1:
-        return <FaGooglePay className="fs-4 text-success" />;
-
-      case 2:
-        return <FaApplePay className="fs-4" />;
-
-      default:
-        return <FaMoneyBillWave />;
-    }
-  };
-
-  const getStatusClass = (status) => {
-    switch (status?.toLowerCase()) {
-      case "pending":
-        return "pending";
-
-      case "confirmed":
-        return "confirmed";
-
-      case "shipped out":
-      case "out for delivery":
-        return "shipping";
-
-      case "delivered":
-        return "delivered";
-
-      case "cancelled":
-        return "cancelled";
-
-      default:
-        return "";
-    }
-  };
-
-  const getStatusColor = (status) => {
-    if (status?.toLowerCase().includes("fail")) {
-      return "text-danger";
-    }
-
-    if (status?.toLowerCase().includes("pending")) {
-      return "text-warning";
-    }
-
-    return "text-success";
-  };
-
-  const handleCancelOrder = async () => {
-    try {
-      setPaymentLoading(true);
-
-      toast.success("Order cancelled successfully");
-
-      setCancelShow(false);
-    } catch (error) {
-      toast.error("Failed to cancel order");
-    } finally {
-      setPaymentLoading(false);
-    }
-  };
+  if (loading) {
+    return (
+      <div className="od-container">
+        <Skeleton height={120} />
+        <Skeleton height={200} />
+        <Skeleton height={200} />
+      </div>
+    );
+  }
 
   return (
-    <div className="d-flex">
-      <Sidebar />
+    <div className="od-page">
+      <div className="od-container" ref={designRef}>
 
-      <main className="order-details-main">
-        {/* top */}
-        {!loading && (
-          <div className="details-header">
-            <div>
-              <h2>Order #{order?.id}</h2>
-
-              <p>
-                Manage and track your order details
-              </p>
-            </div>
-
-            <div className="details-actions">
-              {order?.status !== "Delivered" &&
-                order?.status !== "Cancelled" && (
-                  <button
-                    className="btn btn-dark"
-                    onClick={() =>
-                      setCancelShow(true)
-                    }
-                  >
-                    Cancel Order
-                  </button>
-                )}
-
-              <button
-                className="btn btn-dark"
-                onClick={handlePrint}
-              >
-                Invoice
-              </button>
-
-              <button
-                className="btn btn-dark"
-                onClick={() =>
-                  navigate(`/track/${order.id}`)
-                }
-              >
-                Track Order
-              </button>
-            </div>
+        {/* HEADER */}
+        <div className="od-header">
+          <div>
+            <h2>Order #{order?.id}</h2>
+            <p>Tracking: {order?.tracking_number}</p>
           </div>
-        )}
 
-        {/* loading */}
-        {loading || !order ? (
-          <div className="row g-4">
-            {Array.from({ length: 6 }).map(
-              (_, index) => (
-                <div
-                  className="col-md-6"
-                  key={index}
-                >
-                  <Skeleton
-                    height={220}
-                    borderRadius={24}
-                  />
-                </div>
-              )
-            )}
+          <div className="od-actions">
+            {/* <button onClick={() => navigate(-1)}>Back</button> */}
+            <button onClick={() => window.print()}>Invoice</button>
           </div>
-        ) : (
-          <div
-            className="modern-order-wrapper"
-            ref={designRef}
-          >
-            {/* banner */}
-            <div className="top-order-banner">
-              <div>
-                <h3>
-                  {order.status ===
-                  "Cancelled"
-                    ? "Order Cancelled"
-                    : "Order Status"}
-                </h3>
+        </div>
 
-                <p>
-                  Tracking Number:
-                  <strong>
-                    {" "}
-                    {order.tracking_number}
-                  </strong>
+        {/* STATUS */}
+        <div className="od-status-bar">
+          <div className={`od-status-pill ${order.status?.toLowerCase()}`}>
+            {order.status}
+          </div>
+
+          <div className="od-status-text">
+            {order.status === "Pending" && "Your order is waiting for confirmation"}
+            {order.status === "Confirmed" && "Seller has confirmed your order"}
+            {order.status === "Shipped Out" && "Your order is on the way"}
+            {order.status === "Out for Delivery" && "Delivery partner is near you"}
+            {order.status === "Delivered" && "Order delivered successfully 🎉"}
+            {order.status === "Cancelled" && "Order has been cancelled"}
+          </div>
+        </div>
+
+        {/* GRID */}
+        <div className="od-grid">
+
+          {/* SHIPPING */}
+          <div className="od-card">
+            <h4>Shipping Address</h4>
+
+            <p><FaUser /> {user?.name}</p>
+
+            <p>
+              <FaMapMarkerAlt />
+              {address?.addressLine1}, {address?.state}
+            </p>
+          </div>
+
+          {/* PAYMENT */}
+          <div className="od-card">
+            <h4>Payments</h4>
+
+            {order.orderpayments_logs?.map((l, i) => (
+              <div className="od-row" key={i}>
+                {getPaymentIcon(l.payment_method)}
+                <span>${l.amount}</span>
+                <span>{l.status}</span>
+              </div>
+            ))}
+          </div>
+
+        </div>
+
+        {/* TRACKING TIMELINE */}
+<div className="od-section">
+  <h4 className="od-section-title">Order Tracking</h4>
+
+  <div className="od-track-wrapper">
+
+    {/* BASE LINE */}
+    <div className="od-track-line-bg" />
+
+    {[
+      "Placed",
+      "Confirmed",
+      "Shipped",
+      "Out for Delivery",
+      "Delivered",
+    ].map((step, i) => {
+
+      const statusMap = {
+        Placed: true,
+        Confirmed: ["Confirmed", "Shipped Out", "Out for Delivery", "Delivered"].includes(order.status),
+        Shipped: ["Shipped Out", "Out for Delivery", "Delivered"].includes(order.status),
+        "Out for Delivery": ["Out for Delivery", "Delivered"].includes(order.status),
+        Delivered: order.status === "Delivered",
+      };
+
+      const done = statusMap[step];
+
+      return (
+        <div key={i} className={`od-track-step ${done ? "done" : ""}`}>
+          <div className="od-track-circle">
+            {done ? "✓" : i + 1}
+          </div>
+
+          <div className="od-track-label">{step}</div>
+        </div>
+      );
+    })}
+
+  </div>
+</div>
+
+        {/* PRODUCTS */}
+        <div className="od-section">
+          <h4 className="od-section-title">Products</h4>
+
+          {order.order_items?.map((item, i) => (
+            <div className="od-product" key={i}>
+
+              {/* IMAGE */}
+              <div className="od-product-img">
+                <img
+                  src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.products.banner_url}`}
+                  alt={item.products?.name}
+                />
+              </div>
+
+              {/* INFO */}
+              <div className="od-product-info">
+                <h5>{item.products?.name}</h5>
+
+                <p className="od-product-sub">
+                  Qty: <span>{item.quantity}</span>
                 </p>
               </div>
 
-              <div
-                className={`status-badge ${getStatusClass(
-                  order.status
-                )}`}
-              >
-                {order.status}
+              {/* PRICE */}
+              <div className="od-product-price">
+                <span>₹{(item.price_each * item.quantity).toFixed(2)}</span>
               </div>
+
             </div>
+          ))}
+        </div>
 
-            <div className="row g-4 mt-1">
-              {/* shipping */}
-              <div className="col-lg-6">
-                <div className="modern-card">
-                  <h5>
-                    <FaShippingFast />
-                    Shipping Details
-                  </h5>
+        {/* SUMMARY */}
+        <div className="od-summary">
+          <h3>
+            Total: $
+            {order.order_items
+              .reduce((a, b) => a + b.price_each * b.quantity, 0)
+              .toFixed(2)}
+          </h3>
+        </div>
 
-                  <div className="info-group">
-                    <span>Recipient</span>
-
-                    <strong>
-                      <FaUser />
-                      {user?.name}
-                    </strong>
-                  </div>
-
-                  <div className="info-group">
-                    <span>Address</span>
-
-                    <strong>
-                      <FaMapMarkerAlt />
-
-                      {
-                        shippingAddress?.addressLine1
-                      }
-                      ,{" "}
-                      {shippingAddress?.state}
-                      ,{" "}
-                      {
-                        shippingAddress?.country
-                      }
-                    </strong>
-                  </div>
-
-                  <div className="info-group">
-                    <span>Status</span>
-
-                    <strong>
-                      {order.status}
-                    </strong>
-                  </div>
-                </div>
-              </div>
-
-              {/* payment */}
-              <div className="col-lg-6">
-                <div className="modern-card">
-                  <h5>
-                    <FaFileInvoice />
-                    Payment Summary
-                  </h5>
-
-                  {order
-                    ?.orderpayments_logs
-                    ?.length > 0 ? (
-                    order.orderpayments_logs.map(
-                      (log, index) => (
-                        <div
-                          className="payment-row"
-                          key={index}
-                        >
-                          <div>
-                            {getPaymentIcon(
-                              log.payment_method
-                            )}
-                          </div>
-
-                          <div>
-                            $
-                            {Number(
-                              log.amount
-                            ).toFixed(2)}
-                          </div>
-
-                          <div
-                            className={getStatusColor(
-                              log.status
-                            )}
-                          >
-                            {log.status}
-                          </div>
-                        </div>
-                      )
-                    )
-                  ) : (
-                    <p className="text-muted">
-                      No payment logs
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/* products */}
-              <div className="col-12">
-                <div className="modern-card">
-                  <h5>
-                    Ordered Items (
-                    {
-                      order.order_items
-                        ?.length
-                    }
-                    )
-                  </h5>
-
-                  <div className="products-grid">
-                    {order.order_items?.map(
-                      (item, index) => (
-                        <div
-                          className="modern-product"
-                          key={index}
-                        >
-                          <img
-                            src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.products.banner_url}`}
-                            alt={
-                              item.products
-                                ?.name
-                            }
-                          />
-
-                          <div className="flex-grow-1">
-                            <h6>
-                              {
-                                item.products
-                                  ?.name
-                              }
-                            </h6>
-
-                            <p>
-                              Qty:{" "}
-                              {
-                                item.quantity
-                              }
-                            </p>
-                          </div>
-
-                          <strong>
-                            $
-                            {(
-                              item.price_each *
-                              item.quantity
-                            ).toFixed(2)}
-                          </strong>
-                        </div>
-                      )
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* summary */}
-              <div className="col-12">
-                <div className="modern-card">
-                  <h5>
-                    <FaMoneyBillWave />
-                    Order Summary
-                  </h5>
-
-                  <div className="summary-row">
-                    <span>
-                      Items Total
-                    </span>
-
-                    <strong>
-                      $
-                      {order.order_items
-                        .reduce(
-                          (
-                            acc,
-                            item
-                          ) =>
-                            acc +
-                            item.price_each *
-                              item.quantity,
-                          0
-                        )
-                        .toFixed(2)}
-                    </strong>
-                  </div>
-
-                  <div className="summary-row">
-                    <span>Shipping</span>
-
-                    <strong>
-                      $
-                      {order.shipping_method ===
-                      0
-                        ? "0.00"
-                        : "30.00"}
-                    </strong>
-                  </div>
-
-                  <div className="summary-total">
-                    <span>Total</span>
-
-                    <h4>
-                      $
-                      {(
-                        order.order_items.reduce(
-                          (
-                            acc,
-                            item
-                          ) =>
-                            acc +
-                            item.price_each *
-                              item.quantity,
-                          0
-                        ) +
-                        (order.shipping_method ===
-                        0
-                          ? 0
-                          : 30)
-                      ).toFixed(2)}
-                    </h4>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* cancel modal */}
-        {cancelShow && (
-          <div className="custom-modal-overlay">
-            <div className="custom-modal">
-              <h4>
-                Cancel Order
-              </h4>
-
-              <p>
-                Why are you cancelling
-                this order?
-              </p>
-
-              <select
-                className="form-select mb-3"
-                value={selectedReason}
-                onChange={(e) => {
-                  const reason =
-                    e.target.value;
-
-                  setSelectedReason(
-                    reason
-                  );
-
-                  if (
-                    reason !== "Other"
-                  ) {
-                    setRefundReason(
-                      reason
-                    );
-                  } else {
-                    setRefundReason(
-                      ""
-                    );
-                  }
-                }}
-              >
-                <option value="">
-                  Select reason
-                </option>
-
-                {predefinedReasons.map(
-                  (reason, index) => (
-                    <option
-                      key={index}
-                      value={reason}
-                    >
-                      {reason}
-                    </option>
-                  )
-                )}
-              </select>
-
-              {selectedReason ===
-                "Other" && (
-                <textarea
-                  className="form-control mb-3"
-                  rows="4"
-                  placeholder="Enter reason"
-                  value={
-                    refundReason
-                  }
-                  onChange={(e) =>
-                    setRefundReason(
-                      e.target.value
-                    )
-                  }
-                />
-              )}
-
-              <div className="modal-actions">
-                <button
-                  className="btn btn-light"
-                  onClick={() =>
-                    setCancelShow(
-                      false
-                    )
-                  }
-                >
-                  Close
-                </button>
-
-                <button
-                  className="btn btn-danger"
-                  onClick={
-                    handleCancelOrder
-                  }
-                  disabled={
-                    paymentLoading
-                  }
-                >
-                  {paymentLoading
-                    ? "Processing..."
-                    : "Cancel Order"}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-      </main>
+      </div>
     </div>
   );
 };

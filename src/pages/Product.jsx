@@ -446,10 +446,8 @@ const Product = () => {
       )}
       <div className="productSection">
         <div className=" productShowCase">{loading ? <Loading /> : <ShowProduct />}</div>
-        <div className="row my-5 py-5">
-          <div className="d-md-block">
+        <div className="row">
             <AdditionalInfo product_reviews={product?.product_reviews} />
-          </div>
         </div>
       </div>
     </>

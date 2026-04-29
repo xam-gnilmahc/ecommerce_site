@@ -2,9 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 import "./AdditionalInfo.css";
 import toast from "react-hot-toast";
 
-import user1 from "../components/assets/user-1.jpg";
-import user2 from "../components/assets/user-2.jpg";
-
 import { FaStar, FaThumbsUp, FaThumbsDown } from "react-icons/fa";
 import Rating from "@mui/material/Rating";
 import DeleteIcon from "@mui/icons-material/Delete"; // Import Delete icon
