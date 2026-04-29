@@ -19,9 +19,27 @@ const NotificationPage = () => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1); // page number for pagination
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const containerRef = useRef();
   const listRef = useRef();
+
+  const fetchUnreadCount = async () => {
+    if (!user?.id) return;
+
+    const { count, error } = await supabase
+      .from("notifications")
+      .select("*", {
+        count: "exact",
+        head: true,
+      })
+      .eq("user_id", user.id)
+      .eq("read", false);
+
+    if (!error) {
+      setUnreadCount(count || 0);
+    }
+  };
 
   // Fetch notifications in pages
   const fetchNotifications = async (pageNum) => {
@@ -74,6 +92,7 @@ const NotificationPage = () => {
 
     // Fetch first page
     fetchNotifications(1);
+    fetchUnreadCount();
 
     return () => {
       channel.unbind_all();
@@ -122,181 +141,144 @@ const NotificationPage = () => {
     fetchNotifications(page);
   }, [page]);
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
-
-  const handleNotificationClick = (id, orderId) => {
-    window.open(`/orders/${orderId}`, "_blank");
-  };
-
   const handleBellClick = async () => {
     const wasOpen = open;
     setOpen((prev) => !prev);
 
     if (!wasOpen) {
-      const unreadIds = notifications.filter((n) => !n.read).map((n) => n.id);
-      if (unreadIds.length > 0) {
         try {
-          await supabase
-            .from("notifications")
-            .update({ read: true })
-            .in("id", unreadIds);
+          const { error } = await supabase
+          .from("notifications")
+          .update({ read: true })
+          .eq("user_id", user.id)
+          .eq("read", false);
+
+          if (error) throw error;
+          
+          fetchUnreadCount();
           setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
         } catch (err) {
           console.error("Failed to mark all as read:", err.message);
         }
-      }
     }
   };
 
   return (
-    <div style={{ position: "relative" }} ref={containerRef}>
-      <div
+    <div
+      className="notification-wrapper"
+      ref={containerRef}
+    >
+      {/* BELL */}
+
+      <button
+        className="notification-bell"
         onClick={handleBellClick}
-        style={{
-          position: "relative",
-          width: "40px",
-          height: "40px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          borderRadius: "50%",
-          cursor: "pointer",
-          transition: "background-color 0.2s",
-        }}
-        onMouseEnter={(e) =>
-          (e.currentTarget.style.backgroundColor = "#e7f1fb")
-        }
-        onMouseLeave={(e) =>
-          (e.currentTarget.style.backgroundColor = "transparent")
-        }
       >
-        <div style={{ position: "relative" }}>
-          {open ? <IoIosNotifications size={30} color="#6e81c6ff"/> : <FiBell size={25} />}
-          {unreadCount > 0 && (
-            <span
-              className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-black"
-              style={{
-                transform: "translate(-50%, 10%)",
-                fontSize: "0.65rem",
-                padding: "4px 6px",
-                minWidth: "20px",
-                textAlign: "center",
-              }}
-            >
-              {unreadCount > 9 ? "9+" : unreadCount}
-            </span>
-          )}
-        </div>
-      </div>
+        {open ? (
+          <IoIosNotifications
+            size={22}
+          />
+        ) : (
+          <FiBell size={20} />
+        )}
+
+        {unreadCount > 0 && (
+          <span className="notification-count">
+            {unreadCount > 9
+              ? "9+"
+              : unreadCount}
+          </span>
+        )}
+      </button>
+
+      {/* DROPDOWN */}
+
       {open && (
-        <div
-          className="notification-dropdown card border"
-          style={{
-            position: "absolute",
-            top: "2.5rem",
-            left: "50%",
-            transform: "translateX(-50%) translateY(-10px)",
-            width: "450px",
-            height: "450px",
-            zIndex: 1050,
-            borderRadius: "16px",
-            boxShadow: "0 8px 24px rgba(0, 0, 0, 0.2)",
-            display: "flex",
-            flexDirection: "column",
-            backgroundColor: "white",
-            opacity: 0,
-            animation: "fadeSlideIn 0.3s ease forwards",
-          }}
-        >
-          <div className="card-header bg-white  d-flex justify-content-between py-3 align-items-center">
-            <h6 className="mb-0">Notifications</h6>
+        <div className="notification-dropdown">
+          {/* HEADER */}
+
+          <div className="notification-header">
+            <h4>
+              Notifications
+            </h4>
+
             <FiSettings
               size={18}
-              style={{ cursor: "pointer" }}
-              title="Notification Settings"
-              onClick={() => alert("Open settings panel here")}
             />
           </div>
 
-          <ul
-            className="list-group list-group-flush"
-            style={{ overflowY: "auto", flex: 1 }}
+          {/* LIST */}
+
+          <div
+            className="notification-list"
             ref={listRef}
             onScroll={onScroll}
           >
-            {notifications.length === 0 ? (
-              <li className="list-group-item text-center text-muted py-3">
-                No notifications to show.
-              </li>
+            {notifications.length ===
+            0 ? (
+              <div className="notification-empty">
+                No notifications
+              </div>
             ) : (
               notifications.map(
-                ({ id, order_id, message, read, created_at, type }) => (
-                  <li
+                ({
+                  id,
+                  order_id,
+                  message,
+                  created_at,
+                  type,
+                }) => (
+                  <div
                     key={id}
-                    className="list-group-item"
-                    style={{
-                      border: "none",
-                      borderBottom: "1px solid #dee2e6",
-                      padding: "16px",
-                      cursor: "pointer",
-                      display: "flex",
-                      gap: "12px",
-                      alignItems: "flex-start",
-                      backgroundColor: "white",
-                    }}
-                    onClick={() => handleNotificationClick(id, order_id)}
+                    className="notification-item"
+                    onClick={() =>
+                      window.open(
+                        `/orders/${order_id}`,
+                        "_blank"
+                      )
+                    }
                   >
-                    <div
-                      style={{
-                        width: "30px",
-                        height: "30px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        borderRadius: "50%",
-                        cursor: "pointer",
-                        backgroundColor: "#FCF7FA",
-                      }}
-                    >
-                      <IoMdCheckmark size={20} style={{ marginTop: "4px" }} />
+                    <div className="notification-icon">
+                      <IoMdCheckmark />
                     </div>
-                    <div style={{ flex: 1 }}>
-                      <div
-                        className="d-flex justify-content-between align-items-center"
-                        style={{ marginBottom: "4px" }}
-                      >
-                        <div
-                          style={{
-                            fontWeight: 600,
-                            fontSize: "0.95rem",
-                            color: "black",
-                          }}
-                        >
-                          {type === 0
-                            ? "New order placed"
-                            : type === 1
-                            ? "Out for delivery today"
+
+                    <div className="notification-content">
+                      <div className="notification-top">
+                        <h5>
+                          {type ===
+                          0
+                            ? "New Order"
+                            : type ===
+                              1
+                            ? "Out for delivery"
                             : "Order update"}
-                        </div>
-                        <div style={{ fontSize: "0.75rem", color: "black" }}>
-                          {dayjs(created_at).fromNow()}
-                        </div>
+                        </h5>
+
+                        <span>
+                          {dayjs(
+                            created_at
+                          ).fromNow()}
+                        </span>
                       </div>
-                      <div style={{ fontSize: "0.85rem", color: "black" }}>
-                        <span dangerouslySetInnerHTML={{ __html: message }} />
-                      </div>
+
+                      <p
+                        dangerouslySetInnerHTML={{
+                          __html:
+                            message,
+                        }}
+                      />
                     </div>
-                  </li>
+                  </div>
                 )
               )
             )}
-            {/* Loading indicator at bottom */}
+
             {loadingMore && (
-              <li className="list-group-item text-center text-muted py-3">
-                Loading more notifications...
-              </li>
+              <div className="notification-loading">
+                Loading...
+              </div>
             )}
-          </ul>
+          </div>
         </div>
       )}
     </div>

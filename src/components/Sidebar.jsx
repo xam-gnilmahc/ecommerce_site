@@ -1,129 +1,62 @@
 import React, { useState } from "react";
 import { NavLink, Link } from "react-router-dom";
-import {
-  BsHouseDoorFill,
-  BsBagCheck,
-} from "react-icons/bs";
-
-import {
-  FaBars,
-  FaSignOutAlt,
-} from "react-icons/fa";
-
+import { BsHouseDoorFill, BsBagCheck } from "react-icons/bs";
+import { FaBars, FaSignOutAlt } from "react-icons/fa";
 import { MdCancel } from "react-icons/md";
-
 import logo from "./assets/logo.png";
-
 import { useAuth } from "../context/authContext";
-
 import "./Sidebar.css";
 
 const links = [
-  {
-    to: "/order",
-    label: "My Orders",
-    icon: <BsBagCheck />,
-  },
-
-  {
-    to: "/return-cancel",
-    label: "Cancelled Orders",
-    icon: <MdCancel />,
-  },
+  { to: "/order", label: "Orders", icon: <BsBagCheck /> },
+  { to: "/return-cancel", label: "Cancelled", icon: <MdCancel /> },
 ];
 
 const Sidebar = () => {
   const { logout } = useAuth();
-
-  const [isOpen, setIsOpen] = useState(false);
+  const [open, setOpen] = useState(false);
 
   return (
     <>
-      {/* mobile toggle */}
+      <button className="sb-toggle" onClick={() => setOpen(true)}>
+        <FaBars />
+      </button>
 
-      {!isOpen && (
-        <button
-          className="mobile-sidebar-toggle"
-          onClick={() => setIsOpen(true)}
-        >
-          <FaBars />
-        </button>
-      )}
+      {open && <div className="sb-overlay" onClick={() => setOpen(false)} />}
 
-      {/* overlay */}
+      <aside className={`sb ${open ? "open" : ""}`}>
+        <div className="sb-top">
+          <img src={logo} className="sb-logo" />
 
-      {isOpen && (
-        <div
-          className="sidebar-overlay"
-          onClick={() => setIsOpen(false)}
-        ></div>
-      )}
+          <Link to="/" className="sb-home">
+            <BsHouseDoorFill />
+          </Link>
 
-      {/* sidebar */}
-
-      <aside
-        className={`modern-sidebar ${
-          isOpen ? "open" : ""
-        }`}
-      >
-        {/* top */}
-
-        <div className="sidebar-top">
-          <div className="sidebar-logo-wrap">
-            <img
-              src={logo}
-              alt="Logo"
-              className="sidebar-logo"
-            />
-
-            <Link to="/" className="home-btn">
-              <BsHouseDoorFill />
-            </Link>
-          </div>
-
-          <button
-            className="sidebar-close"
-            onClick={() => setIsOpen(false)}
-          >
+          <button className="sb-close" onClick={() => setOpen(false)}>
             ✕
           </button>
         </div>
 
-        {/* nav */}
-
-        <nav className="sidebar-nav">
-          {links.map(({ to, label, icon }) => (
+        <nav className="sb-nav">
+          {links.map((l) => (
             <NavLink
-              key={to}
-              to={to}
-              onClick={() => setIsOpen(false)}
+              key={l.to}
+              to={l.to}
               className={({ isActive }) =>
-                `sidebar-link ${
-                  isActive ? "active" : ""
-                }`
+                `sb-link ${isActive ? "active" : ""}`
               }
+              onClick={() => setOpen(false)}
             >
-              <span className="sidebar-icon">
-                {icon}
-              </span>
-
-              <span>{label}</span>
+              {l.icon}
+              <span>{l.label}</span>
             </NavLink>
           ))}
         </nav>
 
-        {/* bottom */}
-
-        <div className="sidebar-bottom">
-          <button
-            className="logout-btn"
-            onClick={logout}
-          >
-            <FaSignOutAlt />
-
-            <span>Logout</span>
-          </button>
-        </div>
+        <button className="sb-logout" onClick={logout}>
+          <FaSignOutAlt />
+          Logout
+        </button>
       </aside>
     </>
   );
