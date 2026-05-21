@@ -25,7 +25,7 @@ const Products = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const lastExecutedQuery = useRef("");
-  const postsPerPage = 12;
+  const postsPerPage = 20;
 
   const { user } = useAuth();
   const navigate = useNavigate();
