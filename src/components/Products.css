@@ -17,7 +17,7 @@
 }
 
 .shopDetails {
-  padding: 30px clamp(16px, 6vw, 120px);
+  padding: 10px clamp(16px, 2vw, 120px);
 }
 
 /* =========================
@@ -26,7 +26,7 @@
 
 .shopDetailMain {
   display: flex;
-  gap: 40px;
+  gap: 10px;
   align-items: flex-start;
 }
 
@@ -48,7 +48,7 @@
 .shopDetailsProductsContainer {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 24px;
+  gap: 10px;
 }
 
 /* =========================
@@ -61,16 +61,14 @@
   cursor: pointer;
 
   transition: transform 0.25s ease, box-shadow 0.25s ease;
-
-  border-radius: 14px;
 }
 
 /* MAIN HOVER EFFECT */
 .sdProductContainer:hover {
-  transform: translateY(-8px);
+  /* transform: translateY(-8px); */
 
   /* soft premium shadow */
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.10);
+  box-shadow: rgba(17, 17, 26, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.05) 0px 8px 32px;
 }
 
 .sdProductImages {
@@ -108,9 +106,9 @@
   transition: transform 0.3s ease;
 }
 
-.sdProductContainer:hover .sdProductImages img {
+/* .sdProductContainer:hover .sdProductImages img {
   transform: scale(1.07);
-}
+} */
 
 /* =========================
    ADD TO CART (OVERLAY)
