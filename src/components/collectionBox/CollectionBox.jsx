@@ -39,7 +39,7 @@ const CollectionBox = () => {
         </h3>
 
         <div className="col-link">
-          <Link to="/search" onClick={scrollToTop}>
+          <Link to="/search?q=iphone" onClick={scrollToTop}>
             <span className="shop-link">Shop Now</span>
           </Link>
         </div>
@@ -60,7 +60,7 @@ const CollectionBox = () => {
         </h3>
 
         <div className="col-link">
-          <Link to="/search" onClick={scrollToTop}>
+          <Link to="/search?q=ipad" onClick={scrollToTop}>
             <span className="shop-link">Shop Now</span>
           </Link>
         </div>
@@ -81,7 +81,7 @@ const CollectionBox = () => {
         </h3>
 
         <div className="col-link">
-          <Link to="/search" onClick={scrollToTop}>
+          <Link to="/search?q=watch" onClick={scrollToTop}>
             <span className="shop-link">Shop Now</span>
           </Link>
         </div>
@@ -97,12 +97,12 @@ const CollectionBox = () => {
         viewport={{ once: true, amount: 0.3 }}
       >
         <h3 className="col-h3">
-          <span>E-gift</span> Cards
+          <span>Ear bud</span> Collection
         </h3>
         <p className="col-p">Surprise someone with the gift they really want.</p>
 
         <div className="col-link">
-          <Link to="/search" onClick={scrollToTop}>
+          <Link to="/search?q=earbud" onClick={scrollToTop}>
             <span className="shop-link">Shop Now</span>
           </Link>
         </div>

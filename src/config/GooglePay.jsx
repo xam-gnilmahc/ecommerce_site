@@ -21,8 +21,7 @@ export const paymentRequest = {
         parameters: {
           gateway: "stripe",
           "stripe:version": "2018-10-31",
-          "stripe:publishableKey":
-            "pk_test_51TN3nmCgcdDcdyhzt0ZVbDM3VaZK12ReZAXDwZPFRM62Zmt75hwJvQqXxeqm1C0FSm4EYFZoBrGgNiVKQ8iEuJdx000TlKifsq",
+          "stripe:publishableKey":`${process.env.REACT_APP_STRIPE_URL}`,
         },
       },
     },

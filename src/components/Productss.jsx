@@ -206,7 +206,7 @@ const Products = () => {
           currentPosts.map((product) => (
             <div key={product.id} className="sdProductContainer">
               <div className="sdProductImages">
-                <Link to={`/product/${product.id}`} target="_blank" rel="noopener noreferrer">
+                <Link to={`/product/${product.id}`}  rel="noopener noreferrer">
                   <img
                     src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${product.banner_url}`}
                     alt={product.name}

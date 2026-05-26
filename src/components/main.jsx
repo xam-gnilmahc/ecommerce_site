@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { FiSearch } from "react-icons/fi";
 import "./Main.css";
 
 const images = [
@@ -9,14 +10,7 @@ const images = [
 
 const Home = () => {
   const [search, setSearch] = useState("");
-  const [loaded, setLoaded] = useState(false);
-  const [currentImage, setCurrentImage] = useState("");
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const randomImage = images[Math.floor(Math.random() * images.length)];
-    setCurrentImage(randomImage);
-  }, []);
 
   const handleSearch = (e) => {
     if (e.key === "Enter") {
@@ -25,61 +19,33 @@ const Home = () => {
     }
   };
 
+  const handleSearchClick = () => {
+    if (!search.trim()) return;
+    navigate(`/search?q=${encodeURIComponent(search.trim())}`);
+  };
+
+  const quickTags = ["iPhone 15", "MacBook", "AirPods", "Samsung", "Gaming"];
+
   return (
-    <div className="heroSearchFull">
+    <div className="heroWrap">
+      <div className="heroBg" />
+      <div className="heroGrid" />
+      <div className="heroGlow" />
 
-      {/* BACKGROUND IMAGE */}
-      {currentImage && (
-        <img
-          src={currentImage}
-          alt="hero"
-          className={`bgImage ${loaded ? "show" : ""}`}
-          onLoad={() => setLoaded(true)}
-        />
-      )}
+      <div className="heroContent">
+        <div className="heroBadge">
+          <span className="heroDot" />
+          Premium tech collection
+        </div>
 
-      {/* OVERLAY */}
-      <div className="overlay"></div>
+        <h1 className="heroTitle">
+          Find your perfect <em>tech</em>
+        </h1>
 
-      {/* CONTENT */}
-      <motion.div
-        className="heroContent"
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.9 }}
-      >
-        <motion.p
-          className="heroTag"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-        >
-          Premium Tech Collection
-        </motion.p>
+        <p className="heroSub">Mobiles · Laptops · Accessories · Smart deals</p>
 
-        {/* <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-        >
-          Find Your Perfect Tech
-        </motion.h1> */}
-
-        {/* <motion.p
-          className="heroSubText"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-        >
-          Mobiles • Laptops • Accessories • Smart Deals
-        </motion.p> */}
-
-        <motion.div
-          className="heroSearchBox"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-        >
+        <div className="searchWrap">
+          <FiSearch className="searchIcon" />
           <input
             type="text"
             placeholder="Search premium products..."
@@ -87,10 +53,24 @@ const Home = () => {
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={handleSearch}
           />
-        </motion.div>
-      </motion.div>
+          <button className="searchBtn" onClick={handleSearchClick}>
+            Search
+          </button>
+        </div>
+
+        <div className="heroTags">
+          {quickTags.map((tag) => (
+            <div
+              key={tag}
+              className="heroTag"
+              onClick={() => navigate(`/search?q=${encodeURIComponent(tag)}`)}
+            >
+              {tag}
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
-
 export default Home;

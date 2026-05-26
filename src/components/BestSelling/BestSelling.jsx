@@ -71,11 +71,11 @@ const BestSelling = () => {
           autoplay={{ delay: 2500 }}
           modules={[Navigation, Autoplay]}
           breakpoints={{
-            320: { slidesPerView: 2, spaceBetween: 14 },
-            640: { slidesPerView: 2, spaceBetween: 16 },
-            768: { slidesPerView: 3, spaceBetween: 20 },
-            1024: { slidesPerView: 4, spaceBetween: 24 },
-            1280: { slidesPerView: 5, spaceBetween: 26 },
+            320: { slidesPerView: 2, spaceBetween: 1 },
+            640: { slidesPerView: 2, spaceBetween: 1 },
+            768: { slidesPerView: 3, spaceBetween: 2 },
+            1024: { slidesPerView: 4, spaceBetween: 2 },
+            1280: { slidesPerView: 5, spaceBetween: 2 },
           }}
         >
           {loading
