@@ -545,13 +545,10 @@ export const AuthProvider = ({ children }) => {
               amount,
               description
             )
-          ),
-          orderpayments_logs(
-          *)
+          )
         `
         )
         .eq("user_id", memoizedUser.id)
-        .neq("status", "Cancelled")
         .order("created_at", { ascending: false });
 
       if (error) {

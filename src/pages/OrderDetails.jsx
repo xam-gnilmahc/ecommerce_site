@@ -2,12 +2,10 @@ import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import Skeleton from "react-loading-skeleton";
-import toast from "react-hot-toast";
 
 import {
   FaMapMarkerAlt,
   FaUser,
-  FaFileInvoice,
   FaMoneyBillWave,
   FaCcVisa,
   FaGooglePay,
@@ -16,36 +14,55 @@ import {
 
 import "./orderDetails.css";
 
+const TRACK_STEPS = ["Placed", "Confirmed", "Shipped", "Out for Delivery", "Delivered"];
+
+const STATUS_DONE_MAP = {
+  Placed:             () => true,
+  Confirmed:          (s) => ["Confirmed", "Shipped Out", "Out for Delivery", "Delivered"].includes(s),
+  Shipped:            (s) => ["Shipped Out", "Out for Delivery", "Delivered"].includes(s),
+  "Out for Delivery": (s) => ["Out for Delivery", "Delivered"].includes(s),
+  Delivered:          (s) => s === "Delivered",
+};
+
+const STATUS_DESC = {
+  Pending:           "Your order is waiting for confirmation",
+  Confirmed:         "Seller has confirmed your order",
+  "Shipped Out":     "Your order is on the way",
+  "Out for Delivery":"Delivery partner is near you",
+  Delivered:         "Order delivered successfully 🎉",
+  Cancelled:         "Order has been cancelled",
+};
+
 const OrderDetailsPage = () => {
   const { orderId } = useParams();
-  const navigate = useNavigate();
-
   const { getOrderDetails, user } = useAuth();
 
   const [loading, setLoading] = useState(true);
   const [order, setOrder] = useState(null);
 
-  const designRef = useRef();
-
   useEffect(() => {
-    const load = async () => {
+    (async () => {
       setLoading(true);
       const data = await getOrderDetails(orderId);
       setOrder(data);
       setLoading(false);
-    };
-
-    load();
+    })();
   }, [orderId]);
 
-  const parseAddress = (str) => {
-    try {
-      return JSON.parse(str);
-    } catch {
-      return null;
-    }
-  };
+  if (loading) {
+    return (
+      <div className="od-page">
+        <div className="od-container">
+          <Skeleton height={160} borderRadius={24} style={{ marginBottom: 16 }} />
+          <Skeleton height={320} borderRadius={24} style={{ marginBottom: 16 }} />
+          <Skeleton height={200} borderRadius={24} />
+        </div>
+      </div>
+    );
+  }
 
+  /* helpers */
+  const parseAddress = (str) => { try { return JSON.parse(str); } catch { return null; } };
   const address = parseAddress(order?.shipping_address);
 
   const getPaymentIcon = (m) => {
@@ -55,163 +72,152 @@ const OrderDetailsPage = () => {
     return <FaMoneyBillWave />;
   };
 
-  if (loading) {
-    return (
-      <div className="od-container">
-        <Skeleton height={120} />
-        <Skeleton height={200} />
-        <Skeleton height={200} />
-      </div>
-    );
-  }
+  const total = order?.order_items?.reduce((a, b) => a + b.price_each * b.quantity, 0) ?? 0;
+
+  /* tracking progress width */
+  const doneCount = TRACK_STEPS.filter((s) => STATUS_DONE_MAP[s]?.(order?.status)).length;
+  const progressPct = doneCount <= 1 ? 0 : ((doneCount - 1) / (TRACK_STEPS.length - 1)) * 80;
+
+  const statusKey = (order?.status ?? "").toLowerCase().replace(/ /g, "\\ ");
 
   return (
     <div className="od-page">
-      <div className="od-container" ref={designRef}>
+      <div className="od-container">
+        <div className="od-receipt">
 
-        {/* HEADER */}
-        <div className="od-header">
-          <div>
-            <h2>Order #{order?.id}</h2>
-            <p>Tracking: {order?.tracking_number}</p>
+          {/* ── TOP BAND ─────────────────────────────────── */}
+          <div className="od-top-band">
+            <div className="od-brand">
+              <span className="od-brand-name">UOM</span>
+              <span className="od-brand-label">Order Receipt</span>
+            </div>
+
+            <div className="od-top-meta">
+              <span className="od-order-number">
+                Order <span>#{order?.id}</span>
+              </span>
+              <span className="od-tracking-number">
+                {order?.tracking_number}
+              </span>
+              <button className="od-invoice-btn" onClick={() => window.print()}>
+                Print Invoice
+              </button>
+            </div>
           </div>
 
-          <div className="od-actions">
-            {/* <button onClick={() => navigate(-1)}>Back</button> */}
-            <button onClick={() => window.print()}>Invoice</button>
-          </div>
-        </div>
-
-        {/* STATUS */}
-        <div className="od-status-bar">
-          <div className={`od-status-pill ${order.status?.toLowerCase()}`}>
-            {order.status}
+          {/* ── STATUS ROW ───────────────────────────────── */}
+          <div className="od-status-row">
+            <span className={`od-status-pill ${statusKey}`}>
+              {order?.status}
+            </span>
+            <span className="od-status-desc">
+              {STATUS_DESC[order?.status] ?? ""}
+            </span>
           </div>
 
-          <div className="od-status-text">
-            {order.status === "Pending" && "Your order is waiting for confirmation"}
-            {order.status === "Confirmed" && "Seller has confirmed your order"}
-            {order.status === "Shipped Out" && "Your order is on the way"}
-            {order.status === "Out for Delivery" && "Delivery partner is near you"}
-            {order.status === "Delivered" && "Order delivered successfully 🎉"}
-            {order.status === "Cancelled" && "Order has been cancelled"}
+          {/* ── TRACKING ─────────────────────────────────── */}
+          <div className="od-track-section">
+            <p className="od-section-label">Tracking</p>
+
+            <div className="od-track-wrapper">
+              <div className="od-track-line-bg" />
+              <div
+                className="od-track-line-fill"
+                style={{ width: `${progressPct}%` }}
+              />
+
+              {TRACK_STEPS.map((step, i) => {
+                const done = STATUS_DONE_MAP[step]?.(order?.status);
+                return (
+                  <div key={i} className={`od-track-step ${done ? "done" : ""}`}>
+                    <div className="od-track-circle">
+                      {done ? "✓" : i + 1}
+                    </div>
+                    <div className="od-track-label">{step}</div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
 
-        {/* GRID */}
-        <div className="od-grid">
+          <hr className="od-divider" />
 
-          {/* SHIPPING */}
-          <div className="od-card">
-            <h4>Shipping Address</h4>
+          {/* ── META GRID ────────────────────────────────── */}
+          <div className="od-meta-grid">
 
-            <p><FaUser /> {user?.name}</p>
+            {/* Shipping */}
+            <div className="od-meta-block">
+              <p className="od-section-label">Shipping Address</p>
+              <div className="od-meta-row">
+                <FaUser />
+                <span>{user?.name}</span>
+              </div>
+              {address && (
+                <div className="od-meta-row">
+                  <FaMapMarkerAlt />
+                  <span>
+                    {address.addressLine1}
+                    {address.state ? `, ${address.state}` : ""}
+                  </span>
+                </div>
+              )}
+            </div>
 
-            <p>
-              <FaMapMarkerAlt />
-              {address?.addressLine1}, {address?.state}
-            </p>
+            {/* Payment */}
+            <div className="od-meta-block">
+              <p className="od-section-label">Payment</p>
+              {order?.orderpayments_logs?.map((l, i) => (
+                <div className="od-pay-row" key={i}>
+                  {getPaymentIcon(l.payment_method)}
+                  <span className="od-pay-amount">${l.amount}</span>
+                  <span className="od-pay-status">{l.status}</span>
+                </div>
+              ))}
+            </div>
+
           </div>
 
-          {/* PAYMENT */}
-          <div className="od-card">
-            <h4>Payments</h4>
+          <hr className="od-divider" />
 
-            {order.orderpayments_logs?.map((l, i) => (
-              <div className="od-row" key={i}>
-                {getPaymentIcon(l.payment_method)}
-                <span>${l.amount}</span>
-                <span>{l.status}</span>
+          {/* ── ITEMS ────────────────────────────────────── */}
+          <div className="od-items-section">
+            <p className="od-section-label">Items Ordered</p>
+
+            {order?.order_items?.map((item, i) => (
+              <div className="od-item" key={i}>
+                <div className="od-item-img">
+                  <img
+                    src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.products.banner_url}`}
+                    alt={item.products?.name}
+                  />
+                </div>
+
+                <div className="od-item-info">
+                  <p className="od-item-name">{item.products?.name}</p>
+                  <p className="od-item-qty">Qty: {item.quantity}</p>
+                </div>
+
+                <div className="od-item-price">
+                  ${(item.price_each * item.quantity).toFixed(2)}
+                </div>
               </div>
             ))}
           </div>
 
-        </div>
+          {/* ── FOOTER / TOTAL ───────────────────────────── */}
+          <div className="od-footer">
+            <p className="od-footer-note">
+              Thank you for your order.<br />
+              Questions? Contact our support team.
+            </p>
 
-        {/* TRACKING TIMELINE */}
-<div className="od-section">
-  <h4 className="od-section-title">Order Tracking</h4>
-
-  <div className="od-track-wrapper">
-
-    {/* BASE LINE */}
-    <div className="od-track-line-bg" />
-
-    {[
-      "Placed",
-      "Confirmed",
-      "Shipped",
-      "Out for Delivery",
-      "Delivered",
-    ].map((step, i) => {
-
-      const statusMap = {
-        Placed: true,
-        Confirmed: ["Confirmed", "Shipped Out", "Out for Delivery", "Delivered"].includes(order.status),
-        Shipped: ["Shipped Out", "Out for Delivery", "Delivered"].includes(order.status),
-        "Out for Delivery": ["Out for Delivery", "Delivered"].includes(order.status),
-        Delivered: order.status === "Delivered",
-      };
-
-      const done = statusMap[step];
-
-      return (
-        <div key={i} className={`od-track-step ${done ? "done" : ""}`}>
-          <div className="od-track-circle">
-            {done ? "✓" : i + 1}
+            <div className="od-total-block">
+              <span className="od-total-label">Total Paid</span>
+              <span className="od-total-amount">${total.toFixed(2)}</span>
+            </div>
           </div>
 
-          <div className="od-track-label">{step}</div>
         </div>
-      );
-    })}
-
-  </div>
-</div>
-
-        {/* PRODUCTS */}
-        <div className="od-section">
-          <h4 className="od-section-title">Products</h4>
-
-          {order.order_items?.map((item, i) => (
-            <div className="od-product" key={i}>
-
-              {/* IMAGE */}
-              <div className="od-product-img">
-                <img
-                  src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.products.banner_url}`}
-                  alt={item.products?.name}
-                />
-              </div>
-
-              {/* INFO */}
-              <div className="od-product-info">
-                <h5>{item.products?.name}</h5>
-
-                <p className="od-product-sub">
-                  Qty: <span>{item.quantity}</span>
-                </p>
-              </div>
-
-              {/* PRICE */}
-              <div className="od-product-price">
-                <span>₹{(item.price_each * item.quantity).toFixed(2)}</span>
-              </div>
-
-            </div>
-          ))}
-        </div>
-
-        {/* SUMMARY */}
-        <div className="od-summary">
-          <h3>
-            Total: $
-            {order.order_items
-              .reduce((a, b) => a + b.price_each * b.quantity, 0)
-              .toFixed(2)}
-          </h3>
-        </div>
-
       </div>
     </div>
   );

@@ -26,7 +26,7 @@ import PaymentsPage from "./pages/PaymentsPage";
 import ForgotPassword from "./pages/ForgotPassword";
 import CronJob from "./pages/CronJob";
 import NotificationPage from "./pages/NotificationPage";
-import NotificationSettings from "./pages/NotificationSetting";
+import NotificationSettings from "./pages/SetttingPage";
 
 
 // Layouts
@@ -62,7 +62,7 @@ const RoutesComponent = () => (
       <Route path="/return-cancel" element={<CancelledOrderPage />} />
       <Route path="/orders/:orderId" element={<OrderDetailsPage />} />
       <Route path="/notification" element={<NotificationPage />} />
-      <Route path="/notification-settings" element={<NotificationSettings />} />
+      <Route path="/settings" element={<NotificationSettings />} />
     </Route>
   </Routes>
 );
