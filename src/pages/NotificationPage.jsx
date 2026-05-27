@@ -88,6 +88,7 @@ const NotificationPage = () => {
         },
         ...prev,
       ]);
+      setUnreadCount((prev) => prev + 1);
     });
 
     // Fetch first page
