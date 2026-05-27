@@ -40,16 +40,16 @@ const getPaymentIcon = (m) => {
 const OrdersPage = () => {
   const { fetchUserOrders, getOrderDetails, user } = useAuth();
 
-  const [orders, setOrders]               = useState([]);
+  const [orders, setOrders]                   = useState([]);
   const [cancelledOrders, setCancelledOrders] = useState([]);
-  const [showCancelled, setShowCancelled] = useState(false);
-  const [loading, setLoading]             = useState(true);
-  const hasFetched                        = useRef(false);
+  const [showCancelled, setShowCancelled]     = useState(false);
+  const [loading, setLoading]                 = useState(true);
+  const hasFetched                            = useRef(false);
 
-  const [selectedOrder, setSelectedOrder]   = useState(null);
-  const [detailLoading, setDetailLoading]   = useState(false);
-  const [activeId, setActiveId]             = useState(null);
-  const [panelOpen, setPanelOpen]           = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [activeId, setActiveId]           = useState(null);
+  const [panelOpen, setPanelOpen]         = useState(false);
 
   useEffect(() => {
     if (hasFetched.current) return;
@@ -65,10 +65,7 @@ const OrdersPage = () => {
   }, []);
 
   const handleOrderClick = async (orderId) => {
-    if (activeId === orderId && panelOpen) {
-      handleClose();
-      return;
-    }
+    if (activeId === orderId && panelOpen) { handleClose(); return; }
     setActiveId(orderId);
     setPanelOpen(true);
     setDetailLoading(true);
@@ -91,21 +88,21 @@ const OrdersPage = () => {
 
   const getStatusIcon = (status) => {
     switch (status?.toLowerCase()) {
-      case "pending":    return <FaClock />;
+      case "pending":      return <FaClock />;
       case "confirmed":
-      case "packed":     return <FaBoxOpen />;
-      case "shipped out": return <FaTruck />;
-      case "delivered":  return <FaCheckCircle />;
-      default:           return <FaBoxOpen />;
+      case "packed":       return <FaBoxOpen />;
+      case "shipped out":  return <FaTruck />;
+      case "delivered":    return <FaCheckCircle />;
+      default:             return <FaBoxOpen />;
     }
   };
 
-  const order     = selectedOrder;
-  const address   = parseAddress(order?.shipping_address);
-  const total     = order?.order_items?.reduce((a, b) => a + b.price_each * b.quantity, 0) ?? 0;
-  const doneCount = TRACK_STEPS.filter((s) => STATUS_DONE_MAP[s]?.(order?.status)).length;
+  const order       = selectedOrder;
+  const address     = parseAddress(order?.shipping_address);
+  const total       = order?.order_items?.reduce((a, b) => a + b.price_each * b.quantity, 0) ?? 0;
+  const doneCount   = TRACK_STEPS.filter((s) => STATUS_DONE_MAP[s]?.(order?.status)).length;
   const progressPct = doneCount <= 1 ? 0 : ((doneCount - 1) / (TRACK_STEPS.length - 1)) * 80;
-  const statusKey = (order?.status ?? "").toLowerCase().replace(/ /g, "-");
+  const statusKey   = (order?.status ?? "").toLowerCase().replace(/ /g, "-");
 
   return (
     <>
@@ -115,6 +112,12 @@ const OrdersPage = () => {
 
           {/* ── LIST COLUMN ─────────────────────────────── */}
           <div className="orders-list-col">
+
+            {/* Page heading */}
+            {/* <p className="orders-page-label">Account</p>
+            <h1 className="orders-page-title">My <em>orders</em></h1> */}
+
+            {/* Toggle */}
             <div className="orders-toggle-wrapper">
               <div className="toggle-slider">
                 <div className={`toggle-highlight ${showCancelled ? "right" : ""}`} />
@@ -127,8 +130,8 @@ const OrdersPage = () => {
               <div className="order-list">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <div className="order-card" key={i}>
-                    <Skeleton height={18} width={160} />
-                    <Skeleton height={80} />
+                    <Skeleton height={18} width={160} style={{ marginBottom: 10 }} />
+                    <Skeleton height={80} style={{ marginBottom: 8 }} />
                     <Skeleton height={40} />
                   </div>
                 ))}
@@ -142,7 +145,7 @@ const OrdersPage = () => {
                     onClick={() => handleOrderClick(order.id)}
                   >
                     <div className="order-top">
-                      <div className="tracking">Tracking: {order.tracking_number || "N/A"}</div>
+                      <div className="tracking">#{order.tracking_number || "N/A"}</div>
                       <div className={`status ${order.status?.toLowerCase()}`}>
                         {getStatusIcon(order.status)}
                         <span>{order.status}</span>
@@ -182,15 +185,10 @@ const OrdersPage = () => {
           <div className={`orders-detail-panel ${panelOpen ? "panel-visible" : ""}`}>
             <div className="od-panel-inner">
 
-              {/* close btn */}
-              <button className="od-close-btn" onClick={handleClose}>
-                <FaTimes />
-              </button>
+              <button className="od-close-btn" onClick={handleClose}><FaTimes /></button>
 
               {detailLoading ? (
                 <div className="od-skeleton-wrap">
-
-                  {/* top band */}
                   <div className="skel-band">
                     <div className="skel-band-left">
                       <Skeleton width={60} height={22} borderRadius={4} />
@@ -202,29 +200,22 @@ const OrdersPage = () => {
                       <Skeleton width={90} height={24} borderRadius={999} style={{ marginTop: 7 }} />
                     </div>
                   </div>
-
-                  {/* status row */}
                   <div className="skel-status-row">
                     <Skeleton width={80} height={24} borderRadius={999} />
                     <Skeleton width={160} height={13} borderRadius={4} />
                   </div>
-
-                  {/* tracking steps */}
                   <div className="skel-track-section">
                     <Skeleton width={70} height={10} borderRadius={4} style={{ marginBottom: 16 }} />
                     <div className="skel-track-steps">
                       {Array.from({ length: 5 }).map((_, i) => (
                         <div className="skel-track-step" key={i}>
-                          <Skeleton circle width={28} height={28} />
+                          <Skeleton circle width={26} height={26} />
                           <Skeleton width={40} height={9} borderRadius={4} style={{ marginTop: 6 }} />
                         </div>
                       ))}
                     </div>
                   </div>
-
                   <div className="skel-divider" />
-
-                  {/* meta grid */}
                   <div className="skel-meta-grid">
                     <div className="skel-meta-block">
                       <Skeleton width={100} height={10} borderRadius={4} style={{ marginBottom: 12 }} />
@@ -236,10 +227,7 @@ const OrdersPage = () => {
                       <div className="skel-meta-row"><Skeleton width={28} height={20} borderRadius={4} /><Skeleton width={50} height={13} borderRadius={4} /><Skeleton width={55} height={13} borderRadius={4} /></div>
                     </div>
                   </div>
-
                   <div className="skel-divider" />
-
-                  {/* items */}
                   <div className="skel-items-section">
                     <Skeleton width={90} height={10} borderRadius={4} style={{ marginBottom: 14 }} />
                     {Array.from({ length: 3 }).map((_, i) => (
@@ -253,8 +241,6 @@ const OrdersPage = () => {
                       </div>
                     ))}
                   </div>
-
-                  {/* footer */}
                   <div className="skel-footer">
                     <div>
                       <Skeleton width={160} height={11} borderRadius={4} />
@@ -265,8 +251,8 @@ const OrdersPage = () => {
                       <Skeleton width={80} height={24} borderRadius={4} style={{ marginTop: 5 }} />
                     </div>
                   </div>
-
                 </div>
+
               ) : order ? (
                 <>
                   {/* TOP BAND */}

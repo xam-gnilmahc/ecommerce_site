@@ -162,7 +162,7 @@ const Checkout = () => {
             <div className="ck-left">
 
               {/* step label */}
-              <p className="ck-step-label">Checkout</p>
+              {/* <p className="ck-step-label">Checkout</p> */}
               <h1 className="ck-page-title">Complete your<br /><em>order</em></h1>
 
               <form onSubmit={handleSubmit} className="ck-form">
@@ -217,7 +217,7 @@ const Checkout = () => {
                 {paymentMethod === "card" && (
                   <div className="ck-block">
                     <h2 className="ck-block-title">
-                      <span className="ck-num">02</span> Shipping method
+                      Shipping method
                     </h2>
                     <div className="ck-shipping-row">
                       <label className={`ck-ship-card ${shippingMethod === "free" ? "active" : ""}`}>
