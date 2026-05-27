@@ -29,9 +29,10 @@ const Cart = () => {
     if (!user) return;
     if (action === "increase") {
       dispatch(addToCart({ userId: user.id, product }));
-      // track increase as add-to-cart
       trackAddToCart(dispatch, user?.id, product);
-    } else if (action === "decrease") dispatch(removeFromCart({ userId: user.id, product }));
+    } else if (action === "decrease") {
+      dispatch(removeFromCart({ userId: user.id, product }));
+    }
   };
 
   const handleRemoveFromCart = (product) => {
@@ -41,10 +42,10 @@ const Cart = () => {
 
   const EmptyCart = () => (
     <div className="empty-cart">
-      <h3>Your Cart is Empty</h3>
-      <Link to="/" className="btn btn-outline-primary btn-lg mt-3">
-        Continue Shopping
-      </Link>
+      <div className="empty-cart-icon">🛒</div>
+      <h3>Your cart is empty</h3>
+      <p>Add some items before checking out</p>
+      <Link to="/" className="empty-cart-btn">Continue shopping</Link>
     </div>
   );
 
@@ -60,103 +61,128 @@ const Cart = () => {
     return (
       <section className="cart-section">
         <div className="container">
-          <div className="row g-3">
-            {/* Cart Items */}
-            <div className="col-12 col-lg-8">
+          {/* Page heading */}
+          {/* <p className="cart-page-label">Your bag</p> */}
+          <h1 className="cart-page-title">
+            Shopping<br /><em>cart</em>
+          </h1>
+
+          <div className="cart-layout">
+            {/* ── LEFT: items ─────────────────────── */}
+            <div className="cart-left">
+              <h2 className="cart-left-title">
+                Items ({totalItems})
+              </h2>
+
               <div className="cart-items">
-                <h5>🛒 Shopping Cart</h5>
                 {cart.map((item) => (
                   <div key={item.id} className="cart-item">
+                    {/* Remove */}
                     <button
                       onClick={() => handleRemoveFromCart(item.products)}
                       className="remove-btn"
+                      aria-label="Remove item"
                     >
-                      <FaTimes size={14} />
+                      <FaTimes size={11} />
                     </button>
 
-                    <div className="cart-item-inner">
+                    {/* Image */}
+                    <div className="cart-item-img">
                       <img
                         src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.products.banner_url}`}
                         alt={item.products.name}
                       />
+                    </div>
 
-                      <div className="cart-item-details">
-                        <h6  title={item.products.name}>{item.products.name}</h6>
-                        <p>
-                          {item.products.description.length > 80
-                            ? item.products.description.slice(0, 80) + "..."
-                            : item.products.description}
-                        </p>
-                        <div className="rating">
-                          {Array.from({ length: 5 }, (_, i) => {
-                            const rating = item.products?.rating || 0;
-                            return (
-                              <i
-                                key={i}
-                                className={`fa ${rating >= i + 1
-                                    ? "fa-star"
-                                    : rating >= i + 0.5
-                                      ? "fa-star-half-o"
-                                      : "fa-star-o"
-                                  } text-warning`}
-                              />
-                            );
-                          })}
-                        </div>
+                    {/* Details */}
+                    <div className="cart-item-details">
+                      <h6 title={item.products.name}>{item.products.name}</h6>
+                      <p>
+                        {item.products.description.length > 80
+                          ? item.products.description.slice(0, 80) + "…"
+                          : item.products.description}
+                      </p>
 
-                        {/* Quantity */}
-                        <div className="quantity-control">
-                          <button
-                            className="qty-btn"
-                            onClick={() => updateItemQuantity(item.products, "decrease")}
-                          >
-                            -
-                          </button>
-                          <span>{item.quantity}</span>
-                          <button
-                            className="qty-btn"
-                            onClick={() => updateItemQuantity(item.products, "increase")}
-                          >
-                            +
-                          </button>
-                        </div>
+                      {/* Stars */}
+                      <div className="rating">
+                        {Array.from({ length: 5 }, (_, i) => {
+                          const rating = item.products?.rating || 0;
+                          return (
+                            <i
+                              key={i}
+                              className={`fa ${
+                                rating >= i + 1
+                                  ? "fa-star"
+                                  : rating >= i + 0.5
+                                  ? "fa-star-half-o"
+                                  : "fa-star-o"
+                              }`}
+                            />
+                          );
+                        })}
                       </div>
+
+                      {/* Qty */}
+                      <div className="quantity-control">
+                        <button
+                          className="qty-btn"
+                          onClick={() => updateItemQuantity(item.products, "decrease")}
+                        >
+                          −
+                        </button>
+                        <span>{item.quantity}</span>
+                        <button
+                          className="qty-btn"
+                          onClick={() => updateItemQuantity(item.products, "increase")}
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Price */}
+                    <div className="cart-item-price">
+                      ${(item.amount * item.quantity).toFixed(2)}
                     </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Order Summary */}
-            <div className="col-12 col-lg-4">
-              <div className="order-summary">
-                <h5>📦 Order Summary</h5>
-                <ul>
-                  <li>
-                    <span>
-                      Subtotal ({totalItems})
+            {/* ── RIGHT: summary ──────────────────── */}
+            <div className="cart-right">
+              <div className="cart-summary">
+                <h2 className="cart-summary-title">Order summary</h2>
+
+                <ul className="cart-totals">
+                  <li className="cart-total-row">
+                    <span className="row-label">
+                      Subtotal ({totalItems} items)
                       <FaQuestion className="info-icon" />
                     </span>
                     <span>${Math.round(subtotal)}</span>
                   </li>
-                  <li>
+                  <li className="cart-total-row">
                     <span>Shipping</span>
-                    <span>$0</span>
+                    <span className="cart-free">Free</span>
                   </li>
-                  <li>
-                    <span>
-                      Estimated Tax <FaQuestion className="info-icon" />
+                  <li className="cart-total-row">
+                    <span className="row-label">
+                      Estimated tax <FaQuestion className="info-icon" />
                     </span>
-                    <span>-</span>
+                    <span style={{ color: "var(--ck-muted)" }}>—</span>
                   </li>
-                  <li className="total">
+                  <li className="cart-total-row cart-total-row--final">
                     <span>Total</span>
                     <span>${Math.round(subtotal)}</span>
                   </li>
                 </ul>
-                <Link to="/checkout" className="btn btn-primary w-100">
-                  Checkout
+
+                <Link to="/checkout" className="cart-checkout-btn">
+                  Proceed to checkout
                 </Link>
+
+                <p className="cart-secure-note">🔒 Payments secured by Stripe</p>
               </div>
             </div>
           </div>
@@ -165,48 +191,36 @@ const Cart = () => {
     );
   };
 
-  // Skeleton Loader for Cart Items
   const CartSkeleton = () => (
     <section className="cart-section">
       <div className="container">
-        <div className="row g-3">
-          {/* Cart Items Skeleton */}
-          <div className="col-12 col-lg-8">
-            <div className="cart-items">
-              <Skeleton height={40} width={200} className="mb-3" />
-              {Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="cart-item skeleton-card mb-3 p-3 rounded-3">
-                  <div className="cart-item-inner">
-                    <Skeleton width={100} height={100} />
-                    <div className="cart-item-details flex-grow-1 ms-3">
-                      <Skeleton height={20} width="70%" className="mb-2" />
-                      <Skeleton height={15} width="90%" className="mb-2" />
-                      <Skeleton height={15} width="50%" className="mb-2" />
-                      <div className="d-flex gap-2 mt-2">
-                        <Skeleton width={35} height={35} />
-                        <Skeleton width={40} height={35} />
-                        <Skeleton width={35} height={35} />
-                      </div>
-                    </div>
-                  </div>
+        <Skeleton height={14} width={80} style={{ marginBottom: 10 }} />
+        <Skeleton height={52} width={260} style={{ marginBottom: 48 }} />
+        <div className="cart-layout">
+          <div className="cart-left">
+            <Skeleton height={20} width={160} style={{ marginBottom: 24 }} />
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} style={{ display: "flex", gap: 16, padding: "20px 0", borderBottom: "1px solid #e8e8e8" }}>
+                <Skeleton width={72} height={72} borderRadius={12} />
+                <div style={{ flex: 1 }}>
+                  <Skeleton height={14} width="60%" style={{ marginBottom: 6 }} />
+                  <Skeleton height={12} width="80%" style={{ marginBottom: 10 }} />
+                  <Skeleton height={32} width={96} borderRadius={8} />
+                </div>
+                <Skeleton height={20} width={50} />
+              </div>
+            ))}
+          </div>
+          <div className="cart-right">
+            <div className="cart-summary">
+              <Skeleton height={22} width={140} style={{ marginBottom: 24 }} />
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
+                  <Skeleton height={14} width={120} />
+                  <Skeleton height={14} width={50} />
                 </div>
               ))}
-            </div>
-          </div>
-
-          {/* Order Summary Skeleton */}
-          <div className="col-12 col-lg-4">
-            <div className="order-summary skeleton-card p-4 rounded-3">
-              <Skeleton height={30} width={180} className="mb-3" />
-              <ul>
-                {Array.from({ length: 4 }).map((_, i) => (
-                  <li key={i} className="d-flex justify-content-between mb-2">
-                    <Skeleton height={15} width={120} />
-                    <Skeleton height={15} width={50} />
-                  </li>
-                ))}
-              </ul>
-              <Skeleton height={40} width="100%" className="mt-3 rounded-pill" />
+              <Skeleton height={56} borderRadius={12} style={{ marginTop: 24 }} />
             </div>
           </div>
         </div>
@@ -214,11 +228,10 @@ const Cart = () => {
     </section>
   );
 
-
   return (
     <>
       <Navbar />
-      <div className="container py-4">
+      <div className="cart-root">
         {fetchLoading ? <CartSkeleton /> : cart.length ? <ShowCart /> : <EmptyCart />}
       </div>
     </>
