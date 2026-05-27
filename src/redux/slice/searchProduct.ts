@@ -26,19 +26,62 @@ export const searchProducts = createAsyncThunk<
   'search/searchProducts',
   async (searchTerm, { rejectWithValue }) => {
     try {
-      // Example: searching in 'name', 'brand', 'type', 'category' columns using ilike (case-insensitive partial match)
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .or(
-          `name.ilike.%${searchTerm}%,brand.ilike.%${searchTerm}%,type.ilike.%${searchTerm}%,category.ilike.%${searchTerm}%`
-        )
-        .limit(1000);
+      const raw = searchTerm.trim();
+      if (!raw) return [];
 
-      if (error) return rejectWithValue(error.message);
-      if (!data) return rejectWithValue('No products found');
+      // Split into individual words, dedupe, ignore empty
+      const words = [...new Set(raw.toLowerCase().split(/\s+/).filter(Boolean))];
 
-      return data;
+      const FIELDS = ['name', 'brand', 'type', 'category'];
+
+      // Build one OR filter per word: every word must match at least one field
+      // e.g. "nike red" → (name|brand|type|category ilike %nike%) AND (...%red%)
+      // We run one query per word then intersect by id for AND logic,
+      // OR merge all for OR logic — chose AND so "nike shoes" is more precise
+      const queries = words.map((word) =>
+        supabase
+          .from('products')
+          .select('*')
+          .or(FIELDS.map((f) => `${f}.ilike.%${word}%`).join(','))
+          .limit(500)
+      );
+
+      const results = await Promise.all(queries);
+
+      // Check errors
+      for (const r of results) {
+        if (r.error) return rejectWithValue(r.error.message);
+      }
+
+      // Intersect by id (AND logic: product must match ALL words)
+      const sets = results.map(
+        (r) => new Map((r.data ?? []).map((p) => [p.id, p]))
+      );
+
+      const [first, ...rest] = sets;
+      const intersected: Product[] = [];
+
+      first.forEach((product, id) => {
+        if (rest.every((s) => s.has(id))) intersected.push(product);
+      });
+
+      if (!intersected.length) return rejectWithValue('No products found');
+
+      // Score by relevance: count how many fields contain the full original term
+      const scored = intersected
+        .map((p) => {
+          const haystack = FIELDS.map((f) => (p as any)[f] ?? '').join(' ').toLowerCase();
+          let score = 0;
+          // Exact full-term match = highest boost
+          if (haystack.includes(raw.toLowerCase())) score += 10;
+          // Each individual word match adds 1
+          words.forEach((w) => { if (haystack.includes(w)) score += 1; });
+          return { product: p, score };
+        })
+        .sort((a, b) => b.score - a.score)
+        .map(({ product }) => product);
+
+      return scored;
     } catch {
       return rejectWithValue('Unexpected error while searching products.');
     }

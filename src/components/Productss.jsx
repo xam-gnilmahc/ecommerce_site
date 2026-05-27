@@ -94,6 +94,7 @@ const Products = () => {
     lastExecutedQuery.current = searchQuery;
 
     setCurrentPage(1);
+    setDisplayProducts([]);
     dispatch(searchProducts(searchQuery));
     trackSearch(dispatch, user?.id, searchQuery);
   }, [searchQuery, dispatch, user?.id]);
@@ -105,6 +106,10 @@ const Products = () => {
     if (searchStatus === "success") {
       setDisplayProducts(searchResults || []);
       setCurrentPage(1);
+    }
+
+    if (searchStatus === "failed") {
+      setDisplayProducts([]);
     }
   }, [searchResults, searchStatus, searchQuery]);
 
