@@ -3,8 +3,8 @@
 ========================= */
 
 .limitedProductSection {
-  margin: 80px 0;
-  padding: 0 clamp(16px, 6vw, 120px);
+  margin: 30px 0;
+  padding: 0 clamp(10px, 4.3vw, 120px);
 }
 
 /* =========================

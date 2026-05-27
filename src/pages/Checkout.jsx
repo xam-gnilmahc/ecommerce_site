@@ -4,10 +4,7 @@ import { Link } from "react-router-dom";
 import { Country, State } from "country-state-city";
 import Skeleton from "react-loading-skeleton";
 import {
-  useStripe,
-  useElements,
-  CardElement,
-  Elements,
+  useStripe, useElements, CardElement, Elements,
 } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import GooglePayButton from '@google-pay/button-react';
@@ -19,11 +16,23 @@ import "./checkout.css";
 import { fetchTotalCart } from "../redux/slice/userCart.ts";
 import Navbar from "../components/Navbar";
 import { useAppDispatch } from "../redux/index.ts";
-import { fetchCartItems, } from "../redux/slice/userCart.ts";
+import { fetchCartItems } from "../redux/slice/userCart.ts";
 import { trackPurchase } from "../utils/tracking";
 import { processCardPayment, processGooglePay } from "../service/googlePayService";
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_URL);
+
+const CARD_STYLE = {
+  style: {
+    base: {
+      fontSize: "15px",
+      fontFamily: "'DM Sans', sans-serif",
+      color: "#0a0a0a",
+      "::placeholder": { color: "#bbb" },
+    },
+    invalid: { color: "#ef4444" },
+  },
+};
 
 const Checkout = () => {
   const { user, placeOrder } = useAuth();
@@ -31,42 +40,30 @@ const Checkout = () => {
   const stripe = useStripe();
   const elements = useElements();
 
-  const { items: cart, fetchLoading: loading } = useSelector((state) => state.addToCart);
+  const { items: cart, fetchLoading: loading } = useSelector((s) => s.addToCart);
 
-  // States for form fields, loading, payment method, etc.
-  const [email, setEmail] = useState(user?.email || "");
-  const [name, setName] = useState(user?.full_name || "");
-  const [addressLine1, setAddressLine1] = useState("");
-  const [addressLine2, setAddressLine2] = useState("");
-  const [zipCode, setZipCode] = useState("");
+  const [email, setEmail]                 = useState(user?.email || "");
+  const [name, setName]                   = useState(user?.full_name || "");
+  const [addressLine1, setAddressLine1]   = useState("");
+  const [addressLine2, setAddressLine2]   = useState("");
+  const [zipCode, setZipCode]             = useState("");
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedState, setSelectedState] = useState("");
-  const [states, setStates] = useState([]);
-  const [paymentLoading, setPaymentLoading] = useState(false); // Add loading state
+  const [states, setStates]               = useState([]);
+  const [paymentLoading, setPaymentLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("");
   const [paymentRequest, setPaymentRequest] = useState(null);
-  const [show, setShow] = useState(false);
+  const [show, setShow]                   = useState(false);
   const [shippingMethod, setShippingMethod] = useState("free");
-  const [showPromo, setShowPromo] = useState(false);
 
-  const getSubtotal = () => cart.reduce((sum, item) => sum + item.amount * item.quantity, 0);
-
-  const getShipping = () => (shippingMethod === "free" ? 0 : 3);
-
-  const getAddress = () => ({
-    addressLine1,
-    addressLine2,
-    country: selectedCountry,
-    state: selectedState,
-    zipCode,
-  });
+  const getSubtotal = () => cart.reduce((s, i) => s + i.amount * i.quantity, 0);
+  const getShipping = () => shippingMethod === "free" ? 0 : 3;
+  const getAddress  = () => ({ addressLine1, addressLine2, country: selectedCountry, state: selectedState, zipCode });
 
   const handleOrderSuccess = async (orderId) => {
     if (!orderId) return;
-
     dispatch(fetchTotalCart(user.id));
     await trackPurchase(dispatch, user?.id, { id: orderId, items: cart });
-
     setShow(true);
     toast.success("Payment successful!");
   };
@@ -79,535 +76,295 @@ const Checkout = () => {
     return false;
   };
 
-  // ---------------- FETCH CART ----------------
-  useEffect(() => {
-    if (user?.id) {
-      dispatch(fetchCartItems(user.id));
-    }
-  }, [user?.id]);
+  useEffect(() => { if (user?.id) dispatch(fetchCartItems(user.id)); }, [user?.id]);
 
-  // ---------------- COUNTRY ----------------
-  const handleCountryChange = (country) => {
-    setSelectedCountry(country);
-    setStates(State.getStatesOfCountry(country));
-  };
+  const handleCountryChange = (c) => { setSelectedCountry(c); setStates(State.getStatesOfCountry(c)); };
 
-  const handleStateChange = (state) => {
-    setSelectedState(state);
-  };
-
-  // ---------------- CARD PAYMENT ----------------
   const handleSubmit = async (e) => {
     e.preventDefault();
     setPaymentLoading(true);
-
     try {
-      const subtotal = getSubtotal();
-      const totalAmount = Math.round(subtotal + getShipping());
-
-      const { finalData, result } = await processCardPayment(
-        stripe,
-        elements,
-        {
-          amount: totalAmount,
-          name,
-          email,
-          address: getAddress(),
-        }
-      );
-
+      const totalAmount = Math.round(getSubtotal() + getShipping());
+      const { finalData, result } = await processCardPayment(stripe, elements, { amount: totalAmount, name, email, address: getAddress() });
       if (handlePaymentError(result)) return;
-
-      const orderId = await placeOrder(
-        { ...finalData, payment_status: "success", shippingMethod },
-        result
-      );
-
+      const orderId = await placeOrder({ ...finalData, payment_status: "success", shippingMethod }, result);
       await handleOrderSuccess(orderId);
-    } catch (err) {
-      toast.error(err.message || "Something went wrong.");
-    } finally {
-      setPaymentLoading(false);
-    }
+    } catch (err) { toast.error(err.message || "Something went wrong."); }
+    finally { setPaymentLoading(false); }
   };
 
-  // ---------------- GOOGLE PAY ----------------
   const handleLoadPaymentData = async (paymentData) => {
     setPaymentLoading(true);
-
     try {
-      const subtotal = getSubtotal();
-      const gpayShippingId = paymentData.shippingOptionData?.id;
-      const totalAmount = Math.round(subtotal + (gpayShippingId == "free" ? 0 : 3));
-
-      const { finalData, result } = await processGooglePay(paymentData, {
-        amount: totalAmount,
-        name: user?.name || user?.full_name,
-        email: user?.email || email,
-      });
-
+      const gpayId = paymentData.shippingOptionData?.id;
+      const totalAmount = Math.round(getSubtotal() + (gpayId === "free" ? 0 : 3));
+      const { finalData, result } = await processGooglePay(paymentData, { amount: totalAmount, name: user?.name || user?.full_name, email: user?.email || email });
       if (handlePaymentError(result)) return;
-
-      const orderId = await placeOrder(
-        { ...finalData, payment_status: "success", shippingMethod: gpayShippingId == "free" ? "free" : "express" },
-        result
-      );
-
+      const orderId = await placeOrder({ ...finalData, payment_status: "success", shippingMethod: gpayId === "free" ? "free" : "express" }, result);
       await handleOrderSuccess(orderId);
-    } catch (err) {
-      toast.error(err.message || "Something went wrong.");
-    } finally {
-      setPaymentLoading(false);
-    }
+    } catch (err) { toast.error(err.message || "Something went wrong."); }
+    finally { setPaymentLoading(false); }
   };
 
-  // ---------------- GOOGLE PAY REQUEST ----------------
   useEffect(() => {
     if (!cart?.length) return;
-
-    const displayItems = cart.map((item) => ({
-      label: item.products.name,
-      price: (item.amount * item.quantity).toFixed(2),
-      type: "LINE_ITEM",
-    }));
-
+    const displayItems = cart.map((i) => ({ label: i.products.name, price: (i.amount * i.quantity).toFixed(2), type: "LINE_ITEM" }));
     setPaymentRequest(buildPaymentRequest(displayItems));
   }, [cart]);
 
-
+  /* ── RENDER ── */
   return (
     <>
       {paymentLoading && (
-        <div className="payment-overlay">
-          <div className="payment-loader-box">
-            <div className="payment-spinner"></div>
-            <h3>Processing Payment...</h3>
-            <p>Please do not refresh or click anything</p>
+        <div className="ck-overlay">
+          <div className="ck-overlay-box">
+            <div className="ck-spinner" />
+            <p className="ck-overlay-title">Processing payment…</p>
+            <p className="ck-overlay-sub">Please don't refresh or navigate away</p>
           </div>
         </div>
       )}
+
       <Navbar />
-      <div className="container my-4 py-3">
-        <div className="row">
-          {loading ? (
-            <>
-              {/* Left Form Skeleton */}
-              <div className="col-12 col-lg-8">
-                <Skeleton height={30} width="40%" className="mb-3" /> {/* Delivery Info Header */}
-                <div className="row g-3 mb-3">
-                  <div className="col-md-6">
-                    <Skeleton height={40} />
-                  </div>
-                  <div className="col-md-6">
-                    <Skeleton height={40} />
+
+      <div className="ck-root">
+
+        {loading ? (
+          /* ── SKELETON ── */
+          <div className="ck-layout">
+            <div className="ck-left">
+              <Skeleton height={28} width={180} style={{ marginBottom: 24 }} />
+              {[1,2,3].map(i => <Skeleton key={i} height={52} style={{ marginBottom: 12, borderRadius: 10 }} />)}
+              <Skeleton height={28} width={160} style={{ margin: "24px 0 12px" }} />
+              {[1,2].map(i => <Skeleton key={i} height={72} style={{ marginBottom: 12, borderRadius: 12 }} />)}
+            </div>
+            <div className="ck-right">
+              <Skeleton height={28} width={140} style={{ marginBottom: 20 }} />
+              {[1,2].map(i => (
+                <div key={i} style={{ display:"flex", gap:12, marginBottom:16 }}>
+                  <Skeleton width={56} height={56} borderRadius={10} />
+                  <div style={{ flex:1 }}>
+                    <Skeleton height={14} style={{ marginBottom:6 }} />
+                    <Skeleton height={12} width="60%" />
                   </div>
                 </div>
-              </div>
+              ))}
+              <Skeleton height={1} style={{ margin:"16px 0" }} />
+              {[1,2,3].map(i => <Skeleton key={i} height={18} style={{ marginBottom:8 }} />)}
+            </div>
+          </div>
 
-              {/* Right Cart Summary Skeleton */}
-              <div className="col-md-4">
-                <Skeleton height={25} width="50%" className="mb-3" /> {/* Summary title */}
-                {Array(2)
-                  .fill(0)
-                  .map((_, idx) => (
-                    <div
-                      key={idx}
-                      className="d-flex mb-3 align-items-center"
-                      style={{ minHeight: "60px" }}
-                    >
-                      <Skeleton height={60} width={60} />
-                      <div className="ms-2 w-100">
-                        <Skeleton height={15} width="80%" className="mb-2" />
-                        <Skeleton height={15} width="60%" className="mb-1" />
-                        <Skeleton height={15} width="40%" />
+        ) : cart.length && !show ? (
+          /* ── MAIN CHECKOUT ── */
+          <div className="ck-layout">
+
+            {/* ── LEFT FORM ─────────────────────────── */}
+            <div className="ck-left">
+
+              {/* step label */}
+              <p className="ck-step-label">Checkout</p>
+              <h1 className="ck-page-title">Complete your<br /><em>order</em></h1>
+
+              <form onSubmit={handleSubmit} className="ck-form">
+
+                {/* DELIVERY INFO — only if card */}
+                {paymentMethod === "card" && (
+                  <div className="ck-block">
+                    <h2 className="ck-block-title">
+                      <span className="ck-num">01</span> Delivery info
+                    </h2>
+
+                    <div className="ck-fields">
+                      <div className="ck-field">
+                        <label className="ck-label">Email</label>
+                        <input className="ck-input" type="email" value={email} onChange={e => setEmail(e.target.value)} required />
+                      </div>
+                      <div className="ck-field">
+                        <label className="ck-label">Full name</label>
+                        <input className="ck-input" type="text" value={name} onChange={e => setName(e.target.value)} required />
+                      </div>
+                      <div className="ck-field ck-field--full">
+                        <label className="ck-label">Address line 1</label>
+                        <input className="ck-input" type="text" value={addressLine1} onChange={e => setAddressLine1(e.target.value)} required />
+                      </div>
+                      <div className="ck-field ck-field--full">
+                        <label className="ck-label">Address line 2 <span className="ck-opt">(optional)</span></label>
+                        <input className="ck-input" type="text" value={addressLine2} onChange={e => setAddressLine2(e.target.value)} />
+                      </div>
+                      <div className="ck-field">
+                        <label className="ck-label">Zip code</label>
+                        <input className="ck-input" type="text" value={zipCode} onChange={e => setZipCode(e.target.value)} required />
+                      </div>
+                      <div className="ck-field">
+                        <label className="ck-label">Country</label>
+                        <select className="ck-input" value={selectedCountry} onChange={e => handleCountryChange(e.target.value)} required>
+                          <option value="">Select country</option>
+                          {Country.getAllCountries().map(c => <option key={c.isoCode} value={c.isoCode}>{c.name}</option>)}
+                        </select>
+                      </div>
+                      <div className="ck-field">
+                        <label className="ck-label">State</label>
+                        <select className="ck-input" value={selectedState} onChange={e => setSelectedState(e.target.value)} required>
+                          <option value="">Select state</option>
+                          {states.map(s => <option key={s.isoCode} value={s.isoCode}>{s.name}</option>)}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* SHIPPING — only if card */}
+                {paymentMethod === "card" && (
+                  <div className="ck-block">
+                    <h2 className="ck-block-title">
+                      <span className="ck-num">02</span> Shipping method
+                    </h2>
+                    <div className="ck-shipping-row">
+                      <label className={`ck-ship-card ${shippingMethod === "free" ? "active" : ""}`}>
+                        <input type="radio" name="shipping" value="free" checked={shippingMethod === "free"} onChange={() => setShippingMethod("free")} hidden />
+                        <div className="ck-ship-left">
+                          <span className="ck-ship-icon">📦</span>
+                          <div>
+                            <div className="ck-ship-name">Free shipping</div>
+                            <div className="ck-ship-eta">7–20 business days</div>
+                          </div>
+                        </div>
+                        <div className="ck-ship-price">$0</div>
+                      </label>
+                      <label className={`ck-ship-card ${shippingMethod === "express" ? "active" : ""}`}>
+                        <input type="radio" name="shipping" value="express" checked={shippingMethod === "express"} onChange={() => setShippingMethod("express")} hidden />
+                        <div className="ck-ship-left">
+                          <span className="ck-ship-icon">⚡</span>
+                          <div>
+                            <div className="ck-ship-name">Express shipping</div>
+                            <div className="ck-ship-eta">1–3 business days</div>
+                          </div>
+                        </div>
+                        <div className="ck-ship-price">$3</div>
+                      </label>
+                    </div>
+                  </div>
+                )}
+
+                {/* PAYMENT */}
+                <div className="ck-block">
+                  <h2 className="ck-block-title">
+                    <span className="ck-num">{paymentMethod === "card" ? "03" : "01"}</span> Payment method
+                  </h2>
+
+                  <div className="ck-pay-grid">
+                    <button type="button" className={`ck-pay-btn ${paymentMethod === "card" ? "active" : ""}`} onClick={() => setPaymentMethod("card")}>
+                      <img src="https://cdn-icons-png.flaticon.com/512/179/179457.png" alt="card" width={22} />
+                      <div>
+                        <div className="ck-pay-name">Card</div>
+                        <div className="ck-pay-sub">Visa / Master / Amex</div>
+                      </div>
+                      {paymentMethod === "card" && <span className="ck-pay-check">✓</span>}
+                    </button>
+                    <button type="button" className={`ck-pay-btn ${paymentMethod === "googlePay" ? "active" : ""}`} onClick={() => setPaymentMethod("googlePay")}>
+                      <img src="https://toppng.com/uploads/preview/google-pay-gpay-logo-11530962961mwws81tde9.png" alt="gpay" width={28} />
+                      <div>
+                        <div className="ck-pay-name">Google Pay</div>
+                        <div className="ck-pay-sub">Fast & secure</div>
+                      </div>
+                      {paymentMethod === "googlePay" && <span className="ck-pay-check">✓</span>}
+                    </button>
+                  </div>
+
+                  {!paymentMethod && (
+                    <p className="ck-pay-prompt">Select a payment method to continue.</p>
+                  )}
+
+                  {paymentMethod === "card" && (
+                    <div className="ck-stripe-box">
+                      <CardElement options={CARD_STYLE} />
+                      <p className="ck-test-cards">
+                        Test cards: <code>4242 4242 4242 4242</code> · <code>5555 5555 5555 4444</code>
+                      </p>
+                    </div>
+                  )}
+
+                  {paymentMethod === "googlePay" && (
+                    <div className="ck-gpay-box">
+                      {paymentRequest && user ? (
+                        <GooglePayButton
+                          environment="TEST"
+                          buttonSizeMode="fill"
+                          paymentRequest={paymentRequest}
+                          onLoadPaymentData={handleLoadPaymentData}
+                          onError={console.error}
+                          onPaymentDataChanged={(d) => getUpdatedPaymentData(paymentRequest, d)}
+                        />
+                      ) : (
+                        <p className="ck-pay-prompt">{user ? "Preparing payment…" : "Please log in to use Google Pay."}</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* SUBMIT */}
+                {paymentMethod === "card" && (
+                  <button type="submit" className="ck-submit" disabled={!stripe || paymentLoading}>
+                    {paymentLoading ? "Processing…" : `Pay $${Math.round(getSubtotal() + getShipping())}`}
+                  </button>
+                )}
+
+              </form>
+            </div>
+
+            {/* ── RIGHT SUMMARY ─────────────────────── */}
+            <aside className="ck-right">
+              <div className="ck-summary">
+                <h2 className="ck-summary-title">Order summary</h2>
+
+                <div className="ck-items">
+                  {cart.map((item, i) => (
+                    <div key={i} className="ck-item">
+                      <div className="ck-item-img">
+                        <img
+                          src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.products.banner_url}`}
+                          alt={item.products.name}
+                        />
+                        <span className="ck-item-qty">{item.quantity}</span>
+                      </div>
+                      <div className="ck-item-info">
+                        <div className="ck-item-name">{item.products.name}</div>
+                        <div className="ck-item-price">${(item.amount * item.quantity).toFixed(2)}</div>
                       </div>
                     </div>
                   ))}
-                <Skeleton height={30} width="50%" className="mb-1" /> {/* Products total */}
-                <Skeleton height={30} width="50%" className="mb-1" /> {/* Shipping */}
-                <Skeleton height={30} width="50%" /> {/* Total */}
-              </div>
-            </>
-          ) : cart.length && show === false ? (
-            <>
-              {/* Main form section */}
-              <div className="col-12 col-lg-8">
-                <div className="checkout-form glass-card p-4">
-                  <form onSubmit={handleSubmit}>
-                    <div className="row g-4">
-                      {/* Contact Information */}
-                      {paymentMethod === 'card' && (
-                        <>
-                          <div className="col-12">
-                            <h5 className="mb-3" style={{ color: "#000" }}>
-                              Delivery Information
-                            </h5>
-                            <div className="">
-                              <div className="row g-3">
-                                <div className="col-12 col-md-6">
-                                  <label className="form-label" style={{ color: "#6c757d" }}>
-                                    Email
-                                  </label>
-                                  <input type="email" className="form-control" value={email} style={{ color: "#6c757d" }} onChange={(e) => setEmail(e.target.value)} required/>
-                                </div>
-                                <div className="col-12 col-md-6">
-                                  <label className="form-label" style={{ color: "#6c757d" }}>
-                                    Name
-                                  </label>
-                                  <input type="text" className="form-control" value={name} style={{ color: "#6c757d" }} onChange={(e) => setName(e.target.value)} required/>
-                                </div>
-                              </div>
-
-                              {/* 2. Delivery Method */}
-
-                              <div className="row g-3 mt-2">
-                                <div className="col-12 col-md-6">
-                                  <label className="form-label" style={{ color: "#6c757d" }}>
-                                    Address Line 1
-                                  </label>
-                                  <input type="text" className="form-control" value={addressLine1} style={{ color: "#6c757d" }}
-                                    onChange={(e) =>
-                                      setAddressLine1(e.target.value)
-                                    }
-                                    required
-                                  />
-                                </div>
-                                <div className="col-12 col-md-6">
-                                  <label className="form-label" style={{ color: "#6c757d" }}>
-                                    Address Line 2
-                                  </label>
-                                  <input
-                                    type="text" className="form-control" style={{ color: "#6c757d" }} value={addressLine2}
-                                    onChange={(e) =>
-                                      setAddressLine2(e.target.value)
-                                    }
-                                  />
-                                </div>
-                                <div className="row g-3">
-                                  <div className="col-md-4">
-                                    <label className="form-label" style={{ color: "#6c757d" }}>
-                                      Zip Code
-                                    </label>
-                                    <input
-                                      type="text" className="form-control w-full" style={{ color: "#6c757d" }} value={zipCode}
-                                      onChange={(e) => setZipCode(e.target.value)}
-                                      required
-                                    />
-                                  </div>
-                                  <div className="col-md-4">
-                                    <label className="form-label" style={{ color: "#6c757d" }}>
-                                      Country
-                                    </label>
-                                    <select className="form-select w-full" style={{ color: "#6c757d" }} value={selectedCountry}
-                                      onChange={(e) => handleCountryChange(e.target.value)}
-                                      required
-                                    >
-                                      <option value="">Select Country</option>
-                                      {Country.getAllCountries().map((country) => (
-                                        <option key={country.isoCode} value={country.isoCode}>
-                                          {country.name}
-                                        </option>
-                                      ))}
-                                    </select>
-                                  </div>
-                                  <div className="col-md-4">
-                                    <label className="form-label" style={{ color: "#6c757d" }}>
-                                      State
-                                    </label>
-                                    <select style={{ color: "#6c757d" }} className="form-select w-full" value={selectedState}
-                                      onChange={(e) => handleStateChange(e.target.value)}
-                                      required
-                                    >
-                                      <option value="">Select State</option>
-                                      {states.map((state) => (
-                                        <option key={state.isoCode} value={state.isoCode}>
-                                          {state.name}
-                                        </option>
-                                      ))}
-                                    </select>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="col-12 pt-2">
-                            <h6 className="mb-3" style={{ color: "#000" }}>Shipping Method</h6>
-                            <div className="d-flex gap-3">
-                              {/* Free Shipping Option */}
-                              <label
-                                className={`border rounded p-3 flex-fill text-start ${shippingMethod === "free" ? "border-primary bg-primary bg-opacity-10" : "border-secondary"
-                                  }`}
-                                style={{ cursor: "pointer", minWidth: "160px" }}
-                              >
-                                <div className="d-flex justify-content-between align-items-center mb-1">
-                                  <div className="form-check m-0">
-                                    <input className="form-check-input" type="radio"  name="shipping"  id="shippingFree" value="free" checked={shippingMethod === "free"} onChange={() => setShippingMethod("free")}/>
-                                    <label className="form-check-label ms-2" htmlFor="shippingFree">
-                                      Free Shipping
-                                    </label>
-                                  </div>
-                                  <strong>$0</strong>
-                                </div>
-                                <div className="text-muted ps-4">7–20 Days</div>
-                              </label>
-
-                              {/* Express Shipping Option */}
-                              <label
-                                className={`border rounded p-3 flex-fill text-start ${shippingMethod === "express" ? "border-primary bg-primary bg-opacity-10" : "border-secondary"
-                                  }`}
-                                style={{ cursor: "pointer", minWidth: "160px" }}
-                              >
-                                <div className="d-flex justify-content-between align-items-center mb-1">
-                                  <div className="form-check m-0">
-                                    <input className="form-check-input" type="radio" name="shipping" id="shippingExpress" value="express" checked={shippingMethod === "express"} onChange={() => setShippingMethod("express")} />
-                                    <label className="form-check-label ms-2" htmlFor="shippingExpress">
-                                      Express Shipping
-                                    </label>
-                                  </div>
-                                  <strong>$3</strong>
-                                </div>
-                                <div className="text-muted ps-4">1–3 Days</div>
-                              </label>
-                            </div>
-                          </div>
-                        </>
-                      )}
-
-                      {/* 3. Payment Method */}
-                      <div className="col-12 pt-4">
-                        <h5 className="mb-3" style={{ color: "#000" }}>
-                          Payment Method
-                        </h5>
-
-                        <div className="payment-grid">
-  {/* CARD */}
-  <div
-    onClick={() => setPaymentMethod("card")}
-    className={`payment-card ${paymentMethod === "card" ? "active" : ""}`}
-  >
-    <div className="payment-content">
-      <div className="d-flex align-items-center gap-2">
-        <img
-          src="https://cdn-icons-png.flaticon.com/512/179/179457.png"
-          alt="card"
-          width="22"
-        />
-        <div>
-          <h6 className="mb-0">Card</h6>
-          <small className="text-muted">Visa / Master / Amex</small>
-        </div>
-      </div>
-      {paymentMethod === "card" && <div className="check">✓</div>}
-    </div>
-  </div>
-
-  {/* GOOGLE PAY */}
-  <div
-    onClick={() => setPaymentMethod("googlePay")}
-    className={`payment-card ${paymentMethod === "googlePay" ? "active" : ""}`}
-  >
-    <div className="payment-content">
-      <div className="d-flex align-items-center gap-2">
-        <img
-          src="https://toppng.com/uploads/preview/google-pay-gpay-logo-11530962961mwws81tde9.png"
-          alt="gpay"
-          width="22"
-        />
-        <div>
-          <h6 className="mb-0">Google Pay</h6>
-          <small className="text-muted">Fast & Secure</small>
-        </div>
-      </div>
-      {paymentMethod === "googlePay" && <div className="check">✓</div>}
-    </div>
-  </div>
-</div>
-
-                        <div className="payment-method">
-
-                          {/* Prompt when no payment method selected */}
-                          {paymentMethod === "" && (
-                            <p className="text-muted mt-3">
-                              Choose how you’d like to pay: Card or Google Pay.
-                            </p>
-                          )}
-
-                          {/* Conditional payment fields */}
-                          {paymentMethod === "card" && (
-                            <div className="mt-4 p-3 border rounded">
-                              <CardElement
-                                options={{
-                                  style: {
-                                    base: {
-                                      fontSize: "18px",
-                                      lineHeight: "30px",
-                                      padding: "12px 14px",
-                                      color: "#424770",
-                                      "::placeholder": { color: "#aab7c4" },
-                                    },
-                                    invalid: { color: "#9e2146" },
-                                  },
-                                }}
-                              />
-                              <p className="mt-2" style={{ fontSize: "0.9rem", color: "#6c757d" }}>
-                                Test Card Numbers: <br />
-                                - 4242 4242 4242 4242 (Visa) <br />
-                                - 5555 5555 5555 4444 (Mastercard) <br />- 3782 8224 6310 005 (American Express)
-                              </p>
-                            </div>
-                          )}
-
-                          {paymentMethod === "applePay" && <p>Apple Pay button will be here.</p>}
-
-                          {paymentMethod === "googlePay" && (
-                            <div className="mt-4">
-                              {paymentRequest ? (
-                                user ? (
-                                  <GooglePayButton
-                                    environment="TEST"
-                                    buttonSizeMode="fill"
-                                    paymentRequest={paymentRequest}
-                                    onLoadPaymentData={handleLoadPaymentData}
-                                    onError={(error) => console.error(error)}
-                                    onPaymentDataChanged={(paymentData) => getUpdatedPaymentData(paymentRequest, paymentData)}
-                                  />
-                                ) : (
-                                  <p className="text-muted">Please login to use Google Pay.</p>
-                                )
-                              ) : (
-                                <p className="text-muted">Preparing payment...</p>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Submit */}
-                      {paymentMethod === 'card' && (
-                        <div className="col-12 pt-4">
-                          <button
-                            type="submit"
-                            className="btn btn-primary w-100"
-                            disabled={loading || !stripe}
-                          >
-                            {paymentLoading
-                              ? (
-                                <>
-                                  <span
-                                    className="spinner-border spinner-border-sm me-2"
-                                    role="status"
-                                    aria-hidden="true"
-                                  ></span>
-                                  Submitting Payment...
-                                </>
-                              )
-                              : "Submit Payment"}
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </form>
                 </div>
-              </div>
 
-              {/* Order Summary on Right */}
-              <div className="col-12 col-lg-4">
-                <div className="order-summary">
-                  <h5 className="mb-4 text-lg font-semibold text-gray-800">
-                    📦 Order Summary
-                  </h5>
-
-                  <div className="card-body">
-                    <div
-                      className="mx-auto"
-                      style={{
-                        maxHeight: "600px",
-                        overflowX: "auto",
-                      }}
-                    >
-                      {cart.map((item, index) => (
-                        <div
-                          key={index}
-                          className="d-flex align-items-center mb-3"
-                          style={{
-                            borderBottom: "1px solid #ddd",
-                            paddingBottom: "10px",
-                          }}
-                        >
-                          {/* Product Image */}
-                          <div style={{ width: "25%", flexShrink: 0 }}>
-                            <img
-                              src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.products.banner_url}`}
-                              alt={item.products.name}
-                              style={{
-                                width: "60px",
-                                height: "60px",
-                                objectFit: "contain",
-                                borderRadius: "5px",
-                              }}
-                            />
-                          </div>
-
-                          {/* Product Details */}
-                          <div
-                            className="d-flex flex-column"
-                            style={{ width: "75%", paddingLeft: "10px" }}
-                          >
-                            <div className="d-flex flex-column mb-1">
-                              {/* Product Name */}
-                              <span
-                                className="fw-bold"
-                                style={{ color: "#6c757d" }}
-                              >
-                                {item.products.name}
-                              </span>
-
-                              {/* Quantity */}
-                              <span
-                                style={{ color: "#6c757d", fontSize: "14px" }}
-                              >
-                                Quantity: {item.quantity}
-                              </span>
-
-                              {/* Price */}
-                              <span
-                                style={{ color: "#6c757d", fontSize: "14px" }}
-                              >
-                                {`$${item.amount.toFixed(2)}`}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                    {/* Order Summary */}
-                    <ul className="list-group list-group-flush mt-3">
-                      <li className="list-group-item d-flex justify-content-between" style={{ color: "#6c757d" }}>
-                        Products ({cart.reduce((s, i) => s + i.quantity, 0)})
-                        <span>${Math.round(getSubtotal())}</span>
-                      </li>
-                      <li className="list-group-item d-flex justify-content-between" style={{ color: "#6c757d" }}>
-                        Shipping
-                        <span>${getShipping()}</span>
-                      </li>
-                      <li className="list-group-item d-flex justify-content-between fw-bold" style={{ color: "#000" }}>
-                        Total
-                        <span>${Math.round(getSubtotal() + getShipping())}</span>
-                      </li>
-                    </ul>
+                <div className="ck-totals">
+                  <div className="ck-total-row">
+                    <span>Subtotal ({cart.reduce((s, i) => s + i.quantity, 0)} items)</span>
+                    <span>${Math.round(getSubtotal())}</span>
+                  </div>
+                  <div className="ck-total-row">
+                    <span>Shipping</span>
+                    <span>{getShipping() === 0 ? <span className="ck-free">Free</span> : `$${getShipping()}`}</span>
+                  </div>
+                  <div className="ck-total-row ck-total-row--final">
+                    <span>Total</span>
+                    <span>${Math.round(getSubtotal() + getShipping())}</span>
                   </div>
                 </div>
+
+                <p className="ck-secure-note">🔒 Payments secured by Stripe</p>
               </div>
-            </>
-          ) : (
-            <div className="col-12 text-center py-5 bg-light">
-              <h4 className="mb-4">No item in Cart</h4>
-              <Link to="/" className="btn btn-outline-primary">
-                <i className="fa fa-arrow-left"></i> Continue Shopping
-              </Link>
-            </div>
-          )}
-        </div>
+            </aside>
+
+          </div>
+
+        ) : (
+          /* ── EMPTY CART ── */
+          <div className="ck-empty">
+            <div className="ck-empty-icon">🛒</div>
+            <h2 className="ck-empty-title">Your cart is empty</h2>
+            <p className="ck-empty-sub">Add some items before checking out</p>
+            <Link to="/" className="ck-empty-btn">Continue shopping</Link>
+          </div>
+        )}
       </div>
     </>
   );

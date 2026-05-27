@@ -25,7 +25,7 @@ function Home() {
       <Main/>
       <BestSelling/>
       <CollectionBox/>
-      <DealTimer/>
+      {/* <DealTimer/> */}
       {/* <Banner/> */}
 
     </>
