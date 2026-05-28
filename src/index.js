@@ -16,6 +16,7 @@ import { Toaster } from "react-hot-toast";
 
 import ScrollToTop from "./components/ScrollToTop";
 import Popup from "./pages/Popup";
+import { CookiesProvider } from "react-cookie"; 
 
 import { AuthProvider } from "./context/authContext";
 import { PageHeaderProvider } from "./context/PageHeaderContext.tsx";
@@ -29,6 +30,7 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <BrowserRouter>
+  <CookiesProvider>  
   {/* <ChatBot/> */}
     <ScrollToTop>
       <Provider store={store}>
@@ -41,5 +43,6 @@ root.render(
         </AuthProvider>
       </Provider>
     </ScrollToTop>
+    </CookiesProvider>
   </BrowserRouter>
 );

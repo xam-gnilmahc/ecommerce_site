@@ -27,7 +27,7 @@ const Products = () => {
   const lastExecutedQuery = useRef("");
   const postsPerPage = 20;
 
-  const { user } = useAuth();
+  const { user, trackProduct} = useAuth();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const location = useLocation();
@@ -211,7 +211,7 @@ const Products = () => {
           currentPosts.map((product) => (
             <div key={product.id} className="sdProductContainer">
               <div className="sdProductImages">
-                <Link to={`/product/${product.id}`}  rel="noopener noreferrer">
+                <Link to={`/product/${product.id}`}  rel="noopener noreferrer" onClick={() => trackProduct(product.id)}>
                   <img
                     src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${product.banner_url}`}
                     alt={product.name}
