@@ -44,10 +44,13 @@ const Login = () => {
   const loginWithGoogle = async () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
     });
+
     if (error) {
-      toast.error("Facebook sign-in failed: " + error.message);
-      return;
+      toast.error(error.message);
     }
   };
 
@@ -129,7 +132,7 @@ const Login = () => {
                 appId="1206302750908024"
                 autoLoad={false}
                 fields="name,email,picture"
-                callback={responseFacebook}
+                callback={responseFacebook} 
                 icon="fa-facebook me-2"
                 textButton="Continue with Facebook"
                 cssClass="btn btn-outline-primary w-100 mb-2 d-flex align-items-center justify-content-center"
