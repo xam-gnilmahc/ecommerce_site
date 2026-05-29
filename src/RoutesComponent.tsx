@@ -27,6 +27,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import CronJob from "./pages/CronJob";
 import NotificationPage from "./pages/NotificationPage";
 import NotificationSettings from "./pages/SetttingPage";
+import RafflePage from "./pages/RafflePage"; 
 
 
 // Layouts
@@ -50,6 +51,7 @@ const RoutesComponent = () => (
       <Route path="/terms" element={<TermsandConditions />} />
       {/* <Route path="/cronjob" element={<CronJob />} /> */}
       <Route path="*" element={<PageNotFound />} />
+      <Route path="/raffles" element={<RafflePage />} />
     </Route>
 
     {/* Authenticated Layout */}
