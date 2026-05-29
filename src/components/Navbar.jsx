@@ -21,6 +21,7 @@ import {
 
 import { MdOutlineClose } from "react-icons/md";
 import { FiSearch } from "react-icons/fi";
+import { MdConfirmationNumber } from "react-icons/md"; // 🎟️ raffle icon
 
 import logo from "./assets/logo.png";
 
@@ -36,32 +37,21 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [mobileMenuOpen, setMobileMenuOpen] =
-    useState(false);
-
-  const [profileOpen, setProfileOpen] =
-    useState(false);
-
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const [search, setSearch] = useState("");
-
   const [isSticky, setIsSticky] = useState(false);
-
   const [navHeight, setNavHeight] = useState(0);
 
   const navRef = useRef(null);
-
   const profileRef = useRef(null);
 
-  const { totalCart } = useSelector(
-    (state) => state.addToCart
-  );
+  const { totalCart } = useSelector((state) => state.addToCart);
 
-  const isSearchPage =
-    location.pathname === "/search";
+  const isSearchPage = location.pathname === "/search";
 
   const searchQuery =
-    new URLSearchParams(location.search).get("q") ||
-    "";
+    new URLSearchParams(location.search).get("q") || "";
 
   useEffect(() => {
     setSearch(searchQuery);
@@ -83,16 +73,8 @@ const Navbar = () => {
       }
     };
 
-    document.addEventListener(
-      "mousedown",
-      handleClickOutside
-    );
-
-    return () =>
-      document.removeEventListener(
-        "mousedown",
-        handleClickOutside
-      );
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   useEffect(() => {
@@ -105,19 +87,13 @@ const Navbar = () => {
     };
 
     window.addEventListener("scroll", onScroll);
-
-    return () =>
-      window.removeEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen((prev) => {
       const next = !prev;
-
-      document.body.style.overflow = next
-        ? "hidden"
-        : "auto";
-
+      document.body.style.overflow = next ? "hidden" : "auto";
       return next;
     });
   };
@@ -125,12 +101,8 @@ const Navbar = () => {
   const handleSearch = (e) => {
     if (e.key === "Enter") {
       const value = search.trim();
-
       if (!value) return;
-
-      navigate(
-        `/search?q=${encodeURIComponent(value)}`
-      );
+      navigate(`/search?q=${encodeURIComponent(value)}`);
     }
   };
 
@@ -138,9 +110,7 @@ const Navbar = () => {
     <>
       <div
         ref={navRef}
-        className={`navBar ${
-          isSticky ? "fixed" : ""
-        }`}
+        className={`navBar ${isSticky ? "fixed" : ""}`}
       >
         {/* LEFT */}
         <div className="logoContainer">
@@ -154,14 +124,11 @@ const Navbar = () => {
           <div className="navbar-search">
             <div className="search-box">
               <FiSearch className="search-icon" />
-
               <input
                 type="text"
                 placeholder="Search for products..."
                 value={search}
-                onChange={(e) =>
-                  setSearch(e.target.value)
-                }
+                onChange={(e) => setSearch(e.target.value)}
                 onKeyDown={handleSearch}
               />
             </div>
@@ -170,19 +137,36 @@ const Navbar = () => {
 
         {/* RIGHT */}
         <div className="nav-right">
+          {/* 🎟️ RAFFLES LINK — always visible */}
+          <NavLink
+            to="/raffles"
+            className="nav-raffle-link"
+            style={({ isActive }) => ({
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              padding: "6px 14px",
+              borderRadius: "100px",
+              border: "1.5px solid",
+              borderColor: isActive ? "#1a1a2e" : "#e0ddd6",
+              background: isActive ? "#1a1a2e" : "transparent",
+              color: isActive ? "#ffffff" : "#1a1a2e",
+              fontWeight: 600,
+              fontSize: "13px",
+              textDecoration: "none",
+              transition: "all 0.2s ease",
+            })}
+          >
+            <MdConfirmationNumber size={15} />
+            Raffles
+          </NavLink>
+
           {!user ? (
             <>
-              <NavLink
-                to="/login"
-                className="nav-btn"
-              >
+              <NavLink to="/login" className="nav-btn">
                 Login
               </NavLink>
-
-              <NavLink
-                to="/register"
-                className="nav-btn"
-              >
+              <NavLink to="/register" className="nav-btn">
                 Register
               </NavLink>
             </>
@@ -191,17 +175,10 @@ const Navbar = () => {
               <NotificationPage embedded />
 
               {/* PROFILE DROPDOWN */}
-              <div
-                className="profile-dropdown"
-                ref={profileRef}
-              >
+              <div className="profile-dropdown" ref={profileRef}>
                 <button
                   className="profile-trigger"
-                  onClick={() =>
-                    setProfileOpen(
-                      !profileOpen
-                    )
-                  }
+                  onClick={() => setProfileOpen(!profileOpen)}
                 >
                   {user.picture ? (
                     <img
@@ -212,13 +189,8 @@ const Navbar = () => {
                   ) : (
                     <FaRegUser size={18} />
                   )}
-
                   <FaChevronDown
-                    className={`arrow ${
-                      profileOpen
-                        ? "rotate"
-                        : ""
-                    }`}
+                    className={`arrow ${profileOpen ? "rotate" : ""}`}
                   />
                 </button>
 
@@ -227,10 +199,7 @@ const Navbar = () => {
                     <button
                       onClick={() => {
                         navigate("/order");
-
-                        setProfileOpen(
-                          false
-                        );
+                        setProfileOpen(false);
                       }}
                     >
                       <FaBoxOpen />
@@ -239,13 +208,8 @@ const Navbar = () => {
 
                     <button
                       onClick={() => {
-                        navigate(
-                          "/settings"
-                        );
-
-                        setProfileOpen(
-                          false
-                        );
+                        navigate("/settings");
+                        setProfileOpen(false);
                       }}
                     >
                       <FaCog />
@@ -256,10 +220,7 @@ const Navbar = () => {
                       className="logout-btn"
                       onClick={() => {
                         logout();
-
-                        setProfileOpen(
-                          false
-                        );
+                        setProfileOpen(false);
                       }}
                     >
                       <FaSignOutAlt />
@@ -271,15 +232,8 @@ const Navbar = () => {
 
               {/* CART */}
               <NavLink to="/cart">
-                <Badge
-                  badgeContent={
-                    totalCart || "0"
-                  }
-                  color="primary"
-                >
-                  <RiShoppingBagLine
-                    size={22}
-                  />
+                <Badge badgeContent={totalCart || "0"} color="primary">
+                  <RiShoppingBagLine size={22} />
                 </Badge>
               </NavLink>
             </>
@@ -287,50 +241,26 @@ const Navbar = () => {
         </div>
       </div>
 
-      {isSticky && (
-        <div
-          style={{ height: navHeight }}
-        />
-      )}
+      {isSticky && <div style={{ height: navHeight }} />}
 
       {/* MOBILE NAV */}
       <nav>
         <div className="mobile-nav">
           {mobileMenuOpen ? (
-            <MdOutlineClose
-              size={22}
-              onClick={
-                toggleMobileMenu
-              }
-            />
+            <MdOutlineClose size={22} onClick={toggleMobileMenu} />
           ) : (
-            <RiMenu2Line
-              size={22}
-              onClick={
-                toggleMobileMenu
-              }
-            />
+            <RiMenu2Line size={22} onClick={toggleMobileMenu} />
           )}
 
           <div className="logoContainer">
             <Link to="/">
-              <img
-                src={logo}
-                alt="logo"
-              />
+              <img src={logo} alt="logo" />
             </Link>
           </div>
 
           <Link to="/cart">
-            <Badge
-              badgeContent={
-                totalCart || "0"
-              }
-              color="primary"
-            >
-              <RiShoppingBagLine
-                size={22}
-              />
+            <Badge badgeContent={totalCart || "0"} color="primary">
+              <RiShoppingBagLine size={22} />
             </Badge>
           </Link>
         </div>
@@ -338,30 +268,18 @@ const Navbar = () => {
         {mobileMenuOpen && (
           <div
             className="mobile-overlay"
-            onClick={() =>
-              setMobileMenuOpen(false)
-            }
+            onClick={() => setMobileMenuOpen(false)}
           />
         )}
 
-        <div
-          className={`mobile-menu ${
-            mobileMenuOpen
-              ? "open"
-              : ""
-          }`}
-        >
+        <div className={`mobile-menu ${mobileMenuOpen ? "open" : ""}`}>
           <div className="mobile-menu-content">
             <div>
               <div
                 className="mobile-close"
-                onClick={() =>
-                  setMobileMenuOpen(false)
-                }
+                onClick={() => setMobileMenuOpen(false)}
               >
-                <MdOutlineClose
-                  size={28}
-                />
+                <MdOutlineClose size={28} />
               </div>
 
               {isSearchPage && (
@@ -370,35 +288,24 @@ const Navbar = () => {
                     type="text"
                     placeholder="Search..."
                     value={search}
-                    onChange={(e) =>
-                      setSearch(
-                        e.target.value
-                      )
-                    }
-                    onKeyDown={
-                      handleSearch
-                    }
+                    onChange={(e) => setSearch(e.target.value)}
+                    onKeyDown={handleSearch}
                   />
                 </div>
               )}
             </div>
 
             <div className="mobile-menuFooter">
-              <Link
-                to="/order"
-                onClick={
-                  toggleMobileMenu
-                }
-              >
+              {/* 🎟️ Raffles in mobile menu */}
+              <Link to="/raffles" onClick={toggleMobileMenu}>
+                🎟️ Raffles
+              </Link>
+
+              <Link to="/order" onClick={toggleMobileMenu}>
                 Orders
               </Link>
 
-              <Link
-                to="/settings"
-                onClick={
-                  toggleMobileMenu
-                }
-              >
+              <Link to="/settings" onClick={toggleMobileMenu}>
                 Settings
               </Link>
 
@@ -407,31 +314,17 @@ const Navbar = () => {
                   className="mobile-logout"
                   onClick={() => {
                     logout();
-
-                    setMobileMenuOpen(
-                      false
-                    );
+                    setMobileMenuOpen(false);
                   }}
                 >
                   Logout
                 </button>
               ) : (
                 <div className="mobile-auth">
-                  <NavLink
-                    to="/login"
-                    onClick={
-                      toggleMobileMenu
-                    }
-                  >
+                  <NavLink to="/login" onClick={toggleMobileMenu}>
                     Login
                   </NavLink>
-
-                  <NavLink
-                    to="/register"
-                    onClick={
-                      toggleMobileMenu
-                    }
-                  >
+                  <NavLink to="/register" onClick={toggleMobileMenu}>
                     Register
                   </NavLink>
                 </div>
