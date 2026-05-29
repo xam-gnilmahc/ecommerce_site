@@ -33,8 +33,6 @@ import RafflePage from "./pages/RafflePage";
 // Layouts
 import GuestLayout from "./layouts/GuestLayout";
 import AuthLayout from "./layouts/AuthLayout";
-import AuthCallback from "./pages/AuthCallback";
-import CreatePassword from "./pages/CreatePassword";
 
 const RoutesComponent = () => (
   <Routes>
@@ -54,8 +52,6 @@ const RoutesComponent = () => (
       {/* <Route path="/cronjob" element={<CronJob />} /> */}
       <Route path="*" element={<PageNotFound />} />
       <Route path="/raffles" element={<RafflePage />} />
-      <Route path="/auth/callback" element={<AuthCallback />} />
-      <Route path="/create-password" element={<CreatePassword />} />
     </Route>
 
     {/* Authenticated Layout */}
