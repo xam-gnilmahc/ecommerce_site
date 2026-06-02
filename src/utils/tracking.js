@@ -32,7 +32,7 @@ export async function trackIfLoggedIn(dispatch, userId, payload) {
     return null;
   }
 }
- 
+
 /**
  * Track a search event
  * @param {Function} dispatch

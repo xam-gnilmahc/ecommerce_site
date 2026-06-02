@@ -4,16 +4,16 @@
    ROOT — exact cart/checkout variable set
 ═══════════════════════════════════════════════ */
 :root {
-  --ck-black:   #0a0a0a;
-  --ck-white:   #ffffff;
-  --ck-off:     #f5f5f7;
-  --ck-border:  #e8e8e8;
-  --ck-muted:   #6b7280;
-  --ck-radius:  12px;
+  --ck-black: #0a0a0a;
+  --ck-white: #ffffff;
+  --ck-off: #f5f5f7;
+  --ck-border: #e8e8e8;
+  --ck-muted: #6b7280;
+  --ck-radius: 12px;
 
-  --rf-live:     #059669;
+  --rf-live: #059669;
   --rf-upcoming: #d97706;
-  --rf-closed:   #9ca3af;
+  --rf-closed: #9ca3af;
 }
 
 /* ═══════════════════════════════════════════════
@@ -63,8 +63,13 @@
 }
 
 @keyframes rf-blink {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.2; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.2;
+  }
 }
 
 .raffle-hero-title {
@@ -96,11 +101,7 @@
   margin-top: auto;
   margin-bottom: 0;
 
-  background: linear-gradient(
-    135deg,
-    rgba(255, 215, 0, 0.12),
-    rgba(255, 180, 0, 0.08)
-  );
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.12), rgba(255, 180, 0, 0.08));
 
   border: 1.5px solid rgba(255, 180, 0, 0.4);
 
@@ -175,7 +176,10 @@
   letter-spacing: 0.06em;
   color: var(--ck-muted);
   cursor: pointer;
-  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  transition:
+    border-color 0.15s,
+    color 0.15s,
+    background 0.15s;
 }
 
 .raffle-filter-btn:hover {
@@ -195,7 +199,7 @@
   border-radius: 999px;
   padding: 2px 8px;
   letter-spacing: 0;
-  background: rgba(255,255,255,0.18);
+  background: rgba(255, 255, 255, 0.18);
 }
 
 .raffle-filter-btn:not(.active) .raffle-filter-count {
@@ -232,8 +236,8 @@
 }
 /* 🌟 modern soft card upgrade */
 .raffle-card-modern {
-  border: 1px solid rgba(0,0,0,0.08);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
   border-radius: 16px;
   overflow: hidden;
   transition: all 0.25s ease;
@@ -241,7 +245,7 @@
 
 .raffle-card-modern:hover {
   transform: translateY(-4px);
-  box-shadow: 0 14px 40px rgba(0,0,0,0.08);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.08);
 }
 
 /* cleaner state blocks */
@@ -283,13 +287,15 @@
   display: flex;
   flex-direction: row;
   min-height: 240px;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
   /* NO ::after, NO ::before pseudo content here */
 }
 
 .raffle-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 12px 32px rgba(0,0,0,0.09);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.09);
 }
 
 /* ── IMAGE — takes 40% of card width, full height ── */
@@ -298,7 +304,7 @@
   /* flex-basis 40%, don't shrink below it */
   flex: 0 0 40%;
   min-width: 0;
-  height: auto;         /* stretches to card height */
+  height: auto; /* stretches to card height */
   align-self: stretch;
   background: var(--ck-off) center / cover no-repeat;
 }
@@ -306,7 +312,7 @@
 .raffle-card-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent 45%, rgba(10,10,10,0.32) 100%);
+  background: linear-gradient(90deg, transparent 45%, rgba(10, 10, 10, 0.32) 100%);
 }
 
 /* STATUS BADGE */
@@ -329,19 +335,19 @@
 }
 
 .raffle-status-live {
-  background: rgba(5,150,105,0.15);
+  background: rgba(5, 150, 105, 0.15);
   border: 1.5px solid var(--rf-live);
   color: var(--rf-live);
 }
 
 .raffle-status-upcoming {
-  background: rgba(217,119,6,0.12);
+  background: rgba(217, 119, 6, 0.12);
   border: 1.5px solid var(--rf-upcoming);
   color: var(--rf-upcoming);
 }
 
 .raffle-status-closed {
-  background: rgba(107,114,128,0.12);
+  background: rgba(107, 114, 128, 0.12);
   border: 1.5px solid var(--rf-closed);
   color: var(--rf-closed);
 }
@@ -441,8 +447,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 8px;
   padding: 6px 10px;
   min-width: 44px;
@@ -579,8 +585,8 @@
 .raffle-ticket--entered {
   margin-top: auto;
   margin-bottom: 0;
-  background: rgba(5,150,105,0.06);
-  border: 1.5px solid rgba(5,150,105,0.3);
+  background: rgba(5, 150, 105, 0.06);
+  border: 1.5px solid rgba(5, 150, 105, 0.3);
   color: var(--rf-live);
   font-weight: 600;
 }
@@ -603,14 +609,14 @@
 }
 
 .raffle-message-success {
-  background: rgba(5,150,105,0.08);
-  border: 1px solid rgba(5,150,105,0.25);
+  background: rgba(5, 150, 105, 0.08);
+  border: 1px solid rgba(5, 150, 105, 0.25);
   color: var(--rf-live);
 }
 
 .raffle-message-error {
-  background: rgba(239,68,68,0.07);
-  border: 1px solid rgba(239,68,68,0.2);
+  background: rgba(239, 68, 68, 0.07);
+  border: 1px solid rgba(239, 68, 68, 0.2);
   color: #dc2626;
 }
 
@@ -634,18 +640,20 @@
   letter-spacing: 0.05em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
+  transition:
+    transform 0.15s,
+    box-shadow 0.15s;
 }
 
 .raffle-enter-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
 }
 
 .raffle-btn-entered {
   background: var(--ck-off);
   color: var(--rf-live);
-  border: 1.5px solid rgba(5,150,105,0.3);
+  border: 1.5px solid rgba(5, 150, 105, 0.3);
   cursor: default;
 }
 
@@ -670,7 +678,9 @@
   color: var(--ck-muted);
 }
 
-.raffle-empty span { font-size: 52px; }
+.raffle-empty span {
+  font-size: 52px;
+}
 
 .raffle-empty p {
   font-family: 'Barlow', sans-serif;
@@ -685,29 +695,48 @@
    RESPONSIVE
 ═══════════════════════════════════════════════ */
 @media (max-width: 1100px) {
-  .raffle-hero      { padding: 52px 40px 44px; }
-  .raffle-container { padding: 44px 40px 80px; }
-  .raffle-divider   { padding: 0 14px; font-size: 40px; }
+  .raffle-hero {
+    padding: 52px 40px 44px;
+  }
+  .raffle-container {
+    padding: 44px 40px 80px;
+  }
+  .raffle-divider {
+    padding: 0 14px;
+    font-size: 40px;
+  }
 }
 
 @media (max-width: 860px) {
-  .raffle-hero      { padding: 44px 28px 36px; }
-  .raffle-container { padding: 36px 28px 64px; }
+  .raffle-hero {
+    padding: 44px 28px 36px;
+  }
+  .raffle-container {
+    padding: 36px 28px 64px;
+  }
 
   /* drop to single column, hide slash */
   .raffle-grid {
     grid-template-columns: 1fr;
     row-gap: 16px;
   }
-  .raffle-divider { display: none; }
+  .raffle-divider {
+    display: none;
+  }
 
   /* card stays horizontal but image slimmer */
-  .raffle-card-image { flex: 0 0 35%; }
+  .raffle-card-image {
+    flex: 0 0 35%;
+  }
 }
 
 @media (max-width: 580px) {
-  .raffle-hero      { padding: 36px 16px 28px; }
-  .raffle-container { padding: 28px 16px 56px; }
+  .raffle-hero {
+    padding: 36px 16px 28px;
+  }
+  .raffle-container {
+    padding: 28px 16px 56px;
+  }
 
   /* stack card vertically on small phones */
   .raffle-card {
@@ -720,10 +749,18 @@
     height: 180px;
   }
   .raffle-card-overlay {
-    background: linear-gradient(180deg, transparent 40%, rgba(10,10,10,0.55) 100%);
+    background: linear-gradient(180deg, transparent 40%, rgba(10, 10, 10, 0.55) 100%);
   }
-  .raffle-meta { flex-direction: column; gap: 10px; }
+  .raffle-meta {
+    flex-direction: column;
+    gap: 10px;
+  }
 
-  .raffle-hero-title { font-size: 44px; }
-  .raffle-filter-btn { padding: 7px 14px; font-size: 12px; }
+  .raffle-hero-title {
+    font-size: 44px;
+  }
+  .raffle-filter-btn {
+    padding: 7px 14px;
+    font-size: 12px;
+  }
 }

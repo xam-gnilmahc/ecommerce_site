@@ -8,29 +8,34 @@ import DevicesIcon from '@mui/icons-material/Devices';
 
 const categories = [
   {
-    title: "Mobile Phones",
+    title: 'Mobile Phones',
     icon: <PhoneIphoneIcon fontSize="large" style={{ color: '#3f51b5' }} />,
-    image: "https://images.pexels.com/photos/788946/pexels-photo-788946.jpeg?auto=compress&cs=tinysrgb&w=600",
+    image:
+      'https://images.pexels.com/photos/788946/pexels-photo-788946.jpeg?auto=compress&cs=tinysrgb&w=600',
   },
   {
-    title: "Laptops",
+    title: 'Laptops',
     icon: <LaptopMacIcon fontSize="large" style={{ color: '#673ab7' }} />,
-    image: "https://images.pexels.com/photos/4592256/pexels-photo-4592256.jpeg?auto=compress&cs=tinysrgb&w=600",
+    image:
+      'https://images.pexels.com/photos/4592256/pexels-photo-4592256.jpeg?auto=compress&cs=tinysrgb&w=600',
   },
   {
-    title: "Tablets",
+    title: 'Tablets',
     icon: <TabletIcon fontSize="large" style={{ color: '#f44336' }} />,
-    image: "https://images.pexels.com/photos/5904931/pexels-photo-5904931.jpeg?auto=compress&cs=tinysrgb&w=600",
+    image:
+      'https://images.pexels.com/photos/5904931/pexels-photo-5904931.jpeg?auto=compress&cs=tinysrgb&w=600',
   },
   {
-    title: "Watches",
+    title: 'Watches',
     icon: <WatchIcon fontSize="large" style={{ color: '#ff9800' }} />,
-    image: "https://images.pexels.com/photos/1200491/pexels-photo-1200491.jpeg?auto=compress&cs=tinysrgb&w=600",
+    image:
+      'https://images.pexels.com/photos/1200491/pexels-photo-1200491.jpeg?auto=compress&cs=tinysrgb&w=600',
   },
   {
-    title: "Tech Brands",
+    title: 'Tech Brands',
     icon: <StorefrontIcon fontSize="large" style={{ color: '#009688' }} />,
-    image: "https://images.pexels.com/photos/3606228/pexels-photo-3606228.jpeg?auto=compress&cs=tinysrgb&w=600",
+    image:
+      'https://images.pexels.com/photos/3606228/pexels-photo-3606228.jpeg?auto=compress&cs=tinysrgb&w=600',
   },
 ];
 
@@ -40,8 +45,9 @@ const AboutPage = () => {
       <div className="container py-5">
         <div className="text-center mb-5">
           <h1 className="fw-bold display-6">About Our Brand</h1>
-          <p className="lead text-muted mx-auto" style={{ maxWidth: "750px" }}>
-            We specialize in offering top-tier technology, including mobile phones, laptops, tablets, and watches from the best tech brands in the world.
+          <p className="lead text-muted mx-auto" style={{ maxWidth: '750px' }}>
+            We specialize in offering top-tier technology, including mobile phones, laptops,
+            tablets, and watches from the best tech brands in the world.
           </p>
         </div>
 
@@ -54,8 +60,8 @@ const AboutPage = () => {
                   alt={cat.title}
                   className="card-img-top"
                   style={{
-                    height: "180px",
-                    objectFit: "cover",
+                    height: '180px',
+                    objectFit: 'cover',
                     borderTopLeftRadius: '0.5rem',
                     borderTopRightRadius: '0.5rem',
                   }}

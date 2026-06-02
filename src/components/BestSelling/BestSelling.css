@@ -65,10 +65,11 @@
   cursor: pointer;
 }
 
-.lpContainer:hover{
-  box-shadow: rgba(17, 17, 26, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.05) 0px 8px 32px;
+.lpContainer:hover {
+  box-shadow:
+    rgba(17, 17, 26, 0.1) 0px 4px 16px,
+    rgba(17, 17, 26, 0.05) 0px 8px 32px;
 }
-
 
 /* =========================
    IMAGE (FIXED CENTER)
@@ -87,7 +88,7 @@
 }
 
 .lpImage {
-  width: 90%;   /* reduced size */
+  width: 90%; /* reduced size */
   height: 190px;
   object-fit: contain;
   /* transition: transform 0.35s ease; */

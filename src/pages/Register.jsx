@@ -1,15 +1,15 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { supabase } from "../supaBaseClient"; // adjust path as needed
-import toast from "react-hot-toast";
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { supabase } from '../supaBaseClient'; // adjust path as needed
+import toast from 'react-hot-toast';
 const Register = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
+    name: '',
+    email: '',
+    password: '',
   });
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -19,7 +19,7 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
+    setError('');
 
     const { email, password, name } = formData;
 
@@ -35,25 +35,21 @@ const Register = () => {
 
     if (error) {
       setError(error.message);
-      toast.error(error.message)
+      toast.error(error.message);
       setLoading(false);
       return;
     }
 
-    navigate("/login");
-    toast.success("User registered");
+    navigate('/login');
+    toast.success('User registered');
   };
 
   return (
     <>
       <div className="loginSignUpSection">
         <div className="loginSignUpContainer">
-        <div className="loginSignUpTabs">
-            <p          
-            >
-              Register
-            </p>
-           
+          <div className="loginSignUpTabs">
+            <p>Register</p>
           </div>
           <div className="loginSignUpTabsContentRegister">
             <form onSubmit={handleSubmit} autoComplete="off">
@@ -91,14 +87,10 @@ const Register = () => {
               />
 
               <p>
-                Your personal data will be used to support your experience
-                throughout this website, to manage access to your account, and
-                for other purposes described in our
-                <Link
-                  to="/terms"
-                  style={{ textDecoration: "none", color: "#c32929" }}
-                >
-                  {" "}
+                Your personal data will be used to support your experience throughout this website,
+                to manage access to your account, and for other purposes described in our
+                <Link to="/terms" style={{ textDecoration: 'none', color: '#c32929' }}>
+                  {' '}
                   privacy policy
                 </Link>
                 .
@@ -106,18 +98,15 @@ const Register = () => {
 
               <div className="my-3">
                 <p>
-                  Already have an account?{" "}
-                  <Link
-                    to="/login"
-                    className="text-decoration-underline text-info"
-                  >
+                  Already have an account?{' '}
+                  <Link to="/login" className="text-decoration-underline text-info">
                     Login
                   </Link>
                 </p>
               </div>
 
               <button type="submit" disabled={loading}>
-                {loading ? "Registering..." : "Register"}
+                {loading ? 'Registering...' : 'Register'}
               </button>
             </form>
           </div>

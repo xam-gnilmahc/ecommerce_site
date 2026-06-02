@@ -7,22 +7,17 @@ interface SearchState {
   status: 'idle' | 'loading' | 'success' | 'failed';
   error: string | null;
   loading: boolean;
-
 }
 
 const initialState: SearchState = {
   results: [],
   status: 'idle',
   error: null,
-  loading:true,
+  loading: true,
 };
 
 // Async thunk to search products by term
-export const searchProducts = createAsyncThunk<
-  Product[],
-  string,
-  { rejectValue: string }
->(
+export const searchProducts = createAsyncThunk<Product[], string, { rejectValue: string }>(
   'search/searchProducts',
   async (searchTerm, { rejectWithValue }) => {
     try {
@@ -54,9 +49,7 @@ export const searchProducts = createAsyncThunk<
       }
 
       // Intersect by id (AND logic: product must match ALL words)
-      const sets = results.map(
-        (r) => new Map((r.data ?? []).map((p) => [p.id, p]))
-      );
+      const sets = results.map((r) => new Map((r.data ?? []).map((p) => [p.id, p])));
 
       const [first, ...rest] = sets;
       const intersected: Product[] = [];
@@ -70,12 +63,16 @@ export const searchProducts = createAsyncThunk<
       // Score by relevance: count how many fields contain the full original term
       const scored = intersected
         .map((p) => {
-          const haystack = FIELDS.map((f) => (p as any)[f] ?? '').join(' ').toLowerCase();
+          const haystack = FIELDS.map((f) => (p as any)[f] ?? '')
+            .join(' ')
+            .toLowerCase();
           let score = 0;
           // Exact full-term match = highest boost
           if (haystack.includes(raw.toLowerCase())) score += 10;
           // Each individual word match adds 1
-          words.forEach((w) => { if (haystack.includes(w)) score += 1; });
+          words.forEach((w) => {
+            if (haystack.includes(w)) score += 1;
+          });
           return { product: p, score };
         })
         .sort((a, b) => b.score - a.score)

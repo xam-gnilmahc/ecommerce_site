@@ -18,7 +18,8 @@
 }
 
 /* apply globally */
-html, body {
+html,
+body {
   font-family: var(--font-main);
   font-size: var(--text-md);
   color: #111827;
@@ -42,7 +43,12 @@ a {
 }
 
 /* headings refined */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-main);
   font-weight: 700;
   letter-spacing: -0.02em;

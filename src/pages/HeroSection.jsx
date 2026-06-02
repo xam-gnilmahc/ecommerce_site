@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
-import "./HeroSection.css";
+import './HeroSection.css';
 // import { Model } from "./Model";
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 
 const HeroSection = () => {
-  const [tshirtColor, setTshirtColor] = useState("red");
+  const [tshirtColor, setTshirtColor] = useState('red');
 
   const changeColor = (color) => {
     setTshirtColor(color);
@@ -14,7 +14,7 @@ const HeroSection = () => {
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
-      behavior: "smooth",
+      behavior: 'smooth',
     });
   };
 
@@ -56,21 +56,18 @@ const HeroSection = () => {
           </Canvas> */}
           <div className="heroColorBtn">
             <button
-              onClick={() => changeColor("#353933")}
-              style={{ backgroundColor: "#353933" }}
+              onClick={() => changeColor('#353933')}
+              style={{ backgroundColor: '#353933' }}
             ></button>
             <button
-              onClick={() => changeColor("#EFBD4E")}
-              style={{ backgroundColor: "#EFBD4E" }}
+              onClick={() => changeColor('#EFBD4E')}
+              style={{ backgroundColor: '#EFBD4E' }}
             ></button>
             <button
-              onClick={() => changeColor("#726DE7")}
-              style={{ backgroundColor: "#726DE7" }}
+              onClick={() => changeColor('#726DE7')}
+              style={{ backgroundColor: '#726DE7' }}
             ></button>
-            <button
-              onClick={() => changeColor("red")}
-              style={{ backgroundColor: "red" }}
-            ></button>
+            <button onClick={() => changeColor('red')} style={{ backgroundColor: 'red' }}></button>
           </div>
         </div>
       </div>

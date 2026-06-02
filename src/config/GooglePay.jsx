@@ -1,4 +1,4 @@
-import { shippingOptionParameters } from "./ShippingOptions";
+import { shippingOptionParameters } from './ShippingOptions';
 
 /**
  * The Google Pay payment request
@@ -11,37 +11,37 @@ export const paymentRequest = {
 
   allowedPaymentMethods: [
     {
-      type: "CARD",
+      type: 'CARD',
       parameters: {
-        allowedAuthMethods: ["PAN_ONLY", "CRYPTOGRAM_3DS"],
-        allowedCardNetworks: ["MASTERCARD", "VISA"],
+        allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
+        allowedCardNetworks: ['MASTERCARD', 'VISA'],
       },
       tokenizationSpecification: {
-        type: "PAYMENT_GATEWAY",
+        type: 'PAYMENT_GATEWAY',
         parameters: {
-          gateway: "stripe",
-          "stripe:version": "2018-10-31",
-          "stripe:publishableKey":`${process.env.REACT_APP_STRIPE_URL}`,
+          gateway: 'stripe',
+          'stripe:version': '2018-10-31',
+          'stripe:publishableKey': `${process.env.REACT_APP_STRIPE_URL}`,
         },
       },
     },
   ],
 
   merchantInfo: {
-    merchantId: "17613812255336763067",
-    merchantName: "Demo Only (you will not be charged)",
+    merchantId: '17613812255336763067',
+    merchantName: 'Demo Only (you will not be charged)',
   },
 
   transactionInfo: {
-    totalPriceStatus: "FINAL",
-    totalPriceLabel: "Total",
-    totalPrice: "0",
-    currencyCode: "USD",
-    countryCode: "US",
+    totalPriceStatus: 'FINAL',
+    totalPriceLabel: 'Total',
+    totalPrice: '0',
+    currencyCode: 'USD',
+    countryCode: 'US',
   },
 
   shippingAddressRequired: true,
   shippingOptionParameters: shippingOptionParameters,
   shippingOptionRequired: true,
-  callbackIntents: ["SHIPPING_ADDRESS", "SHIPPING_OPTION"],
+  callbackIntents: ['SHIPPING_ADDRESS', 'SHIPPING_OPTION'],
 };

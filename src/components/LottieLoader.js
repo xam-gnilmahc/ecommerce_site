@@ -1,7 +1,7 @@
 // LottieLoader.js
 import React from 'react';
 import Lottie from 'react-lottie';
-import animationData from '../lottie.json'; 
+import animationData from '../lottie.json';
 import altAnimation from '../animation.json';
 
 const LottieLoader = ({ useAlt }) => {

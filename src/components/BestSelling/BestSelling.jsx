@@ -1,23 +1,23 @@
-import React, { useState, useEffect } from "react";
-import "./BestSelling.css";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
-import "swiper/css/navigation";
-import { Navigation, Autoplay } from "swiper/modules";
+import React, { useState, useEffect } from 'react';
+import './BestSelling.css';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import { Navigation, Autoplay } from 'swiper/modules';
 
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/authContext";
-import { FiHeart } from "react-icons/fi";
-import { FaStar } from "react-icons/fa";
-import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
-import { addToCart } from "../../redux/slice/userCart.ts";
-import { useAppDispatch } from "../../redux/index.ts";
-import { trackAddToCart } from "../../utils/tracking";
-import { supabase } from "../../supaBaseClient";
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/authContext';
+import { FiHeart } from 'react-icons/fi';
+import { FaStar } from 'react-icons/fa';
+import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
+import { addToCart } from '../../redux/slice/userCart.ts';
+import { useAppDispatch } from '../../redux/index.ts';
+import { trackAddToCart } from '../../utils/tracking';
+import { supabase } from '../../supaBaseClient';
 
-import toast from "react-hot-toast";
-import Skeleton from "react-loading-skeleton";
-import "react-loading-skeleton/dist/skeleton.css";
+import toast from 'react-hot-toast';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 
 const BestSelling = () => {
   const { bestSellingProduct, user, visitor, trackProduct } = useAuth();
@@ -60,17 +60,12 @@ const BestSelling = () => {
 
     const fetchRecent = async () => {
       setRecentLoading(true);
-      const { data, error } = await supabase
-        .from("products")
-        .select("*")
-        .in("id", ids);
+      const { data, error } = await supabase.from('products').select('*').in('id', ids);
 
       if (!error && data) {
         // sort by the order in cookie (reversed — most recent first)
         const reversed = [...ids].reverse();
-        const sorted = reversed
-          .map((id) => data.find((p) => p.id === id))
-          .filter(Boolean); // remove any not found
+        const sorted = reversed.map((id) => data.find((p) => p.id === id)).filter(Boolean); // remove any not found
         setRecentProducts(sorted);
       }
       setRecentLoading(false);
@@ -82,15 +77,15 @@ const BestSelling = () => {
   const swiperConfig = {
     loop: true,
     navigation: {
-      nextEl: ".image-swiper-button-next",
-      prevEl: ".image-swiper-button-prev",
+      nextEl: '.image-swiper-button-next',
+      prevEl: '.image-swiper-button-prev',
     },
     autoplay: { delay: 2500 },
     modules: [Navigation, Autoplay],
     breakpoints: {
-      320:  { slidesPerView: 2, spaceBetween: 1 },
-      640:  { slidesPerView: 2, spaceBetween: 1 },
-      768:  { slidesPerView: 3, spaceBetween: 2 },
+      320: { slidesPerView: 2, spaceBetween: 1 },
+      640: { slidesPerView: 2, spaceBetween: 1 },
+      768: { slidesPerView: 3, spaceBetween: 2 },
       1024: { slidesPerView: 4, spaceBetween: 2 },
       1280: { slidesPerView: 5, spaceBetween: 2 },
     },
@@ -99,10 +94,7 @@ const BestSelling = () => {
   const ProductCard = ({ product }) => (
     <div className="lpContainer">
       <div className="lpImageContainer">
-        <Link
-          to={`/product/${product.id}`}
-          onClick={() => trackProduct(product.id)}
-        >
+        <Link to={`/product/${product.id}`} onClick={() => trackProduct(product.id)}>
           <img
             src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${product.banner_url}`}
             className="lpImage"
@@ -117,17 +109,14 @@ const BestSelling = () => {
           <FiHeart
             onClick={() => handleWishlistClick(product.id)}
             style={{
-              color: wishList[product.id] ? "red" : "#888",
-              cursor: "pointer",
+              color: wishList[product.id] ? 'red' : '#888',
+              cursor: 'pointer',
             }}
           />
         </div>
 
         <div className="product-title">
-          <Link
-            to={`/product/${product.id}`}
-            onClick={() => trackProduct(product.id)}
-          >
+          <Link to={`/product/${product.id}`} onClick={() => trackProduct(product.id)}>
             {product.name}
           </Link>
         </div>
@@ -136,11 +125,7 @@ const BestSelling = () => {
 
         <div className="productRatingReviews">
           {[...Array(5)].map((_, i) => (
-            <FaStar
-              key={i}
-              size={10}
-              color={i < product.rating ? "#FEC78A" : "#ddd"}
-            />
+            <FaStar key={i} size={10} color={i < product.rating ? '#FEC78A' : '#ddd'} />
           ))}
           <span>{product.rating}</span>
         </div>
@@ -172,8 +157,8 @@ const BestSelling = () => {
                       <Skeleton height={300} />
                     </SwiperSlide>
                   ))
-                : recentProducts.map((product) => (
-                    <SwiperSlide key={product.id}>
+                : recentProducts.map((product, index) => (
+                    <SwiperSlide key={`recent-${index}-${product.id}`}>
                       <ProductCard product={product} />
                     </SwiperSlide>
                   ))}

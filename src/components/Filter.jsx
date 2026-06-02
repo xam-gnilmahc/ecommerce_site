@@ -1,19 +1,19 @@
-import React, { useState, useEffect } from "react";
-import "./Filter.css";
+import React, { useState, useEffect } from 'react';
+import './Filter.css';
 
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import { IoIosArrowDown } from "react-icons/io";
-import { BiSearch } from "react-icons/bi";
-import { FiFilter } from "react-icons/fi";
-import Slider from "@mui/material/Slider";
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import { IoIosArrowDown } from 'react-icons/io';
+import { BiSearch } from 'react-icons/bi';
+import { FiFilter } from 'react-icons/fi';
+import Slider from '@mui/material/Slider';
 
 const Filter = ({ onApplyFilters, searchQuery }) => {
   const [value, setValue] = useState([0, 2000]);
   const [selectedColors, setSelectedColors] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [selectedBrands, setSelectedBrands] = useState([]);
 
   const [open, setOpen] = useState(false); // 👈 mobile filter toggle
@@ -23,41 +23,41 @@ const Filter = ({ onApplyFilters, searchQuery }) => {
       setSelectedBrands([]);
       setSelectedCategory([]);
       setSelectedColors([]);
-      setSearchTerm("");
+      setSearchTerm('');
       setValue([0, 2000]);
     }
   }, [searchQuery]);
 
   const brandsData = [
-    { name: "Apple", count: 24 },
-    { name: "Google", count: 3 },
-    { name: "Vivo", count: 1 },
-    { name: "Samsung", count: 12 },
-    { name: "Redmi", count: 14 },
-    { name: "Huawei", count: 5 },
+    { name: 'Apple', count: 24 },
+    { name: 'Google', count: 3 },
+    { name: 'Vivo', count: 1 },
+    { name: 'Samsung', count: 12 },
+    { name: 'Redmi', count: 14 },
+    { name: 'Huawei', count: 5 },
   ];
 
   const filterCategories = [
-    "Mobile",
-    "Laptop",
-    "Watch",
-    "Earbuds",
-    "Tablet",
-    "Monitor",
-    "Keyboard",
+    'Mobile',
+    'Laptop',
+    'Watch',
+    'Earbuds',
+    'Tablet',
+    'Monitor',
+    'Keyboard',
   ];
 
   const filterColors = [
-    "#0B2472",
-    "#D6BB4F",
-    "#282828",
-    "#B0D6E8",
-    "#9C7539",
-    "#D29B47",
-    "#E5AE95",
-    "#D76B67",
-    "#BABABA",
-    "#BFDCC4",
+    '#0B2472',
+    '#D6BB4F',
+    '#282828',
+    '#B0D6E8',
+    '#9C7539',
+    '#D29B47',
+    '#E5AE95',
+    '#D76B67',
+    '#BABABA',
+    '#BFDCC4',
   ];
 
   const handleApplyFilters = () => {
@@ -81,9 +81,9 @@ const Filter = ({ onApplyFilters, searchQuery }) => {
     elevation: 0,
     square: true,
     sx: {
-      boxShadow: "none",
-      border: "none",
-      "&:before": { display: "none" },
+      boxShadow: 'none',
+      border: 'none',
+      '&:before': { display: 'none' },
     },
   };
 
@@ -91,7 +91,7 @@ const Filter = ({ onApplyFilters, searchQuery }) => {
     padding: 0,
     margin: 0,
     minHeight: 0,
-    "& .MuiAccordionSummary-content": { margin: 0 },
+    '& .MuiAccordionSummary-content': { margin: 0 },
   };
 
   const accordionDetailsSX = { padding: 0, margin: 0 };
@@ -107,11 +107,13 @@ const Filter = ({ onApplyFilters, searchQuery }) => {
       {open && <div className="filterOverlay" onClick={() => setOpen(false)} />}
 
       {/* FILTER PANEL */}
-      <aside className={`filterSection ${open ? "active" : ""}`}>
+      <aside className={`filterSection ${open ? 'active' : ''}`}>
         {/* CLOSE BUTTON (mobile only) */}
         <div className="filterHeader">
           <h4>Filters</h4>
-          <div className="closeBtn" onClick={() => setOpen(false)}>✕</div>
+          <div className="closeBtn" onClick={() => setOpen(false)}>
+            ✕
+          </div>
         </div>
 
         {/* COLORS */}
@@ -125,12 +127,10 @@ const Filter = ({ onApplyFilters, searchQuery }) => {
                 <button
                   key={color}
                   style={{ backgroundColor: color }}
-                  className={selectedColors.includes(color) ? "selected" : ""}
+                  className={selectedColors.includes(color) ? 'selected' : ''}
                   onClick={() =>
                     setSelectedColors((prev) =>
-                      prev.includes(color)
-                        ? prev.filter((c) => c !== color)
-                        : [...prev, color]
+                      prev.includes(color) ? prev.filter((c) => c !== color) : [...prev, color]
                     )
                   }
                 />
@@ -149,14 +149,10 @@ const Filter = ({ onApplyFilters, searchQuery }) => {
               {filterCategories.map((cat) => (
                 <button
                   key={cat}
-                  className={`sizeButton ${
-                    selectedCategory.includes(cat) ? "selected" : ""
-                  }`}
+                  className={`sizeButton ${selectedCategory.includes(cat) ? 'selected' : ''}`}
                   onClick={() =>
                     setSelectedCategory((prev) =>
-                      prev.includes(cat)
-                        ? prev.filter((c) => c !== cat)
-                        : [...prev, cat]
+                      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
                     )
                   }
                 >

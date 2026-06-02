@@ -41,18 +41,16 @@ export const fetchProducts = createAsyncThunk<Product[], void, { rejectValue: st
   }
 );
 
-
 interface ProductState {
   products: Product[];
-  status: "idle" | "loading" | "success" | "failed";
+  status: 'idle' | 'loading' | 'success' | 'failed';
   error: string | null;
   loading: boolean;
-
 }
 
 const initialState: ProductState = {
   products: [],
-  status: "idle",
+  status: 'idle',
   error: null,
   loading: false,
 };
@@ -64,18 +62,19 @@ const productSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchProducts.pending, (state) => {
-        state.status = "loading";
+        state.status = 'loading';
         state.error = null;
         state.loading = true;
       })
       .addCase(fetchProducts.fulfilled, (state, action: PayloadAction<Product[]>) => {
-        state.status = "success";
+        state.status = 'success';
         state.products = action.payload;
         state.loading = false;
       })
       .addCase(fetchProducts.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = typeof action.payload === 'string' ? action.payload : 'Failed to fetch products';
+        state.status = 'failed';
+        state.error =
+          typeof action.payload === 'string' ? action.payload : 'Failed to fetch products';
         state.loading = false;
       });
   },

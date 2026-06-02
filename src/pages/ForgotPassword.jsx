@@ -1,75 +1,71 @@
-import { useState } from "react";
-import { supabase } from "../supaBaseClient"; // Assuming you've set up supabaseClient.js
-import toast from "react-hot-toast";
-import { useNavigate, Link } from "react-router-dom";
-import "./ForgotPassword.css";
+import { useState } from 'react';
+import { supabase } from '../supaBaseClient'; // Assuming you've set up supabaseClient.js
+import toast from 'react-hot-toast';
+import { useNavigate, Link } from 'react-router-dom';
+import './ForgotPassword.css';
 const ForgotPassword = () => {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
-  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
-    setSuccessMessage("");
+    setError('');
+    setSuccessMessage('');
 
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email);
       if (error) {
-        toast.error("Error sending password reset email");
-        setError("Error sending password reset email: " + error.message);
+        toast.error('Error sending password reset email');
+        setError('Error sending password reset email: ' + error.message);
       } else {
-        toast.success("Password reset email sent. Please check your inbox");
-        setSuccessMessage("Password reset email sent. Please check your inbox.");
+        toast.success('Password reset email sent. Please check your inbox');
+        setSuccessMessage('Password reset email sent. Please check your inbox.');
         // Redirect after success
         setTimeout(() => {
-          navigate("/login");
+          navigate('/login');
         }, 2000);
       }
     } catch (error) {
-      setError("An unexpected error occurred.");
+      setError('An unexpected error occurred.');
     }
     setLoading(false);
   };
 
   return (
     <>
-    <div className="resetPasswordSection">
-       <h2>Reset Your Password</h2>
-     
-      <div className="resetPasswordContainer">
-      <p>We will send you an email to reset your password</p>
-     
-          <form onSubmit={handleSubmit}>
-              <input
-                type="email"
-                className="form-control"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="name@example.com"
-                required
-              />
+      <div className="resetPasswordSection">
+        <h2>Reset Your Password</h2>
 
-              <button
-                type="submit"
-                disabled={loading}
-              >
-                {loading ? "Sending..." : "Send Reset Link"}
-              </button>
-            
+        <div className="resetPasswordContainer">
+          <p>We will send you an email to reset your password</p>
+
+          <form onSubmit={handleSubmit}>
+            <input
+              type="email"
+              className="form-control"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="name@example.com"
+              required
+            />
+
+            <button type="submit" disabled={loading}>
+              {loading ? 'Sending...' : 'Send Reset Link'}
+            </button>
           </form>
-      </div>
-      <p>
-          Back to{" "}
+        </div>
+        <p>
+          Back to{' '}
           <Link to="/login">
             <span>Login</span>
           </Link>
         </p>
-    </div>
+      </div>
     </>
   );
 };

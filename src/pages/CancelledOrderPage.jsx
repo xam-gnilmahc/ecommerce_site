@@ -1,11 +1,11 @@
-import React, { useEffect, useState, useRef } from "react";
-import { useAuth } from "../context/authContext";
-import { Link, useNavigate } from "react-router-dom";
-import Sidebar from "../components/Sidebar";
-import { HiLocationMarker } from "react-icons/hi";
-import { FaTruck, FaTimesCircle, FaBoxOpen } from "react-icons/fa";
-import Skeleton from "react-loading-skeleton";
-import "./ordersPage.css";
+import React, { useEffect, useState, useRef } from 'react';
+import { useAuth } from '../context/authContext';
+import { Link, useNavigate } from 'react-router-dom';
+import Sidebar from '../components/Sidebar';
+import { HiLocationMarker } from 'react-icons/hi';
+import { FaTruck, FaTimesCircle, FaBoxOpen } from 'react-icons/fa';
+import Skeleton from 'react-loading-skeleton';
+import './ordersPage.css';
 
 const CancelledOrderPage = () => {
   const { fetchUserCancelledOrders } = useAuth();
@@ -55,9 +55,7 @@ const CancelledOrderPage = () => {
             <p>Refunded or cancelled purchases</p>
           </div>
 
-          <div className="orders-count cancelled-count">
-            {orders.length} Cancelled
-          </div>
+          <div className="orders-count cancelled-count">{orders.length} Cancelled</div>
         </div>
 
         {/* LOADING */}
@@ -85,8 +83,7 @@ const CancelledOrderPage = () => {
           <div className="orders-grid">
             {orders.map((order) => {
               const shippingAddress = parseAddress(order.shipping_address);
-              const destination =
-                shippingAddress?.country || "Destination";
+              const destination = shippingAddress?.country || 'Destination';
 
               return (
                 <div
@@ -98,9 +95,7 @@ const CancelledOrderPage = () => {
                   <div className="order-top">
                     <div>
                       <p className="order-label">ORDER #{order.id}</p>
-                      <h4>
-                        {order.order_items?.length || 0} Items
-                      </h4>
+                      <h4>{order.order_items?.length || 0} Items</h4>
                     </div>
 
                     <div className="status-pill cancelled">
@@ -114,9 +109,7 @@ const CancelledOrderPage = () => {
                     <FaTimesCircle />
                     <div>
                       <strong>Order Cancelled</strong>
-                      <p>
-                        Refund will be processed within 5–7 business days.
-                      </p>
+                      <p>Refund will be processed within 5–7 business days.</p>
                     </div>
                   </div>
 
@@ -137,38 +130,28 @@ const CancelledOrderPage = () => {
 
                   {/* PRODUCTS */}
                   <div className="product-preview">
-                    {order.order_items
-                      ?.slice(0, 2)
-                      .map((item, index) => (
-                        <div key={index} className="product-item">
-                          <img
-                            src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.products.banner_url}`}
-                            alt={item.products.name}
-                          />
+                    {order.order_items?.slice(0, 2).map((item, index) => (
+                      <div key={index} className="product-item">
+                        <img
+                          src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.products.banner_url}`}
+                          alt={item.products.name}
+                        />
 
-                          <div className="product-info">
-                            <h5>{item.products.name}</h5>
-                            <p>Qty: {item.quantity}</p>
-                          </div>
-
-                          <strong>
-                            $
-                            {(
-                              item.price_each * item.quantity
-                            ).toFixed(2)}
-                          </strong>
+                        <div className="product-info">
+                          <h5>{item.products.name}</h5>
+                          <p>Qty: {item.quantity}</p>
                         </div>
-                      ))}
+
+                        <strong>${(item.price_each * item.quantity).toFixed(2)}</strong>
+                      </div>
+                    ))}
                   </div>
 
                   {/* FOOTER */}
                   <div className="order-footer">
                     <div>
                       <p>Total</p>
-                      <h3>
-                        $
-                        {Number(order.total_amount).toLocaleString()}
-                      </h3>
+                      <h3>${Number(order.total_amount).toLocaleString()}</h3>
                     </div>
 
                     <button

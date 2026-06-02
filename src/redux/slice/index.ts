@@ -1,10 +1,10 @@
-import { combineReducers, Action } from "@reduxjs/toolkit";
-import productSlice from "./Product.ts";
-import searchSlice from "./searchProduct.ts";
-import filterSlice from "./filterProduct.ts";
-import cartSlice, { addToCart } from "./userCart.ts";
-import trackingSlice from "./trackingSlice.ts";
-import userRecommendationSlice from "./userRecommendation.ts";
+import { combineReducers, Action } from '@reduxjs/toolkit';
+import productSlice from './Product.ts';
+import searchSlice from './searchProduct.ts';
+import filterSlice from './filterProduct.ts';
+import cartSlice, { addToCart } from './userCart.ts';
+import trackingSlice from './trackingSlice.ts';
+import userRecommendationSlice from './userRecommendation.ts';
 
 export interface AppState {
   product: ReturnType<typeof productSlice>;
@@ -13,14 +13,13 @@ export interface AppState {
   addToCart: ReturnType<typeof cartSlice>;
   tracking: ReturnType<typeof trackingSlice>;
   userRecommendations: ReturnType<typeof userRecommendationSlice>;
-
 }
 
 const appReducer = combineReducers({
   product: productSlice,
-  search:searchSlice,
-  filterProduct:filterSlice,
-  addToCart:cartSlice,
+  search: searchSlice,
+  filterProduct: filterSlice,
+  addToCart: cartSlice,
   tracking: trackingSlice,
   userRecommendations: userRecommendationSlice,
 });

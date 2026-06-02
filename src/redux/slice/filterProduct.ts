@@ -8,11 +8,7 @@ interface Filters {
   priceRange: [number, number] | null;
 }
 
-export const fetchFilteredProducts = createAsyncThunk<
-  Product[],
-  Filters,
-  { rejectValue: string }
->(
+export const fetchFilteredProducts = createAsyncThunk<Product[], Filters, { rejectValue: string }>(
   'products/fetchFilteredProducts',
   async (filters, { rejectWithValue }) => {
     try {
@@ -47,7 +43,6 @@ export const fetchFilteredProducts = createAsyncThunk<
     }
   }
 );
-
 
 interface FilterState {
   filteredProducts: Product[];

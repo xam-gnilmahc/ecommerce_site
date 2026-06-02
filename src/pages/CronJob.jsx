@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from "react";
-import { useAuth } from "../context/authContext";
+import React, { useEffect, useRef } from 'react';
+import { useAuth } from '../context/authContext';
 
 const CronJob = () => {
   const { sendAllDeliveryEmails } = useAuth();
@@ -9,9 +9,9 @@ const CronJob = () => {
     if (!hasRun.current) {
       hasRun.current = true;
       (async () => {
-        console.log("Triggered sendAllDeliveryEmails");
+        console.log('Triggered sendAllDeliveryEmails');
         await sendAllDeliveryEmails();
-        console.log("Done sending");
+        console.log('Done sending');
       })();
     }
   }, []);

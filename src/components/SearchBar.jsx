@@ -1,14 +1,9 @@
-import React, { useState } from "react";
-import {
-  TextField,
-  InputAdornment,
-  Box,
-  CircularProgress,
-} from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
+import React, { useState } from 'react';
+import { TextField, InputAdornment, Box, CircularProgress } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
 
 const SearchBar = ({ onSearch }) => {
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState('');
   const [loading, setLoading] = useState(false);
 
   // فقط typing update local state
@@ -18,7 +13,7 @@ const SearchBar = ({ onSearch }) => {
 
   // ONLY ENTER triggers search
   const handleKeyDown = async (event) => {
-    if (event.key === "Enter") {
+    if (event.key === 'Enter') {
       setLoading(true);
 
       await onSearch(value); // trigger redux search ONLY here
@@ -28,7 +23,7 @@ const SearchBar = ({ onSearch }) => {
   };
 
   return (
-    <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
       <TextField
         size="small"
         variant="outlined"
@@ -37,11 +32,11 @@ const SearchBar = ({ onSearch }) => {
         onChange={handleChange}
         onKeyDown={handleKeyDown}
         sx={{
-          width: "100%",
+          width: '100%',
           maxWidth: 400,
-          "& .MuiOutlinedInput-root": {
-            borderRadius: "25px",
-            paddingRight: "8px",
+          '& .MuiOutlinedInput-root': {
+            borderRadius: '25px',
+            paddingRight: '8px',
             height: 38,
             fontSize: 14,
           },
@@ -49,11 +44,7 @@ const SearchBar = ({ onSearch }) => {
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-              {loading ? (
-                <CircularProgress size={18} />
-              ) : (
-                <SearchIcon fontSize="small" />
-              )}
+              {loading ? <CircularProgress size={18} /> : <SearchIcon fontSize="small" />}
             </InputAdornment>
           ),
         }}

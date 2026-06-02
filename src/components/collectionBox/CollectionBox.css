@@ -20,15 +20,10 @@
 
 /* overlay for better readability */
 .collection > div::before {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to top,
-    rgba(0, 0, 0, 0.55),
-    rgba(0, 0, 0, 0.15),
-    transparent
-  );
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.15), transparent);
   border-radius: 8px;
   z-index: 1;
 }
@@ -41,25 +36,25 @@
 
 /* images */
 .collectionLeft {
-  background-image: url("https://www.apple.com/newsroom/images/product/iphone/standard/Apple-iPhone-14-iPhone-14-Plus-hero-220907.jpg.og.jpg?202602251842");
+  background-image: url('https://www.apple.com/newsroom/images/product/iphone/standard/Apple-iPhone-14-iPhone-14-Plus-hero-220907.jpg.og.jpg?202602251842');
   background-size: cover;
   background-position: center;
 }
 
 .collectionTop {
-  background-image: url("https://store.ave.com.bn/wp-content/uploads/2021/10/iPad-mini-Avail-Web-Banner.jpg");
+  background-image: url('https://store.ave.com.bn/wp-content/uploads/2021/10/iPad-mini-Avail-Web-Banner.jpg');
   background-size: cover;
   background-position: center;
 }
 
 .box1 {
-  background-image: url("https://www.apple.com/newsroom/images/product/watch/standard/Apple_watch-series7-availability_hero_10052021_big.jpg.small_2x.jpg");
+  background-image: url('https://www.apple.com/newsroom/images/product/watch/standard/Apple_watch-series7-availability_hero_10052021_big.jpg.small_2x.jpg');
   background-size: cover;
   background-position: center;
 }
 
 .box2 {
-  background-image: url("https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/og-airpods-max-202409?wid=1200&hei=630&fmt=jpeg&qlt=95&.v=1724144125817");
+  background-image: url('https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/og-airpods-max-202409?wid=1200&hei=630&fmt=jpeg&qlt=95&.v=1724144125817');
   background-size: cover;
   background-position: center;
 }
@@ -105,7 +100,7 @@
 
 /* underline */
 .col-link a::after {
-  content: "";
+  content: '';
   position: absolute;
   left: 0;
   bottom: -5px;

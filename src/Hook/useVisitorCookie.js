@@ -1,19 +1,18 @@
-import { useEffect, useCallback } from "react";
-import { useCookies } from "react-cookie";
+import { useEffect, useCallback } from 'react';
+import { useCookies } from 'react-cookie';
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
-const COOKIE_NAME = "visitor_tracking";
+const COOKIE_NAME = 'visitor_tracking';
 const COOKIE_MAX_AGE_DAYS = 365;
-const MAX_PAGES = 5;     // store only last 5 pages
-const MAX_PRODUCTS = 6;  // store only last 6 product IDs
-
+const MAX_PAGES = 5; // store only last 5 pages
+const MAX_PRODUCTS = 6; // store only last 6 product IDs
 
 // Generates a simple UUID without any library
 function generateUUID() {
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
     const r = (Math.random() * 16) | 0;
-    const v = c === "x" ? r : (r & 0x3) | 0x8;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
 }
@@ -46,10 +45,10 @@ function slidingWindow(list, newValue, max) {
 
 function getCookieOptions() {
   return {
-    path: "/",
+    path: '/',
     maxAge: COOKIE_MAX_AGE_DAYS * 24 * 60 * 60, // convert days to seconds
-    sameSite: "lax",
-    secure: window.location.protocol === "https:",
+    sameSite: 'lax',
+    secure: window.location.protocol === 'https:',
   };
 }
 
@@ -71,7 +70,6 @@ export function useVisitorCookie(userId, currentPath) {
 
   // ── Runs on page load (or when userId first becomes available) ──────────────
   useEffect(() => {
-
     const now = new Date().toISOString();
     const path = currentPath || window.location.pathname;
 
@@ -89,18 +87,18 @@ export function useVisitorCookie(userId, currentPath) {
     if (!existing) {
       // First ever visit — build cookie from scratch
       updated = {
-        visitor_id,    
-        first_seen: now,          // set once, never changed again
+        visitor_id,
+        first_seen: now, // set once, never changed again
         last_seen: now,
         visit_count: 1,
-        pages_visited: [path],    // start tracking pages
-        product_ids: [],          // no products clicked yet
+        pages_visited: [path], // start tracking pages
+        product_ids: [], // no products clicked yet
       };
     } else {
       // Return visit — update metadata
       updated = {
         ...existing,
-        visitor_id,           // if user just logged in, this upgrades anon → real id
+        visitor_id, // if user just logged in, this upgrades anon → real id
         last_seen: now,
         visit_count: existing.visit_count + 1,
         pages_visited: slidingWindow(existing.pages_visited, path, MAX_PAGES),
@@ -120,7 +118,7 @@ export function useVisitorCookie(userId, currentPath) {
       if (!existing) return; // safety: cookie must exist before we can update it
 
       const updated = {
-        ...existing,  // keep everything else the same
+        ...existing, // keep everything else the same
         product_ids: slidingWindow(existing.product_ids, productId, MAX_PRODUCTS),
       };
 
@@ -131,12 +129,12 @@ export function useVisitorCookie(userId, currentPath) {
 
   // ── Call this on logout ──────────────────────────────────────────────────────
   function clearVisitor() {
-    removeCookie(COOKIE_NAME, { path: "/" });
+    removeCookie(COOKIE_NAME, { path: '/' });
   }
 
   return {
     visitor: cookies[COOKIE_NAME] || null, // the full cookie data
-    trackProduct,                          // call on product click
-    clearVisitor,                          // call on logout
+    trackProduct, // call on product click
+    clearVisitor, // call on logout
   };
 }

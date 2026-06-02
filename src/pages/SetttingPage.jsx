@@ -1,18 +1,30 @@
-import React, { useState } from "react";
-import Navbar from "../components/Navbar.jsx";
-import "./settingsPage.css";
+import React, { useState } from 'react';
+import Navbar from '../components/Navbar.jsx';
+import './settingsPage.css';
 import {
-  FaUser, FaBell, FaMapMarkerAlt, FaCreditCard,
-  FaShieldAlt, FaGlobe, FaInfoCircle, FaChevronRight,
-  FaToggleOn, FaToggleOff, FaCamera, FaSignOutAlt,
-  FaTrashAlt, FaLock, FaEnvelope, FaPhone,
-} from "react-icons/fa";
-import { useAuth } from "../context/authContext";
+  FaUser,
+  FaBell,
+  FaMapMarkerAlt,
+  FaCreditCard,
+  FaShieldAlt,
+  FaGlobe,
+  FaInfoCircle,
+  FaChevronRight,
+  FaToggleOn,
+  FaToggleOff,
+  FaCamera,
+  FaSignOutAlt,
+  FaTrashAlt,
+  FaLock,
+  FaEnvelope,
+  FaPhone,
+} from 'react-icons/fa';
+import { useAuth } from '../context/authContext';
 
 /* ── tiny reusable toggle ───────────────────────────────────────────── */
 const Toggle = ({ value, onChange }) => (
   <button
-    className={`sett-toggle ${value ? "on" : ""}`}
+    className={`sett-toggle ${value ? 'on' : ''}`}
     onClick={() => onChange(!value)}
     aria-checked={value}
     role="switch"
@@ -44,7 +56,10 @@ const ToggleRow = ({ label, sub, value, onChange }) => (
 );
 
 const LinkRow = ({ label, sub, value, onClick, danger }) => (
-  <button className={`sett-row sett-row--link ${danger ? "sett-row--danger" : ""}`} onClick={onClick}>
+  <button
+    className={`sett-row sett-row--link ${danger ? 'sett-row--danger' : ''}`}
+    onClick={onClick}
+  >
     <div className="sett-row-text">
       <span className="sett-row-label">{label}</span>
       {sub && <span className="sett-row-sub">{sub}</span>}
@@ -63,18 +78,18 @@ const SettingsPage = () => {
   const { user } = useAuth();
   /* notification toggles */
   const [notif, setNotif] = useState({
-    push:       true,
-    email:      true,
+    push: true,
+    email: true,
     orderUpdates: true,
-    promos:     false,
-    sms:        false,
+    promos: false,
+    sms: false,
     newArrivals: true,
     priceDrops: true,
   });
 
   /* preference state */
-  const [language, setLanguage] = useState("English");
-  const [currency, setCurrency] = useState("USD");
+  const [language, setLanguage] = useState('English');
+  const [currency, setCurrency] = useState('USD');
 
   const toggle = (key) => setNotif((p) => ({ ...p, [key]: !p[key] }));
 
@@ -83,7 +98,6 @@ const SettingsPage = () => {
       <Navbar />
       <div className="sett-layout">
         <div className="sett-container">
-
           {/* ── PAGE TITLE ───────────────────────────── */}
           <div className="sett-page-header">
             <h1 className="sett-page-title">Settings</h1>
@@ -101,34 +115,50 @@ const SettingsPage = () => {
                 />
               ) : (
                 <div className="sett-avatar">
-                  <span>{user?.full_name?.charAt(0)?.toUpperCase() ?? "?"}</span>
+                  <span>{user?.full_name?.charAt(0)?.toUpperCase() ?? '?'}</span>
                 </div>
               )}
-              <button className="sett-avatar-edit"><FaCamera /></button>
+              <button className="sett-avatar-edit">
+                <FaCamera />
+              </button>
             </div>
             <div className="sett-profile-info">
-              <p className="sett-profile-name">{user?.full_name || user?.name || "—"}</p>
-              <p className="sett-profile-email">{user?.email || "—"}</p>
+              <p className="sett-profile-name">{user?.full_name || user?.name || '—'}</p>
+              <p className="sett-profile-email">{user?.email || '—'}</p>
               <span className="sett-profile-badge">
-                {user?.email_verified ? "✓ Verified Account" : "Unverified"}
+                {user?.email_verified ? '✓ Verified Account' : 'Unverified'}
               </span>
             </div>
             <button className="sett-edit-profile-btn">Edit Profile</button>
           </div>
 
           <div className="sett-grid">
-
             {/* ── ACCOUNT ──────────────────────────────── */}
             <Section icon={<FaUser />} title="Account">
-              <LinkRow label="Full Name"     sub="Your display name"       value={user?.full_name || user?.name || "—"}  onClick={() => {}} />
-              <LinkRow label="Email Address" sub="Login & notifications"   value={user?.email || "—"}                    onClick={() => {}} />
               <LinkRow
-                label="Phone Number"
-                sub={user?.phone_verified ? "Verified" : "Not added yet"}
-                value={user?.phone_verified ? "Verified" : null}
+                label="Full Name"
+                sub="Your display name"
+                value={user?.full_name || user?.name || '—'}
                 onClick={() => {}}
               />
-              <LinkRow label="Google Account" sub={user?.iss?.includes("google") ? "Connected via Google" : "Not connected"} value={user?.iss?.includes("google") ? "Connected" : null} onClick={() => {}} />
+              <LinkRow
+                label="Email Address"
+                sub="Login & notifications"
+                value={user?.email || '—'}
+                onClick={() => {}}
+              />
+              <LinkRow
+                label="Phone Number"
+                sub={user?.phone_verified ? 'Verified' : 'Not added yet'}
+                value={user?.phone_verified ? 'Verified' : null}
+                onClick={() => {}}
+              />
+              <LinkRow
+                label="Google Account"
+                sub={user?.iss?.includes('google') ? 'Connected via Google' : 'Not connected'}
+                value={user?.iss?.includes('google') ? 'Connected' : null}
+                onClick={() => {}}
+              />
             </Section>
 
             {/* ── NOTIFICATIONS ────────────────────────── */}
@@ -137,68 +167,82 @@ const SettingsPage = () => {
                 label="Push Notifications"
                 sub="Browser & device alerts"
                 value={notif.push}
-                onChange={() => toggle("push")}
+                onChange={() => toggle('push')}
               />
               <ToggleRow
                 label="Email Notifications"
                 sub="Receipts and updates to your inbox"
                 value={notif.email}
-                onChange={() => toggle("email")}
+                onChange={() => toggle('email')}
               />
               <ToggleRow
                 label="SMS Alerts"
                 sub="Text messages for urgent updates"
                 value={notif.sms}
-                onChange={() => toggle("sms")}
+                onChange={() => toggle('sms')}
               />
               <div className="sett-row-group-label">What to notify you about</div>
               <ToggleRow
                 label="Order Updates"
                 sub="Shipping, delivery & cancellations"
                 value={notif.orderUpdates}
-                onChange={() => toggle("orderUpdates")}
+                onChange={() => toggle('orderUpdates')}
               />
               <ToggleRow
                 label="Promotions & Deals"
                 sub="Flash sales and discount codes"
                 value={notif.promos}
-                onChange={() => toggle("promos")}
+                onChange={() => toggle('promos')}
               />
               <ToggleRow
                 label="New Arrivals"
                 sub="Products matching your interests"
                 value={notif.newArrivals}
-                onChange={() => toggle("newArrivals")}
+                onChange={() => toggle('newArrivals')}
               />
               <ToggleRow
                 label="Price Drops"
                 sub="Items in your wishlist go on sale"
                 value={notif.priceDrops}
-                onChange={() => toggle("priceDrops")}
+                onChange={() => toggle('priceDrops')}
               />
             </Section>
 
             {/* ── ADDRESSES ────────────────────────────── */}
             <Section icon={<FaMapMarkerAlt />} title="Address Book">
-              <LinkRow label="Home"    sub="123 Main St, New York, NY 10001"   value="Default" onClick={() => {}} />
-              <LinkRow label="Office"  sub="456 Park Ave, New York, NY 10022"  onClick={() => {}} />
+              <LinkRow
+                label="Home"
+                sub="123 Main St, New York, NY 10001"
+                value="Default"
+                onClick={() => {}}
+              />
+              <LinkRow label="Office" sub="456 Park Ave, New York, NY 10022" onClick={() => {}} />
               <LinkRow label="Add New Address" onClick={() => {}} />
             </Section>
 
             {/* ── PAYMENT ──────────────────────────────── */}
             <Section icon={<FaCreditCard />} title="Payment Methods">
-              <LinkRow label="Visa •••• 4242"     sub="Expires 08/26"  value="Default" onClick={() => {}} />
+              <LinkRow
+                label="Visa •••• 4242"
+                sub="Expires 08/26"
+                value="Default"
+                onClick={() => {}}
+              />
               <LinkRow label="Mastercard •••• 8810" sub="Expires 12/25" onClick={() => {}} />
-              <LinkRow label="Google Pay"          sub="Connected"      onClick={() => {}} />
-              <LinkRow label="Add Payment Method"  onClick={() => {}} />
+              <LinkRow label="Google Pay" sub="Connected" onClick={() => {}} />
+              <LinkRow label="Add Payment Method" onClick={() => {}} />
             </Section>
 
             {/* ── SECURITY ─────────────────────────────── */}
             <Section icon={<FaShieldAlt />} title="Privacy & Security">
-              <LinkRow label="Change Password"          sub="Last changed 3 months ago"   onClick={() => {}} />
-              <LinkRow label="Two-Factor Authentication" sub="Extra layer of protection"   onClick={() => {}} />
-              <LinkRow label="Login Sessions"           sub="2 active sessions"            onClick={() => {}} />
-              <LinkRow label="Download My Data"         sub="Export your account data"     onClick={() => {}} />
+              <LinkRow label="Change Password" sub="Last changed 3 months ago" onClick={() => {}} />
+              <LinkRow
+                label="Two-Factor Authentication"
+                sub="Extra layer of protection"
+                onClick={() => {}}
+              />
+              <LinkRow label="Login Sessions" sub="2 active sessions" onClick={() => {}} />
+              <LinkRow label="Download My Data" sub="Export your account data" onClick={() => {}} />
             </Section>
 
             {/* ── PREFERENCES ──────────────────────────── */}
@@ -241,13 +285,17 @@ const SettingsPage = () => {
 
             {/* ── ABOUT ────────────────────────────────── */}
             <Section icon={<FaInfoCircle />} title="About">
-              <LinkRow label="App Version"      sub="You're up to date"       value="v2.4.1"   onClick={() => {}} />
-              <LinkRow label="Terms of Service" sub="Read our terms"                           onClick={() => {}} />
-              <LinkRow label="Privacy Policy"   sub="How we use your data"                     onClick={() => {}} />
-              <LinkRow label="Contact Support"  sub="We're here to help"                       onClick={() => {}} />
-              <LinkRow label="Rate the App"     sub="Leave a review"                           onClick={() => {}} />
+              <LinkRow
+                label="App Version"
+                sub="You're up to date"
+                value="v2.4.1"
+                onClick={() => {}}
+              />
+              <LinkRow label="Terms of Service" sub="Read our terms" onClick={() => {}} />
+              <LinkRow label="Privacy Policy" sub="How we use your data" onClick={() => {}} />
+              <LinkRow label="Contact Support" sub="We're here to help" onClick={() => {}} />
+              <LinkRow label="Rate the App" sub="Leave a review" onClick={() => {}} />
             </Section>
-
           </div>
 
           {/* ── DANGER ZONE ──────────────────────────── */}
@@ -259,7 +307,6 @@ const SettingsPage = () => {
               <FaTrashAlt /> Delete Account
             </button>
           </div>
-
         </div>
       </div>
     </>
