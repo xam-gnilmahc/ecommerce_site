@@ -1,25 +1,25 @@
-import React from "react";
-import "./Footer.css";
-import logo from "./assets/logo.png";
-import paymentIcon from "./assets/paymentIcon.png";
-import { FaFacebookF } from "react-icons/fa";
-import { FaXTwitter } from "react-icons/fa6";
-import { FaInstagram } from "react-icons/fa";
-import { FaYoutube } from "react-icons/fa";
-import { FaPinterest } from "react-icons/fa";
+import React from 'react';
+import './Footer.css';
+import logo from './assets/logo.png';
+import paymentIcon from './assets/paymentIcon.png';
+import { FaFacebookF } from 'react-icons/fa';
+import { FaXTwitter } from 'react-icons/fa6';
+import { FaInstagram } from 'react-icons/fa';
+import { FaYoutube } from 'react-icons/fa';
+import { FaPinterest } from 'react-icons/fa';
 
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   const handleSubscribe = (e) => {
     e.preventDefault();
-    alert("Subscribed Successfully");
+    alert('Subscribed Successfully');
   };
 
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
-      behavior: "smooth",
+      behavior: 'smooth',
     });
   };
 
@@ -121,10 +121,7 @@ const Footer = () => {
           </div>
           <div className="footer_right">
             <h5>Subscribe</h5>
-            <p>
-              Be the first to get the latest news about trends, promotions, and
-              much more!
-            </p>
+            <p>Be the first to get the latest news about trends, promotions, and much more!</p>
 
             <form onSubmit={handleSubscribe}>
               <input type="email" placeholder="Your email address" required />
@@ -139,15 +136,15 @@ const Footer = () => {
         </div>
         <div className="footer_bottom">
           <p>
-            © {getCurrentYear()} Uomo. All Rights Reserved | Made By{" "}
+            © {getCurrentYear()} Uomo. All Rights Reserved | Made By{' '}
             <a
               href="https://github.com/shakti177"
               target="_blank"
               rel="noreferrer"
-              style={{ color: "#C22928", textDecoration: "none" }}
+              style={{ color: '#C22928', textDecoration: 'none' }}
             >
               Max Chamling
-            </a>{" "}
+            </a>{' '}
             with ❤️
           </p>
           <div className="footerLangCurrency">

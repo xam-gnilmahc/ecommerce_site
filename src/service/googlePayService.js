@@ -6,11 +6,9 @@ import { CardElement } from '@stripe/react-stripe-js';
  * - Builds a final payload and sends it to your smart-handler endpoint
  * - Returns { finalData, result }
  */
-const SMART_HANDLER_URL =
-  "https://fzliiwigydluhgbuvnmr.supabase.co/functions/v1/smart-handler";
+const SMART_HANDLER_URL = 'https://fzliiwigydluhgbuvnmr.supabase.co/functions/v1/smart-handler';
 
-const BEARER =
-  `Bearer ${process.env.REACT_APP_SMART_HANDLER_URL}`;
+const BEARER = `Bearer ${process.env.REACT_APP_SMART_HANDLER_URL}`;
 
 /**
  * Shared Google Pay service
@@ -21,13 +19,16 @@ const BEARER =
  * @param {*} param1
  * @returns
  */
-export async function processGooglePay(paymentData, { amount, name, email, comment = "Payment for order" } = {}) {
+export async function processGooglePay(
+  paymentData,
+  { amount, name, email, comment = 'Payment for order' } = {}
+) {
   // Parse token returned from Google Pay (Stripe gateway)
   let parsedToken = null;
   try {
     parsedToken = JSON.parse(paymentData.paymentMethodData.tokenizationData.token);
   } catch (err) {
-    throw new Error("Failed to parse payment token");
+    throw new Error('Failed to parse payment token');
   }
 
   const address = {
@@ -49,10 +50,10 @@ export async function processGooglePay(paymentData, { amount, name, email, comme
   };
 
   const response = await fetch(SMART_HANDLER_URL, {
-    method: "POST",
+    method: 'POST',
     headers: {
       Authorization: BEARER,
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify(finalData),
   });
@@ -76,22 +77,16 @@ export async function processGooglePay(paymentData, { amount, name, email, comme
 export async function processCardPayment(
   stripe,
   elements,
-  {
-    amount,
-    name,
-    email,
-    address,
-    comment = "Payment for order",
-  } = {}
+  { amount, name, email, address, comment = 'Payment for order' } = {}
 ) {
   if (!stripe || !elements) {
-    throw new Error("Stripe not loaded");
+    throw new Error('Stripe not loaded');
   }
 
   const cardElement = elements.getElement(CardElement);
 
   if (!cardElement) {
-    throw new Error("Card element not found");
+    throw new Error('Card element not found');
   }
 
   const { token, error } = await stripe.createToken(cardElement);
@@ -110,10 +105,10 @@ export async function processCardPayment(
   };
 
   const response = await fetch(SMART_HANDLER_URL, {
-    method: "POST",
+    method: 'POST',
     headers: {
       Authorization: BEARER,
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify(finalData),
   });

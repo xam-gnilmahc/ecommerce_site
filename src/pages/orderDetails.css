@@ -59,7 +59,7 @@
 .od-order-number {
   font-size: 13px;
   font-weight: 700;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255, 255, 255, 0.5);
   letter-spacing: 1px;
   text-transform: uppercase;
 }
@@ -70,7 +70,7 @@
 
 .od-tracking-number {
   font-size: 11px;
-  color: rgba(255,255,255,0.35);
+  color: rgba(255, 255, 255, 0.35);
   letter-spacing: 1px;
 }
 
@@ -78,9 +78,9 @@
   margin-top: 8px;
   padding: 9px 18px;
   border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.18);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   background: transparent;
-  color: rgba(255,255,255,0.75);
+  color: rgba(255, 255, 255, 0.75);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 1.5px;
@@ -90,9 +90,9 @@
 }
 
 .od-invoice-btn:hover {
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
   color: #fff;
-  border-color: rgba(255,255,255,0.35);
+  border-color: rgba(255, 255, 255, 0.35);
 }
 
 /* ── STATUS ROW ────────────────────────────────────────── */
@@ -121,7 +121,7 @@
 }
 
 .od-status-pill::before {
-  content: "";
+  content: '';
   width: 6px;
   height: 6px;
   border-radius: 50%;
@@ -129,12 +129,30 @@
   opacity: 0.7;
 }
 
-.od-status-pill.pending        { background: #fff7d6; color: #946200; }
-.od-status-pill.confirmed      { background: #dbeafe; color: #1d4ed8; }
-.od-status-pill.shipped\ out   { background: #ede9fe; color: #6d28d9; }
-.od-status-pill.out\ for\ delivery { background: #cffafe; color: #0e7490; }
-.od-status-pill.delivered      { background: #dcfce7; color: #15803d; }
-.od-status-pill.cancelled      { background: #fee2e2; color: #dc2626; }
+.od-status-pill.pending {
+  background: #fff7d6;
+  color: #946200;
+}
+.od-status-pill.confirmed {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+.od-status-pill.shipped\ out {
+  background: #ede9fe;
+  color: #6d28d9;
+}
+.od-status-pill.out\ for\ delivery {
+  background: #cffafe;
+  color: #0e7490;
+}
+.od-status-pill.delivered {
+  background: #dcfce7;
+  color: #15803d;
+}
+.od-status-pill.cancelled {
+  background: #fee2e2;
+  color: #dc2626;
+}
 
 .od-status-desc {
   font-size: 13px;
@@ -219,7 +237,7 @@
   background: #c19a6b;
   border-color: #c19a6b;
   color: #fff;
-  box-shadow: 0 0 0 4px rgba(193,154,107,0.15);
+  box-shadow: 0 0 0 4px rgba(193, 154, 107, 0.15);
 }
 
 .od-track-label {
@@ -281,7 +299,9 @@
   color: #374151;
 }
 
-.od-pay-row:last-child { border-bottom: none; }
+.od-pay-row:last-child {
+  border-bottom: none;
+}
 
 .od-pay-row svg {
   font-size: 20px;
@@ -317,7 +337,9 @@
   border-bottom: 1px solid #f8f9fb;
 }
 
-.od-item:last-child { border-bottom: none; }
+.od-item:last-child {
+  border-bottom: none;
+}
 
 .od-item-img {
   width: 72px;
@@ -418,7 +440,9 @@
 /* ── RESPONSIVE ────────────────────────────────────────── */
 
 @media (max-width: 640px) {
-  .od-page { padding: 16px 12px 48px; }
+  .od-page {
+    padding: 16px 12px 48px;
+  }
 
   .od-top-band {
     flex-direction: column;
@@ -426,9 +450,13 @@
     padding: 24px 22px 22px;
   }
 
-  .od-top-meta { align-items: flex-start; }
+  .od-top-meta {
+    align-items: flex-start;
+  }
 
-  .od-status-row { padding: 14px 22px; }
+  .od-status-row {
+    padding: 14px 22px;
+  }
 
   .od-meta-grid {
     grid-template-columns: 1fr;
@@ -444,7 +472,9 @@
   }
 
   .od-track-section,
-  .od-items-section { padding: 22px; }
+  .od-items-section {
+    padding: 22px;
+  }
 
   .od-footer {
     flex-direction: column;
@@ -453,15 +483,29 @@
     gap: 16px;
   }
 
-  .od-total-block { align-items: flex-start; }
+  .od-total-block {
+    align-items: flex-start;
+  }
 
-  .od-track-wrapper { overflow-x: auto; gap: 0; }
+  .od-track-wrapper {
+    overflow-x: auto;
+    gap: 0;
+  }
 
-  .od-track-step { min-width: 80px; }
+  .od-track-step {
+    min-width: 80px;
+  }
 }
 
 @media (max-width: 400px) {
-  .od-brand-label { font-size: 22px; }
-  .od-item-img { width: 56px; height: 56px; }
-  .od-item-name { font-size: 13px; }
+  .od-brand-label {
+    font-size: 22px;
+  }
+  .od-item-img {
+    width: 56px;
+    height: 56px;
+  }
+  .od-item-name {
+    font-size: 13px;
+  }
 }

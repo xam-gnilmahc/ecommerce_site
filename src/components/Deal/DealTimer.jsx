@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import "./DealTimer.css";
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import './DealTimer.css';
 
 const DealTimer = () => {
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const [timeLeft, setTimeLeft] = useState({
@@ -49,7 +49,7 @@ const DealTimer = () => {
     return () => clearInterval(timer);
   }, []);
 
-  const formatTime = (val) => val.toString().padStart(2, "0");
+  const formatTime = (val) => val.toString().padStart(2, '0');
 
   return (
     <motion.div

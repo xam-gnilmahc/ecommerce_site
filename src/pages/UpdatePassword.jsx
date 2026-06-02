@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supaBaseClient';
 import { useNavigate, useSearchParams } from 'react-router-dom'; // For redirection
-import toast from "react-hot-toast";
+import toast from 'react-hot-toast';
 
 // Function to generate a random secure password
 const generatePassword = () => {
   const length = 12; // Password length
-  const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
-  let password = "";
+  const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+';
+  let password = '';
   for (let i = 0; i < length; i++) {
     password += charset.charAt(Math.floor(Math.random() * charset.length));
   }
@@ -72,7 +72,7 @@ const UpdatePassword = () => {
               New Password
             </label>
             <input
-              type={showPassword ? "text" : "password"} // Toggle password visibility
+              type={showPassword ? 'text' : 'password'} // Toggle password visibility
               id="password"
               className="form-control pe-5" // Add padding-right for the eye icon
               placeholder="Enter new password"

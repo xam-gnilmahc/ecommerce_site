@@ -1,15 +1,15 @@
-import React, { useState } from "react";
-import { NavLink, Link } from "react-router-dom";
-import { BsHouseDoorFill, BsBagCheck } from "react-icons/bs";
-import { FaBars, FaSignOutAlt } from "react-icons/fa";
-import { MdCancel } from "react-icons/md";
-import logo from "./assets/logo.png";
-import { useAuth } from "../context/authContext";
-import "./Sidebar.css";
+import React, { useState } from 'react';
+import { NavLink, Link } from 'react-router-dom';
+import { BsHouseDoorFill, BsBagCheck } from 'react-icons/bs';
+import { FaBars, FaSignOutAlt } from 'react-icons/fa';
+import { MdCancel } from 'react-icons/md';
+import logo from './assets/logo.png';
+import { useAuth } from '../context/authContext';
+import './Sidebar.css';
 
 const links = [
-  { to: "/order", label: "Orders", icon: <BsBagCheck /> },
-  { to: "/return-cancel", label: "Cancelled", icon: <MdCancel /> },
+  { to: '/order', label: 'Orders', icon: <BsBagCheck /> },
+  { to: '/return-cancel', label: 'Cancelled', icon: <MdCancel /> },
 ];
 
 const Sidebar = () => {
@@ -24,7 +24,7 @@ const Sidebar = () => {
 
       {open && <div className="sb-overlay" onClick={() => setOpen(false)} />}
 
-      <aside className={`sb ${open ? "open" : ""}`}>
+      <aside className={`sb ${open ? 'open' : ''}`}>
         <div className="sb-top">
           <img src={logo} className="sb-logo" />
 
@@ -42,9 +42,7 @@ const Sidebar = () => {
             <NavLink
               key={l.to}
               to={l.to}
-              className={({ isActive }) =>
-                `sb-link ${isActive ? "active" : ""}`
-              }
+              className={({ isActive }) => `sb-link ${isActive ? 'active' : ''}`}
               onClick={() => setOpen(false)}
             >
               {l.icon}

@@ -1,5 +1,5 @@
-import React from "react";
-import { Routes, Route } from "react-router-dom";
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
 
 // Pages
 import {
@@ -12,27 +12,26 @@ import {
   Login,
   Register,
   Checkout,
-  PageNotFound
-} from "./pages";
+  PageNotFound,
+} from './pages';
 
-import UpdatePassword from "./pages/UpdatePassword";
-import OrderDetailsSheet from "./pages/OrderDetailsSheet";
-import TermsandConditions from "./pages/TermsandConditions";
-import OrdersPage from "./pages/OrdersPage";
-import OrderDetailsPage from "./pages/OrderDetails";
-import Profile from "./pages/Profile";
-import CancelledOrderPage from "./pages/CancelledOrderPage";
-import PaymentsPage from "./pages/PaymentsPage";
-import ForgotPassword from "./pages/ForgotPassword";
-import CronJob from "./pages/CronJob";
-import NotificationPage from "./pages/NotificationPage";
-import NotificationSettings from "./pages/SetttingPage";
-import RafflePage from "./pages/RafflePage"; 
-
+import UpdatePassword from './pages/UpdatePassword';
+import OrderDetailsSheet from './pages/OrderDetailsSheet';
+import TermsandConditions from './pages/TermsandConditions';
+import OrdersPage from './pages/OrdersPage';
+import OrderDetailsPage from './pages/OrderDetails';
+import Profile from './pages/Profile';
+import CancelledOrderPage from './pages/CancelledOrderPage';
+import PaymentsPage from './pages/PaymentsPage';
+import ForgotPassword from './pages/ForgotPassword';
+import CronJob from './pages/CronJob';
+import NotificationPage from './pages/NotificationPage';
+import NotificationSettings from './pages/SetttingPage';
+import RafflePage from './pages/RafflePage';
 
 // Layouts
-import GuestLayout from "./layouts/GuestLayout";
-import AuthLayout from "./layouts/AuthLayout";
+import GuestLayout from './layouts/GuestLayout';
+import AuthLayout from './layouts/AuthLayout';
 
 const RoutesComponent = () => (
   <Routes>

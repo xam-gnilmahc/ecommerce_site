@@ -1,11 +1,11 @@
-import React from "react";
-import "./CollectionBox.css";
-import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import React from 'react';
+import './CollectionBox.css';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 const CollectionBox = () => {
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const cardVariant = {
@@ -17,7 +17,7 @@ const CollectionBox = () => {
       transition: {
         delay: i * 0.15,
         duration: 0.8,
-        ease: "easeOut",
+        ease: 'easeOut',
       },
     }),
   };

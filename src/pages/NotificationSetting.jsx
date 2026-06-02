@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Sidebar from "../components/Sidebar";
+import Sidebar from '../components/Sidebar';
 
 const NotificationSettings = () => {
   const [settings, setSettings] = useState({
@@ -18,7 +18,7 @@ const NotificationSettings = () => {
 
   const toggleSetting = (key) => {
     if (key === 'securityAlerts') return;
-    setSettings(prev => ({ ...prev, [key]: !prev[key] }));
+    setSettings((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
   const renderSwitch = (label, key, disabled = false) => (
@@ -37,7 +37,7 @@ const NotificationSettings = () => {
           style={{
             width: '3rem',
             height: '1.7rem',
-            cursor: disabled ? 'not-allowed' : 'pointer'
+            cursor: disabled ? 'not-allowed' : 'pointer',
           }}
         />
       </div>
@@ -47,7 +47,10 @@ const NotificationSettings = () => {
   return (
     <div className="d-flex flex-column flex-md-row">
       <Sidebar />
-      <main className="flex-grow-1 p-3" style={{ marginLeft: "280px", backgroundColor: "#fff", minHeight: "100vh" }}>
+      <main
+        className="flex-grow-1 p-3"
+        style={{ marginLeft: '280px', backgroundColor: '#fff', minHeight: '100vh' }}
+      >
         <div className="container">
           <div className="row">
             <div className="col-12 col-md-6 mb-4">

@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useGLTF } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
+import React, { useEffect, useRef, useState } from 'react';
+import { useGLTF } from '@react-three/drei';
+import { useFrame } from '@react-three/fiber';
 
 export function Model({ color, ...props }) {
-  const { nodes, materials } = useGLTF("/iphone.glb");
+  const { nodes, materials } = useGLTF('/iphone.glb');
   const modelRef = useRef();
 
   const [scale, setScale] = useState([1, 1, 1]);
@@ -12,7 +12,7 @@ export function Model({ color, ...props }) {
   useEffect(() => {
     function updateScale() {
       const width = window.innerWidth;
-  
+
       if (width < 600) {
         setScale([4.5, 4, 7]); // ⬅️ Reduced width (X) and height (Y)
         setPosition([0, -1, 0]);
@@ -24,19 +24,18 @@ export function Model({ color, ...props }) {
         setPosition([0, 0, 0]);
       }
     }
-  
-    updateScale();
-  
-    window.addEventListener("resize", updateScale);
-    return () => window.removeEventListener("resize", updateScale);
-  }, []);
-  
-useFrame(() => {
-  if (modelRef.current) {
-    modelRef.current.rotation.y += 0.01; // ✅ Horizontal rotation
-  }
-});
 
+    updateScale();
+
+    window.addEventListener('resize', updateScale);
+    return () => window.removeEventListener('resize', updateScale);
+  }, []);
+
+  useFrame(() => {
+    if (modelRef.current) {
+      modelRef.current.rotation.y += 0.01; // ✅ Horizontal rotation
+    }
+  });
 
   useEffect(() => {
     Object.values(materials).forEach((material) => {
@@ -46,8 +45,8 @@ useFrame(() => {
 
   // Log nodes to inspect the structure
   useEffect(() => {
-    console.log("Loaded nodes:", nodes);
-    console.log("Loaded materials:", materials);
+    console.log('Loaded nodes:', nodes);
+    console.log('Loaded materials:', materials);
   }, [nodes, materials]);
 
   return (
@@ -57,11 +56,11 @@ useFrame(() => {
       dispose={null}
       position={position}
       scale={scale}
-      rotation={[-Math.PI / -1, Math.PI, 0]} 
+      rotation={[-Math.PI / -1, Math.PI, 0]}
     >
       {/* Dynamically render all meshes */}
       {Object.entries(nodes).map(([key, node]) => {
-        if (node.type === "Mesh") {
+        if (node.type === 'Mesh') {
           return (
             <mesh
               key={key}
@@ -78,4 +77,4 @@ useFrame(() => {
   );
 }
 
-useGLTF.preload("/iphone.glb");
+useGLTF.preload('/iphone.glb');

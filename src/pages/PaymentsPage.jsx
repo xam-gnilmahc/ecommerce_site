@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaApplePay, FaGooglePay, FaCreditCard } from 'react-icons/fa';
-import Sidebar from "../components/Sidebar";
+import Sidebar from '../components/Sidebar';
 
 const PaymentSetupPage = () => {
   const [paymentOptions, setPaymentOptions] = useState({
@@ -30,7 +30,7 @@ const PaymentSetupPage = () => {
       [name]: value,
     }));
   };
-  
+
   const handleSave = async () => {
     const dataToSave = {
       ...paymentOptions,
@@ -42,15 +42,18 @@ const PaymentSetupPage = () => {
   return (
     <div className="d-flex flex-column flex-md-row">
       <Sidebar />
-      <main className="flex-grow-1 p-4" style={{ marginLeft: "280px", backgroundColor: "#fff", minHeight: "100vh" }}>
+      <main
+        className="flex-grow-1 p-4"
+        style={{ marginLeft: '280px', backgroundColor: '#fff', minHeight: '100vh' }}
+      >
         <div className="container">
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <motion.div initial={{ y: 40 }} animate={{ y: 0 }} transition={{ duration: 0.4 }}>
               <h3 className="text-center mb-4">Setup Your Payment Methods</h3>
-              {[ 
+              {[
                 { id: 'googlePay', label: 'Google Pay', icon: <FaGooglePay size={28} /> },
                 { id: 'applePay', label: 'Apple Pay', icon: <FaApplePay size={28} /> },
-                { id: 'card', label: 'Credit / Debit Card', icon: <FaCreditCard size={26} /> }
+                { id: 'card', label: 'Credit / Debit Card', icon: <FaCreditCard size={26} /> },
               ].map((option) => (
                 <div
                   key={option.id}

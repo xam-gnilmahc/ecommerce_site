@@ -21,7 +21,6 @@ const initialState: TrackingState = {
   error: undefined,
 };
 
-
 export const trackUserActivity = createAsyncThunk(
   'tracking/trackUserActivity',
   async (payload: TrackPayload, { rejectWithValue }) => {
@@ -46,7 +45,6 @@ export const trackUserActivity = createAsyncThunk(
     }
   }
 );
-
 
 export const trackBulkActivity = createAsyncThunk(
   'tracking/trackBulkActivity',
@@ -73,7 +71,6 @@ export const trackBulkActivity = createAsyncThunk(
   }
 );
 
-
 const trackingSlice = createSlice({
   name: 'tracking',
   initialState,
@@ -89,7 +86,7 @@ const trackingSlice = createSlice({
       })
       .addCase(trackUserActivity.rejected, (state, action) => {
         state.loading = false;
-        state.error =  'Tracking failed';
+        state.error = 'Tracking failed';
       })
 
       // bulk tracking

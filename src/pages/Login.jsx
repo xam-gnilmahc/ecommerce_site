@@ -1,17 +1,17 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { supabase } from "../supaBaseClient";
-import toast from "react-hot-toast";
-import { useAuth } from "../context/authContext";
-import FacebookLogin from "react-facebook-login";
-import "./Login.css";
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { supabase } from '../supaBaseClient';
+import toast from 'react-hot-toast';
+import { useAuth } from '../context/authContext';
+import FacebookLogin from 'react-facebook-login';
+import './Login.css';
 
 const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const [formData, setFormData] = useState({ email: "", password: "" });
-  const [error, setError] = useState("");
+  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -21,7 +21,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
+    setError('');
 
     const { email, password } = formData;
 
@@ -35,15 +35,14 @@ const Login = () => {
       setLoading(false);
       return;
     }
-    
-    toast.success("Login successful!");
-    navigate("/");
-    
+
+    toast.success('Login successful!');
+    navigate('/');
   };
 
   const loginWithGoogle = async () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
+      provider: 'google',
     });
     if (error) {
       toast.error(error.message);
@@ -61,7 +60,7 @@ const Login = () => {
         `Welcome ${response.name}!\nEmail: ${response.email}\n\nNote: Facebook login is under development and not fully functional for end users.`
       );
     } else {
-      toast.error("Facebook login failed or is incomplete.");
+      toast.error('Facebook login failed or is incomplete.');
     }
   };
 
@@ -69,15 +68,10 @@ const Login = () => {
     <>
       <div className="loginSignUpSection">
         <div className="loginSignUpContainer">
-        <div className="loginSignUpTabs">
-            <p          
-            >
-              Login
-            </p>
-           
+          <div className="loginSignUpTabs">
+            <p>Login</p>
           </div>
           <div className="loginSignUpTabsContentLogin">
-            
             <form onSubmit={handleSubmit}>
               <input
                 type="email"
@@ -102,21 +96,16 @@ const Login = () => {
               />
 
               <div className="loginSignUpForgetPass">
-                <p style={{ margin : 0}}>
+                <p style={{ margin: 0 }}>
                   <Link to="/forgot-password">Lost password?</Link>
                 </p>
               </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-              >
-                {loading ? "Logging in..." : "Login"}
+              <button type="submit" disabled={loading}>
+                {loading ? 'Logging in...' : 'Login'}
               </button>
 
-              <div className="text-center mb-3 text-muted">
-                or continue with
-              </div>
+              <div className="text-center mb-3 text-muted">or continue with</div>
 
               <button
                 onClick={loginWithGoogle}
@@ -129,7 +118,7 @@ const Login = () => {
                 appId="1206302750908024"
                 autoLoad={false}
                 fields="name,email,picture"
-                callback={responseFacebook} 
+                callback={responseFacebook}
                 icon="fa-facebook me-2"
                 textButton="Continue with Facebook"
                 cssClass="btn btn-outline-primary w-100 mb-2 d-flex align-items-center justify-content-center"
@@ -137,11 +126,8 @@ const Login = () => {
 
               <div className="loginSignUpTabsContentLoginText">
                 <p>
-                  No account yet?{" "}
-                  <Link
-                    to="/register"
-                    className="text-decoration-underline text-info"
-                  >
+                  No account yet?{' '}
+                  <Link to="/register" className="text-decoration-underline text-info">
                     Create Account
                   </Link>
                 </p>

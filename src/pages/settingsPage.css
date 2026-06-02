@@ -48,25 +48,25 @@
 }
 
 .sett-profile-card::before {
-  content: "";
+  content: '';
   position: absolute;
   top: -40px;
   right: -40px;
   width: 180px;
   height: 180px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.07);
+  background: rgba(255, 255, 255, 0.07);
 }
 
 .sett-profile-card::after {
-  content: "";
+  content: '';
   position: absolute;
   bottom: -60px;
   right: 80px;
   width: 140px;
   height: 140px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .sett-avatar-wrap {
@@ -78,8 +78,8 @@
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.2);
-  border: 2.5px solid rgba(255,255,255,0.5);
+  background: rgba(255, 255, 255, 0.2);
+  border: 2.5px solid rgba(255, 255, 255, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -120,13 +120,13 @@
 
 .sett-profile-email {
   font-size: 12px;
-  color: rgba(255,255,255,0.75);
+  color: rgba(255, 255, 255, 0.75);
   margin: 0 0 8px;
 }
 
 .sett-profile-badge {
-  background: rgba(255,255,255,0.15);
-  border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   color: #fff;
   font-size: 10px;
   font-weight: 600;
@@ -136,8 +136,8 @@
 }
 
 .sett-edit-profile-btn {
-  background: rgba(255,255,255,0.15);
-  border: 1.5px solid rgba(255,255,255,0.4);
+  background: rgba(255, 255, 255, 0.15);
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
   color: #fff;
   font-size: 12px;
   font-weight: 600;
@@ -150,7 +150,7 @@
 }
 
 .sett-edit-profile-btn:hover {
-  background: rgba(255,255,255,0.25);
+  background: rgba(255, 255, 255, 0.25);
 }
 
 /* ═══════════════════════════════════════════════
@@ -329,7 +329,7 @@
   height: 18px;
   border-radius: 50%;
   background: #fff;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   display: block;
 }
@@ -406,17 +406,31 @@
    MOBILE
 ═══════════════════════════════════════════════ */
 @media (max-width: 768px) {
-  .sett-layout { padding: 16px 12px 40px; }
+  .sett-layout {
+    padding: 16px 12px 40px;
+  }
 
-  .sett-grid { grid-template-columns: 1fr; }
+  .sett-grid {
+    grid-template-columns: 1fr;
+  }
 
-  .sett-profile-card { flex-wrap: wrap; }
+  .sett-profile-card {
+    flex-wrap: wrap;
+  }
 
-  .sett-edit-profile-btn { width: 100%; text-align: center; justify-content: center; }
+  .sett-edit-profile-btn {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
 
-  .sett-danger-zone { flex-direction: column; }
+  .sett-danger-zone {
+    flex-direction: column;
+  }
 
-  .sett-danger-btn { justify-content: center; }
+  .sett-danger-btn {
+    justify-content: center;
+  }
 }
 
 /* real google avatar image */
@@ -425,6 +439,6 @@
   height: 64px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2.5px solid rgba(255,255,255,0.5);
+  border: 2.5px solid rgba(255, 255, 255, 0.5);
   display: block;
 }

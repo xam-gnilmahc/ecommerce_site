@@ -1,5 +1,5 @@
-import { paymentRequest } from "../config/GooglePay";
-import { shippingOptions } from "../config/ShippingOptions";
+import { paymentRequest } from '../config/GooglePay';
+import { shippingOptions } from '../config/ShippingOptions';
 
 /** Calculate and return the total price */
 function calculateTotalPrice(displayItems) {
@@ -32,7 +32,7 @@ function getUpdatedPaymentData(paymentRequest, paymentData) {
         {
           label: shippingOption.label,
           price: shippingOption.price.toFixed(2),
-          type: "SHIPPING_OPTION",
+          type: 'SHIPPING_OPTION',
         },
       ];
 

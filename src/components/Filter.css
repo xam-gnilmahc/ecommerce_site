@@ -276,33 +276,32 @@
 ========================= */
 
 @media (max-width: 992px) {
-
   /* show filter button */
- .mobileFilterBtn {
-  display: block;
-  width: 100%;
-  padding: 12px 14px;
+  .mobileFilterBtn {
+    display: block;
+    width: 100%;
+    padding: 12px 14px;
 
-  border: none;
-  border-radius: 12px;
+    border: none;
+    border-radius: 12px;
 
-  background: #111827;
-  color: white;
+    background: #111827;
+    color: white;
 
-  font-size: 14px;
-  font-weight: 600;
+    font-size: 14px;
+    font-weight: 600;
 
-  cursor: pointer;
+    cursor: pointer;
 
-  margin-bottom: 12px;
-}
+    margin-bottom: 12px;
+  }
 
   /* overlay */
   .filterOverlay {
     display: block;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.45);
+    background: rgba(0, 0, 0, 0.45);
     z-index: 1999;
   }
 
@@ -324,7 +323,7 @@
     overflow-y: auto;
 
     transition: left 0.35s ease;
-    box-shadow: 10px 0 30px rgba(0,0,0,0.12);
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.12);
   }
 
   .filterSection.active {
@@ -350,7 +349,6 @@
 ========================= */
 
 @media (max-width: 480px) {
-
   .filterSection {
     padding: 14px;
   }

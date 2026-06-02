@@ -1,21 +1,20 @@
-import React, { useState, useRef, useEffect } from "react";
-import "./AdditionalInfo.css";
-import toast from "react-hot-toast";
+import React, { useState, useRef, useEffect } from 'react';
+import './AdditionalInfo.css';
+import toast from 'react-hot-toast';
 
-import { FaStar, FaThumbsUp, FaThumbsDown } from "react-icons/fa";
-import Rating from "@mui/material/Rating";
-import DeleteIcon from "@mui/icons-material/Delete"; // Import Delete icon
-import IconButton from "@mui/material/IconButton";
-
+import { FaStar, FaThumbsUp, FaThumbsDown } from 'react-icons/fa';
+import Rating from '@mui/material/Rating';
+import DeleteIcon from '@mui/icons-material/Delete'; // Import Delete icon
+import IconButton from '@mui/material/IconButton';
 
 const AdditionalInfo = ({ product_reviews }) => {
-
-  const DEFAULT_AVATAR = "https://thumbs.dreamstime.com/b/default-avatar-profile-vector-user-profile-default-avatar-profile-vector-user-profile-profile-179376714.jpg";
+  const DEFAULT_AVATAR =
+    'https://thumbs.dreamstime.com/b/default-avatar-profile-vector-user-profile-default-avatar-profile-vector-user-profile-profile-179376714.jpg';
 
   // Reviews state: use reviews passed from Product.jsx (no localStorage persistence)
-  const [activeTab, setActiveTab] = useState("aiTab1");
+  const [activeTab, setActiveTab] = useState('aiTab1');
   const [rating, setRating] = useState(0);
-  const [review, setReview] = useState("");
+  const [review, setReview] = useState('');
   const [mediaFiles, setMediaFiles] = useState([]);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [dragActive, setDragActive] = useState(false);
@@ -51,7 +50,6 @@ const AdditionalInfo = ({ product_reviews }) => {
     setMediaFiles(updatedFiles);
   };
 
-
   const handleDrop = (e) => {
     e.preventDefault();
     setDragActive(false);
@@ -63,9 +61,9 @@ const AdditionalInfo = ({ product_reviews }) => {
   const handleDrag = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
+    if (e.type === 'dragenter' || e.type === 'dragover') {
       setDragActive(true);
-    } else if (e.type === "dragleave") {
+    } else if (e.type === 'dragleave') {
       setDragActive(false);
     }
   };
@@ -74,17 +72,17 @@ const AdditionalInfo = ({ product_reviews }) => {
     e.preventDefault();
     // basic validation
     if (!rating || rating <= 0) {
-      toast.error("Please provide a rating.");
+      toast.error('Please provide a rating.');
       return;
     }
     if (!review || review.trim().length < 5) {
-      toast.error("Please write a short review (min 5 characters).");
+      toast.error('Please write a short review (min 5 characters).');
       return;
     }
 
     const newReview = {
       id: Date.now(),
-      name: "Anonymous",
+      name: 'Anonymous',
       picture: DEFAULT_AVATAR,
       comment: review,
       rating: rating,
@@ -96,9 +94,9 @@ const AdditionalInfo = ({ product_reviews }) => {
     // Update in-memory reviews so the UI shows the new review immediately.
     setReviews(updated);
     setRating(0);
-    setReview("");
+    setReview('');
     setMediaFiles([]);
-    toast.success("Review submitted.");
+    toast.success('Review submitted.');
   };
 
   const openViewer = (mediaArray, index = 0) => {
@@ -117,15 +115,15 @@ const AdditionalInfo = ({ product_reviews }) => {
   };
 
   const formatDate = (value) => {
-    if (!value) return "N/A";
-    const fixed = value.replace(" ", "T");
+    if (!value) return 'N/A';
+    const fixed = value.replace(' ', 'T');
     const date = new Date(fixed);
-    if (isNaN(date)) return "Invalid date";
+    if (isNaN(date)) return 'Invalid date';
 
-    return date.toLocaleDateString("en-GB", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
+    return date.toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
     });
   };
   //  const ratings = [
@@ -136,31 +134,29 @@ const AdditionalInfo = ({ product_reviews }) => {
   //     { stars: 1, count: 0, color: "bg-red-500" },
   //   ];
 
-
   const ratingColors = {
-    5: "bg-success",
-    4: "bg-primary",
-    3: "bg-warning",
-    2: "bg-info",
-    1: "bg-danger",
+    5: 'bg-success',
+    4: 'bg-primary',
+    3: 'bg-warning',
+    2: 'bg-info',
+    1: 'bg-danger',
   };
-
 
   const total = reviews?.length || 0;
 
-  const ratingCounts = [1, 2, 3, 4, 5].map((star) => {
-    const count = (reviews || []).filter((r) => r.rating === star).length;
-    return {
-      stars: star,
-      count,
-      color: ratingColors[star],
-    };
-  }).reverse(); // So that 5★ appears on top
+  const ratingCounts = [1, 2, 3, 4, 5]
+    .map((star) => {
+      const count = (reviews || []).filter((r) => r.rating === star).length;
+      return {
+        stars: star,
+        count,
+        color: ratingColors[star],
+      };
+    })
+    .reverse(); // So that 5★ appears on top
 
-  const avg = total > 0
-    ? ((reviews || []).reduce((sum, r) => sum + r.rating, 0) / total).toFixed(1)
-    : 0;
-
+  const avg =
+    total > 0 ? ((reviews || []).reduce((sum, r) => sum + r.rating, 0) / total).toFixed(1) : 0;
 
   return (
     <>
@@ -168,22 +164,36 @@ const AdditionalInfo = ({ product_reviews }) => {
         <div className="productAdditonalInfoContainer">
           <div className="productAdditionalInfoTabs">
             <div className="aiTabs">
-              <p onClick={() => handleTabClick("aiTab1")} className={activeTab === "aiTab1" ? "aiActive" : ""}>Description</p>
-              <p onClick={() => handleTabClick("aiTab2")} className={activeTab === "aiTab2" ? "aiActive" : ""}>Additional Information</p>
-              <p onClick={() => handleTabClick("aiTab3")} className={activeTab === "aiTab3" ? "aiActive" : ""}>Reviews {reviews?.length}</p>
+              <p
+                onClick={() => handleTabClick('aiTab1')}
+                className={activeTab === 'aiTab1' ? 'aiActive' : ''}
+              >
+                Description
+              </p>
+              <p
+                onClick={() => handleTabClick('aiTab2')}
+                className={activeTab === 'aiTab2' ? 'aiActive' : ''}
+              >
+                Additional Information
+              </p>
+              <p
+                onClick={() => handleTabClick('aiTab3')}
+                className={activeTab === 'aiTab3' ? 'aiActive' : ''}
+              >
+                Reviews {reviews?.length}
+              </p>
             </div>
           </div>
           <div className="productAdditionalInfoContent">
             {/* Tab1 - Description */}
-            {activeTab === "aiTab1" && (
+            {activeTab === 'aiTab1' && (
               <div className="aiTabDescription">
                 <div className="descriptionPara">
                   <h3>Experience the Power of Innovation</h3>
                   <p>
-                    Discover the next-gen smartphone built for speed,
-                    performance, and style. Equipped with the latest processor,
-                    high-resolution display, and long-lasting battery, this
-                    device keeps you connected, productive, and entertained.
+                    Discover the next-gen smartphone built for speed, performance, and style.
+                    Equipped with the latest processor, high-resolution display, and long-lasting
+                    battery, this device keeps you connected, productive, and entertained.
                   </p>
                 </div>
                 <div className="descriptionParaGrid">
@@ -208,7 +218,7 @@ const AdditionalInfo = ({ product_reviews }) => {
                 </div>
                 <div className="descriptionPara">
                   <h3>Material & Build</h3>
-                  <p style={{ marginTop: "-10px" }}>
+                  <p style={{ marginTop: '-10px' }}>
                     Premium aluminum frame with Gorilla Glass Victus+ protection.
                   </p>
                 </div>
@@ -216,7 +226,7 @@ const AdditionalInfo = ({ product_reviews }) => {
             )}
 
             {/* Tab2 - Additional Info */}
-            {activeTab === "aiTab2" && (
+            {activeTab === 'aiTab2' && (
               <div className="aiTabAdditionalInfo">
                 <div className="additionalInfoContainer">
                   <h6>Weight</h6>
@@ -243,31 +253,28 @@ const AdditionalInfo = ({ product_reviews }) => {
           </div>
 
           {/* Tab3 - Reviews */}
-          {activeTab === "aiTab3" && (
+          {activeTab === 'aiTab3' && (
             <div className="aiTabReview">
               <div className="aiTabReviewContainer">
                 <div className="userReviews">
                   {reviews?.map((review, index) => (
-                    <div
-                      key={index}
-                      className="d-flex gap-3 border-bottom pb-4 mb-4"
-                    >
+                    <div key={index} className="d-flex gap-3 border-bottom pb-4 mb-4">
                       {/* User Image */}
-                       <div className="userReviewImg">
-                         <img src={review.users?.profile || DEFAULT_AVATAR} alt="User" />
-                        </div>
+                      <div className="userReviewImg">
+                        <img src={review.users?.profile || DEFAULT_AVATAR} alt="User" />
+                      </div>
                       {/* Review Content */}
                       <div className="flex-grow-1 position-relative">
                         {/* Name, Rating, Date */}
                         <div className="d-flex justify-content-between flex-wrap mb-1">
                           <div className="d-flex align-items-center gap-2">
-                            <h6 className="mb-0">{review.users?.name || "Anonymous"}</h6>
+                            <h6 className="mb-0">{review.users?.name || 'Anonymous'}</h6>
                             <div className="d-flex gap-1">
                               {[...Array(5)].map((_, i) => (
                                 <FaStar
                                   key={i}
                                   size={14}
-                                  color={i < review.rating ? "#FEC78A" : "#E5E7EB"}
+                                  color={i < review.rating ? '#FEC78A' : '#E5E7EB'}
                                 />
                               ))}
                             </div>
@@ -276,7 +283,7 @@ const AdditionalInfo = ({ product_reviews }) => {
                         </div>
 
                         {/* Comment */}
-                        <div className="userReviewBottomContent" style={{ marginBottom: "18px" }}>
+                        <div className="userReviewBottomContent" style={{ marginBottom: '18px' }}>
                           <p>{review.comment}</p>
                         </div>
 
@@ -284,7 +291,7 @@ const AdditionalInfo = ({ product_reviews }) => {
                         {review.picture && (
                           <div className="review-media-grid">
                             {(() => {
-                              const url = String(review.picture).startsWith("http")
+                              const url = String(review.picture).startsWith('http')
                                 ? review.picture
                                 : `https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/lol/${review.picture}`;
                               return (
@@ -299,24 +306,15 @@ const AdditionalInfo = ({ product_reviews }) => {
                             })()}
                           </div>
                         )}
-
                       </div>
                     </div>
                   ))}
                 </div>
 
-
                 <div className="userNewReview">
-
                   {showModal && (
-                    <div
-                      className="review-modal-overlay"
-                      onClick={() => setShowModal(false)}
-                    >
-                      <div
-                        className="review-modal"
-                        onClick={(e) => e.stopPropagation()}
-                      >
+                    <div className="review-modal-overlay" onClick={() => setShowModal(false)}>
+                      <div className="review-modal" onClick={(e) => e.stopPropagation()}>
                         <button
                           className="modal-close"
                           onClick={() => setShowModal(false)}
@@ -347,8 +345,20 @@ const AdditionalInfo = ({ product_reviews }) => {
                             />
                           </div>
 
-                          <div className={`drag-drop-zone ${dragActive ? "active" : ""}`} onDragEnter={handleDrag} onDragLeave={handleDrag} onDragOver={handleDrag} onDrop={handleDrop}>
-                            <input type="file" accept="image/*,video/*" id="uploadInput" multiple onChange={(e) => handleFileChange(e.target.files)} />
+                          <div
+                            className={`drag-drop-zone ${dragActive ? 'active' : ''}`}
+                            onDragEnter={handleDrag}
+                            onDragLeave={handleDrag}
+                            onDragOver={handleDrag}
+                            onDrop={handleDrop}
+                          >
+                            <input
+                              type="file"
+                              accept="image/*,video/*"
+                              id="uploadInput"
+                              multiple
+                              onChange={(e) => handleFileChange(e.target.files)}
+                            />
                             <label htmlFor="uploadInput">
                               <p>
                                 Drag & drop an image or video here, or <span>click to browse</span>
@@ -360,13 +370,21 @@ const AdditionalInfo = ({ product_reviews }) => {
                             <div className="file-preview-grid">
                               {mediaFiles.map((media, index) => (
                                 <div key={index} className="file-preview-item">
-                                  <div className="file-delete-btn" onClick={() => handleDeleteFile(index)} title="Delete file">
+                                  <div
+                                    className="file-delete-btn"
+                                    onClick={() => handleDeleteFile(index)}
+                                    title="Delete file"
+                                  >
                                     <DeleteIcon fontSize="small" />
                                   </div>
-                                  {media.file.type.startsWith("image/") ? (
+                                  {media.file.type.startsWith('image/') ? (
                                     <img src={media.preview} alt="preview" />
                                   ) : (
-                                    <video ref={(el) => (videoRefs.current[index] = el)} src={media.preview} controls />
+                                    <video
+                                      ref={(el) => (videoRefs.current[index] = el)}
+                                      src={media.preview}
+                                      controls
+                                    />
                                   )}
                                 </div>
                               ))}
@@ -377,13 +395,15 @@ const AdditionalInfo = ({ product_reviews }) => {
                             <button
                               className="modal-submit"
                               onClick={(e) => {
-                                handleSubmit({ preventDefault: () => { } });
+                                handleSubmit({ preventDefault: () => {} });
                                 setShowModal(false);
                               }}
                             >
                               Submit
                             </button>
-                            <button className="modal-cancel" onClick={() => setShowModal(false)}>Cancel</button>
+                            <button className="modal-cancel" onClick={() => setShowModal(false)}>
+                              Cancel
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -394,18 +414,37 @@ const AdditionalInfo = ({ product_reviews }) => {
                   {viewerOpen && (
                     <div className="media-viewer-overlay" onClick={() => setViewerOpen(false)}>
                       <div className="media-viewer" onClick={(e) => e.stopPropagation()}>
-                        <button className="viewer-close" onClick={() => setViewerOpen(false)}>×</button>
+                        <button className="viewer-close" onClick={() => setViewerOpen(false)}>
+                          ×
+                        </button>
                         <div className="viewer-content">
-                          {viewerMedia[viewerIndex] && viewerMedia[viewerIndex].match(/\.(mp4|webm|ogg)$/i) ? (
-                            <video className="viewer-video" src={viewerMedia[viewerIndex]} controls />
+                          {viewerMedia[viewerIndex] &&
+                          viewerMedia[viewerIndex].match(/\.(mp4|webm|ogg)$/i) ? (
+                            <video
+                              className="viewer-video"
+                              src={viewerMedia[viewerIndex]}
+                              controls
+                            />
                           ) : (
-                            <img className="viewer-img" src={viewerMedia[viewerIndex]} alt="review-media" />
+                            <img
+                              className="viewer-img"
+                              src={viewerMedia[viewerIndex]}
+                              alt="review-media"
+                            />
                           )}
                         </div>
                         {viewerMedia.length > 1 && (
                           <div className="viewer-controls">
-                            <button className="viewer-prev" onClick={viewerPrev} aria-label="Previous">‹</button>
-                            <button className="viewer-next" onClick={viewerNext} aria-label="Next">›</button>
+                            <button
+                              className="viewer-prev"
+                              onClick={viewerPrev}
+                              aria-label="Previous"
+                            >
+                              ‹
+                            </button>
+                            <button className="viewer-next" onClick={viewerNext} aria-label="Next">
+                              ›
+                            </button>
                           </div>
                         )}
                       </div>

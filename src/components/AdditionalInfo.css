@@ -63,7 +63,7 @@
 }
 
 .aiTabs p.aiActive::after {
-  content: "";
+  content: '';
   position: absolute;
   bottom: -22px;
   left: 0;
@@ -74,7 +74,7 @@
 }
 
 .aiTabs p:not(.aiActive)::after {
-  content: "";
+  content: '';
   position: absolute;
   bottom: -22px;
   left: 0;
@@ -192,10 +192,10 @@
 }
 
 .aiTabReviewContainer h2 {
-    font-size: 24px;
+  font-size: 24px;
   font-weight: 700;
   color: var(--text-dark);
-    margin: 0 0 8px 0;
+  margin: 0 0 8px 0;
 }
 
 /* Review Stats Cards */
@@ -280,11 +280,11 @@
 }
 
 .userReviewImg img {
-    width: 48px;
-    height: 48px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   object-fit: cover;
-    border: 1px solid var(--border-color);
+  border: 1px solid var(--border-color);
 }
 
 .userReviewContent {
@@ -327,7 +327,7 @@
 }
 
 .userReviewBottomContent {
-    margin: 8px 0 12px 0; /* tighten comment spacing */
+  margin: 8px 0 12px 0; /* tighten comment spacing */
 }
 
 .userReviewBottomContent p {
@@ -340,17 +340,17 @@
 
 /* Helpful/Unhelpful Buttons */
 .review-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 8px; /* reduce vertical gap below review */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px; /* reduce vertical gap below review */
 }
 
 .review-action-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 5px 8px; /* smaller buttons */
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px; /* smaller buttons */
   background-color: transparent;
   border: 1px solid var(--border-color);
   border-radius: 6px;
@@ -380,7 +380,7 @@
 }
 
 .review-add-button {
-    padding: 8px 12px;
+  padding: 8px 12px;
   background: var(--primary);
   color: #fff;
   border: none;
@@ -392,26 +392,26 @@
 
 /* Modal for adding a review */
 .review-modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.45);
-    display: flex;
-    align-items: flex-start; /* stick modal near top */
-    justify-content: center;
-    z-index: 1200;
-    padding: 20px;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: flex-start; /* stick modal near top */
+  justify-content: center;
+  z-index: 1200;
+  padding: 20px;
 }
 
 .review-modal {
-    width: 100%;
-    max-width: 680px;
-    background: var(--card-bg);
-    border-radius: 10px;
-    padding: 14px 16px; /* more compact form */
-    box-shadow: none;
-    border: 1px solid var(--border-color);
-    position: relative;
-    margin-top: 6vh; /* distance from top of viewport */
+  width: 100%;
+  max-width: 680px;
+  background: var(--card-bg);
+  border-radius: 10px;
+  padding: 14px 16px; /* more compact form */
+  box-shadow: none;
+  border: 1px solid var(--border-color);
+  position: relative;
+  margin-top: 6vh; /* distance from top of viewport */
 }
 
 .review-modal h5 {
@@ -429,12 +429,46 @@
   cursor: pointer;
 }
 
-.modal-body { display:flex; flex-direction:column; gap:12px; }
-.modal-row label { font-weight:600; font-size:13px; margin-bottom:6px; display:block; }
-.modal-row textarea.form-control { width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); resize:vertical; }
-.modal-actions { display:flex; gap:10px; justify-content:flex-end; margin-top:8px; }
-.modal-submit { background:var(--primary); color:white; border:none; padding:10px 16px; border-radius:8px; cursor:pointer; font-weight:700; }
-.modal-cancel { background:transparent; border:1px solid var(--border-color); padding:10px 14px; border-radius:8px; cursor:pointer; }
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.modal-row label {
+  font-weight: 600;
+  font-size: 13px;
+  margin-bottom: 6px;
+  display: block;
+}
+.modal-row textarea.form-control {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  resize: vertical;
+}
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+.modal-submit {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+}
+.modal-cancel {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
 
 .userNewReviewMessage {
   display: flex;
@@ -511,7 +545,9 @@
   font-family: inherit;
   color: var(--text-dark);
   background-color: var(--card-bg);
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
   resize: vertical;
 }
 
@@ -569,13 +605,13 @@
 
 /* Drag and Drop Area */
 .drag-drop-zone {
-    border: 2px dashed var(--border-color);
-    border-radius: 8px;
-    padding: 16px 14px; /* smaller drop area */
-    text-align: center;
-    background-color: var(--bg-muted);
-    transition: all 0.16s ease;
-    cursor: pointer;
+  border: 2px dashed var(--border-color);
+  border-radius: 8px;
+  padding: 16px 14px; /* smaller drop area */
+  text-align: center;
+  background-color: var(--bg-muted);
+  transition: all 0.16s ease;
+  cursor: pointer;
 }
 
 .drag-drop-zone.active {
@@ -601,20 +637,20 @@
 
 /* File Preview Grid */
 .file-preview-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* smaller previews */
-    gap: 12px;
-    margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* smaller previews */
+  gap: 12px;
+  margin-top: 12px;
 }
 
 .file-preview-item {
-    position: relative;
-    border-radius: 8px;
-    overflow: hidden;
-    background-color: var(--bg-muted);
-    aspect-ratio: 1;
-    box-shadow: none;
-    transition: all 0.16s ease;
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: var(--bg-muted);
+  aspect-ratio: 1;
+  box-shadow: none;
+  transition: all 0.16s ease;
 }
 
 .file-preview-item:hover {
@@ -663,7 +699,7 @@
 .media-viewer-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.65);
+  background: rgba(0, 0, 0, 0.65);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -682,7 +718,13 @@
   justify-content: center;
 }
 
-.viewer-content { max-width: 100%; max-height: 80vh; display:flex; align-items:center; justify-content:center; }
+.viewer-content {
+  max-width: 100%;
+  max-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .viewer-img {
   /* clamp viewer size to a reasonable desktop max but still responsive */
   max-width: clamp(320px, 80vw, 900px);
@@ -698,29 +740,67 @@
   border-radius: 8px;
 }
 
-.viewer-close { position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: none; font-size: 22px; padding: 6px 10px; border-radius: 6px; cursor: pointer; }
-.viewer-controls { position: absolute; left: 12px; right: 12px; top: 50%; transform: translateY(-50%); display:flex; justify-content:space-between; pointer-events: none; }
-.viewer-prev, .viewer-next { pointer-events: auto; background: rgba(255,255,255,0.9); border: none; font-size: 28px; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
+.viewer-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  font-size: 22px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.viewer-controls {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+}
+.viewer-prev,
+.viewer-next {
+  pointer-events: auto;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  font-size: 28px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
 
 @media (max-width: 768px) {
-  .review-media-thumb { width: 52px; height: 52px; }
-  .review-modal { max-width: 95%; padding: 14px; }
-  .viewer-img, .viewer-video { max-width: 95vw; max-height: 70vh; }
+  .review-media-thumb {
+    width: 52px;
+    height: 52px;
+  }
+  .review-modal {
+    max-width: 95%;
+    padding: 14px;
+  }
+  .viewer-img,
+  .viewer-video {
+    max-width: 95vw;
+    max-height: 70vh;
+  }
 }
 
 .file-delete-btn {
-    position: absolute;
-    top: 6px;
-    right: 6px;
-    background-color: rgba(255, 255, 255, 0.9);
-    border-radius: 50%;
-    padding: 4px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.12s ease;
-    box-shadow: none;
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.12s ease;
+  box-shadow: none;
 }
 
 .file-delete-btn:hover {

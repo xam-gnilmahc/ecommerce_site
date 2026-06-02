@@ -2,57 +2,59 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { supabase } from '../../supaBaseClient';
 import { Product } from '../../types/products';
 
-export const fetchUserRecommendations = createAsyncThunk<Product[], string, { rejectValue: string }>(
-  'userRecommendations/fetchUserRecommendations',
-  async (userId, { rejectWithValue }) => {
-    if (!userId) return rejectWithValue('userId required');
+export const fetchUserRecommendations = createAsyncThunk<
+  Product[],
+  string,
+  { rejectValue: string }
+>('userRecommendations/fetchUserRecommendations', async (userId, { rejectWithValue }) => {
+  if (!userId) return rejectWithValue('userId required');
 
-    try {
-      // Get recommended product ids and scores for the user
-      const { data: recs, error: recErr } = await supabase
-        .from('user_recommendations')
-        .select('product_id, score')
-        .eq('user_id', userId)
-        .order('score', { ascending: false });
+  try {
+    // Get recommended product ids and scores for the user
+    const { data: recs, error: recErr } = await supabase
+      .from('user_recommendations')
+      .select('product_id, score')
+      .eq('user_id', userId)
+      .order('score', { ascending: false });
 
-  if (recErr) return rejectWithValue(recErr.message || 'Failed to load recommendations');
+    if (recErr) return rejectWithValue(recErr.message || 'Failed to load recommendations');
 
-      if (!recs || recs.length === 0) return [];
+    if (!recs || recs.length === 0) return [];
 
-      const ids = recs.map((r) => r.product_id).filter(Boolean);
+    const ids = recs.map((r) => r.product_id).filter(Boolean);
 
-      if (ids.length === 0) return [];
-          
-      // Fetch full product records for the recommended ids
-      const { data: products, error: prodErr } = await supabase
-        .from('products')
-        .select('*')
-        .in('id', ids);
+    if (ids.length === 0) return [];
 
-      if (prodErr) return rejectWithValue(prodErr.message || 'Failed to load products for recommendations');
+    // Fetch full product records for the recommended ids
+    const { data: products, error: prodErr } = await supabase
+      .from('products')
+      .select('*')
+      .in('id', ids);
 
-      // Normalize keys to string to avoid mismatches between db id types
-      const scoreById = new Map(recs.map((r) => [String(r.product_id), r.score]));
+    if (prodErr)
+      return rejectWithValue(prodErr.message || 'Failed to load products for recommendations');
 
-      // Build a map of fetched products by id for quick lookup
-      const productById = new Map((products || []).map((p) => [String(p.id), p]));
+    // Normalize keys to string to avoid mismatches between db id types
+    const scoreById = new Map(recs.map((r) => [String(r.product_id), r.score]));
 
-      // Preserve the exact recommendation order returned by 'recs'
-      const ordered = ids
-        .map((id) => {
-          const key = String(id);
-          const prod = productById.get(key);
-          if (!prod) return null;
-          return { ...prod, _recommendationScore: scoreById.get(key) };
-        })
-        .filter(Boolean);
+    // Build a map of fetched products by id for quick lookup
+    const productById = new Map((products || []).map((p) => [String(p.id), p]));
 
-      return ordered;
-    } catch (err) {
-      return rejectWithValue('Unexpected error while fetching recommendations');
-    }
+    // Preserve the exact recommendation order returned by 'recs'
+    const ordered = ids
+      .map((id) => {
+        const key = String(id);
+        const prod = productById.get(key);
+        if (!prod) return null;
+        return { ...prod, _recommendationScore: scoreById.get(key) };
+      })
+      .filter(Boolean);
+
+    return ordered;
+  } catch (err) {
+    return rejectWithValue('Unexpected error while fetching recommendations');
   }
-);
+});
 
 interface RecommendationState {
   recommendations: Product[];
@@ -86,7 +88,8 @@ const recommendationSlice = createSlice({
       })
       .addCase(fetchUserRecommendations.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = typeof action.payload === 'string' ? action.payload : 'Failed to fetch recommendations';
+        state.error =
+          typeof action.payload === 'string' ? action.payload : 'Failed to fetch recommendations';
         state.loading = false;
       });
   },

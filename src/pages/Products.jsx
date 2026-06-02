@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import Productss from '../components/Productss';
 
 const Products = () => {
@@ -6,7 +6,7 @@ const Products = () => {
     <>
       <Productss />
     </>
-  )
-}
+  );
+};
 
-export default Products
+export default Products;

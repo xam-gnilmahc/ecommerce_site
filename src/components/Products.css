@@ -60,7 +60,9 @@
   flex-direction: column;
   cursor: pointer;
 
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 /* MAIN HOVER EFFECT */
@@ -68,7 +70,9 @@
   /* transform: translateY(-8px); */
 
   /* soft premium shadow */
-  box-shadow: rgba(17, 17, 26, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.05) 0px 8px 32px;
+  box-shadow:
+    rgba(17, 17, 26, 0.1) 0px 4px 16px,
+    rgba(17, 17, 26, 0.05) 0px 8px 32px;
 }
 
 .sdProductImages {
@@ -211,7 +215,6 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-
 
 /* =========================
    PRICE

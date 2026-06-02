@@ -1,15 +1,15 @@
-import React, { useState } from "react";
-import Sidebar from "../components/Sidebar";
-import { useAuth } from "../context/authContext"; // adjust path if needed
+import React, { useState } from 'react';
+import Sidebar from '../components/Sidebar';
+import { useAuth } from '../context/authContext'; // adjust path if needed
 
 const Profile = () => {
-  const { user} = useAuth();
+  const { user } = useAuth();
   // Example state for form fields
   const [profile, setProfile] = useState({
     name: user.name,
     email: user.email,
-    phone: "+1 234 567 890",
-    address: "123 Main Street, City, Country",
+    phone: '+1 234 567 890',
+    address: '123 Main Street, City, Country',
   });
 
   const handleChange = (e) => {
@@ -19,7 +19,7 @@ const Profile = () => {
 
   const handleSave = () => {
     // Placeholder for save functionality
-    alert("Profile saved!");
+    alert('Profile saved!');
   };
 
   return (
@@ -27,12 +27,12 @@ const Profile = () => {
       <Sidebar />
       <main
         style={{
-          marginLeft: "280px", // same as sidebar width
-          minHeight: "100vh",
-          overflowY: "auto",
-          padding: "30px",
-          backgroundColor: "#fff",
-          width: "100%",
+          marginLeft: '280px', // same as sidebar width
+          minHeight: '100vh',
+          overflowY: 'auto',
+          padding: '30px',
+          backgroundColor: '#fff',
+          width: '100%',
         }}
       >
         <h2 className="mb-4">Profile</h2>
@@ -44,7 +44,7 @@ const Profile = () => {
               src={user?.picture}
               alt={user.picture}
               className="rounded-circle me-4"
-              style={{ width: 100, height: 100, objectFit: "cover" }}
+              style={{ width: 100, height: 100, objectFit: 'cover' }}
               title={user?.picture}
             />
             <div>
@@ -55,7 +55,7 @@ const Profile = () => {
                 type="file"
                 id="profileImage"
                 accept="image/*"
-                style={{ display: "none" }}
+                style={{ display: 'none' }}
                 // onChange={handleFileUpload} // you can add upload handler here
                 disabled
               />
@@ -63,7 +63,12 @@ const Profile = () => {
           </div>
 
           {/* Profile Form */}
-          <form onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSave();
+            }}
+          >
             <div className="mb-3">
               <label htmlFor="name" className="form-label fw-semibold">
                 Full Name

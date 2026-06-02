@@ -1,13 +1,13 @@
-import React, { useEffect, useState, useRef } from "react";
-import Pusher from "pusher-js";
-import { useAuth } from "../context/authContext";
-import { FaCheckCircle } from "react-icons/fa";
-import { FiBell, FiSettings } from "react-icons/fi"; // ✅ Notification bell icon
-import { IoMdCheckmark } from "react-icons/io";
-import { IoIosNotifications } from "react-icons/io";
-import { supabase } from "../supaBaseClient";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
+import React, { useEffect, useState, useRef } from 'react';
+import Pusher from 'pusher-js';
+import { useAuth } from '../context/authContext';
+import { FaCheckCircle } from 'react-icons/fa';
+import { FiBell, FiSettings } from 'react-icons/fi'; // ✅ Notification bell icon
+import { IoMdCheckmark } from 'react-icons/io';
+import { IoIosNotifications } from 'react-icons/io';
+import { supabase } from '../supaBaseClient';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
 
 const PAGE_SIZE = 10; // number of notifications to load per batch
@@ -28,13 +28,13 @@ const NotificationPage = () => {
     if (!user?.id) return;
 
     const { count, error } = await supabase
-      .from("notifications")
-      .select("*", {
-        count: "exact",
+      .from('notifications')
+      .select('*', {
+        count: 'exact',
         head: true,
       })
-      .eq("user_id", user.id)
-      .eq("read", false);
+      .eq('user_id', user.id)
+      .eq('read', false);
 
     if (!error) {
       setUnreadCount(count || 0);
@@ -51,32 +51,29 @@ const NotificationPage = () => {
 
       const newItems = await getNotificationsByUserId(start, end);
 
-      setNotifications((prev) =>
-        pageNum === 1 ? newItems : [...prev, ...newItems]
-      );
+      setNotifications((prev) => (pageNum === 1 ? newItems : [...prev, ...newItems]));
 
       setHasMore(newItems.length === PAGE_SIZE); // if less than PAGE_SIZE, no more data
 
       setLoadingMore(false);
     } catch (error) {
-      console.error("Failed to load notifications:", error);
+      console.error('Failed to load notifications:', error);
       setLoadingMore(false);
     }
   };
-
 
   useEffect(() => {
     if (!user?.id) return;
 
     // Setup Pusher for real-time updates (same as before)
-    const pusher = new Pusher("8a749302cc2bbbaf87b5", {
-      cluster: "ap1",
+    const pusher = new Pusher('8a749302cc2bbbaf87b5', {
+      cluster: 'ap1',
       encrypted: true,
     });
 
     const channel = pusher.subscribe(`user-${user.id}`);
 
-    channel.bind("order-placed", (data) => {
+    channel.bind('order-placed', (data) => {
       setNotifications((prev) => [
         {
           id: Date.now(),
@@ -105,22 +102,19 @@ const NotificationPage = () => {
   // Handle clicks outside dropdown to close
   useEffect(() => {
     function handleClickOutside(event) {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target)
-      ) {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
         setOpen(false);
       }
     }
 
     if (open) {
-      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener('mousedown', handleClickOutside);
     } else {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [open]);
 
@@ -147,48 +141,32 @@ const NotificationPage = () => {
     setOpen((prev) => !prev);
 
     if (!wasOpen) {
-        try {
-          const { error } = await supabase
-          .from("notifications")
+      try {
+        const { error } = await supabase
+          .from('notifications')
           .update({ read: true })
-          .eq("user_id", user.id)
-          .eq("read", false);
+          .eq('user_id', user.id)
+          .eq('read', false);
 
-          if (error) throw error;
-          
-          fetchUnreadCount();
-          setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-        } catch (err) {
-          console.error("Failed to mark all as read:", err.message);
-        }
+        if (error) throw error;
+
+        fetchUnreadCount();
+        setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+      } catch (err) {
+        console.error('Failed to mark all as read:', err.message);
+      }
     }
   };
 
   return (
-    <div
-      className="notification-wrapper"
-      ref={containerRef}
-    >
+    <div className="notification-wrapper" ref={containerRef}>
       {/* BELL */}
 
-      <button
-        className="notification-bell"
-        onClick={handleBellClick}
-      >
-        {open ? (
-          <IoIosNotifications
-            size={22}
-          />
-        ) : (
-          <FiBell size={20} />
-        )}
+      <button className="notification-bell" onClick={handleBellClick}>
+        {open ? <IoIosNotifications size={22} /> : <FiBell size={20} />}
 
         {unreadCount > 0 && (
-          <span className="notification-count">
-            {unreadCount > 9
-              ? "9+"
-              : unreadCount}
-          </span>
+          <span className="notification-count">{unreadCount > 9 ? '9+' : unreadCount}</span>
         )}
       </button>
 
@@ -199,86 +177,51 @@ const NotificationPage = () => {
           {/* HEADER */}
 
           <div className="notification-header">
-            <h4>
-              Notifications
-            </h4>
+            <h4>Notifications</h4>
 
-            <FiSettings
-              size={18}
-            />
+            <FiSettings size={18} />
           </div>
 
           {/* LIST */}
 
-          <div
-            className="notification-list"
-            ref={listRef}
-            onScroll={onScroll}
-          >
-            {notifications.length ===
-            0 ? (
-              <div className="notification-empty">
-                No notifications
-              </div>
+          <div className="notification-list" ref={listRef} onScroll={onScroll}>
+            {notifications.length === 0 ? (
+              <div className="notification-empty">No notifications</div>
             ) : (
-              notifications.map(
-                ({
-                  id,
-                  order_id,
-                  message,
-                  created_at,
-                  type,
-                }) => (
-                  <div
-                    key={id}
-                    className="notification-item"
-                    onClick={() =>
-                      window.open(
-                        `/orders/${order_id}`,
-                        "_blank"
-                      )
-                    }
-                  >
-                    <div className="notification-icon">
-                      <IoMdCheckmark />
-                    </div>
-
-                    <div className="notification-content">
-                      <div className="notification-top">
-                        <h5>
-                          {type ===
-                          0
-                            ? "New Order"
-                            : type ===
-                              1
-                            ? "Out for delivery"
-                            : "Order update"}
-                        </h5>
-
-                        <span>
-                          {dayjs(
-                            created_at
-                          ).fromNow()}
-                        </span>
-                      </div>
-
-                      <p
-                        dangerouslySetInnerHTML={{
-                          __html:
-                            message,
-                        }}
-                      />
-                    </div>
+              notifications.map(({ id, order_id, message, created_at, type }) => (
+                <div
+                  key={id}
+                  className="notification-item"
+                  onClick={() => window.open(`/orders/${order_id}`, '_blank')}
+                >
+                  <div className="notification-icon">
+                    <IoMdCheckmark />
                   </div>
-                )
-              )
+
+                  <div className="notification-content">
+                    <div className="notification-top">
+                      <h5>
+                        {type === 0
+                          ? 'New Order'
+                          : type === 1
+                            ? 'Out for delivery'
+                            : 'Order update'}
+                      </h5>
+
+                      <span>{dayjs(created_at).fromNow()}</span>
+                    </div>
+
+                    <p
+                      dangerouslySetInnerHTML={{
+                        __html: message,
+                      }}
+                    />
+                  </div>
+                </div>
+              ))
             )}
 
-            {loadingMore && (
-              <div className="notification-loading">
-                Loading...
-              </div>
-            )}
+            {loadingMore && <div className="notification-loading">Loading...</div>}
           </div>
         </div>
       )}

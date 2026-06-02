@@ -59,7 +59,13 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css,json}\""
+  },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "printWidth": 100
   },
   "eslintConfig": {
     "extends": [
@@ -83,6 +89,7 @@
     "@typescript-eslint/eslint-plugin": "^8.35.0",
     "@typescript-eslint/parser": "^8.35.0",
     "cross-env": "^7.0.3",
+    "prettier": "^3.8.3",
     "typescript": "^5.8.3"
   }
 }
