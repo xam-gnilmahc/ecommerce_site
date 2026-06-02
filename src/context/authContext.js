@@ -248,30 +248,26 @@ export const AuthProvider = ({ children }) => {
 
       await Promise.all([
         supabase.from('order_items').insert(orderItemsToInsert),
-        supabase
-          .from('orderpayments_logs')
-          .insert([
-            {
-              order_id: orderId,
-              stripe_payment_id: stripe.transactionId,
-              charge_id: stripe.chargeId,
-              status: stripe.message,
-              amount: data.amount,
-              currency: 'USD',
-              response_data: stripe,
-            },
-          ]),
-        supabase
-          .from('notifications')
-          .insert([
-            {
-              user_id: memoizedUser.id,
-              order_id: orderId,
-              message: `✨Your order <a href="/orders/${orderId}" target="_blank" rel="noopener noreferrer" style="color:#0d6efd; text-decoration:underline;">#${orderId}</a> has been placed successfully. Thank you for shopping with us!`,
-              read: false,
-              type: 0,
-            },
-          ]),
+        supabase.from('orderpayments_logs').insert([
+          {
+            order_id: orderId,
+            stripe_payment_id: stripe.transactionId,
+            charge_id: stripe.chargeId,
+            status: stripe.message,
+            amount: data.amount,
+            currency: 'USD',
+            response_data: stripe,
+          },
+        ]),
+        supabase.from('notifications').insert([
+          {
+            user_id: memoizedUser.id,
+            order_id: orderId,
+            message: `✨Your order <a href="/orders/${orderId}" target="_blank" rel="noopener noreferrer" style="color:#0d6efd; text-decoration:underline;">#${orderId}</a> has been placed successfully. Thank you for shopping with us!`,
+            read: false,
+            type: 0,
+          },
+        ]),
         sendOrderEmail(
           user.full_name || user.name,
           data.email,
