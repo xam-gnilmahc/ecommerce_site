@@ -56,6 +56,7 @@ function getCookieOptions() {
 //
 // Works for BOTH logged-in and logged-out users:
 //
+
 //   Logged in  → visitor_id = user.id  (from your auth context)
 //   Logged out → visitor_id = random UUID generated once, stored in cookie
 //

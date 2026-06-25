@@ -14,13 +14,13 @@ import store from './redux/index.ts';
 
 import { Toaster } from 'react-hot-toast';
 
-import ScrollToTop from './components/ScrollToTop';
-import Popup from './pages/Popup';
+import ScrollToTop from './components/ui/ScrollToTop';
+import Popup from './pages/popup/Popup';
 import { CookiesProvider } from 'react-cookie';
 
 import { AuthProvider } from './context/authContext';
 import { PageHeaderProvider } from './context/PageHeaderContext.tsx';
-import ChatBot from './pages/ChatBot.jsx';
+import ChatBot from './pages/chat/ChatBot';
 import './index.css';
 
 import RoutesComponent from './RoutesComponent.tsx'; // Move all <Routes> into this separate file for clarity
