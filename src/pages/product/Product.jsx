@@ -17,7 +17,10 @@ import { trackProductPreview, trackAddToCart } from '../../utils/tracking.js';
 import GooglePayButton from '@google-pay/button-react';
 import { fetchTotalCart } from '../../redux/slice/userCart.ts';
 import { trackPurchase } from '../../utils/tracking.js';
-import { buildPaymentRequest, getUpdatedPaymentData } from '../../components/product/GooglePlay.jsx';
+import {
+  buildPaymentRequest,
+  getUpdatedPaymentData,
+} from '../../components/product/GooglePlay.jsx';
 import { processGooglePay } from '../../service/googlePayService.js';
 import { shippingOptions } from '../../config/ShippingOptions.jsx';
 

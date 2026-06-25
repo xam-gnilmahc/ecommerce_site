@@ -6,7 +6,10 @@ import Skeleton from 'react-loading-skeleton';
 import { useStripe, useElements, CardElement, Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import GooglePayButton from '@google-pay/button-react';
-import { buildPaymentRequest, getUpdatedPaymentData } from '../../components/product/GooglePlay.jsx';
+import {
+  buildPaymentRequest,
+  getUpdatedPaymentData,
+} from '../../components/product/GooglePlay.jsx';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/authContext';
 import './Animation.css';
