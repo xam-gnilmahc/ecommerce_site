@@ -20,6 +20,7 @@ import { trackPurchase } from '../utils/tracking';
 import { buildPaymentRequest, getUpdatedPaymentData } from '../components/GooglePlay.jsx';
 import { processGooglePay } from '../service/googlePayService';
 import { shippingOptions } from '../config/ShippingOptions.jsx';
+import InnerImageZoom from 'react-inner-image-zoom';
 
 const Product = () => {
   const { id } = useParams();
@@ -249,40 +250,30 @@ const Product = () => {
 
   const ShowProduct = () => (
     <>
-      {/* Product Image + Thumbnails */}
+      {/* Product Image + Thumbnails — Flipkart style */}
       <div className="productGallery">
-        <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-          <img
-            src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${activeImage}`}
-            alt={activeImage}
-            style={{
-              width: '400px',
-              maxWidth: '70%',
-              height: '400px',
-              objectFit: 'contain',
-              borderRadius: '8px',
-            }}
-          />
-        </div>
         <div className="productThumb">
           {product.product_images?.map((img) => (
             <img
               key={img.id}
               onClick={() => setActiveImage(img.image_url)}
+              className={activeImage === img.image_url ? 'active' : ''}
               src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${img.image_url}`}
               alt="thumb"
-              style={{
-                width: 80,
-                height: 80,
-                margin: 5,
-                padding: 3,
-                border: activeImage === img.image_url ? '2px solid black' : '1px solid gray',
-                borderRadius: 4,
-                cursor: 'pointer',
-                objectFit: 'contain',
-              }}
             />
           ))}
+        </div>
+        <div className="productImageWrapper">
+          <div className="productMainImage">
+            <InnerImageZoom
+              src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${activeImage}`}
+              alt={activeImage}
+              zoomType="hover"
+              hideHint={true}
+              zoomScale={1}
+              imgAttributes={{ draggable: false }}
+            />
+          </div>
         </div>
       </div>
 
@@ -457,8 +448,14 @@ const Product = () => {
       <div className="productSection">
         <div className="productShowCase">{loading ? <Loading /> : <ShowProduct />}</div>
         <div className="row">
-          <AdditionalInfo product_reviews={product?.product_reviews} />
+          <AdditionalInfo productId={id} product_reviews={product?.product_reviews} />
         </div>
+        <ReviewsSection
+          productId={id}
+          productName={product?.name}
+          initialReviews={product?.product_reviews}
+          user={user}
+        />
       </div>
     </>
   );

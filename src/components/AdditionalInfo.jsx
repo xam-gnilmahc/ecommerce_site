@@ -6,8 +6,9 @@ import { FaStar, FaThumbsUp, FaThumbsDown } from 'react-icons/fa';
 import Rating from '@mui/material/Rating';
 import DeleteIcon from '@mui/icons-material/Delete'; // Import Delete icon
 import IconButton from '@mui/material/IconButton';
+import { getReviewsForProduct, saveReviewForProduct } from '../../utils/reviewStorage';
 
-const AdditionalInfo = ({ product_reviews }) => {
+const AdditionalInfo = ({ productId, product_reviews }) => {
   const DEFAULT_AVATAR =
     'https://thumbs.dreamstime.com/b/default-avatar-profile-vector-user-profile-default-avatar-profile-vector-user-profile-profile-179376714.jpg';
 
@@ -24,13 +25,19 @@ const AdditionalInfo = ({ product_reviews }) => {
   const [viewerIndex, setViewerIndex] = useState(0);
   const [viewerMedia, setViewerMedia] = useState([]);
 
-  // Use reviews passed from Product.jsx. Do NOT persist to localStorage here.
-  const [reviews, setReviews] = useState(product_reviews || []);
+  // Merge localStorage reviews with Supabase reviews
+  const [reviews, setReviews] = useState(() => {
+    const stored = getReviewsForProduct(productId);
+    const supabase = product_reviews || [];
+    return [...stored, ...supabase.filter(r => !stored.some(sr => sr.id === r.id))];
+  });
 
-  // Keep in-sync when parent prop changes (Product.jsx may fetch for each product)
+  // Keep in-sync when parent prop changes
   useEffect(() => {
-    setReviews(product_reviews || []);
-  }, [product_reviews]);
+    const stored = getReviewsForProduct(productId);
+    const supabase = product_reviews || [];
+    setReviews([...stored, ...supabase.filter(r => !stored.some(sr => sr.id === r.id))]);
+  }, [product_reviews, productId]);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -81,22 +88,30 @@ const AdditionalInfo = ({ product_reviews }) => {
     }
 
     const newReview = {
-      id: Date.now(),
+      id: Date.now().toString(),
+      userId: 'anonymous',
       name: 'Anonymous',
-      picture: DEFAULT_AVATAR,
+      avatar: DEFAULT_AVATAR,
       comment: review,
       rating: rating,
       created_at: new Date().toISOString(),
       media: mediaFiles.map((m) => m.preview),
+      verified: false,
+      helpful: 0,
+      notHelpful: 0,
     };
 
-    const updated = [newReview, ...(reviews || [])];
-    // Update in-memory reviews so the UI shows the new review immediately.
-    setReviews(updated);
-    setRating(0);
-    setReview('');
-    setMediaFiles([]);
-    toast.success('Review submitted.');
+    // Persist to localStorage
+    const saved = saveReviewForProduct(productId, newReview);
+
+    if (saved) {
+      const updated = [newReview, ...(reviews || [])];
+      setReviews(updated);
+      setRating(0);
+      setReview('');
+      setMediaFiles([]);
+      toast.success('Review submitted.');
+    }
   };
 
   const openViewer = (mediaArray, index = 0) => {
@@ -144,6 +159,17 @@ const AdditionalInfo = ({ product_reviews }) => {
 
   const total = reviews?.length || 0;
 
+  const [expandedDescriptions, setExpandedDescriptions] = useState({});
+  const [expandedReviews, setExpandedReviews] = useState({});
+
+  const toggleDescription = (key) => {
+    setExpandedDescriptions(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const toggleReviewExpand = (reviewId) => {
+    setExpandedReviews(prev => ({ ...prev, [reviewId]: !prev[reviewId] }));
+  };
+
   const ratingCounts = [1, 2, 3, 4, 5]
     .map((star) => {
       const count = (reviews || []).filter((r) => r.rating === star).length;
@@ -190,11 +216,18 @@ const AdditionalInfo = ({ product_reviews }) => {
               <div className="aiTabDescription">
                 <div className="descriptionPara">
                   <h3>Experience the Power of Innovation</h3>
-                  <p>
-                    Discover the next-gen smartphone built for speed, performance, and style.
-                    Equipped with the latest processor, high-resolution display, and long-lasting
-                    battery, this device keeps you connected, productive, and entertained.
-                  </p>
+                  <div className={`description-text ${!expandedDescriptions['intro'] ? 'truncated' : ''}`}>
+                    <p>
+                      Discover the next-gen smartphone built for speed, performance, and style.
+                      Equipped with the latest processor, high-resolution display, and long-lasting
+                      battery, this device keeps you connected, productive, and entertained.
+                    </p>
+                  </div>
+                  {expandedDescriptions['intro'] ? (
+                    <button className="show-more-btn" onClick={() => toggleDescription('intro')}>Show less</button>
+                  ) : (
+                    <button className="show-more-btn" onClick={() => toggleDescription('intro')}>Show more</button>
+                  )}
                 </div>
                 <div className="descriptionParaGrid">
                   <div className="descriptionPara">
@@ -218,9 +251,11 @@ const AdditionalInfo = ({ product_reviews }) => {
                 </div>
                 <div className="descriptionPara">
                   <h3>Material & Build</h3>
-                  <p style={{ marginTop: '-10px' }}>
-                    Premium aluminum frame with Gorilla Glass Victus+ protection.
-                  </p>
+                  <div className={`description-text ${!expandedDescriptions['build'] ? 'truncated' : ''}`}>
+                    <p style={{ marginTop: '-10px' }}>
+                      Premium aluminum frame with Gorilla Glass Victus+ protection.
+                    </p>
+                  </div>
                 </div>
               </div>
             )}
@@ -261,14 +296,14 @@ const AdditionalInfo = ({ product_reviews }) => {
                     <div key={index} className="d-flex gap-3 border-bottom pb-4 mb-4">
                       {/* User Image */}
                       <div className="userReviewImg">
-                        <img src={review.users?.profile || DEFAULT_AVATAR} alt="User" />
+                        <img src={review.users?.profile || review.avatar || DEFAULT_AVATAR} alt="User" />
                       </div>
                       {/* Review Content */}
                       <div className="flex-grow-1 position-relative">
                         {/* Name, Rating, Date */}
                         <div className="d-flex justify-content-between flex-wrap mb-1">
                           <div className="d-flex align-items-center gap-2">
-                            <h6 className="mb-0">{review.users?.name || 'Anonymous'}</h6>
+                            <h6 className="mb-0">{review.users?.name || review.name || 'Anonymous'}</h6>
                             <div className="d-flex gap-1">
                               {[...Array(5)].map((_, i) => (
                                 <FaStar
@@ -284,13 +319,18 @@ const AdditionalInfo = ({ product_reviews }) => {
 
                         {/* Comment */}
                         <div className="userReviewBottomContent" style={{ marginBottom: '18px' }}>
-                          <p>{review.comment}</p>
+                          <p className={!expandedReviews[index] ? 'truncated' : ''}>{review.comment}</p>
+                          {review.comment && review.comment.length > 100 && (
+                            <button className="show-more-btn" onClick={() => toggleReviewExpand(index)}>
+                              {expandedReviews[index] ? 'Show less' : 'Show more'}
+                            </button>
+                          )}
                         </div>
 
                         {/* Review media thumbnails (click to open viewer) */}
-                        {review.picture && (
+                        {(review.picture || (review.media && review.media.length > 0)) && (
                           <div className="review-media-grid">
-                            {(() => {
+                            {review.picture ? (() => {
                               const url = String(review.picture).startsWith('http')
                                 ? review.picture
                                 : `https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/lol/${review.picture}`;
@@ -303,7 +343,16 @@ const AdditionalInfo = ({ product_reviews }) => {
                                   <img src={url} alt="Sticker" loading="lazy" />
                                 </button>
                               );
-                            })()}
+                            })() : review.media.map((url, i) => (
+                              <button
+                                key={i}
+                                type="button"
+                                className="review-media-thumb"
+                                onClick={() => openViewer(review.media, i)}
+                              >
+                                <img src={url} alt={`Review media ${i}`} loading="lazy" />
+                              </button>
+                            ))}
                           </div>
                         )}
                       </div>
