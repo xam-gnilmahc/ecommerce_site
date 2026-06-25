@@ -21,6 +21,7 @@ import { buildPaymentRequest, getUpdatedPaymentData } from '../components/Google
 import { processGooglePay } from '../service/googlePayService';
 import { shippingOptions } from '../config/ShippingOptions.jsx';
 import InnerImageZoom from 'react-inner-image-zoom';
+import ReviewsSection from '../components/product/ReviewsSection.jsx';
 
 const Product = () => {
   const { id } = useParams();

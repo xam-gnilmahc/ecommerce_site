@@ -6,7 +6,7 @@ import { FaStar, FaThumbsUp, FaThumbsDown } from 'react-icons/fa';
 import Rating from '@mui/material/Rating';
 import DeleteIcon from '@mui/icons-material/Delete'; // Import Delete icon
 import IconButton from '@mui/material/IconButton';
-import { getReviewsForProduct, saveReviewForProduct } from '../../utils/reviewStorage';
+import { getReviewsForProduct, saveReviewForProduct } from '../utils/reviewStorage';
 
 const AdditionalInfo = ({ productId, product_reviews }) => {
   const DEFAULT_AVATAR =
