@@ -105,17 +105,17 @@
   transition: width 0.4s ease;
 }
 
-.bar-fill[data-rating="5"],
-.bar-fill[data-rating="4"] {
+.bar-fill[data-rating='5'],
+.bar-fill[data-rating='4'] {
   background: linear-gradient(90deg, #388e3c, #4caf50);
 }
 
-.bar-fill[data-rating="3"] {
+.bar-fill[data-rating='3'] {
   background: linear-gradient(90deg, #ff9f00, #ffb74d);
 }
 
-.bar-fill[data-rating="2"],
-.bar-fill[data-rating="1"] {
+.bar-fill[data-rating='2'],
+.bar-fill[data-rating='1'] {
   background: linear-gradient(90deg, #ff6161, #ef5350);
 }
 
@@ -217,7 +217,9 @@
   resize: vertical;
   box-sizing: border-box;
   font-family: inherit;
-  transition: border-color 0.2s, background 0.2s;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
 }
 
 .textarea-wrap textarea:focus {
