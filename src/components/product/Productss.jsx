@@ -6,6 +6,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/authContext';
 import Filters from './Filter';
+import SortBar from './SortBar';
 import Pagination from '../ui/Pagination.js';
 import { IoClose } from 'react-icons/io5';
 import { FaStar } from 'react-icons/fa';
@@ -24,6 +25,7 @@ const Products = () => {
   const [wishList, setWishList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [sortBy, setSortBy] = useState('default');
   const lastExecutedQuery = useRef('');
   const postsPerPage = 20;
 
@@ -101,10 +103,38 @@ const Products = () => {
     }
   }, [searchResults, searchStatus, searchQuery]);
 
+  // SORT
+  const sortProducts = (items, sortKey) => {
+    if (sortKey === 'default') return items;
+    const sorted = [...items];
+    switch (sortKey) {
+      case 'price-low':
+        return sorted.sort((a, b) => Number(a.amount) - Number(b.amount));
+      case 'price-high':
+        return sorted.sort((a, b) => Number(b.amount) - Number(a.amount));
+      case 'rating-high':
+        return sorted.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+      case 'rating-low':
+        return sorted.sort((a, b) => (a.rating || 0) - (b.rating || 0));
+      case 'name-az':
+        return sorted.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+      case 'name-za':
+        return sorted.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
+      case 'newest':
+        return sorted.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      case 'oldest':
+        return sorted.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+      default:
+        return sorted;
+    }
+  };
+
+  const sortedProducts = sortProducts(displayProducts, sortBy);
+
   // PAGINATION
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = displayProducts.slice(indexOfFirstPost, indexOfLastPost);
+  const currentPosts = sortedProducts.slice(indexOfFirstPost, indexOfLastPost);
 
   // CART
   const handleAddToCart = async (product) => {
@@ -128,6 +158,12 @@ const Products = () => {
   // FILTER
   const handleFilterChange = (filters) => {
     dispatch(fetchFilteredProducts(filters));
+    setCurrentPage(1);
+  };
+
+  // SORT
+  const handleSortChange = (value) => {
+    setSortBy(value);
     setCurrentPage(1);
   };
 
@@ -245,11 +281,16 @@ const Products = () => {
         </div>
 
         <div className="shopDetails__right">
+          <SortBar
+            sortBy={sortBy}
+            onSortChange={handleSortChange}
+            totalProducts={displayProducts.length}
+          />
           <div className="row">{isLoading ? <LoadingSkeleton /> : <ProductList />}</div>
 
           <Pagination
             postsPerPage={postsPerPage}
-            totalPosts={displayProducts.length}
+            totalPosts={sortedProducts.length}
             paginate={setCurrentPage}
             currentPage={currentPage}
           />
