@@ -166,8 +166,6 @@ const Checkout = () => {
         </div>
       )}
 
-      <Navbar />
-
       <div className="ck-root">
         {loading ? (
           /* ── SKELETON ── */

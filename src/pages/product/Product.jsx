@@ -11,6 +11,8 @@ import Zoom from '@mui/material/Zoom';
 import { FiHeart } from 'react-icons/fi';
 import { PiShareNetworkLight } from 'react-icons/pi';
 import AdditionalInfo from '../../components/product/AdditionalInfo';
+import ProductImageGallery from '../../components/product/ProductImageGallery';
+import RelatedProducts from '../../components/product/RelatedProducts';
 import { addToCart } from '../../redux/slice/userCart.ts';
 import { useAppDispatch } from '../../redux/index.ts';
 import { trackProductPreview, trackAddToCart } from '../../utils/tracking.js';
@@ -166,14 +168,7 @@ const Product = () => {
     getInventory();
   }, [id]);
 
-  const [activeImage, setActiveImage] = useState('');
-
-  useEffect(() => {
-    if (product && product.product_images) {
-      const primary = product.product_images.find((img) => img.is_primary);
-      setActiveImage(primary ? primary.image_url : product.banner_url);
-    }
-  }, [product]);
+  const [clicked, setClicked] = useState(false);
 
   const sizes = ['XS', 'S', 'M', 'L', 'XL'];
   const sizesFullName = ['Extra Small', 'Small', 'Medium', 'Large', 'Extra Large'];
@@ -192,8 +187,6 @@ const Product = () => {
     const value = parseInt(event.target.value);
     if (!isNaN(value) && value > 0) setQuantity(value);
   };
-
-  const [clicked, setClicked] = useState(false);
   const handleWishClick = () => setClicked(!clicked);
 
   // ── Stock badge helper ───────────────────────────────────────────────────
@@ -252,41 +245,13 @@ const Product = () => {
 
   const ShowProduct = () => (
     <>
-      {/* Product Image + Thumbnails */}
+      {/* Product Image + Thumbnails — Flipkart-style Gallery */}
       <div className="productGallery">
-        <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-          <img
-            src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${activeImage}`}
-            alt={activeImage}
-            style={{
-              width: '400px',
-              maxWidth: '70%',
-              height: '400px',
-              objectFit: 'contain',
-              borderRadius: '8px',
-            }}
-          />
-        </div>
-        <div className="productThumb">
-          {product.product_images?.map((img) => (
-            <img
-              key={img.id}
-              onClick={() => setActiveImage(img.image_url)}
-              src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${img.image_url}`}
-              alt="thumb"
-              style={{
-                width: 80,
-                height: 80,
-                margin: 5,
-                padding: 3,
-                border: activeImage === img.image_url ? '2px solid black' : '1px solid gray',
-                borderRadius: 4,
-                cursor: 'pointer',
-                objectFit: 'contain',
-              }}
-            />
-          ))}
-        </div>
+        <ProductImageGallery
+          images={product.product_images || []}
+          productName={product.name || ''}
+          bannerUrl={product.banner_url || ''}
+        />
       </div>
 
       {/* Product Details */}
@@ -462,6 +427,7 @@ const Product = () => {
         <div className="row">
           <AdditionalInfo product_reviews={product?.product_reviews} />
         </div>
+        <RelatedProducts brand={product?.brand} category={product?.category} />
       </div>
     </>
   );

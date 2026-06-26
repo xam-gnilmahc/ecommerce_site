@@ -243,7 +243,6 @@ const Cart = () => {
 
   return (
     <>
-      <Navbar />
       <div className="cart-root">
         {fetchLoading ? <CartSkeleton /> : cart.length ? <ShowCart /> : <EmptyCart />}
       </div>

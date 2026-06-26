@@ -6,9 +6,7 @@ import Footer from '../../ui/Footer';
 
 const GuestLayout = () => (
   <>
-    <Navbar />
     <Outlet />
-    <Footer />
   </>
 );
 
