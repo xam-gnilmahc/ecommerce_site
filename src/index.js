@@ -20,7 +20,6 @@ import { CookiesProvider } from 'react-cookie';
 
 import { AuthProvider } from './context/authContext';
 import { PageHeaderProvider } from './context/PageHeaderContext.tsx';
-import ChatBot from './pages/chat/ChatBot';
 import './index.css';
 
 import RoutesComponent from './RoutesComponent.tsx'; // Move all <Routes> into this separate file for clarity
@@ -30,7 +29,6 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>
     <CookiesProvider>
-      {/* <ChatBot/> */}
       <ScrollToTop>
         <Provider store={store}>
           <AuthProvider>
