@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../supaBaseClient';
 import recalcUserInterest from '../service/recalcUserInterest';
 import populateUserRecommendations from '../service/populateUserRecommendations';
@@ -26,7 +26,6 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [orderLoading, setOrderLoading] = useState(false);
   const [processed, setProcessed] = useState(false);
-  const memoizedUser = useMemo(() => user, [user]);
   const [authLoading, setAuthLoading] = useState(true);
 
   // ── Visitor cookie — pass user.id, hook does the rest ──────────────────────
@@ -89,13 +88,41 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // check for an existing session on mount (handles page refresh),
+  // then keep listening for future auth changes (login/logout/token refresh).
+  // The empty dependency array means this effect runs ONCE on mount only —
+  // it does NOT re-run on navigation, menu clicks, or other re-renders.
   useEffect(() => {
+    const initSession = async () => {
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        if (session) {
+          const userData = { ...session.user.user_metadata, id: session.user.id };
+          setUser(userData);
+          handleUserInSupabase(userData);
+        }
+      } catch (err) {
+        console.error('Error checking existing session:', err.message);
+      } finally {
+        setAuthLoading(false); //session check finished — safe to render protected content now
+      }
+    };
+
+    initSession();
+
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session) {
-        setUser({ ...session.user.user_metadata, id: session.user.id });
-        handleUserInSupabase({ ...session.user.user_metadata, id: session.user.id });
+        const userData = { ...session.user.user_metadata, id: session.user.id };
+        setUser(userData);
+        handleUserInSupabase(userData);
+      } else {
+        setUser(null);
       }
+      setAuthLoading(false);
     });
+
     return () => {
       authListener.subscription.unsubscribe();
     };
@@ -158,23 +185,20 @@ export const AuthProvider = ({ children }) => {
     navigate('/login');
   };
 
-  const fetchCartItems = useMemo(
-    () => async (userId) => {
-      const { data, error } = await supabase
-        .from('cart')
-        .select(`*, products:product_id (id, name, banner_url, amount, description, rating)`)
-        .eq('user_id', userId)
-        .order('id', { ascending: true });
-      if (!error) {
-        setCart(data);
-      } else {
-        console.error('Fetch cart error:', error.message);
-      }
-      setLoading(false);
-      return data;
-    },
-    []
-  );
+  const fetchCartItems = async (userId) => {
+    const { data, error } = await supabase
+      .from('cart')
+      .select(`*, products:product_id (id, name, banner_url, amount, description, rating)`)
+      .eq('user_id', userId)
+      .order('id', { ascending: true });
+    if (!error) {
+      setCart(data);
+    } else {
+      console.error('Fetch cart error:', error.message);
+    }
+    setLoading(false);
+    return data;
+  };
 
   // Cart mutations are handled by the redux slice (userCart).
   // The repository uses the redux async thunks for add/remove/fetch operations
@@ -183,9 +207,9 @@ export const AuthProvider = ({ children }) => {
   // are implemented in redux — so we avoid exposing duplicate functions here.
 
   const removeFromCartAfterOrder = async () => {
-    if (!memoizedUser) return;
-    await supabase.from('cart').delete().eq('user_id', memoizedUser.id);
-    await fetchCartItems(memoizedUser.id);
+    if (!user) return;
+    await supabase.from('cart').delete().eq('user_id', user.id);
+    await fetchCartItems(user.id);
   };
 
   const generateTrackingCode = () => {
@@ -226,7 +250,7 @@ export const AuthProvider = ({ children }) => {
         .from('orders')
         .insert([
           {
-            user_id: memoizedUser.id,
+            user_id: user.id,
             status: data.payment_status === 'success' ? 'Confirmed' : 'Pending',
             created_at: new Date(),
             total_amount: data.amount,
@@ -261,7 +285,7 @@ export const AuthProvider = ({ children }) => {
         ]),
         supabase.from('notifications').insert([
           {
-            user_id: memoizedUser.id,
+            user_id: user.id,
             order_id: orderId,
             message: `✨Your order <a href="/orders/${orderId}" target="_blank" rel="noopener noreferrer" style="color:#0d6efd; text-decoration:underline;">#${orderId}</a> has been placed successfully. Thank you for shopping with us!`,
             read: false,
@@ -279,7 +303,7 @@ export const AuthProvider = ({ children }) => {
           singleOrderProduct
         ),
         sendNotification({
-          channel: `user-${memoizedUser?.id}`,
+          channel: `user-${user?.id}`,
           event: 'order-placed',
           message: {
             orderId,
@@ -299,8 +323,8 @@ export const AuthProvider = ({ children }) => {
 
   const placeOrder = async (data, stripe) => {
     setOrderLoading(true);
-    const carts = await fetchCartItems(memoizedUser.id);
-    if (!memoizedUser || carts.length === 0) return;
+    const carts = await fetchCartItems(user.id);
+    if (!user || carts.length === 0) return;
     try {
       const orderItems = carts.map((item) => ({
         product_id: item.product_id,
@@ -328,7 +352,7 @@ export const AuthProvider = ({ children }) => {
 
   const placeOrderSingle = async (data, stripe, product, quantity = 1) => {
     setOrderLoading(true);
-    if (!memoizedUser || !product) return;
+    if (!user || !product) return;
     try {
       const orderItems = [{ product_id: product.id, quantity, price_each: product.amount }];
       const orderId = await createAndFinalizeOrder({
@@ -350,12 +374,12 @@ export const AuthProvider = ({ children }) => {
   };
 
   const getNotificationsByUserId = async (start, end) => {
-    if (!memoizedUser?.id) return [];
+    if (!user?.id) return [];
     try {
       const { data, error } = await supabase
         .from('notifications')
         .select('*')
-        .eq('user_id', memoizedUser?.id)
+        .eq('user_id', user?.id)
         .order('id', { ascending: false })
         .range(start, end);
       if (error) {
@@ -370,7 +394,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const fetchUserOrders = async () => {
-    if (!memoizedUser) return [];
+    if (!user) return [];
     setLoading(true);
     try {
       const { data, error } = await supabase
@@ -378,7 +402,7 @@ export const AuthProvider = ({ children }) => {
         .select(
           `*, order_items (*, products:product_id (id, name, banner_url, amount, description))`
         )
-        .eq('user_id', memoizedUser.id)
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false });
       if (error) {
         console.error('Error fetching orders:', error.message);
@@ -391,7 +415,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const fetchUserCancelledOrders = async () => {
-    if (!memoizedUser) return [];
+    if (!user) return [];
     setLoading(true);
     try {
       const { data, error } = await supabase
@@ -399,7 +423,7 @@ export const AuthProvider = ({ children }) => {
         .select(
           `*, order_items (*, products:product_id (id, name, banner_url, amount, description)), orderpayments_logs (*)`
         )
-        .eq('user_id', memoizedUser.id)
+        .eq('user_id', user.id)
         .eq('status', 'Cancelled')
         .order('created_at', { ascending: false });
       if (error) {
@@ -502,6 +526,7 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         user,
+        authLoading,
         logout,
         cart,
         setUser,

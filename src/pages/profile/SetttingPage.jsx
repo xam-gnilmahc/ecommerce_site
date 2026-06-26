@@ -95,7 +95,6 @@ const SettingsPage = () => {
 
   return (
     <>
-      <Navbar />
       <div className="sett-layout">
         <div className="sett-container">
           {/* ── PAGE TITLE ───────────────────────────── */}

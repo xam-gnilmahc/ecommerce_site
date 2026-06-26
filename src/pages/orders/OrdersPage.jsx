@@ -133,7 +133,6 @@ const OrdersPage = () => {
 
   return (
     <>
-      <Navbar />
       <div className="orders-layout">
         <main className={`orders-main ${panelOpen ? 'panel-open' : ''}`}>
           {/* ── LIST COLUMN ─────────────────────────────── */}
