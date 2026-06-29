@@ -22,7 +22,6 @@ import Profile from './pages/profile/Profile';
 import CancelledOrderPage from './pages/cancelled/CancelledOrderPage';
 import PaymentsPage from './pages/payments/PaymentsPage';
 import ForgotPassword from './pages/auth/ForgotPassword';
-import CronJob from './pages/cron/CronJob';
 import NotificationPage from './pages/profile/NotificationPage';
 import NotificationSettings from './pages/profile/SetttingPage';
 import RafflePage from './pages/raffle/RafflePage';
@@ -51,7 +50,6 @@ const RoutesComponent = () => (
         <Route path="/update-password" element={<UpdatePassword />} />
         <Route path="/order-details" element={<OrderDetailsSheet />} />
         <Route path="/terms" element={<TermsandConditions />} />
-        {/* <Route path="/cronjob" element={<CronJob />} /> */}
         <Route path="*" element={<PageNotFound />} />
         <Route path="/raffles" element={<RafflePage />} />
       </Route>
