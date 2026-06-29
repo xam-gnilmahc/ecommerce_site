@@ -27,18 +27,33 @@
 .shopDetailMain {
   display: flex;
   gap: 10px;
-  align-items: flex-start;
+  align-items: stretch;
+  height: calc(100vh - 90px);
 }
 
 .shopDetails__left {
   width: 270px;
-  position: sticky;
-  top: 90px;
+  flex-shrink: 0;
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  padding-right: 8px;
+}
+
+.shopDetails__left::-webkit-scrollbar {
+  display: none;
 }
 
 .shopDetails__right {
   flex: 1;
   min-width: 0;
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.shopDetails__right::-webkit-scrollbar {
+  display: none;
 }
 
 /* =========================
@@ -259,11 +274,17 @@
 @media (max-width: 992px) {
   .shopDetailMain {
     flex-direction: column;
+    height: auto;
   }
 
   .shopDetails__left {
     width: 100%;
-    position: static;
+    overflow-y: visible;
+    max-height: none;
+  }
+
+  .shopDetails__right {
+    overflow-y: visible;
   }
 
   .shopDetailsProductsContainer {
