@@ -27,7 +27,7 @@ const CARD_STYLE = {
   style: {
     base: {
       fontSize: '15px',
-      fontFamily: "'DM Sans', sans-serif",
+      fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif",
       color: '#0a0a0a',
       '::placeholder': { color: '#bbb' },
     },
