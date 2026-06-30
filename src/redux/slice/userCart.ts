@@ -5,8 +5,8 @@ import { CartItem } from '../../types/cartItem';
 
 interface CartState {
   items: CartItem[];
-  loading: boolean;        // used for add/remove actions
-  fetchLoading: boolean;   // used only during initial fetch
+  loading: boolean; // used for add/remove actions
+  fetchLoading: boolean; // used only during initial fetch
   status: 'idle' | 'loading' | 'success' | 'failed';
   error?: string;
   totalCart: number;
@@ -69,10 +69,9 @@ export const fetchTotalCart = createAsyncThunk(
   }
 );
 
-
 export const addToCart = createAsyncThunk(
   'cart/addToCart',
-  async ({ userId, product }:{ userId: any; product: any }, { rejectWithValue, dispatch }) => {
+  async ({ userId, product }: { userId: any; product: any }, { rejectWithValue, dispatch }) => {
     try {
       const { data: existingItem, error: selectError } = await supabase
         .from('cart')
@@ -88,18 +87,20 @@ export const addToCart = createAsyncThunk(
       if (!existingItem) {
         const { data: inserted, error: insertError } = await supabase
           .from('cart')
-          .insert([{
-            product_id: product.id,
-            user_id: userId,
-            amount: product.amount,
-            quantity: product.qty ?? 1,
-          }])
+          .insert([
+            {
+              product_id: product.id,
+              user_id: userId,
+              amount: product.amount,
+              quantity: product.qty ?? 1,
+            },
+          ])
           .select('*, products:product_id(id, name, banner_url, amount, description, rating)') // return new item with product
           .single();
 
         if (insertError) return rejectWithValue(insertError.message);
 
-        toast.success('Product added to cart!');
+        toast.success('Added to cart');
         await dispatch(fetchTotalCart(userId));
         return inserted;
       } else {
@@ -113,7 +114,7 @@ export const addToCart = createAsyncThunk(
           .single();
 
         if (updateError) return rejectWithValue(updateError.message);
-        toast.success('Product has been updated!');
+        toast.success('Cart updated!');
         await dispatch(fetchTotalCart(userId));
         return updated;
       }
@@ -139,10 +140,7 @@ export const removeItemDirectlyFromCart = createAsyncThunk(
         return rejectWithValue(findError?.message || 'Item not found');
       }
 
-      const { error: deleteError } = await supabase
-        .from('cart')
-        .delete()
-        .eq('id', existingItem.id);
+      const { error: deleteError } = await supabase.from('cart').delete().eq('id', existingItem.id);
 
       if (deleteError) {
         return rejectWithValue(deleteError.message);
@@ -173,8 +171,8 @@ export const removeFromCart = createAsyncThunk(
       }
 
       if (!existingItem) {
-        toast.error("Item not found in cart");
-        return rejectWithValue("Item not found in cart");
+        toast.error('Item not found in cart');
+        return rejectWithValue('Item not found in cart');
       }
 
       const newQty = existingItem.quantity - 1;
@@ -207,12 +205,11 @@ export const removeFromCart = createAsyncThunk(
         return { removedId: existingItem.id };
       }
     } catch (err) {
-      toast.error("Unknown error occurred while removing from cart");
-      return rejectWithValue("Unknown error occurred");
+      toast.error('Unknown error occurred while removing from cart');
+      return rejectWithValue('Unknown error occurred');
     }
   }
 );
-
 
 const cartSlice = createSlice({
   name: 'cart',
@@ -225,7 +222,7 @@ const cartSlice = createSlice({
         state.loading = false;
         const updated = action.payload;
 
-        const index = state.items.findIndex(item => item.product_id === updated.product_id);
+        const index = state.items.findIndex((item) => item.product_id === updated.product_id);
         if (index !== -1) {
           // update quantity
           state.items[index] = updated;
@@ -242,15 +239,15 @@ const cartSlice = createSlice({
         state.loading = false;
 
         if ('removedId' in action.payload) {
-          const index = state.items.findIndex(item => item.id === action.payload.removedId);
+          const index = state.items.findIndex((item) => item.id === action.payload.removedId);
           if (index !== -1) {
-            state.items.splice(index, 1); // ✅ directly remove the item
+            state.items.splice(index, 1); //directly remove the item
           }
         } else {
           const updated = action.payload;
-          const index = state.items.findIndex(item => item.product_id === updated.product_id);
+          const index = state.items.findIndex((item) => item.product_id === updated.product_id);
           if (index !== -1) {
-            state.items[index] = updated; // ✅ update item in place
+            state.items[index] = updated; //update item in place
           }
         }
       })
@@ -258,7 +255,7 @@ const cartSlice = createSlice({
         state.loading = false;
       })
       .addCase(removeItemDirectlyFromCart.fulfilled, (state, action) => {
-        const index = state.items.findIndex(item => item.id === action.payload.removedId);
+        const index = state.items.findIndex((item) => item.id === action.payload.removedId);
         if (index !== -1) {
           state.items.splice(index, 1);
         }
@@ -289,7 +286,8 @@ const cartSlice = createSlice({
       })
       .addCase(fetchCartItems.rejected, (state, action) => {
         state.fetchLoading = false;
-        state.error = typeof action.payload === 'string' ? action.payload : 'Unable to fetch cart items';
+        state.error =
+          typeof action.payload === 'string' ? action.payload : 'Unable to fetch cart items';
       });
   },
 });

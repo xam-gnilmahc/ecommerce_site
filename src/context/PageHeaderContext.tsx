@@ -1,4 +1,11 @@
-import React, { createContext, useContext, useState, ReactNode, Dispatch, SetStateAction } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  Dispatch,
+  SetStateAction,
+} from 'react';
 
 // Define the shape of the header props
 interface HeaderProps {
@@ -14,7 +21,7 @@ interface PageHeaderContextType {
 
 // Default values for the context
 const defaultContextValue: PageHeaderContextType = {
-  headerProps: { title: "", children: null },
+  headerProps: { title: '', children: null },
   setHeaderProps: () => {},
 };
 
@@ -25,7 +32,7 @@ const PageHeaderContext = createContext<PageHeaderContextType>(defaultContextVal
 export const usePageHeader = (): PageHeaderContextType => {
   const context = useContext(PageHeaderContext);
   if (!context) {
-    throw new Error("usePageHeader must be used within a PageHeaderProvider");
+    throw new Error('usePageHeader must be used within a PageHeaderProvider');
   }
   return context;
 };

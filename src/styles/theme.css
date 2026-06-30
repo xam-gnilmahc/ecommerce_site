@@ -1,0 +1,139 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+/* Global design tokens and utilities to unify colors, spacing and responsiveness */
+:root {
+  /* Color palette */
+  --bg: #ffffff;
+  --surface: #fbfbfd; /* subtle surface */
+  --text: #0f1724; /* primary text */
+  --muted: #6b7280; /* secondary text */
+  --primary: #5b7cff; /* brand primary */
+  --primary-600: #4966e6;
+  --accent: #00b894; /* accent/positive */
+  --danger: #ff6b6b;
+  --border: #e6e6e6;
+
+  /* Sizing */
+  --container-max: 1200px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+
+  /* Typography */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+
+/* Reset small things for consistency */
+* {
+  box-sizing: border-box;
+}
+html,
+body,
+#root {
+  height: 100%;
+}
+body {
+  margin: 0;
+  /* Prefer the Inter variable font loaded above, fall back to --font-sans */
+  font-family: 'Inter', var(--font-sans);
+  font-weight: 400;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+}
+
+/* Constrain app content and provide consistent horizontal padding */
+.app-container,
+.container {
+  max-width: var(--container-max);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
+}
+
+/* Simple responsive typography helpers */
+h1 {
+  font-size: clamp(1.6rem, 2.2vw + 0.8rem, 2.5rem);
+  margin: 0 0 var(--space-md);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+h2 {
+  font-size: clamp(1.4rem, 1.6vw + 0.8rem, 2rem);
+  margin: 0 0 var(--space-md);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+h3 {
+  font-size: clamp(1.2rem, 1.1vw + 0.8rem, 1.4rem);
+  margin: 0 0 var(--space-sm);
+  font-weight: 600;
+}
+
+/* Slightly larger body copy for better readability */
+p,
+li,
+span,
+a,
+input,
+button {
+  font-size: 16px;
+}
+
+/* Utilities */
+.btn-primary {
+  background: var(--primary);
+  color: white;
+  border: 0;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.muted {
+  color: var(--muted);
+}
+.divider {
+  height: 1px;
+  background: var(--border);
+  width: 100%;
+}
+
+/* Common responsive breakpoints */
+@media (max-width: 1210px) {
+  :root {
+    --container-max: 1000px;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --container-max: 720px;
+  }
+  .navBar {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --container-max: 100%;
+  }
+  body {
+    font-size: 14px;
+  }
+}
+
+/* Small accessibility helpers */
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

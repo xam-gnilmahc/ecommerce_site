@@ -1,0 +1,131 @@
+.collection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 10px;
+  grid-auto-rows: 32rem;
+  margin: 0 2rem 2rem;
+}
+
+/* shared card */
+.collection > div {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  border-radius: 8px;
+  padding: 30px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* overlay for better readability */
+.collection > div::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.15), transparent);
+  border-radius: 8px;
+  z-index: 1;
+}
+
+/* keep text above overlay */
+.collection > div * {
+  position: relative;
+  z-index: 2;
+}
+
+/* images */
+.collectionLeft {
+  background-image: url('https://www.apple.com/newsroom/images/product/iphone/standard/Apple-iPhone-14-iPhone-14-Plus-hero-220907.jpg.og.jpg?202602251842');
+  background-size: cover;
+  background-position: center;
+}
+
+.collectionTop {
+  background-image: url('https://store.ave.com.bn/wp-content/uploads/2021/10/iPad-mini-Avail-Web-Banner.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+.box1 {
+  background-image: url('https://www.apple.com/newsroom/images/product/watch/standard/Apple_watch-series7-availability_hero_10052021_big.jpg.small_2x.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+.box2 {
+  background-image: url('https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/og-airpods-max-202409?wid=1200&hei=630&fmt=jpeg&qlt=95&.v=1724144125817');
+  background-size: cover;
+  background-position: center;
+}
+
+/* TEXT */
+
+.col-p {
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.col-h3 {
+  text-transform: uppercase;
+  font-size: 28px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.col-h3 span {
+  font-weight: 800;
+  color: #00e5ff;
+}
+
+/* LINK */
+.col-link a {
+  text-decoration: none;
+}
+
+.shop-link {
+  font-size: 13px;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: 1px;
+  transition: 0.3s ease;
+}
+
+.shop-link:hover {
+  color: #00e5ff;
+}
+
+/* underline */
+.col-link a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -5px;
+  width: 40%;
+  border-bottom: 2px solid #00e5ff;
+  transition: width 0.3s ease;
+}
+
+.col-link a:hover::after {
+  width: 100%;
+}
+
+/* RESPONSIVE */
+@media screen and (max-width: 1210px) {
+  .collection {
+    grid-template-columns: 1fr;
+    grid-gap: 25px;
+    padding: 0 60px;
+    grid-auto-rows: 22rem;
+  }
+}
+
+@media screen and (max-width: 450px) {
+  .collection {
+    padding: 0 15px;
+    grid-auto-rows: 18rem;
+  }
+}

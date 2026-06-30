@@ -1,0 +1,68 @@
+/* =========================
+   GLOBAL TYPOGRAPHY SYSTEM
+========================= */
+
+/* modern clean font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  --font-main: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+
+  /* optional type scale */
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-md: 16px;
+  --text-lg: 18px;
+  --text-xl: 22px;
+  --text-2xl: 28px;
+}
+
+/* apply globally */
+html,
+body {
+  font-family: var(--font-main);
+  font-size: var(--text-md);
+  color: #111827;
+  background: #fff;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* remove ugly default spacing issues */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* links clean */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* headings refined */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-main);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #111827;
+}
+
+/* paragraph consistency */
+p {
+  font-size: var(--text-md);
+  line-height: 1.6;
+  color: #374151;
+}
+
+/* buttons */
+button {
+  font-family: var(--font-main);
+}

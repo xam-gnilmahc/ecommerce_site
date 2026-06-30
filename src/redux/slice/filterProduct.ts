@@ -8,11 +8,7 @@ interface Filters {
   priceRange: [number, number] | null;
 }
 
-export const fetchFilteredProducts = createAsyncThunk<
-  Product[],
-  Filters,
-  { rejectValue: string }
->(
+export const fetchFilteredProducts = createAsyncThunk<Product[], Filters, { rejectValue: string }>(
   'products/fetchFilteredProducts',
   async (filters, { rejectWithValue }) => {
     try {
@@ -32,7 +28,6 @@ export const fetchFilteredProducts = createAsyncThunk<
       if (filters.priceRange && filters.priceRange.length === 2) {
         const min = Number(filters.priceRange[0]);
         const max = Number(filters.priceRange[1]);
-        console.log('Filtering products with amount between:', min, max);
         query = query.gte('amount', min).lte('amount', max);
       }
 
@@ -48,7 +43,6 @@ export const fetchFilteredProducts = createAsyncThunk<
     }
   }
 );
-
 
 interface FilterState {
   filteredProducts: Product[];

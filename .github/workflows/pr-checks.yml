@@ -1,0 +1,50 @@
+name: PR checks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  test-and-lint:
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Prettier - check formatting
+        run: |
+          npx prettier --version || true
+          npx prettier --check "src/**/*.{js,jsx,ts,tsx,css,json}" || (
+            echo "Prettier reported formatting issues. Run 'npm run format' locally to fix them." && exit 1
+          )
+
+      # - name: Run tests
+      #   env:
+      #     CI: true
+      #   run: |
+      #     npm test -- --watchAll=false --silent || (
+      #       echo "Tests failed" && exit 1
+      #     )
+
+      - name: Build (if present)
+        env:
+          CI: false
+        run: npm run build --if-present
+
+      - name: Type-check (if tsconfig present)
+        run: |
+          if [ -f tsconfig.json ]; then
+            npx tsc --noEmit
+          else
+            echo "No tsconfig.json found — skipping TypeScript check"
+          fi
