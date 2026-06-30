@@ -20,6 +20,7 @@ import { CookiesProvider } from 'react-cookie';
 
 import { AuthProvider } from './context/authContext';
 import { PageHeaderProvider } from './context/PageHeaderContext.tsx';
+import OAuthErrorCatcher from './components/ui/OAuthErrorCatcher';
 import './index.css';
 
 import RoutesComponent from './RoutesComponent.tsx'; // Move all <Routes> into this separate file for clarity
@@ -28,12 +29,13 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
   <BrowserRouter>
+    <OAuthErrorCatcher />
     <CookiesProvider>
       <ScrollToTop>
         <Provider store={store}>
           <AuthProvider>
             <PageHeaderProvider>
-              <Popup />
+              {/* <Popup /> */}
               <RoutesComponent />
               <Toaster />
             </PageHeaderProvider>
