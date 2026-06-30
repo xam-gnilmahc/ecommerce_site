@@ -1,5 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Clash+Display:wght@500;600;700&family=Cabinet+Grotesk:wght@400;500;600;700;800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,800;1,900&display=swap');
+/* Apple system font - loaded globally via index.css */
 
 /* ═══════════════════════════════════════════════
    ROOT
@@ -19,7 +18,7 @@
 .hp-root {
   background: var(--white);
   min-height: 100vh;
-  font-family: 'Barlow', sans-serif;
+  font-family: var(--font-main);
 }
 
 /* ═══════════════════════════════════════════════
@@ -55,7 +54,7 @@
 
 /* big headline */
 .hp-headline {
-  font-family: 'Barlow', sans-serif;
+  font-family: var(--font-main);
   font-size: clamp(52px, 9vw, 96px);
   font-weight: 900;
   font-style: italic;
@@ -103,7 +102,7 @@
   border: none;
   outline: none;
   font-size: 17px;
-  font-family: 'Barlow', sans-serif;
+  font-family: var(--font-main);
   font-weight: 500;
   color: var(--black);
   background: transparent;
@@ -124,7 +123,7 @@
   padding: 14px 28px;
   font-size: 15px;
   font-weight: 700;
-  font-family: 'Barlow', sans-serif;
+  font-family: var(--font-main);
   cursor: pointer;
   white-space: nowrap;
   letter-spacing: 0.01em;
@@ -160,7 +159,7 @@
   font-weight: 600;
   color: var(--black);
   cursor: pointer;
-  font-family: 'Barlow', sans-serif;
+  font-family: var(--font-main);
   transition:
     background 0.15s,
     border-color 0.15s,
@@ -190,7 +189,7 @@
 }
 
 .hp-section-title {
-  font-family: 'Barlow', sans-serif;
+  font-family: var(--font-main);
   font-size: 13px;
   font-weight: 800;
   text-transform: uppercase;
@@ -246,7 +245,7 @@
   font-size: 12px;
   font-weight: 700;
   color: var(--cat-color);
-  font-family: 'Barlow', sans-serif;
+  font-family: var(--font-main);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -330,7 +329,7 @@
 }
 
 .hp-deal-title {
-  font-family: 'Barlow', sans-serif;
+  font-family: var(--font-main);
   font-size: 30px;
   font-weight: 900;
   font-style: italic;
@@ -363,7 +362,7 @@
   padding: 10px 20px;
   font-size: 13px;
   font-weight: 700;
-  font-family: 'Barlow', sans-serif;
+  font-family: var(--font-main);
   cursor: pointer;
   align-self: flex-start;
   transition: transform 0.15s;

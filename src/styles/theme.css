@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
 /* Global design tokens and utilities to unify colors, spacing and responsiveness */
 :root {
   /* Color palette */
@@ -19,7 +18,9 @@
   --space-lg: 24px;
 
   /* Typography */
-  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Helvetica,
+    Arial, sans-serif;
 }
 
 /* Reset small things for consistency */
@@ -33,8 +34,7 @@ body,
 }
 body {
   margin: 0;
-  /* Prefer the Inter variable font loaded above, fall back to --font-sans */
-  font-family: 'Inter', var(--font-sans);
+  font-family: var(--font-sans);
   font-weight: 400;
   background: var(--bg);
   color: var(--text);
