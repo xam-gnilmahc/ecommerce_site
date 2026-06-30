@@ -9,7 +9,7 @@ import GooglePayButton from '@google-pay/button-react';
 import {
   buildPaymentRequest,
   getUpdatedPaymentData,
-} from '../../components/product/GooglePlay.jsx';
+} from '../../components/product/GooglePlay.tsx';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/authContext';
 import './Animation.css';
@@ -18,8 +18,8 @@ import { fetchTotalCart } from '../../redux/slice/userCart.ts';
 import Navbar from '../../components/ui/Navbar';
 import { useAppDispatch } from '../../redux/index.ts';
 import { fetchCartItems } from '../../redux/slice/userCart.ts';
-import { trackPurchase } from '../../utils/tracking.js';
-import { processCardPayment, processGooglePay } from '../../service/googlePayService.js';
+import { trackPurchase } from '../../utils/tracking.ts';
+import { processCardPayment, processGooglePay } from '../../service/googlePayService.ts';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_URL);
 

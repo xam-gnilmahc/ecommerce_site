@@ -15,16 +15,16 @@ import ProductImageGallery from '../../components/product/ProductImageGallery';
 import RelatedProducts from '../../components/product/RelatedProducts';
 import { addToCart } from '../../redux/slice/userCart.ts';
 import { useAppDispatch } from '../../redux/index.ts';
-import { trackProductPreview, trackAddToCart } from '../../utils/tracking.js';
+import { trackProductPreview, trackAddToCart } from '../../utils/tracking.ts';
 import GooglePayButton from '@google-pay/button-react';
 import { fetchTotalCart } from '../../redux/slice/userCart.ts';
-import { trackPurchase } from '../../utils/tracking.js';
+import { trackPurchase } from '../../utils/tracking.ts';
 import {
   buildPaymentRequest,
   getUpdatedPaymentData,
-} from '../../components/product/GooglePlay.jsx';
-import { processGooglePay } from '../../service/googlePayService.js';
-import { shippingOptions } from '../../config/ShippingOptions.jsx';
+} from '../../components/product/GooglePlay.tsx';
+import { processGooglePay } from '../../service/googlePayService.ts';
+import { shippingOptions } from '../../config/ShippingOptions.ts';
 
 const Product = () => {
   const { id } = useParams();

@@ -1,11 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../supaBaseClient';
-import recalcUserInterest from '../service/recalcUserInterest';
-import populateUserRecommendations from '../service/populateUserRecommendations';
-import { sendOrderEmail, sendDeliveryEmail, sendNotification } from '../service/emailService';
+import recalcUserInterest from '../service/recalcUserInterest.ts';
+import populateUserRecommendations from '../service/populateUserRecommendations.ts';
+import { sendOrderEmail, sendDeliveryEmail, sendNotification } from '../service/emailService.ts';
 import { useNavigate } from 'react-router-dom';
 import Pusher from 'pusher-js';
-import { useVisitorCookie } from '../Hook/useVisitorCookie'; // ← added
+import { useVisitorCookie } from '../Hook/useVisitorCookie.ts'; // ← added
 
 const AuthContext = createContext();
 
