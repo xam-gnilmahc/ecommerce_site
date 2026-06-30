@@ -165,11 +165,3 @@ REACT_APP_SUPABASE_ANON_KEY=your_supabase_key
 ```
 
 ---
-
-## Available Scripts
-
-| Command         | Description                   |
-| --------------- | ----------------------------- |
-| `npm start`     | Start dev server on port 3000 |
-| `npm run build` | Production build              |
-| `npm test`      | Run test suite                |
