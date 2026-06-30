@@ -12,7 +12,7 @@ import { FaStar } from 'react-icons/fa';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 import { addToCart } from '../../../redux/slice/userCart.ts';
 import { useAppDispatch } from '../../../redux/index.ts';
-import { trackAddToCart } from '../../../utils/tracking.js';
+import { trackAddToCart } from '../../../utils/tracking.ts';
 import { supabase } from '../../../supaBaseClient';
 
 import toast from 'react-hot-toast';

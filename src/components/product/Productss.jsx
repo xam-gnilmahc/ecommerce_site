@@ -16,7 +16,7 @@ import { fetchProducts } from '../../redux/slice/Product.ts';
 import { fetchUserRecommendations } from '../../redux/slice/userRecommendation.ts';
 import { searchProducts } from '../../redux/slice/searchProduct.ts';
 import { fetchFilteredProducts } from '../../redux/slice/filterProduct.ts';
-import { trackAddToCart, trackSearch } from '../../utils/tracking.js';
+import { trackAddToCart, trackSearch } from '../../utils/tracking.ts';
 import { addToCart } from '../../redux/slice/userCart.ts';
 import './Products.css';
 

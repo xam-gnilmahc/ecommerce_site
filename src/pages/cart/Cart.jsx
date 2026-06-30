@@ -13,7 +13,7 @@ import {
   fetchCartItems,
   removeItemDirectlyFromCart,
 } from '../../redux/slice/userCart.ts';
-import { trackAddToCart } from '../../utils/tracking.js';
+import { trackAddToCart } from '../../utils/tracking.ts';
 import Navbar from '../../components/ui/Navbar';
 
 const Cart = () => {
