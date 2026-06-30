@@ -5,7 +5,7 @@
   opacity: 0;
   max-width: 100%;
   background-color: var(--color-bg-white);
-  border-top: 3px solid var(--color-accent);
+  border-top: 3px solid var(--color-primary);
   text-align: center;
   border-radius: 0;
   position: absolute;
@@ -54,8 +54,8 @@
 }
 
 .category-popup ul li a:hover {
-  color: var(--color-accent);
-  background-color: var(--color-accent-pale);
+  color: var(--color-primary);
+  background-color: var(--color-primary-pale);
 }
 
 
@@ -138,18 +138,26 @@
   left: 0;
   width: 0;
   height: 2px;
+<<<<<<< HEAD:src/components/ui/PublicNabar.css
 <<<<<<< HEAD:src/components/Navbar.css
   background-color: var(--color-accent);
+=======
+  background-color: var(--color-primary);
+>>>>>>> c1b0ae0faf13982784bf7e687d0508d92f3e58fb:src/components/Navbar.css
   transition: width var(--transition-base);
   border-radius: var(--radius-sm);
 }
 
 .linkContainer ul li a:hover {
+<<<<<<< HEAD:src/components/ui/PublicNabar.css
   color: var(--color-accent);
 =======
   background-color: #1b1b1b;
   transition: width 0.3s ease-out;
 >>>>>>> main:src/components/ui/PublicNabar.css
+=======
+  color: var(--color-primary);
+>>>>>>> c1b0ae0faf13982784bf7e687d0508d92f3e58fb:src/components/Navbar.css
 }
 
 .linkContainer ul li a:hover::after {
@@ -176,8 +184,8 @@
 }
 
 .iconContainer a:hover {
-  color: var(--color-accent);
-  background-color: var(--color-accent-pale);
+  color: var(--color-primary);
+  background-color: var(--color-primary-pale);
 }
 
 .mobile-nav {
@@ -235,7 +243,7 @@
     opacity 0.3s ease-out;
 >>>>>>> main:src/components/ui/PublicNabar.css
   z-index: 9;
-  border-top: 2px solid var(--color-accent);
+  border-top: 2px solid var(--color-primary);
   padding-top: 20px;
 }
 
@@ -274,14 +282,14 @@
 
 .mobile-menuSearchBarContainer a {
   text-decoration: none;
-  color: var(--color-accent);
+  color: var(--color-primary);
   display: flex;
   align-items: center;
   transition: color var(--transition-base);
 }
 
 .mobile-menuSearchBarContainer a:hover {
-  color: #d63c2f;
+  color: var(--color-accent);
 }
 
 .mobile-menuList ul {
@@ -306,7 +314,7 @@
 }
 
 .mobile-menuList ul li a:hover {
-  color: var(--color-accent);
+  color: var(--color-primary);
 }
 
 .mobile-menuFooter {

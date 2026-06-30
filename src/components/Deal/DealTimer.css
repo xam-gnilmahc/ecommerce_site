@@ -13,7 +13,7 @@
 }
 
 .dealTimer {
-  background: linear-gradient(135deg, var(--color-accent) 0%, #d63c2f 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
   background-image: url("https://www.business.maxis.com.my/content/dam/enterprise/images/campaign/iphone-series/iphone-16e/herobanner-mobile-2x.webp");
   background-size: cover;
   background-position: right center;

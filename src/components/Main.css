@@ -22,7 +22,7 @@
   .sectionleft p {
     position: relative;
     padding-left: 50px;
-    color: var(--color-accent);
+    color: var(--color-primary);
     text-transform: uppercase;
     font-weight: var(--font-weight-semibold);
     font-size: 14px;
