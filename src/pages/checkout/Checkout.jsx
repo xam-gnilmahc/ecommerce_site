@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Country, State } from 'country-state-city';
 import Skeleton from 'react-loading-skeleton';
@@ -14,12 +13,10 @@ import toast from 'react-hot-toast';
 import { useAuth } from '../../context/authContext';
 import './Animation.css';
 import './checkout.css';
-import { fetchTotalCart } from '../../redux/slice/userCart.ts';
 import Navbar from '../../components/ui/Navbar';
-import { useAppDispatch } from '../../redux/index.ts';
-import { fetchCartItems } from '../../redux/slice/userCart.ts';
 import { trackPurchase } from '../../utils/tracking.ts';
 import { processCardPayment, processGooglePay } from '../../service/googlePayService.ts';
+import { useCart } from '../../hooks/useCart.ts';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_URL);
 
@@ -37,11 +34,10 @@ const CARD_STYLE = {
 
 const Checkout = () => {
   const { user, placeOrder } = useAuth();
-  const dispatch = useAppDispatch();
   const stripe = useStripe();
   const elements = useElements();
 
-  const { items: cart, fetchLoading: loading } = useSelector((s) => s.addToCart);
+  const { data: cart = [], isLoading: loading } = useCart(user?.id);
 
   const [email, setEmail] = useState(user?.email || '');
   const [name, setName] = useState(user?.full_name || '');
@@ -69,8 +65,7 @@ const Checkout = () => {
 
   const handleOrderSuccess = async (orderId) => {
     if (!orderId) return;
-    dispatch(fetchTotalCart(user.id));
-    await trackPurchase(dispatch, user?.id, { id: orderId, items: cart });
+    await trackPurchase(user?.id, { id: orderId, items: cart });
     setShow(true);
     toast.success('Payment successful!');
   };
@@ -82,10 +77,6 @@ const Checkout = () => {
     }
     return false;
   };
-
-  useEffect(() => {
-    if (user?.id) dispatch(fetchCartItems(user.id));
-  }, [user?.id]);
 
   const handleCountryChange = (c) => {
     setSelectedCountry(c);

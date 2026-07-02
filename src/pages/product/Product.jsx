@@ -13,42 +13,39 @@ import { PiShareNetworkLight } from 'react-icons/pi';
 import AdditionalInfo from '../../components/product/AdditionalInfo';
 import ProductImageGallery from '../../components/product/ProductImageGallery';
 import RelatedProducts from '../../components/product/RelatedProducts';
-import { addToCart } from '../../redux/slice/userCart.ts';
-import { useAppDispatch } from '../../redux/index.ts';
-import { trackProductPreview, trackAddToCart } from '../../utils/tracking.ts';
+import { useAddToCart } from '../../hooks/useCartMutations.ts';
+import { trackProductPreview, trackAddToCart, trackPurchase } from '../../utils/tracking.ts';
 import GooglePayButton from '@google-pay/button-react';
-import { fetchTotalCart } from '../../redux/slice/userCart.ts';
-import { trackPurchase } from '../../utils/tracking.ts';
 import {
   buildPaymentRequest,
   getUpdatedPaymentData,
 } from '../../components/product/GooglePlay.tsx';
 import { processGooglePay } from '../../service/googlePayService.ts';
 import { shippingOptions } from '../../config/ShippingOptions.ts';
+import { useProductDetail, useProductInventory } from '../../hooks/useProductDetail.ts';
 
 const Product = () => {
   const { id } = useParams();
-  const [product, setProduct] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [orderLoading, setOrderLoading] = useState(false);
   const { user, placeOrderSingle } = useAuth();
   const [paymentRequest, setPaymentRequest] = useState(null);
 
-  // ── Inventory state ──────────────────────────────────────────────────────
-  const [stockQty, setStockQty] = useState(null); // null = loading
+  // TanStack Query hooks
+  const { data: product, isLoading: loading } = useProductDetail(id);
+  const { data: stockQty = 0, isLoading: stockLoading } = useProductInventory(id);
+  const addToCartMutation = useAddToCart();
 
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
 
-  const addProduct = async (product) => {
-    dispatch(addToCart({ userId: user?.id, product }));
-    await trackAddToCart(dispatch, user?.id, product);
+  const addProduct = async (productData) => {
+    addToCartMutation.mutate({ userId: user?.id, product: productData });
+    await trackAddToCart(user?.id, productData);
   };
 
   async function handleLoadPaymentData(paymentData) {
     setOrderLoading(true);
     try {
-      // ── Re-check stock live before processing payment ──────────────────
+      // Re-check stock live before processing payment
       const { data: inventoryCheck, error: inventoryError } = await supabase
         .from('inventory')
         .select('stock_quantity')
@@ -56,7 +53,6 @@ const Product = () => {
         .single();
 
       const latestStock = inventoryError || !inventoryCheck ? 0 : inventoryCheck.stock_quantity;
-      setStockQty(latestStock); // update badge UI too
 
       if (latestStock === 0) {
         toast.error('Sorry, this product is out of stock.');
@@ -91,8 +87,7 @@ const Product = () => {
         quantity
       );
       if (orderId) {
-        dispatch(fetchTotalCart(user.id));
-        await trackPurchase(dispatch, user?.id, { id: orderId });
+        await trackPurchase(user?.id, { id: orderId });
         toast.success('Payment processed successfully!');
       }
     } catch (err) {
@@ -110,63 +105,12 @@ const Product = () => {
     setPaymentRequest(newRequest);
   }, [product]);
 
-  // ── Fetch product ────────────────────────────────────────────────────────
+  // Track product preview
   useEffect(() => {
-    const getProduct = async () => {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('products')
-        .select(
-          `
-          *,
-          product_items(id, size, sku_number, color),
-          product_images(id, image_url, is_primary),
-          product_reviews(
-            id,
-            user_id,
-            picture,
-            comment,
-            rating,
-            created_at,
-            users(id, name, email, profile)
-          )
-        `
-        )
-        .eq('id', id)
-        .single();
-
-      if (error) {
-        console.error(error);
-        toast.error('Failed to load product');
-        setLoading(false);
-        return;
-      }
-
-      setProduct(data);
-      if (user) await trackProductPreview(dispatch, user.id, data);
-      setLoading(false);
-    };
-    getProduct();
-  }, [id]);
-
-  // ── Fetch inventory for this product ────────────────────────────────────
-  useEffect(() => {
-    if (!id) return;
-    const getInventory = async () => {
-      const { data, error } = await supabase
-        .from('inventory')
-        .select('stock_quantity')
-        .eq('product_id', id)
-        .single();
-
-      if (error || !data) {
-        setStockQty(0);
-      } else {
-        setStockQty(data.stock_quantity);
-      }
-    };
-    getInventory();
-  }, [id]);
+    if (product && user) {
+      trackProductPreview(user.id, product);
+    }
+  }, [product, user]);
 
   const [clicked, setClicked] = useState(false);
 
@@ -189,10 +133,9 @@ const Product = () => {
   };
   const handleWishClick = () => setClicked(!clicked);
 
-  // ── Stock badge helper ───────────────────────────────────────────────────
+  // Stock badge helper
   const StockBadge = () => {
-    if (stockQty === null) {
-      // still loading
+    if (stockLoading) {
       return (
         <div className="stockBadge stockLoading">
           <span className="stockDot" />
@@ -288,7 +231,7 @@ const Product = () => {
           </p>
         </div>
 
-        {/* ── Stock Status Badge ── */}
+        {/* Stock Status Badge */}
         <StockBadge />
 
         <h3 className="product-section-title">Description</h3>

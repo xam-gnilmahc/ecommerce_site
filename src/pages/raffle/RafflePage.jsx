@@ -3,7 +3,9 @@ import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import { useAuth } from '../../context/authContext';
 import { supabase } from '../../supaBaseClient';
+import { useQueryClient } from '@tanstack/react-query';
 import './RafflePage.css';
+import { useRaffles } from '../../hooks/useRaffles.ts';
 
 const SUPABASE_URL = 'https://fzliiwigydluhgbuvnmr.supabase.co';
 
@@ -306,70 +308,17 @@ const RaffleCard = ({ raffle, onEnter, hasEntered, ticketNumber, userId }) => {
    MAIN PAGE
 ───────────────────────────────────────────── */
 const RafflePage = () => {
-  const [raffles, setRaffles] = useState([]);
-
-  const [loading, setLoading] = useState(true);
-
-  const [error, setError] = useState(null);
-
   const [filter, setFilter] = useState('all');
-
-  const [enteredMap, setEnteredMap] = useState({});
+  const queryClient = useQueryClient();
 
   const { user } = useAuth();
-
   const userId = user?.id || null;
 
-  /* FETCH */
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
+  // TanStack Query hooks
+  const { data: rafflesData, isLoading: loading, error } = useRaffles(userId);
 
-      setError(null);
-
-      try {
-        /* RAFFLES */
-        const { data: rafflesData, error: rafflesError } = await supabase
-          .from('raffles')
-          .select('*')
-          .order('start_date', {
-            ascending: true,
-          });
-
-        if (rafflesError) throw rafflesError;
-
-        setRaffles(rafflesData || []);
-
-        /* USER ENTRIES */
-        if (userId) {
-          const { data: entriesData, error: entriesError } = await supabase
-            .from('raffle_entries')
-            .select('raffle_id, ticket_number')
-            .eq('user_id', userId);
-
-          if (entriesError) throw entriesError;
-
-          const map = {};
-
-          entriesData.forEach((entry) => {
-            map[entry.raffle_id] = entry.ticket_number;
-          });
-
-          setEnteredMap(map);
-        } else {
-          setEnteredMap({});
-        }
-      } catch (err) {
-        console.error(err);
-
-        setError('Failed to load raffles');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [userId]);
+  const raffles = rafflesData?.raffles || [];
+  const enteredMap = rafflesData?.enteredMap || {};
 
   /* ENTER */
   const handleEnterRaffle = async (raffleId, uid) => {
@@ -457,21 +406,7 @@ const RafflePage = () => {
       }
 
       /* LOCAL UPDATE */
-      setRaffles((prev) =>
-        prev.map((r) =>
-          r.id === raffleId
-            ? {
-                ...r,
-                total_entries: newTotal,
-              }
-            : r
-        )
-      );
-
-      setEnteredMap((prev) => ({
-        ...prev,
-        [raffleId]: ticketNumber,
-      }));
+      queryClient.invalidateQueries({ queryKey: ['raffles', userId] });
 
       return {
         success: true,

@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
@@ -11,13 +10,12 @@ import Pagination from '../ui/Pagination.js';
 import { IoClose } from 'react-icons/io5';
 import { FaStar } from 'react-icons/fa';
 import { FiHeart } from 'react-icons/fi';
-import { useAppDispatch } from '../../redux/index.ts';
-import { fetchProducts } from '../../redux/slice/Product.ts';
-import { fetchUserRecommendations } from '../../redux/slice/userRecommendation.ts';
-import { searchProducts } from '../../redux/slice/searchProduct.ts';
-import { fetchFilteredProducts } from '../../redux/slice/filterProduct.ts';
+import { useProducts } from '../../hooks/useProducts.ts';
+import { useSearchProducts } from '../../hooks/useSearchProducts.ts';
+import { useFilteredProducts } from '../../hooks/useFilteredProducts.ts';
+import { useRecommendations } from '../../hooks/useRecommendations.ts';
+import { useAddToCart } from '../../hooks/useCartMutations.ts';
 import { trackAddToCart, trackSearch } from '../../utils/tracking.ts';
-import { addToCart } from '../../redux/slice/userCart.ts';
 import './Products.css';
 
 const Products = () => {
@@ -26,82 +24,51 @@ const Products = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [sortBy, setSortBy] = useState('default');
+  const [activeFilters, setActiveFilters] = useState(null);
   const lastExecutedQuery = useRef('');
   const postsPerPage = 20;
 
   const { user, trackProduct } = useAuth();
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
   const location = useLocation();
 
   const searchQuery = new URLSearchParams(location.search).get('q')?.toLowerCase().trim();
 
-  // Redux state
-  const { products, loading: productsLoading } = useSelector((state) => state.product);
+  // TanStack Query hooks
+  const { data: products = [], isLoading: productsLoading } = useProducts(!searchQuery && !activeFilters);
+  const { data: searchResults = [], isLoading: searchLoading, status: searchStatus } = useSearchProducts(searchQuery, !!searchQuery);
+  const { data: filteredProducts = [], isLoading: filterLoading, status: filterStatus } = useFilteredProducts(activeFilters, !!activeFilters);
+  const { data: recommendations = [], isLoading: recLoading, status: recStatus } = useRecommendations(user?.id, !!user?.id && !searchQuery && !activeFilters);
+  const addToCartMutation = useAddToCart();
 
-  const { results: searchResults, status: searchStatus } = useSelector((state) => state.search);
-
-  const { filteredProducts, status: filterStatus } = useSelector((state) => state.filterProduct);
-
-  const { recommendations, status: recStatus } = useSelector((state) => state.userRecommendations);
-
-  // Load initial products / recommendations
+  // Set default products based on query state
   useEffect(() => {
-    if (!searchQuery) {
-      if (user?.id) {
-        dispatch(fetchUserRecommendations(user.id));
-      } else {
-        dispatch(fetchProducts());
+    if (searchQuery) {
+      if (searchStatus === 'success') {
+        setDisplayProducts(searchResults);
+        setCurrentPage(1);
       }
-    }
-  }, [user?.id, searchQuery, dispatch]);
-
-  // Set default products
-  useEffect(() => {
-    if (!searchQuery) {
-      if (recStatus === 'success' && recommendations?.length > 0) {
+    } else if (activeFilters) {
+      if (filterStatus === 'success') {
+        setDisplayProducts(filteredProducts);
+        setCurrentPage(1);
+      }
+    } else {
+      if (recStatus === 'success' && recommendations.length > 0) {
         setDisplayProducts(recommendations);
       } else if (!productsLoading && products.length > 0) {
         setDisplayProducts(products);
       }
     }
-  }, [recStatus, recommendations, products, productsLoading, searchQuery]);
+  }, [searchQuery, searchResults, searchStatus, activeFilters, filteredProducts, filterStatus, recommendations, recStatus, products, productsLoading]);
 
-  // FILTER
+  // Track search
   useEffect(() => {
-    if (filterStatus === 'success') {
-      setDisplayProducts(filteredProducts);
-      setCurrentPage(1);
+    if (searchQuery && searchStatus === 'success' && lastExecutedQuery.current !== searchQuery) {
+      lastExecutedQuery.current = searchQuery;
+      trackSearch(user?.id, searchQuery);
     }
-  }, [filteredProducts, filterStatus]);
-
-  // SEARCH (FIXED - no duplicate calls)
-  useEffect(() => {
-    if (!searchQuery) return;
-
-    if (lastExecutedQuery.current === searchQuery) return;
-
-    lastExecutedQuery.current = searchQuery;
-
-    setCurrentPage(1);
-    setDisplayProducts([]);
-    dispatch(searchProducts(searchQuery));
-    trackSearch(dispatch, user?.id, searchQuery);
-  }, [searchQuery, dispatch, user?.id]);
-
-  // APPLY SEARCH RESULTS
-  useEffect(() => {
-    if (!searchQuery) return;
-
-    if (searchStatus === 'success') {
-      setDisplayProducts(searchResults || []);
-      setCurrentPage(1);
-    }
-
-    if (searchStatus === 'failed') {
-      setDisplayProducts([]);
-    }
-  }, [searchResults, searchStatus, searchQuery]);
+  }, [searchQuery, searchStatus, user?.id]);
 
   // SORT
   const sortProducts = (items, sortKey) => {
@@ -143,8 +110,8 @@ const Products = () => {
       navigate('/login');
       return;
     }
-    dispatch(addToCart({ userId: user.id, product }));
-    await trackAddToCart(dispatch, user?.id, product);
+    addToCartMutation.mutate({ userId: user.id, product });
+    await trackAddToCart(user?.id, product);
   };
 
   // WISHLIST
@@ -157,7 +124,7 @@ const Products = () => {
 
   // FILTER
   const handleFilterChange = (filters) => {
-    dispatch(fetchFilteredProducts(filters));
+    setActiveFilters(filters);
     setCurrentPage(1);
   };
 
@@ -168,9 +135,9 @@ const Products = () => {
   };
 
   const isLoading =
-    (searchQuery && searchStatus === 'loading') ||
-    (!searchQuery && (productsLoading || recStatus === 'loading')) ||
-    filterStatus === 'loading';
+    (searchQuery && searchLoading) ||
+    (!searchQuery && !activeFilters && (productsLoading || recLoading)) ||
+    (activeFilters && filterLoading);
 
   const LoadingSkeleton = () => {
     return (

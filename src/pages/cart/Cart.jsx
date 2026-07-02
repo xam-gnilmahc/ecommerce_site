@@ -1,43 +1,37 @@
-import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/authContext';
 import { FaTimes, FaQuestion } from 'react-icons/fa';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import './cart.css';
-import { useAppDispatch } from '../../redux/index.ts';
+import { useCart } from '../../hooks/useCart.ts';
 import {
-  addToCart,
-  removeFromCart,
-  fetchCartItems,
-  removeItemDirectlyFromCart,
-} from '../../redux/slice/userCart.ts';
+  useAddToCart,
+  useRemoveFromCart,
+  useRemoveItemDirectlyFromCart,
+} from '../../hooks/useCartMutations.ts';
 import { trackAddToCart } from '../../utils/tracking.ts';
-import Navbar from '../../components/ui/Navbar';
 
 const Cart = () => {
   const { user } = useAuth();
-  const dispatch = useAppDispatch();
-  const { items: cart, fetchLoading } = useSelector((state) => state.addToCart);
-
-  useEffect(() => {
-    if (user?.id) dispatch(fetchCartItems(user.id));
-  }, [dispatch, cart.length]);
+  const { data: cart = [], isLoading: fetchLoading } = useCart(user?.id);
+  const addToCartMutation = useAddToCart();
+  const removeFromCartMutation = useRemoveFromCart();
+  const removeItemDirectlyMutation = useRemoveItemDirectlyFromCart();
 
   const updateItemQuantity = async (product, action) => {
     if (!user) return;
     if (action === 'increase') {
-      dispatch(addToCart({ userId: user.id, product }));
-      trackAddToCart(dispatch, user?.id, product);
+      addToCartMutation.mutate({ userId: user.id, product });
+      await trackAddToCart(user?.id, product);
     } else if (action === 'decrease') {
-      dispatch(removeFromCart({ userId: user.id, product }));
+      removeFromCartMutation.mutate({ userId: user.id, product });
     }
   };
 
   const handleRemoveFromCart = (product) => {
     if (!user) return;
-    dispatch(removeItemDirectlyFromCart({ userId: user.id, productId: product.id }));
+    removeItemDirectlyMutation.mutate({ userId: user.id, productId: product.id });
   };
 
   const EmptyCart = () => (

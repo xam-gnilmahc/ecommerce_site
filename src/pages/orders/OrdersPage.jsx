@@ -1,8 +1,10 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { useAuth } from '../../context/authContext';
 import Skeleton from 'react-loading-skeleton';
 import './ordersPage.css';
 import Navbar from '../../components/ui/Navbar';
+import { useUserOrders } from '../../hooks/useOrders.ts';
+import { useOrderDetails } from '../../hooks/useOrderDetails.ts';
 import {
   FaBoxOpen,
   FaCheckCircle,
@@ -53,31 +55,21 @@ const getPaymentIcon = (m) => {
 };
 
 const OrdersPage = () => {
-  const { fetchUserOrders, getOrderDetails, user } = useAuth();
+  const { user } = useAuth();
 
-  const [orders, setOrders] = useState([]);
-  const [cancelledOrders, setCancelledOrders] = useState([]);
+  const { data: allOrders = [], isLoading } = useUserOrders(user?.id);
+  const orders = allOrders.filter((o) => o.status !== 'Cancelled');
+  const cancelledOrders = allOrders.filter((o) => o.status === 'Cancelled');
+
   const [showCancelled, setShowCancelled] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const hasFetched = useRef(false);
 
-  const [selectedOrder, setSelectedOrder] = useState(null);
-  const [detailLoading, setDetailLoading] = useState(false);
   const [activeId, setActiveId] = useState(null);
   const [panelOpen, setPanelOpen] = useState(false);
 
-  useEffect(() => {
-    if (hasFetched.current) return;
-    hasFetched.current = true;
-    const load = async () => {
-      setLoading(true);
-      const data = await fetchUserOrders();
-      setOrders(data?.filter((o) => o.status !== 'Cancelled') || []);
-      setCancelledOrders(data?.filter((o) => o.status === 'Cancelled') || []);
-      setLoading(false);
-    };
-    load();
-  }, []);
+  const { data: selectedOrder, isLoading: detailLoading } = useOrderDetails(
+    activeId,
+    !!activeId
+  );
 
   const handleOrderClick = async (orderId) => {
     if (activeId === orderId && panelOpen) {
@@ -86,17 +78,11 @@ const OrdersPage = () => {
     }
     setActiveId(orderId);
     setPanelOpen(true);
-    setDetailLoading(true);
-    setSelectedOrder(null);
-    const data = await getOrderDetails(orderId);
-    setSelectedOrder(data);
-    setDetailLoading(false);
   };
 
   const handleClose = () => {
     setPanelOpen(false);
     setActiveId(null);
-    setTimeout(() => setSelectedOrder(null), 320);
   };
 
   const formatDate = (d) => {
@@ -160,7 +146,7 @@ const OrdersPage = () => {
               </div>
             </div>
 
-            {loading ? (
+            {isLoading ? (
               <div className="order-list">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <div className="order-card" key={i}>

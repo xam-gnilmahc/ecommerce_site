@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { QueryClientProvider } from '@tanstack/react-query';
 
 import 'font-awesome/css/font-awesome.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -11,6 +12,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 
 import store from './redux/index.ts';
+import queryClient from './config/queryClient.ts';
 
 import { Toaster } from 'react-hot-toast';
 
@@ -33,13 +35,15 @@ root.render(
     <CookiesProvider>
       <ScrollToTop>
         <Provider store={store}>
-          <AuthProvider>
-            <PageHeaderProvider>
-              {/* <Popup /> */}
-              <RoutesComponent />
-              <Toaster />
-            </PageHeaderProvider>
-          </AuthProvider>
+          <QueryClientProvider client={queryClient}>
+            <AuthProvider>
+              <PageHeaderProvider>
+                {/* <Popup /> */}
+                <RoutesComponent />
+                <Toaster />
+              </PageHeaderProvider>
+            </AuthProvider>
+          </QueryClientProvider>
         </Provider>
       </ScrollToTop>
     </CookiesProvider>
