@@ -460,57 +460,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const sendAllDeliveryEmails = async () => {
-    setLoading(true);
-    try {
-      const today = new Date();
-      const startOfDay = new Date(today.setHours(0, 0, 0, 0)).toISOString();
-      const endOfDay = new Date(today.setHours(23, 59, 59, 999)).toISOString();
-      const { data: orders, error } = await supabase
-        .from('orders')
-        .select(
-          `*, order_items (*, products:product_id (id, name, banner_url, amount, description))`
-        )
-        .gte('order_date', startOfDay)
-        .lt('order_date', endOfDay);
-      if (error) throw error;
-      const userIds = [...new Set(orders.map((o) => o.user_id))];
-      const { data: users, error: userError } = await supabase
-        .from('users')
-        .select(`id, name, email`)
-        .in('id', userIds);
-      if (userError) throw userError;
-      const usersMap = Object.fromEntries(users.map((u) => [u.id, u]));
-      await Promise.all(
-        orders
-          .filter((order) => usersMap[order.user_id])
-          .map(async (order) => {
-            const user = usersMap[order.user_id];
-            const address = JSON.parse(order.shipping_address || '{}');
-            await sendDeliveryEmail({
-              userName: user.name,
-              userEmail: user.email,
-              orderItems: order.order_items.map((item) => ({
-                name: item.products?.name || 'Unnamed',
-                quantity: item.quantity,
-                amount: item.price_each,
-                image: item.products?.banner_url,
-              })),
-              address: `${address.addressLine1 || ''} ${address.addressLine2 || ''}, ${address.state || ''}, ${address.country || ''} - ${address.zipCode || ''}`,
-              cartTotal: order.total_amount,
-              orderId: order.id,
-              orderDate: order.order_date,
-            });
-          })
-      );
-      console.log('All emails sent.');
-    } catch (error) {
-      console.error('Error sending delivery emails:', error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const bestSellingProduct = async () => {
     const { data, error } = await supabase
       .from('best_selling_product')
@@ -541,7 +490,6 @@ export const AuthProvider = ({ children }) => {
         fetchUserOrders,
         getOrderDetails,
         fetchUserCancelledOrders,
-        sendAllDeliveryEmails,
         bestSellingProduct,
         getNotificationsByUserId,
         fetchCartItems,

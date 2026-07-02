@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/authContext';
 import Skeleton from 'react-loading-skeleton';
+import { useOrderDetails } from '../../hooks/useOrderDetails.ts';
 
 import {
   FaMapMarkerAlt,
@@ -35,19 +36,9 @@ const STATUS_DESC = {
 
 const OrderDetailsPage = () => {
   const { orderId } = useParams();
-  const { getOrderDetails, user } = useAuth();
+  const { user } = useAuth();
 
-  const [loading, setLoading] = useState(true);
-  const [order, setOrder] = useState(null);
-
-  useEffect(() => {
-    (async () => {
-      setLoading(true);
-      const data = await getOrderDetails(orderId);
-      setOrder(data);
-      setLoading(false);
-    })();
-  }, [orderId]);
+  const { data: order, isLoading: loading } = useOrderDetails(orderId);
 
   if (loading) {
     return (

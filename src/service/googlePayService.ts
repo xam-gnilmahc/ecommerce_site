@@ -137,7 +137,7 @@ export async function processCardPayment(
     throw new Error('Stripe not loaded');
   }
 
-  const cardElement = elements.getElement(CardElement) as StripeCardElement | null;
+  const cardElement = elements.getElement(CardElement) as unknown as StripeCardElement | null;
 
   if (!cardElement) {
     throw new Error('Card element not found');

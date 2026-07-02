@@ -25,7 +25,7 @@ export const searchProducts = createAsyncThunk<Product[], string, { rejectValue:
       if (!raw) return [];
 
       // Split into individual words, dedupe, ignore empty
-      const words = [...new Set(raw.toLowerCase().split(/\s+/).filter(Boolean))];
+      const words = Array.from(new Set(raw.toLowerCase().split(/\s+/).filter(Boolean)));
 
       const FIELDS = ['name', 'brand', 'type', 'category'];
 

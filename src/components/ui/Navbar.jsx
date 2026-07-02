@@ -1,9 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { NavLink, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/authContext';
-import { useAppDispatch } from '../../redux/index.ts';
-import { fetchTotalCart } from '../../redux/slice/userCart.ts';
+import { useCartCount } from '../../hooks/useCart.ts';
 import Badge from '@mui/material/Badge';
 
 import { RiShoppingBagLine, RiMenu2Line } from 'react-icons/ri';
@@ -23,8 +21,6 @@ import NotificationPage from '../../pages/profile/NotificationPage';
 const Navbar = () => {
   const { user, logout } = useAuth();
 
-  const dispatch = useAppDispatch();
-
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -37,7 +33,7 @@ const Navbar = () => {
   const navRef = useRef(null);
   const profileRef = useRef(null);
 
-  const { totalCart } = useSelector((state) => state.addToCart);
+  const { data: totalCart = 0 } = useCartCount(user?.id);
 
   const isSearchPage = location.pathname === '/search';
 
@@ -46,12 +42,6 @@ const Navbar = () => {
   useEffect(() => {
     setSearch(searchQuery);
   }, [searchQuery]);
-
-  useEffect(() => {
-    if (user?.id) {
-      dispatch(fetchTotalCart(user.id));
-    }
-  }, [user]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
