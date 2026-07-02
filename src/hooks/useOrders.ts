@@ -43,9 +43,7 @@ const fetchUserOrders = async (userId: string): Promise<Order[]> => {
 
   const { data, error } = await supabase
     .from('orders')
-    .select(
-      `*, order_items (*, products:product_id (id, name, banner_url, amount, description))`
-    )
+    .select(`*, order_items (*, products:product_id (id, name, banner_url, amount, description))`)
     .eq('user_id', userId)
     .order('created_at', { ascending: false });
 

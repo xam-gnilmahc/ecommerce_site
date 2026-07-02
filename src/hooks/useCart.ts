@@ -34,10 +34,7 @@ export const useCart = (userId: string | undefined, enabled: boolean = true) => 
 };
 
 const fetchCartCount = async (userId: string): Promise<number> => {
-  const { data, error } = await supabase
-    .from('cart')
-    .select('id')
-    .eq('user_id', userId);
+  const { data, error } = await supabase.from('cart').select('id').eq('user_id', userId);
 
   if (error) throw new Error(error.message);
 

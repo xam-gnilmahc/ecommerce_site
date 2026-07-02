@@ -7,7 +7,11 @@ import { IoMdCheckmark } from 'react-icons/io';
 import { IoIosNotifications } from 'react-icons/io';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { useNotifications, useUnreadNotificationCount, useMarkNotificationsAsRead } from '../../hooks/useNotifications.ts';
+import {
+  useNotifications,
+  useUnreadNotificationCount,
+  useMarkNotificationsAsRead,
+} from '../../hooks/useNotifications.ts';
 dayjs.extend(relativeTime);
 
 const NotificationPage = () => {

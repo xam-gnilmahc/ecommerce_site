@@ -28,10 +28,7 @@ export const useBestSelling = () => {
 const fetchRecentlyVisited = async (productIds: number[]): Promise<Product[]> => {
   if (!productIds || productIds.length === 0) return [];
 
-  const { data, error } = await supabase
-    .from('products')
-    .select('*')
-    .in('id', productIds);
+  const { data, error } = await supabase.from('products').select('*').in('id', productIds);
 
   if (error) throw new Error(error.message);
   return data ?? [];

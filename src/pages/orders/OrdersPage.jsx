@@ -66,10 +66,7 @@ const OrdersPage = () => {
   const [activeId, setActiveId] = useState(null);
   const [panelOpen, setPanelOpen] = useState(false);
 
-  const { data: selectedOrder, isLoading: detailLoading } = useOrderDetails(
-    activeId,
-    !!activeId
-  );
+  const { data: selectedOrder, isLoading: detailLoading } = useOrderDetails(activeId, !!activeId);
 
   const handleOrderClick = async (orderId) => {
     if (activeId === orderId && panelOpen) {

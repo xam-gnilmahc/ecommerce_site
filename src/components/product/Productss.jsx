@@ -35,10 +35,24 @@ const Products = () => {
   const searchQuery = new URLSearchParams(location.search).get('q')?.toLowerCase().trim();
 
   // TanStack Query hooks
-  const { data: products = [], isLoading: productsLoading } = useProducts(!searchQuery && !activeFilters);
-  const { data: searchResults = [], isLoading: searchLoading, status: searchStatus } = useSearchProducts(searchQuery, !!searchQuery);
-  const { data: filteredProducts = [], isLoading: filterLoading, status: filterStatus } = useFilteredProducts(activeFilters, !!activeFilters);
-  const { data: recommendations = [], isLoading: recLoading, status: recStatus } = useRecommendations(user?.id, !!user?.id && !searchQuery && !activeFilters);
+  const { data: products = [], isLoading: productsLoading } = useProducts(
+    !searchQuery && !activeFilters
+  );
+  const {
+    data: searchResults = [],
+    isLoading: searchLoading,
+    status: searchStatus,
+  } = useSearchProducts(searchQuery, !!searchQuery);
+  const {
+    data: filteredProducts = [],
+    isLoading: filterLoading,
+    status: filterStatus,
+  } = useFilteredProducts(activeFilters, !!activeFilters);
+  const {
+    data: recommendations = [],
+    isLoading: recLoading,
+    status: recStatus,
+  } = useRecommendations(user?.id, !!user?.id && !searchQuery && !activeFilters);
   const addToCartMutation = useAddToCart();
 
   // Set default products based on query state
@@ -60,7 +74,18 @@ const Products = () => {
         setDisplayProducts(products);
       }
     }
-  }, [searchQuery, searchResults, searchStatus, activeFilters, filteredProducts, filterStatus, recommendations, recStatus, products, productsLoading]);
+  }, [
+    searchQuery,
+    searchResults,
+    searchStatus,
+    activeFilters,
+    filteredProducts,
+    filterStatus,
+    recommendations,
+    recStatus,
+    products,
+    productsLoading,
+  ]);
 
   // Track search
   useEffect(() => {

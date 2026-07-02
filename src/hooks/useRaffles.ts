@@ -38,10 +38,7 @@ const fetchRaffles = async (): Promise<Raffle[]> => {
 const fetchUserRaffleEntries = async (userId: string): Promise<RaffleEntry[]> => {
   if (!userId) return [];
 
-  const { data, error } = await supabase
-    .from('raffle_entries')
-    .select('*')
-    .eq('user_id', userId);
+  const { data, error } = await supabase.from('raffle_entries').select('*').eq('user_id', userId);
 
   if (error) throw new Error(error.message);
   return data ?? [];

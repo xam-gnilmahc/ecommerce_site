@@ -143,10 +143,7 @@ export const useRemoveItemDirectlyFromCart = () => {
         throw new Error(findError?.message || 'Item not found');
       }
 
-      const { error: deleteError } = await supabase
-        .from('cart')
-        .delete()
-        .eq('id', existingItem.id);
+      const { error: deleteError } = await supabase.from('cart').delete().eq('id', existingItem.id);
 
       if (deleteError) throw new Error(deleteError.message);
       return { removedId: existingItem.id };

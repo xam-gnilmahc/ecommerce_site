@@ -47,7 +47,13 @@ const fetchNotifications = async ({
 };
 
 export const useNotifications = (userId: string | undefined, enabled: boolean = true) => {
-  return useInfiniteQuery<NotificationsPage, Error, { pages: NotificationsPage[]; pageParams: number[] }, ['notifications', string], number>({
+  return useInfiniteQuery<
+    NotificationsPage,
+    Error,
+    { pages: NotificationsPage[]; pageParams: number[] },
+    ['notifications', string],
+    number
+  >({
     queryKey: ['notifications', userId ?? ''],
     queryFn: ({ pageParam }) => fetchNotifications({ userId: userId!, pageParam }),
     getNextPageParam: (lastPage) => lastPage.nextPage ?? undefined,

@@ -70,7 +70,10 @@ const fetchProductDetail = async (productId: number | string): Promise<ProductDe
   return data;
 };
 
-export const useProductDetail = (productId: number | string | undefined, enabled: boolean = true) => {
+export const useProductDetail = (
+  productId: number | string | undefined,
+  enabled: boolean = true
+) => {
   return useQuery<ProductDetail, Error>({
     queryKey: ['product', productId],
     queryFn: () => fetchProductDetail(productId!),
@@ -92,7 +95,10 @@ const fetchProductInventory = async (productId: number | string): Promise<number
   return data.stock_quantity;
 };
 
-export const useProductInventory = (productId: number | string | undefined, enabled: boolean = true) => {
+export const useProductInventory = (
+  productId: number | string | undefined,
+  enabled: boolean = true
+) => {
   return useQuery<number, Error>({
     queryKey: ['inventory', productId],
     queryFn: () => fetchProductInventory(productId!),
