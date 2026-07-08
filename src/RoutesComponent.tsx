@@ -33,9 +33,11 @@ import GuestLayout from './components/layout/layouts/GuestLayout';
 import AuthLayout from './components/layout/layouts/AuthLayout';
 
 const RoutesComponent = () => (
-  <>
+  <div className="flex flex-col min-h-screen overflow-x-hidden">
     <Navbar />
 
+    <div className="h-16 shrink-0" />
+    <div className="flex-1">
     <Routes>
       {/* Public/Guest Layout */}
       <Route element={<GuestLayout />}>
@@ -67,9 +69,10 @@ const RoutesComponent = () => (
         <Route path="/settings" element={<NotificationSettings />} />
       </Route>
     </Routes>
+    </div>
 
     <Footer />
-  </>
+  </div>
 );
 
 export default RoutesComponent;

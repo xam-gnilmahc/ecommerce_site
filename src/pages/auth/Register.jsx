@@ -46,17 +46,19 @@ const Register = () => {
 
   return (
     <>
-      <div className="loginSignUpSection">
-        <div className="loginSignUpContainer">
-          <div className="loginSignUpTabs">
-            <p>Register</p>
+      <div className="flex justify-center items-center px-4 pt-[48px] pb-[64px] max-md:pb-[32px]">
+        <div className="flex flex-col justify-center items-center gap-[8px]">
+          <div className="flex flex-wrap items-center justify-center">
+            <p className="border-none cursor-pointer no-underline uppercase text-[20px] font-semibold relative text-gray-900">
+              Register
+            </p>
           </div>
-          <div className="loginSignUpTabsContentRegister">
-            <form onSubmit={handleSubmit} autoComplete="off">
+          <div className="flex flex-col justify-center items-center">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-[24px] w-[480px] max-[450px]:w-[340px] max-[320px]:w-[280px]">
               <input
                 type="text"
-                className="form-control"
-                id="Name"
+                className="p-4 border border-gray-200 rounded-lg outline-none text-[15px] transition-colors focus:border-gray-900 w-full"
+                id="name"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
@@ -66,8 +68,8 @@ const Register = () => {
 
               <input
                 type="email"
-                className="form-control"
-                id="Email"
+                className="p-4 border border-gray-200 rounded-lg outline-none text-[15px] transition-colors focus:border-gray-900 w-full"
+                id="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
@@ -77,8 +79,8 @@ const Register = () => {
 
               <input
                 type="password"
-                className="form-control"
-                id="Password"
+                className="p-4 border border-gray-200 rounded-lg outline-none text-[15px] transition-colors focus:border-gray-900 w-full"
+                id="password"
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
@@ -86,28 +88,32 @@ const Register = () => {
                 required
               />
 
-              <p>
+              <p className="text-[13px] text-gray-400">
                 Your personal data will be used to support your experience throughout this website,
                 to manage access to your account, and for other purposes described in our
-                <Link to="/terms" style={{ textDecoration: 'none', color: '#c32929' }}>
+                <Link to="/terms" className="text-[13px] text-gray-900">
                   {' '}
                   privacy policy
                 </Link>
                 .
               </p>
 
-              <div className="my-3">
-                <p>
+              <button
+                type="submit"
+                disabled={loading}
+                className="p-4 bg-gray-900 text-white border-none rounded-lg cursor-pointer uppercase font-semibold text-[13px] transition-colors hover:bg-gray-800"
+              >
+                {loading ? 'Registering...' : 'Register'}
+              </button>
+
+              <div className="pt-[24px]">
+                <p className="text-[13px] text-center text-gray-400">
                   Already have an account?{' '}
                   <Link to="/login" className="text-decoration-underline text-info">
                     Login
                   </Link>
                 </p>
               </div>
-
-              <button type="submit" disabled={loading}>
-                {loading ? 'Registering...' : 'Register'}
-              </button>
             </form>
           </div>
         </div>

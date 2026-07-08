@@ -8,7 +8,6 @@ import Skeleton from 'react-loading-skeleton';
 import { supabase } from '../../supaBaseClient';
 import { FaStar } from 'react-icons/fa';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
-import './RelatedProducts.css';
 
 const SUPABASE_IMG_BASE =
   'https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/';
@@ -63,32 +62,32 @@ const RelatedProducts = ({ brand, category }) => {
   if (!loading && products.length === 0) return null;
 
   return (
-    <div className="rp-section">
-      <div className="rp-header">
-        <h2 className="rp-title">
-          Related <span>Products</span>
+    <div className="px-[110px] pt-[20px] pb-[6px] mt-32 md:mt-[20px]">
+      <div className="mb-[35px]">
+        <h2 className="text-[30px] font-bold text-[#111827] m-0 md:text-[20px]">
+          Related <span className="text-[#6b7280]">Products</span>
         </h2>
         {brand && (
-          <p className="rp-subtitle">
+          <p className="text-[13px] text-[#9ca3af] mt-1">
             Based on {brand}
             {category ? ` · ${category}` : ''}
           </p>
         )}
       </div>
 
-      <div className="rp-slider-wrap">
-        <div className="rp-swiper-prev">
-          <IoIosArrowBack />
+      <div className="relative">
+        <div className="rp-swiper-prev absolute top-[45%] -left-5 z-20 cursor-pointer md:hidden">
+          <IoIosArrowBack className="w-[42px] h-[42px] p-2.5 rounded-full bg-white border border-[#e5e7eb] shadow-none text-[#111827]" />
         </div>
-        <div className="rp-swiper-next">
-          <IoIosArrowForward />
+        <div className="rp-swiper-next absolute top-[45%] -right-5 z-20 cursor-pointer md:hidden">
+          <IoIosArrowForward className="w-[42px] h-[42px] p-2.5 rounded-full bg-white border border-[#e5e7eb] shadow-none text-[#111827]" />
         </div>
 
         <Swiper {...swiperConfig}>
           {loading
             ? [...Array(5)].map((_, i) => (
                 <SwiperSlide key={i}>
-                  <div className="rp-card">
+                  <div className="flex flex-col cursor-pointer transition-transform duration-300 ease-in-out hover:-translate-y-1">
                     <Skeleton height={180} borderRadius={10} />
                     <div style={{ padding: '10px 0' }}>
                       <Skeleton height={14} width="80%" />
@@ -99,19 +98,27 @@ const RelatedProducts = ({ brand, category }) => {
               ))
             : products.map((product) => (
                 <SwiperSlide key={product.id}>
-                  <Link to={`/product/${product.id}`} className="rp-card">
-                    <div className="rp-card-img">
+                  <Link
+                    to={`/product/${product.id}`}
+                    className="flex flex-col cursor-pointer no-underline transition-transform duration-300 ease-in-out hover:-translate-y-1"
+                  >
+                    <div className="relative w-full h-[220px] flex items-center justify-center overflow-hidden md:h-[210px] max-md:h-[180px]">
                       <img
                         src={`${SUPABASE_IMG_BASE}${product.banner_url}`}
                         alt={product.name}
                         draggable={false}
+                        className="w-[90%] h-[190px] object-contain block mx-auto"
                       />
                     </div>
-                    <div className="rp-card-info">
-                      <p className="rp-card-name">{product.name}</p>
-                      <div className="rp-card-bottom">
-                        <span className="rp-card-price">${product.amount}</span>
-                        <div className="rp-card-rating">
+                    <div className="p-4 flex flex-col gap-2">
+                      <p className="text-[15px] font-semibold text-[#111827] m-0 leading-tight line-clamp-2">
+                        {product.name}
+                      </p>
+                      <div className="flex justify-between items-center">
+                        <span className="text-[17px] font-bold text-[#111827]">
+                          ${product.amount}
+                        </span>
+                        <div className="flex items-center gap-1.5">
                           {[...Array(5)].map((_, i) => (
                             <FaStar
                               key={i}
