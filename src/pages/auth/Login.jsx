@@ -4,7 +4,6 @@ import { supabase } from '../../supaBaseClient';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/authContext';
 import FacebookLogin from 'react-facebook-login';
-import './Login.css';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -50,10 +49,6 @@ const Login = () => {
     }
   };
 
-  // const loginWithFacebook = async () => {
-  //   const { error } = await supabase.auth.signInWithOAuth({ provider: "facebook" });
-  //   if (error) toast.error("Facebook sign-in failed: " + error.message);
-  // };
   const responseFacebook = (response) => {
     if (response && response.name && response.email) {
       toast.success(
@@ -66,16 +61,21 @@ const Login = () => {
 
   return (
     <>
-      <div className="loginSignUpSection">
-        <div className="loginSignUpContainer">
-          <div className="loginSignUpTabs">
-            <p>Login</p>
+      <div className="flex justify-center items-center px-4 pt-[48px] pb-[64px] max-md:pb-[32px]">
+        <div className="flex flex-col justify-center items-center gap-[8px]">
+          <div className="flex flex-wrap items-center justify-center">
+            <p className="border-none cursor-pointer no-underline uppercase text-[20px] font-semibold relative text-gray-900">
+              Login
+            </p>
           </div>
-          <div className="loginSignUpTabsContentLogin">
-            <form onSubmit={handleSubmit}>
+          <div className="flex flex-col justify-center items-center">
+            <form
+              onSubmit={handleSubmit}
+              className="flex flex-col gap-[24px] w-[480px] max-[450px]:w-[340px] max-[320px]:w-[280px]"
+            >
               <input
                 type="email"
-                className="form-control"
+                className="p-[16px] border border-gray-200 rounded-lg outline-none text-[15px] transition-colors focus:border-gray-900"
                 id="email"
                 name="email"
                 value={formData.email}
@@ -86,7 +86,7 @@ const Login = () => {
 
               <input
                 type="password"
-                className="form-control"
+                className="p-[16px] border border-gray-200 rounded-lg outline-none text-[15px] transition-colors focus:border-gray-900"
                 id="password"
                 name="password"
                 value={formData.password}
@@ -95,37 +95,43 @@ const Login = () => {
                 required
               />
 
-              <div className="loginSignUpForgetPass">
-                <p style={{ margin: 0 }}>
-                  <Link to="/forgot-password">Lost password?</Link>
+              <div className="flex justify-between pb-[8px]">
+                <p style={{ margin: 0 }} className="text-[13px] text-gray-400">
+                  <Link to="/forgot-password" className="text-[13px] text-gray-900">
+                    Lost password?
+                  </Link>
                 </p>
               </div>
 
-              <button type="submit" disabled={loading}>
+              <button
+                type="submit"
+                disabled={loading}
+                className="p-[16px] bg-gray-900 text-white border-none rounded-lg cursor-pointer uppercase font-semibold text-[13px] transition-colors hover:bg-gray-800"
+              >
                 {loading ? 'Logging in...' : 'Login'}
               </button>
 
-              <div className="text-center mb-3 text-muted">or continue with</div>
+              <div className="text-center mb-3 text-gray-400 text-sm">or continue with</div>
 
               <button
                 onClick={loginWithGoogle}
                 type="button"
-                className="btn btn-outline-danger w-100 "
+                className="w-full py-3 px-4 border border-gray-200 rounded-lg bg-white text-sm font-medium text-gray-900 cursor-pointer transition-colors duration-200 hover:bg-gray-50 hover:border-gray-300 flex items-center justify-center gap-2"
               >
-                <i className="fab fa-google me-2"></i> Continue with Google
+                <i className="fab fa-google"></i> Continue with Google
               </button>
               <FacebookLogin
                 appId="1206302750908024"
                 autoLoad={false}
                 fields="name,email,picture"
                 callback={responseFacebook}
-                icon="fa-facebook me-2"
+                icon="fab fa-facebook"
                 textButton="Continue with Facebook"
-                cssClass="btn btn-outline-primary w-100 mb-2 d-flex align-items-center justify-content-center"
+                cssClass="w-full py-3 px-4 border border-gray-200 rounded-lg bg-white text-sm font-medium text-gray-900 cursor-pointer transition-colors duration-200 hover:bg-gray-50 hover:border-gray-300 flex items-center justify-center gap-2 mb-2"
               />
 
-              <div className="loginSignUpTabsContentLoginText">
-                <p>
+              <div className="pt-[24px]">
+                <p className="text-[13px] text-center text-gray-400">
                   No account yet?{' '}
                   <Link to="/register" className="text-decoration-underline text-info">
                     Create Account

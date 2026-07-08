@@ -71,7 +71,10 @@ export const fetchTotalCart = createAsyncThunk(
 
 export const addToCart = createAsyncThunk(
   'cart/addToCart',
-  async ({ userId, product }: { userId: any; product: any }, { rejectWithValue, dispatch }) => {
+  async (
+    { userId, product, quantity }: { userId: any; product: any; quantity?: number },
+    { rejectWithValue, dispatch }
+  ) => {
     try {
       const { data: existingItem, error: selectError } = await supabase
         .from('cart')
@@ -92,7 +95,7 @@ export const addToCart = createAsyncThunk(
               product_id: product.id,
               user_id: userId,
               amount: product.amount,
-              quantity: product.qty ?? 1,
+              quantity: quantity ?? 1,
             },
           ])
           .select('*, products:product_id(id, name, banner_url, amount, description, rating)') // return new item with product
@@ -104,7 +107,7 @@ export const addToCart = createAsyncThunk(
         await dispatch(fetchTotalCart(userId));
         return inserted;
       } else {
-        const newQty = existingItem.quantity + (product.qty ?? 1);
+        const newQty = existingItem.quantity + (quantity ?? 1);
 
         const { data: updated, error: updateError } = await supabase
           .from('cart')

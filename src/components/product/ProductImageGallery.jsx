@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import './ProductImageGallery.css';
 
 const SUPABASE_IMG_BASE =
   'https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/';
@@ -23,7 +22,6 @@ const ProductImageGallery = ({ images = [], productName = '', bannerUrl = '' }) 
     return img.id || img.image_url || idx;
   };
 
-  // Merge banner_url as first image if it exists and isn't already in product_images
   const allImages = useMemo(() => {
     const list = [];
     if (bannerUrl) {
@@ -38,7 +36,6 @@ const ProductImageGallery = ({ images = [], productName = '', bannerUrl = '' }) 
     return list;
   }, [images, bannerUrl]);
 
-  // Find primary image or default to first
   useEffect(() => {
     if (allImages.length > 0) {
       const primaryIdx = allImages.findIndex((img) => typeof img === 'object' && img.is_primary);
@@ -83,14 +80,20 @@ const ProductImageGallery = ({ images = [], productName = '', bannerUrl = '' }) 
   const currentSrc = getUrl(allImages[activeIndex]);
 
   return (
-    <div className="pig-gallery">
+    <div className="flex gap-4 w-full max-w-full max-[991px]:flex-col-reverse max-[991px]:gap-3 max-[991px]:items-center max-[480px]:gap-2">
       {/* Thumbnails */}
       {allImages.length > 1 && (
-        <div className="pig-thumbs" ref={thumbListRef}>
+        <div
+          ref={thumbListRef}
+          className="flex flex-col gap-2.5 max-h-[480px] overflow-y-auto overflow-x-hidden shrink-0 py-1 max-[991px]:flex-row max-[991px]:max-h-none max-[991px]:overflow-y-hidden max-[991px]:overflow-x-auto max-[991px]:max-w-full max-[991px]:justify-center max-[991px]:gap-2 max-[991px]:pb-1 max-[480px]:gap-1.5"
+          style={{ scrollbarWidth: 'thin', scrollbarColor: '#e5e7eb transparent' }}
+        >
           {allImages.map((img, idx) => (
             <button
               key={getImageKey(img, idx)}
-              className={`pig-thumb ${idx === activeIndex ? 'pig-thumb--active' : ''}`}
+              className={`w-[68px] h-[68px] shrink-0 border-2 border-transparent rounded-lg p-1 cursor-pointer bg-white transition-colors duration-200 flex items-center justify-center overflow-hidden ${
+                idx === activeIndex ? 'border-[#111827]' : 'hover:border-gray-300'
+              } max-[991px]:w-[60px] max-[991px]:h-[60px] max-[480px]:w-[52px] max-[480px]:h-[52px] max-[480px]:p-[3px]`}
               onClick={() => handleThumbClick(idx)}
               aria-label={`View image ${idx + 1}`}
             >
@@ -98,6 +101,7 @@ const ProductImageGallery = ({ images = [], productName = '', bannerUrl = '' }) 
                 src={getUrl(img)}
                 alt={`${productName} thumbnail ${idx + 1}`}
                 draggable={false}
+                className="w-full h-full object-contain rounded pointer-events-none select-none"
               />
             </button>
           ))}
@@ -105,26 +109,35 @@ const ProductImageGallery = ({ images = [], productName = '', bannerUrl = '' }) 
       )}
 
       {/* Main Image with Zoom */}
-      <div className={`pig-main ${allImages.length <= 1 ? 'pig-main--full' : ''}`}>
+      <div
+        className={`flex-1 relative flex items-center justify-center min-h-[420px] bg-white rounded-xl overflow-hidden ${
+          allImages.length <= 1 ? 'w-full max-w-[600px]' : ''
+        } max-[991px]:min-h-[360px] max-[991px]:w-full max-[480px]:min-h-[280px] max-[480px]:rounded-lg`}
+      >
         <div
-          className="pig-main-image"
           ref={mainImageRef}
+          className="w-full h-full flex items-center justify-center overflow-hidden cursor-crosshair"
           onMouseMove={handleMouseMove}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
           <img
-            className={`pig-zoom-img ${isZoomed ? 'pig-zoom-img--zoomed' : ''}`}
+            className={`max-w-full max-h-[480px] object-contain rounded-lg transition-transform duration-[0.25s] ease-out block ${
+              isZoomed
+                ? 'scale-[2.2] cursor-zoom-out max-[991px]:scale-[2] max-[480px]:scale-[1.8]'
+                : ''
+            }`}
             src={currentSrc}
             alt={productName}
             draggable={false}
             style={{
+              transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
               '--zoom-x': `${zoomPos.x}%`,
               '--zoom-y': `${zoomPos.y}%`,
             }}
           />
           {!isZoomed && (
-            <div className="pig-zoom-hint">
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-black/60 text-white text-sm font-medium py-1.5 px-3.5 rounded-full pointer-events-none opacity-[0.85] transition-opacity duration-200 whitespace-nowrap hover:opacity-0">
               <svg
                 width="22"
                 height="22"
@@ -134,13 +147,16 @@ const ProductImageGallery = ({ images = [], productName = '', bannerUrl = '' }) 
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
+                className="shrink-0"
               >
                 <circle cx="11" cy="11" r="8" />
                 <line x1="21" y1="21" x2="16.65" y2="16.65" />
                 <line x1="11" y1="8" x2="11" y2="14" />
                 <line x1="8" y1="11" x2="14" y2="11" />
               </svg>
-              <span>Hover to zoom</span>
+              <span className="max-[480px]:text-xs max-[480px]:py-[5px] max-[480px]:px-2.5">
+                Hover to zoom
+              </span>
             </div>
           )}
         </div>
@@ -149,7 +165,7 @@ const ProductImageGallery = ({ images = [], productName = '', bannerUrl = '' }) 
         {allImages.length > 1 && (
           <>
             <button
-              className="pig-nav pig-nav--prev"
+              className="absolute top-1/2 -translate-y-1/2 w-10 h-10 rounded-full border-none bg-white/92 cursor-pointer flex items-center justify-center text-gray-900 transition-colors duration-150 z-10 hover:bg-white left-3 max-[480px]:w-[34px] max-[480px]:h-[34px] max-[480px]:left-2"
               onClick={handlePrev}
               aria-label="Previous image"
             >
@@ -166,7 +182,11 @@ const ProductImageGallery = ({ images = [], productName = '', bannerUrl = '' }) 
                 <polyline points="15 18 9 12 15 6" />
               </svg>
             </button>
-            <button className="pig-nav pig-nav--next" onClick={handleNext} aria-label="Next image">
+            <button
+              className="absolute top-1/2 -translate-y-1/2 w-10 h-10 rounded-full border-none bg-white/92 cursor-pointer flex items-center justify-center text-gray-900 transition-colors duration-150 z-10 hover:bg-white right-3 max-[480px]:w-[34px] max-[480px]:h-[34px] max-[480px]:right-2"
+              onClick={handleNext}
+              aria-label="Next image"
+            >
               <svg
                 width="20"
                 height="20"
@@ -185,7 +205,7 @@ const ProductImageGallery = ({ images = [], productName = '', bannerUrl = '' }) 
 
         {/* Image Counter */}
         {allImages.length > 1 && (
-          <div className="pig-counter">
+          <div className="absolute bottom-3 right-3.5 bg-black/55 text-white text-sm font-semibold py-[3px] px-2.5 rounded-full tracking-[0.3px] pointer-events-none max-[480px]:text-xs max-[480px]:py-0.5 max-[480px]:px-2 max-[480px]:bottom-2 max-[480px]:right-2.5">
             {activeIndex + 1} / {allImages.length}
           </div>
         )}

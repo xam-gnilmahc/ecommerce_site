@@ -287,7 +287,7 @@ export const AuthProvider = ({ children }) => {
           {
             user_id: user.id,
             order_id: orderId,
-            message: `✨Your order <a href="/orders/${orderId}" target="_blank" rel="noopener noreferrer" style="color:#0d6efd; text-decoration:underline;">#${orderId}</a> has been placed successfully. Thank you for shopping with us!`,
+            message: `<div style="font-family:Inter,-apple-system,sans-serif;font-size:14px;line-height:1.6;color:#111827;"><p style="margin:0 0 8px 0;font-weight:500;">Order Confirmed</p><p style="margin:0 0 4px 0;color:#6b7280;">Your order <a href="/orders/${orderId}" target="_blank" rel="noopener noreferrer" style="color:#111827;font-weight:600;text-decoration:none;border-bottom:1px solid #111827;">#${orderId}</a> has been placed successfully.</p><p style="margin:0;color:#9ca3af;font-size:13px;">Thank you for shopping with us.</p></div>`,
             read: false,
             type: 0,
           },
@@ -307,7 +307,7 @@ export const AuthProvider = ({ children }) => {
           event: 'order-placed',
           message: {
             orderId,
-            message: `Your order <a href="/orders/${orderId}" target="_blank" rel="noopener noreferrer" style="color:#0d6efd; text-decoration:underline;">#${orderId}</a> has been placed successfully. Thank you for shopping with us`,
+            message: `<div style="font-family:Inter,-apple-system,sans-serif;font-size:14px;line-height:1.6;color:#111827;"><p style="margin:0 0 8px 0;font-weight:500;">Order Confirmed</p><p style="margin:0 0 4px 0;color:#6b7280;">Your order <a href="/orders/${orderId}" target="_blank" rel="noopener noreferrer" style="color:#111827;font-weight:600;text-decoration:none;border-bottom:1px solid #111827;">#${orderId}</a> has been placed successfully.</p><p style="margin:0;color:#9ca3af;font-size:13px;">Thank you for shopping with us.</p></div>`,
             type: 0,
           },
         }),

@@ -37,7 +37,44 @@ root.render(
             <PageHeaderProvider>
               {/* <Popup /> */}
               <RoutesComponent />
-              <Toaster />
+              <Toaster
+                position="top-right"
+                gutter={12}
+                containerStyle={{ margin: '16px', fontFamily: 'Inter, sans-serif' }}
+                toastOptions={{
+                  duration: 3000,
+                  style: {
+                    background: '#ffffff',
+                    color: '#111827',
+                    fontSize: '14px',
+                    fontFamily: 'Inter, sans-serif',
+                    borderRadius: '12px',
+                    padding: '14px 20px',
+                    border: '1px solid #e5e7eb',
+                    boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+                    maxWidth: '380px',
+                    lineHeight: '1.5',
+                  },
+                  success: {
+                    iconTheme: {
+                      primary: '#059669',
+                      secondary: '#ffffff',
+                    },
+                    style: {
+                      border: '1px solid #d1fae5',
+                    },
+                  },
+                  error: {
+                    iconTheme: {
+                      primary: '#dc2626',
+                      secondary: '#ffffff',
+                    },
+                    style: {
+                      border: '1px solid #fecaca',
+                    },
+                  },
+                }}
+              />
             </PageHeaderProvider>
           </AuthProvider>
         </Provider>

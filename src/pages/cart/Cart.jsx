@@ -2,10 +2,9 @@ import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/authContext';
-import { FaTimes, FaQuestion } from 'react-icons/fa';
+import { FaTimes, FaStar } from 'react-icons/fa';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
-import './cart.css';
 import { useAppDispatch } from '../../redux/index.ts';
 import {
   addToCart,
@@ -14,7 +13,6 @@ import {
   removeItemDirectlyFromCart,
 } from '../../redux/slice/userCart.ts';
 import { trackAddToCart } from '../../utils/tracking.ts';
-import Navbar from '../../components/ui/Navbar';
 
 const Cart = () => {
   const { user } = useAuth();
@@ -41,11 +39,29 @@ const Cart = () => {
   };
 
   const EmptyCart = () => (
-    <div className="empty-cart">
-      <div className="empty-cart-icon">🛒</div>
-      <h3>Your cart is empty</h3>
-      <p>Add some items before checking out</p>
-      <Link to="/" className="empty-cart-btn">
+    <div className="flex flex-col items-center justify-center gap-4 min-h-[calc(100vh-64px)] text-center px-8">
+      <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center">
+        <svg
+          width="28"
+          height="28"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#d1d5db"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <circle cx="9" cy="21" r="1" />
+          <circle cx="20" cy="21" r="1" />
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+        </svg>
+      </div>
+      <h3 className="text-xl font-semibold text-gray-900 m-0">Your cart is empty</h3>
+      <p className="text-sm text-gray-400 m-0">Looks like you haven't added anything yet</p>
+      <Link
+        to="/"
+        className="mt-2 bg-gray-900 text-white border-none rounded-lg px-6 py-2.5 text-sm font-medium no-underline cursor-pointer transition-colors hover:bg-gray-800"
+      >
         Continue shopping
       </Link>
     </div>
@@ -61,192 +77,174 @@ const Cart = () => {
     });
 
     return (
-      <section className="cart-section">
-        <div className="container">
-          {/* Page heading */}
-          {/* <p className="cart-page-label">Your bag</p> */}
-          <h1 className="cart-page-title">
-            Shopping
-            <br />
-            <em>cart</em>
-          </h1>
+      <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8 py-8 min-h-[calc(100vh-64px)]">
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 m-0">Shopping Cart</h1>
+          <span className="text-sm text-gray-400">
+            {totalItems} item{totalItems !== 1 ? 's' : ''}
+          </span>
+        </div>
 
-          <div className="cart-layout">
-            {/* ── LEFT: items ─────────────────────── */}
-            <div className="cart-left">
-              <h2 className="cart-left-title">Items ({totalItems})</h2>
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Items */}
+          <div className="flex-1 min-w-0">
+            <div className="flex flex-col border border-gray-200 rounded-xl divide-y divide-gray-100">
+              {cart.map((item) => (
+                <div key={item.id} className="flex items-center gap-4 p-4 sm:p-5">
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gray-50 rounded-lg overflow-hidden shrink-0 flex items-center justify-center">
+                    <img
+                      src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.products.banner_url}`}
+                      alt={item.products.name}
+                      className="w-4/5 h-4/5 object-contain"
+                    />
+                  </div>
 
-              <div className="cart-items">
-                {cart.map((item) => (
-                  <div key={item.id} className="cart-item">
-                    {/* Remove */}
-                    <button
-                      onClick={() => handleRemoveFromCart(item.products)}
-                      className="remove-btn"
-                      aria-label="Remove item"
-                    >
-                      <FaTimes size={11} />
-                    </button>
-
-                    {/* Image */}
-                    <div className="cart-item-img">
-                      <img
-                        src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.products.banner_url}`}
-                        alt={item.products.name}
-                      />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-gray-900 m-0 truncate">
+                          {item.products.name}
+                        </p>
+                        <p className="text-xs text-gray-400 m-0 mt-0.5 truncate">
+                          {item.products.description?.length > 60
+                            ? item.products.description.slice(0, 60) + '...'
+                            : item.products.description}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => handleRemoveFromCart(item.products)}
+                        className="shrink-0 w-7 h-7 flex items-center justify-center border border-gray-200 rounded-full bg-white cursor-pointer text-gray-300 transition-colors hover:border-red-300 hover:text-red-400"
+                      >
+                        <FaTimes size={10} />
+                      </button>
                     </div>
 
-                    {/* Details */}
-                    <div className="cart-item-details">
-                      <h6 title={item.products.name}>{item.products.name}</h6>
-                      <p>
-                        {item.products.description.length > 80
-                          ? item.products.description.slice(0, 80) + '…'
-                          : item.products.description}
-                      </p>
-
-                      {/* Stars */}
-                      <div className="rating">
-                        {Array.from({ length: 5 }, (_, i) => {
-                          const rating = item.products?.rating || 0;
-                          return (
-                            <i
-                              key={i}
-                              className={`fa ${
-                                rating >= i + 1
-                                  ? 'fa-star'
-                                  : rating >= i + 0.5
-                                    ? 'fa-star-half-o'
-                                    : 'fa-star-o'
-                              }`}
-                            />
-                          );
-                        })}
-                      </div>
-
-                      {/* Qty */}
-                      <div className="quantity-control">
+                    <div className="flex items-center justify-between mt-3">
+                      <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden">
                         <button
-                          className="qty-btn"
+                          className="w-8 h-8 border-none bg-white text-sm font-medium text-gray-600 cursor-pointer flex items-center justify-center hover:bg-gray-50 transition-colors"
                           onClick={() => updateItemQuantity(item.products, 'decrease')}
                         >
                           −
                         </button>
-                        <span>{item.quantity}</span>
+                        <span className="min-w-[32px] h-8 flex items-center justify-center text-sm font-semibold text-gray-900 border-x border-gray-200">
+                          {item.quantity}
+                        </span>
                         <button
-                          className="qty-btn"
+                          className="w-8 h-8 border-none bg-white text-sm font-medium text-gray-600 cursor-pointer flex items-center justify-center hover:bg-gray-50 transition-colors"
                           onClick={() => updateItemQuantity(item.products, 'increase')}
                         >
                           +
                         </button>
                       </div>
-                    </div>
-
-                    {/* Price */}
-                    <div className="cart-item-price">
-                      ${(item.amount * item.quantity).toFixed(2)}
+                      <span className="text-sm font-bold text-gray-900">
+                        ${(item.amount * item.quantity).toFixed(2)}
+                      </span>
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
 
-            {/* ── RIGHT: summary ──────────────────── */}
-            <div className="cart-right">
-              <div className="cart-summary">
-                <h2 className="cart-summary-title">Order summary</h2>
+            <Link
+              to="/"
+              className="inline-flex items-center gap-1.5 text-sm text-gray-400 mt-4 no-underline hover:text-gray-600 transition-colors"
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M19 12H5" />
+                <polyline points="12 19 5 12 12 5" />
+              </svg>
+              Continue shopping
+            </Link>
+          </div>
 
-                <ul className="cart-totals">
-                  <li className="cart-total-row">
-                    <span className="row-label">
-                      Subtotal ({totalItems} items)
-                      <FaQuestion className="info-icon" />
-                    </span>
-                    <span>${Math.round(subtotal)}</span>
-                  </li>
-                  <li className="cart-total-row">
-                    <span>Shipping</span>
-                    <span className="cart-free">Free</span>
-                  </li>
-                  <li className="cart-total-row">
-                    <span className="row-label">
-                      Estimated tax <FaQuestion className="info-icon" />
-                    </span>
-                    <span style={{ color: 'var(--ck-muted)' }}>—</span>
-                  </li>
-                  <li className="cart-total-row cart-total-row--final">
-                    <span>Total</span>
-                    <span>${Math.round(subtotal)}</span>
-                  </li>
-                </ul>
+          {/* Summary */}
+          <div className="w-full lg:w-[320px] shrink-0">
+            <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
+              <h2 className="text-sm font-semibold text-gray-900 m-0 mb-4">Order Summary</h2>
 
-                <Link to="/checkout" className="cart-checkout-btn">
-                  Proceed to checkout
-                </Link>
-
-                <p className="cart-secure-note">🔒 Payments secured by Stripe</p>
+              <div className="flex flex-col gap-2.5 pb-4 border-b border-gray-200">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Subtotal ({totalItems} items)</span>
+                  <span className="text-gray-900 font-medium">${subtotal.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Shipping</span>
+                  <span className="text-green-600 font-medium">Free</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Estimated tax</span>
+                  <span className="text-gray-400">—</span>
+                </div>
               </div>
+
+              <div className="flex justify-between items-center pt-4">
+                <span className="text-sm font-semibold text-gray-900">Total</span>
+                <span className="text-lg font-bold text-gray-900">${subtotal.toFixed(2)}</span>
+              </div>
+
+              <Link
+                to="/checkout"
+                className="flex w-full mt-5 h-11 bg-gray-900 text-white border-none rounded-lg text-sm font-semibold no-underline items-center justify-center cursor-pointer transition-colors hover:bg-gray-800"
+              >
+                Proceed to Checkout
+              </Link>
+
+              <p className="text-[11px] text-gray-400 mt-3 text-center m-0">🔒 Secure checkout</p>
             </div>
           </div>
         </div>
-      </section>
+      </div>
     );
   };
 
   const CartSkeleton = () => (
-    <section className="cart-section">
-      <div className="container">
-        <Skeleton height={14} width={80} style={{ marginBottom: 10 }} />
-        <Skeleton height={52} width={260} style={{ marginBottom: 48 }} />
-        <div className="cart-layout">
-          <div className="cart-left">
-            <Skeleton height={20} width={160} style={{ marginBottom: 24 }} />
+    <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8 py-8 min-h-[calc(100vh-64px)]">
+      <Skeleton height={28} width={200} style={{ marginBottom: 32 }} />
+      <div className="flex flex-col lg:flex-row gap-8">
+        <div className="flex-1">
+          <div className="border border-gray-200 rounded-xl divide-y divide-gray-100">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div
-                key={i}
-                style={{
-                  display: 'flex',
-                  gap: 16,
-                  padding: '20px 0',
-                  borderBottom: '1px solid #e8e8e8',
-                }}
-              >
-                <Skeleton width={72} height={72} borderRadius={12} />
-                <div style={{ flex: 1 }}>
-                  <Skeleton height={14} width="60%" style={{ marginBottom: 6 }} />
-                  <Skeleton height={12} width="80%" style={{ marginBottom: 10 }} />
-                  <Skeleton height={32} width={96} borderRadius={8} />
+              <div key={i} className="flex items-center gap-4 p-5">
+                <Skeleton width={80} height={80} borderRadius={8} />
+                <div className="flex-1">
+                  <Skeleton height={14} width="60%" style={{ marginBottom: 4 }} />
+                  <Skeleton height={12} width="40%" style={{ marginBottom: 12 }} />
+                  <div className="flex items-center justify-between">
+                    <Skeleton width={96} height={32} borderRadius={8} />
+                    <Skeleton width={60} height={16} />
+                  </div>
                 </div>
-                <Skeleton height={20} width={50} />
               </div>
             ))}
           </div>
-          <div className="cart-right">
-            <div className="cart-summary">
-              <Skeleton height={22} width={140} style={{ marginBottom: 24 }} />
-              {[1, 2, 3, 4].map((i) => (
-                <div
-                  key={i}
-                  style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}
-                >
-                  <Skeleton height={14} width={120} />
-                  <Skeleton height={14} width={50} />
-                </div>
-              ))}
-              <Skeleton height={56} borderRadius={12} style={{ marginTop: 24 }} />
-            </div>
+        </div>
+        <div className="w-full lg:w-[320px]">
+          <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
+            <Skeleton height={18} width={120} style={{ marginBottom: 16 }} />
+            {[1, 2, 3].map((i) => (
+              <Skeleton key={i} height={16} style={{ marginBottom: 8 }} />
+            ))}
+            <Skeleton height={44} borderRadius={8} style={{ marginTop: 16 }} />
           </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 
   return (
-    <>
-      <div className="cart-root">
-        {fetchLoading ? <CartSkeleton /> : cart.length ? <ShowCart /> : <EmptyCart />}
-      </div>
-    </>
+    <div className="bg-white min-h-screen">
+      {fetchLoading ? <CartSkeleton /> : cart.length ? <ShowCart /> : <EmptyCart />}
+    </div>
   );
 };
 
