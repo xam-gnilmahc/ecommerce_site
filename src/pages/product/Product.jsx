@@ -249,9 +249,19 @@ const Product = () => {
       <div className="flex-1 flex flex-col gap-4 bg-white p-4 md:p-6 lg:p-8 rounded-xl border border-gray-200">
         <div className="flex justify-between items-center">
           <div className="flex gap-1">
-            <Link to="/" className="no-underline text-gray-500 text-sm font-medium uppercase hover:text-gray-900">Home</Link>
+            <Link
+              to="/"
+              className="no-underline text-gray-500 text-sm font-medium uppercase hover:text-gray-900"
+            >
+              Home
+            </Link>
             <span className="text-gray-500 text-sm font-medium uppercase">/&nbsp;</span>
-            <Link to="/product" className="no-underline text-gray-500 text-sm font-medium uppercase hover:text-gray-900">The Shop</Link>
+            <Link
+              to="/product"
+              className="no-underline text-gray-500 text-sm font-medium uppercase hover:text-gray-900"
+            >
+              The Shop
+            </Link>
           </div>
         </div>
 
@@ -278,7 +288,9 @@ const Product = () => {
         <StockBadge />
 
         <h3 className="my-2 mx-0 text-base font-semibold text-gray-900">Description</h3>
-        <p className="text-base leading-relaxed text-gray-500 m-0 mb-4">{product.description?.substring(0, 200)}</p>
+        <p className="text-base leading-relaxed text-gray-500 m-0 mb-4">
+          {product.description?.substring(0, 200)}
+        </p>
 
         <div className="flex gap-6 flex-wrap items-center">
           <div className="flex items-center gap-2">
@@ -334,9 +346,24 @@ const Product = () => {
 
         <div className="flex gap-4 md:gap-6 items-center flex-wrap mt-1">
           <div className="flex border border-gray-200 rounded-sm overflow-hidden">
-            <button className="bg-white border-none py-2 px-3 cursor-pointer font-semibold text-gray-900 hover:bg-gray-50" onClick={decrement}>-</button>
-            <input className="w-12 text-center border-none border-l border-r border-gray-200 font-semibold text-sm" type="text" value={quantity} onChange={handleInputChange} />
-            <button className="bg-white border-none py-2 px-3 cursor-pointer font-semibold text-gray-900 hover:bg-gray-50" onClick={increment}>+</button>
+            <button
+              className="bg-white border-none py-2 px-3 cursor-pointer font-semibold text-gray-900 hover:bg-gray-50"
+              onClick={decrement}
+            >
+              -
+            </button>
+            <input
+              className="w-12 text-center border-none border-l border-r border-gray-200 font-semibold text-sm"
+              type="text"
+              value={quantity}
+              onChange={handleInputChange}
+            />
+            <button
+              className="bg-white border-none py-2 px-3 cursor-pointer font-semibold text-gray-900 hover:bg-gray-50"
+              onClick={increment}
+            >
+              +
+            </button>
           </div>
         </div>
 
@@ -376,7 +403,10 @@ const Product = () => {
 
         <div className="flex gap-6 mt-4 items-center">
           <div>
-            <button className="bg-transparent border-none flex gap-2 items-center cursor-pointer text-sm uppercase text-gray-500 transition-colors duration-200 hover:text-gray-900" onClick={handleWishClick}>
+            <button
+              className="bg-transparent border-none flex gap-2 items-center cursor-pointer text-sm uppercase text-gray-500 transition-colors duration-200 hover:text-gray-900"
+              onClick={handleWishClick}
+            >
               <FiHeart color={clicked ? 'red' : ''} size={17} />
               <p className="m-0">Add to Wishlist</p>
             </button>
@@ -392,10 +422,12 @@ const Product = () => {
             <span className="font-semibold text-gray-900">SKU: </span>N/A
           </p>
           <p className="my-1 mx-0 text-gray-500 text-sm">
-            <span className="font-semibold text-gray-900">CATEGORIES: </span>Mobile , Tablet , Laptop
+            <span className="font-semibold text-gray-900">CATEGORIES: </span>Mobile , Tablet ,
+            Laptop
           </p>
           <p className="my-1 mx-0 text-gray-500 text-sm">
-            <span className="font-semibold text-gray-900">TAGS: </span>Electronics, Gadgets, Smartphone
+            <span className="font-semibold text-gray-900">TAGS: </span>Electronics, Gadgets,
+            Smartphone
           </p>
         </div>
       </div>
@@ -417,7 +449,10 @@ const Product = () => {
       {orderLoading && (
         <div className="fixed inset-0 backdrop-blur-sm bg-black/50 z-[99999] flex items-center justify-center pointer-events-all">
           <div className="text-center text-white">
-            <div className="w-12 h-12 border-3 border-white/30 border-t-white rounded-full mx-auto mb-6" style={{ animation: 'spin 1s linear infinite' }}></div>
+            <div
+              className="w-12 h-12 border-3 border-white/30 border-t-white rounded-full mx-auto mb-6"
+              style={{ animation: 'spin 1s linear infinite' }}
+            ></div>
             <h3>Processing Payment...</h3>
             <p>Please do not refresh or click anything</p>
           </div>

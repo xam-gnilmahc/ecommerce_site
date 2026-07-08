@@ -199,12 +199,15 @@ const OrdersPage = () => {
               <h1 className="text-xl sm:text-2xl font-bold text-gray-900 m-0">My Orders</h1>
               {!loading && (
                 <p className="text-sm text-gray-400 mt-1 m-0">
-                  {displayOrders.length} {showCancelled ? 'cancelled ' : ''}order{displayOrders.length !== 1 ? 's' : ''}
+                  {displayOrders.length} {showCancelled ? 'cancelled ' : ''}order
+                  {displayOrders.length !== 1 ? 's' : ''}
                 </p>
               )}
             </div>
             <div className="relative flex items-center bg-white rounded-full p-0.5 border border-gray-200 overflow-hidden">
-              <div className={`absolute top-0.5 bottom-0.5 w-1/2 bg-gray-900 rounded-full transition-transform duration-200 ease-out ${showCancelled ? 'translate-x-full' : ''}`} />
+              <div
+                className={`absolute top-0.5 bottom-0.5 w-1/2 bg-gray-900 rounded-full transition-transform duration-200 ease-out ${showCancelled ? 'translate-x-full' : ''}`}
+              />
               <button
                 className={`relative px-4 py-1.5 text-xs font-semibold rounded-full cursor-pointer border-none bg-transparent transition-colors duration-200 z-10 ${!showCancelled ? 'text-white' : 'text-gray-400 hover:text-gray-600'}`}
                 onClick={() => setShowCancelled(false)}
@@ -250,31 +253,47 @@ const OrdersPage = () => {
                 <FaBoxOpen className="text-gray-300 text-xl" />
               </div>
               <h3 className="text-base font-semibold text-gray-900 m-0">No orders yet</h3>
-              <p className="text-sm text-gray-400 mt-1">{showCancelled ? 'No cancelled orders' : 'Your orders will appear here'}</p>
+              <p className="text-sm text-gray-400 mt-1">
+                {showCancelled ? 'No cancelled orders' : 'Your orders will appear here'}
+              </p>
             </div>
           ) : (
             <div className="flex flex-col gap-4">
               {displayOrders.map((ord) => (
-                <div key={ord.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                <div
+                  key={ord.id}
+                  className="bg-white rounded-lg border border-gray-200 overflow-hidden"
+                >
                   {/* Order Header */}
                   <div className="flex items-start justify-between px-4 py-2.5 bg-white border-b border-gray-200 gap-3 max-sm:flex-col max-sm:items-start">
                     <div className="flex items-center gap-3 text-[11px] flex-wrap">
                       <span className="text-gray-400">
-                        ORDER PLACED<br />
-                        <span className="text-gray-700 font-medium whitespace-nowrap">{formatDate(ord.created_at)}</span>
+                        ORDER PLACED
+                        <br />
+                        <span className="text-gray-700 font-medium whitespace-nowrap">
+                          {formatDate(ord.created_at)}
+                        </span>
                       </span>
                       <span className="text-gray-400">
-                        TOTAL<br />
-                        <span className="text-gray-700 font-medium">${Number(ord.total_amount).toLocaleString()}</span>
+                        TOTAL
+                        <br />
+                        <span className="text-gray-700 font-medium">
+                          ${Number(ord.total_amount).toLocaleString()}
+                        </span>
                       </span>
                       <span className="text-gray-400">
-                        SHIP TO<br />
-                        <span className="text-gray-700 font-medium truncate max-w-[100px] sm:max-w-[150px]">{user?.name || 'You'}</span>
+                        SHIP TO
+                        <br />
+                        <span className="text-gray-700 font-medium truncate max-w-[100px] sm:max-w-[150px]">
+                          {user?.name || 'You'}
+                        </span>
                       </span>
                     </div>
                     <div className="text-right shrink-0">
                       <div className="text-[11px] text-gray-400">ORDER # {ord.id}</div>
-                      <div className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-0.5 rounded-full mt-0.5 ${getStatusClasses(ord.status)}`}>
+                      <div
+                        className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-0.5 rounded-full mt-0.5 ${getStatusClasses(ord.status)}`}
+                      >
                         {getStatusIcon(ord.status)}
                         <span>{ord.status}</span>
                       </div>
@@ -295,20 +314,35 @@ const OrdersPage = () => {
                           alt=""
                         />
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-800 truncate">{item.products.name}</p>
+                          <p className="text-sm font-medium text-gray-800 truncate">
+                            {item.products.name}
+                          </p>
                           <p className="text-xs text-gray-400 mt-0.5">Qty: {item.quantity}</p>
                         </div>
                         <div className="text-sm font-semibold text-gray-900 shrink-0">
                           ${(item.price_each * item.quantity).toFixed(2)}
                         </div>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+                        <svg
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="#d1d5db"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="shrink-0"
+                        >
                           <polyline points="9 18 15 12 9 6" />
                         </svg>
                       </div>
                     ))}
                     {ord.order_items?.length > 3 && (
                       <div className="text-center pt-2">
-                        <span className="text-xs font-medium text-gray-400">+{ord.order_items.length - 3} more item{ord.order_items.length - 3 > 1 ? 's' : ''}</span>
+                        <span className="text-xs font-medium text-gray-400">
+                          +{ord.order_items.length - 3} more item
+                          {ord.order_items.length - 3 > 1 ? 's' : ''}
+                        </span>
                       </div>
                     )}
                   </div>
@@ -317,7 +351,9 @@ const OrdersPage = () => {
                   <div className="flex items-center justify-between px-4 py-2.5 bg-white border-t border-gray-200">
                     <div className="flex items-center gap-1.5 text-xs text-gray-400">
                       <span>Delivery:</span>
-                      <span className="font-medium text-gray-700">{formatDate(ord.delivery_date || ord.estimated_date)}</span>
+                      <span className="font-medium text-gray-700">
+                        {formatDate(ord.delivery_date || ord.estimated_date)}
+                      </span>
                     </div>
                     <button
                       className="text-xs font-semibold text-gray-900 bg-white border border-gray-300 rounded-md px-4 py-1.5 cursor-pointer hover:bg-gray-50 transition-colors"
@@ -336,13 +372,21 @@ const OrdersPage = () => {
         {panelOpen && (
           <div className="fixed inset-0 z-50 flex justify-end">
             <div className="absolute inset-0 bg-black/20" onClick={handleClose} />
-            <div className={`relative w-full max-w-[580px] bg-white shadow-2xl h-full overflow-y-auto pt-16 transform transition-transform duration-300 ease-out ${panelOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+            <div
+              className={`relative w-full max-w-[580px] bg-white shadow-2xl h-full overflow-y-auto pt-16 transform transition-transform duration-300 ease-out ${panelOpen ? 'translate-x-0' : 'translate-x-full'}`}
+            >
               <div className="sticky top-0 z-10 flex items-center justify-between px-5 py-3 bg-white border-b border-gray-100">
-                <button className="flex items-center gap-2 text-sm font-medium text-gray-600 bg-transparent border-none cursor-pointer hover:text-gray-900" onClick={handleClose}>
+                <button
+                  className="flex items-center gap-2 text-sm font-medium text-gray-600 bg-transparent border-none cursor-pointer hover:text-gray-900"
+                  onClick={handleClose}
+                >
                   <FaArrowLeft className="text-xs" />
                   Back
                 </button>
-                <button className="text-sm font-medium text-gray-900 bg-transparent border-none cursor-pointer" onClick={() => window.print()}>
+                <button
+                  className="text-sm font-medium text-gray-900 bg-transparent border-none cursor-pointer"
+                  onClick={() => window.print()}
+                >
                   Print
                 </button>
               </div>
@@ -369,7 +413,12 @@ const OrdersPage = () => {
                       <Skeleton width={40} height={40} borderRadius={8} />
                       <div className="flex-1">
                         <Skeleton width="80%" height={12} borderRadius={4} />
-                        <Skeleton width="40%" height={10} borderRadius={4} style={{ marginTop: 3 }} />
+                        <Skeleton
+                          width="40%"
+                          height={10}
+                          borderRadius={4}
+                          style={{ marginTop: 3 }}
+                        />
                       </div>
                       <Skeleton width={50} height={14} borderRadius={4} />
                     </div>
@@ -379,31 +428,50 @@ const OrdersPage = () => {
                 <div className="p-5">
                   {/* Order Header */}
                   <div className="mb-5">
-                    <div className="text-xs font-mono font-medium text-gray-400 mb-1">#{order?.tracking_number}</div>
+                    <div className="text-xs font-mono font-medium text-gray-400 mb-1">
+                      #{order?.tracking_number}
+                    </div>
                     <div className="flex items-center gap-2">
-                      <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${getPillClasses(statusKey)}`}>{order?.status}</span>
-                      <span className="text-xs text-gray-400">{STATUS_DESC[order?.status] ?? ''}</span>
+                      <span
+                        className={`text-xs font-semibold px-2.5 py-1 rounded-full ${getPillClasses(statusKey)}`}
+                      >
+                        {order?.status}
+                      </span>
+                      <span className="text-xs text-gray-400">
+                        {STATUS_DESC[order?.status] ?? ''}
+                      </span>
                     </div>
                   </div>
 
                   {/* Tracking */}
                   <div className="mb-5">
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 m-0">Tracking</p>
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 m-0">
+                      Tracking
+                    </p>
                     <div className="relative flex justify-between items-start pb-1">
                       <div className="absolute top-[11px] left-[10%] h-[2px] bg-gray-100 w-[80%] rounded-sm" />
-                      <div className="absolute top-[11px] left-[10%] h-[2px] bg-gray-900 rounded-sm transition-all duration-400" style={{ width: `${progressPct}%` }} />
+                      <div
+                        className="absolute top-[11px] left-[10%] h-[2px] bg-gray-900 rounded-sm transition-all duration-400"
+                        style={{ width: `${progressPct}%` }}
+                      />
                       {TRACK_STEPS.map((step, i) => {
                         const done = STATUS_DONE_MAP[step]?.(order?.status);
                         return (
                           <div key={i} className="flex flex-col items-center gap-1 z-[1] flex-1">
-                            <div className={`w-[22px] h-[22px] rounded-full border-2 flex items-center justify-center text-[8px] font-bold transition-colors ${
-                              done
-                                ? 'bg-gray-900 border-gray-900 text-white'
-                                : 'bg-white border-gray-200 text-gray-300'
-                            }`}>
+                            <div
+                              className={`w-[22px] h-[22px] rounded-full border-2 flex items-center justify-center text-[8px] font-bold transition-colors ${
+                                done
+                                  ? 'bg-gray-900 border-gray-900 text-white'
+                                  : 'bg-white border-gray-200 text-gray-300'
+                              }`}
+                            >
                               {done ? '✓' : i + 1}
                             </div>
-                            <div className={`text-[8px] font-semibold text-center max-w-[48px] leading-tight ${done ? 'text-gray-900' : 'text-gray-400'}`}>{step}</div>
+                            <div
+                              className={`text-[8px] font-semibold text-center max-w-[48px] leading-tight ${done ? 'text-gray-900' : 'text-gray-400'}`}
+                            >
+                              {step}
+                            </div>
                           </div>
                         );
                       })}
@@ -414,7 +482,9 @@ const OrdersPage = () => {
 
                   {/* Shipping */}
                   <div className="mb-5">
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 m-0">Shipping Address</p>
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 m-0">
+                      Shipping Address
+                    </p>
                     <div className="flex items-center gap-2 text-sm text-gray-700 mb-1">
                       <FaUser className="text-gray-300 text-xs shrink-0" />
                       <span>{user?.name}</span>
@@ -434,10 +504,14 @@ const OrdersPage = () => {
 
                   {/* Payment */}
                   <div className="mb-5">
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 m-0">Payment</p>
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 m-0">
+                      Payment
+                    </p>
                     {order?.orderpayments_logs?.map((l, i) => (
                       <div className="flex items-center gap-2 text-sm mb-1" key={i}>
-                        <span className="text-base text-gray-700">{getPaymentIcon(l.payment_method)}</span>
+                        <span className="text-base text-gray-700">
+                          {getPaymentIcon(l.payment_method)}
+                        </span>
                         <span className="font-semibold text-gray-900">${l.amount}</span>
                         <span className="text-xs text-gray-400">{l.status}</span>
                       </div>
@@ -448,9 +522,14 @@ const OrdersPage = () => {
 
                   {/* Items */}
                   <div className="mb-5">
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 m-0">Items</p>
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 m-0">
+                      Items
+                    </p>
                     {order?.order_items?.map((item, i) => (
-                      <div className="flex items-center gap-3 py-2 border-b border-gray-100 last:border-b-0" key={i}>
+                      <div
+                        className="flex items-center gap-3 py-2 border-b border-gray-100 last:border-b-0"
+                        key={i}
+                      >
                         <div className="w-[44px] h-[44px] overflow-hidden shrink-0">
                           <img
                             className="w-full h-full object-contain"
@@ -459,7 +538,9 @@ const OrdersPage = () => {
                           />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 m-0 truncate">{item.products?.name}</p>
+                          <p className="text-sm font-medium text-gray-900 m-0 truncate">
+                            {item.products?.name}
+                          </p>
                           <p className="text-xs text-gray-400 m-0">Qty: {item.quantity}</p>
                         </div>
                         <div className="text-sm font-bold text-gray-900 shrink-0">
@@ -472,7 +553,9 @@ const OrdersPage = () => {
                   {/* Total */}
                   <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                     <span className="text-xs text-gray-400">Total Paid</span>
-                    <span className="text-lg font-extrabold text-gray-900">${total.toFixed(2)}</span>
+                    <span className="text-lg font-extrabold text-gray-900">
+                      ${total.toFixed(2)}
+                    </span>
                   </div>
                 </div>
               ) : null}

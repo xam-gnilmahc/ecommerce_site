@@ -54,7 +54,10 @@ const Register = () => {
             </p>
           </div>
           <div className="flex flex-col justify-center items-center">
-            <form onSubmit={handleSubmit} className="flex flex-col gap-[24px] w-[480px] max-[450px]:w-[340px] max-[320px]:w-[280px]">
+            <form
+              onSubmit={handleSubmit}
+              className="flex flex-col gap-[24px] w-[480px] max-[450px]:w-[340px] max-[320px]:w-[280px]"
+            >
               <input
                 type="text"
                 className="p-4 border border-gray-200 rounded-lg outline-none text-[15px] transition-colors focus:border-gray-900 w-full"

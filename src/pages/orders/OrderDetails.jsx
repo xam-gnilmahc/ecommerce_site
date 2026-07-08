@@ -133,7 +133,9 @@ const OrderDetailsPage = () => {
                 <span className="text-sm font-bold text-white/50 tracking-wide uppercase">
                   Order <span className="text-white">#{order?.id}</span>
                 </span>
-                <span className="text-xs text-white/35 tracking-wide">{order?.tracking_number}</span>
+                <span className="text-xs text-white/35 tracking-wide">
+                  {order?.tracking_number}
+                </span>
                 <button
                   className="od-invoice-btn mt-2 px-4 py-2.5 rounded-full border border-white/20 bg-transparent text-white/75 text-xs font-bold tracking-[1.5px] uppercase cursor-pointer transition-all duration-200 hover:bg-white/10 hover:text-white hover:border-white/40"
                   onClick={() => window.print()}
@@ -150,9 +152,7 @@ const OrderDetailsPage = () => {
               >
                 {order?.status}
               </span>
-              <span className="text-sm text-[#6b7280]">
-                {STATUS_DESC[order?.status] ?? ''}
-              </span>
+              <span className="text-sm text-[#6b7280]">{STATUS_DESC[order?.status] ?? ''}</span>
             </div>
 
             {/* TRACKING */}
@@ -183,9 +183,7 @@ const OrderDetailsPage = () => {
                       </div>
                       <div
                         className={`text-xs leading-[1.3] text-center ${
-                          done
-                            ? 'text-[#111827] font-bold'
-                            : 'text-[#9ca3af] font-medium'
+                          done ? 'text-[#111827] font-bold' : 'text-[#9ca3af] font-medium'
                         }`}
                       >
                         {step}
@@ -230,7 +228,9 @@ const OrderDetailsPage = () => {
                     key={i}
                     className="flex items-center gap-2.5 py-[9px] border-b border-dashed border-[#e5e7eb] text-sm text-[#374151] last:border-b-0 [&:last-child]:border-b-0"
                   >
-                    <span className="text-lg text-[#6b7280]">{getPaymentIcon(l.payment_method)}</span>
+                    <span className="text-lg text-[#6b7280]">
+                      {getPaymentIcon(l.payment_method)}
+                    </span>
                     <span className="font-bold text-[#111827]">${l.amount}</span>
                     <span className="ml-auto text-xs font-bold tracking-wider uppercase text-[#059669]">
                       {l.status}

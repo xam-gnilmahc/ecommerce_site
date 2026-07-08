@@ -41,7 +41,16 @@ const Cart = () => {
   const EmptyCart = () => (
     <div className="flex flex-col items-center justify-center gap-4 min-h-[calc(100vh-64px)] text-center px-8">
       <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg
+          width="28"
+          height="28"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#d1d5db"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
           <circle cx="9" cy="21" r="1" />
           <circle cx="20" cy="21" r="1" />
           <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
@@ -71,7 +80,9 @@ const Cart = () => {
       <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8 py-8 min-h-[calc(100vh-64px)]">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-xl sm:text-2xl font-bold text-gray-900 m-0">Shopping Cart</h1>
-          <span className="text-sm text-gray-400">{totalItems} item{totalItems !== 1 ? 's' : ''}</span>
+          <span className="text-sm text-gray-400">
+            {totalItems} item{totalItems !== 1 ? 's' : ''}
+          </span>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
@@ -91,7 +102,9 @@ const Cart = () => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
-                        <p className="text-sm font-medium text-gray-900 m-0 truncate">{item.products.name}</p>
+                        <p className="text-sm font-medium text-gray-900 m-0 truncate">
+                          {item.products.name}
+                        </p>
                         <p className="text-xs text-gray-400 m-0 mt-0.5 truncate">
                           {item.products.description?.length > 60
                             ? item.products.description.slice(0, 60) + '...'
@@ -124,7 +137,9 @@ const Cart = () => {
                           +
                         </button>
                       </div>
-                      <span className="text-sm font-bold text-gray-900">${(item.amount * item.quantity).toFixed(2)}</span>
+                      <span className="text-sm font-bold text-gray-900">
+                        ${(item.amount * item.quantity).toFixed(2)}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -135,7 +150,16 @@ const Cart = () => {
               to="/"
               className="inline-flex items-center gap-1.5 text-sm text-gray-400 mt-4 no-underline hover:text-gray-600 transition-colors"
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <path d="M19 12H5" />
                 <polyline points="12 19 5 12 12 5" />
               </svg>

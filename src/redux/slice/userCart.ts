@@ -71,7 +71,10 @@ export const fetchTotalCart = createAsyncThunk(
 
 export const addToCart = createAsyncThunk(
   'cart/addToCart',
-  async ({ userId, product, quantity }: { userId: any; product: any; quantity?: number }, { rejectWithValue, dispatch }) => {
+  async (
+    { userId, product, quantity }: { userId: any; product: any; quantity?: number },
+    { rejectWithValue, dispatch }
+  ) => {
     try {
       const { data: existingItem, error: selectError } = await supabase
         .from('cart')

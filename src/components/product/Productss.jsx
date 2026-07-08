@@ -214,7 +214,10 @@ const Products = () => {
           </div>
         ) : (
           currentPosts.map((product) => (
-            <div key={product.id} className="group flex flex-col cursor-pointer transition-all duration-200 hover:-translate-y-0.5">
+            <div
+              key={product.id}
+              className="group flex flex-col cursor-pointer transition-all duration-200 hover:-translate-y-0.5"
+            >
               <div className="relative w-full h-[260px] flex items-center justify-center overflow-hidden max-md:h-[220px]">
                 <Link
                   to={`/product/${product.id}`}
@@ -239,7 +242,9 @@ const Products = () => {
 
               <div className="p-2.5 flex flex-col gap-1 transition-all duration-200">
                 <div className="flex justify-between items-center">
-                  <p className="text-[10px] uppercase text-gray-400 m-0 tracking-wide">{product.category}</p>
+                  <p className="text-[10px] uppercase text-gray-400 m-0 tracking-wide">
+                    {product.category}
+                  </p>
                   <FiHeart
                     onClick={() => handleWishlistToggle(product.id)}
                     style={{
@@ -249,7 +254,9 @@ const Products = () => {
                   />
                 </div>
 
-                <div className="text-[13px] font-medium text-gray-900 leading-snug line-clamp-2 group-hover:text-gray-600 transition-colors duration-200">{product.name}</div>
+                <div className="text-[13px] font-medium text-gray-900 leading-snug line-clamp-2 group-hover:text-gray-600 transition-colors duration-200">
+                  {product.name}
+                </div>
                 <p className="text-[13px] font-semibold text-gray-900">${product.amount}</p>
 
                 <div className="flex items-center gap-1">

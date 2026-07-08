@@ -234,9 +234,7 @@ const RaffleCard = ({ raffle, onEnter, hasEntered, ticketNumber, userId }) => {
         {isWinner ? (
           <div className="mt-auto mb-0 bg-gradient-to-br from-[rgba(255,215,0,0.12)] to-[rgba(255,180,0,0.08)] border-[1.5px] border-[rgba(255,180,0,0.4)] text-[#b45309] font-bold flex justify-between items-center bg-gray-50 border-[1.5px] border-dashed border-[rgba(255,180,0,0.4)] rounded-lg px-3 py-[7px] mb-[10px] text-[13px]">
             <span>🏆 You Won!</span>
-            <span className="text-xs font-extrabold text-[#92400e] tracking-[0.06em]">
-              Winner
-            </span>
+            <span className="text-xs font-extrabold text-[#92400e] tracking-[0.06em]">Winner</span>
           </div>
         ) : hasWinner ? (
           <button
@@ -374,9 +372,7 @@ const RafflePage = () => {
       }
 
       setRaffles((prev) =>
-        prev.map((r) =>
-          r.id === raffleId ? { ...r, total_entries: newTotal } : r
-        )
+        prev.map((r) => (r.id === raffleId ? { ...r, total_entries: newTotal } : r))
       );
 
       setEnteredMap((prev) => ({
@@ -394,9 +390,7 @@ const RafflePage = () => {
   const hasEntered = (id) => !!enteredMap[id];
   const getTicketNum = (id) => enteredMap[id];
 
-  const filtered = raffles.filter((r) =>
-    filter === 'all' ? true : getRaffleStatus(r) === filter
-  );
+  const filtered = raffles.filter((r) => (filter === 'all' ? true : getRaffleStatus(r) === filter));
 
   const counts = {
     all: raffles.length,
@@ -437,18 +431,14 @@ const RafflePage = () => {
             <button
               key={f}
               className={`flex items-center gap-[7px] px-5 py-[9px] border-[1.5px] border-gray-200 rounded-full bg-white text-[13px] font-bold uppercase tracking-[0.06em] text-gray-500 cursor-pointer transition-[border-color,color,background] duration-150 hover:border-gray-900 hover:text-gray-900 ${
-                filter === f
-                  ? 'bg-gray-900 border-gray-900 text-white'
-                  : ''
+                filter === f ? 'bg-gray-900 border-gray-900 text-white' : ''
               } max-sm:px-[14px] max-sm:py-[7px] max-sm:text-[13px]`}
               onClick={() => setFilter(f)}
             >
               {f.charAt(0).toUpperCase() + f.slice(1)}
               <span
                 className={`text-[11px] font-bold rounded-full px-2 py-[2px] tracking-0 ${
-                  filter === f
-                    ? 'bg-[rgba(255,255,255,0.18)]'
-                    : 'bg-gray-50 text-gray-500'
+                  filter === f ? 'bg-[rgba(255,255,255,0.18)]' : 'bg-gray-50 text-gray-500'
                 }`}
               >
                 {counts[f]}
@@ -484,9 +474,7 @@ const RafflePage = () => {
         {!loading && !error && filtered.length === 0 && (
           <div className="flex flex-col items-center gap-[14px] py-[100px_20px] text-center text-gray-500">
             <span className="text-[52px]">🎟️</span>
-            <p className="text-xl font-extrabold uppercase text-gray-900 m-0">
-              No raffles found
-            </p>
+            <p className="text-xl font-extrabold uppercase text-gray-900 m-0">No raffles found</p>
           </div>
         )}
 

@@ -202,12 +202,16 @@ const Checkout = () => {
                   {paymentMethod === 'card' && (
                     <div className="border border-gray-200 rounded-xl p-5">
                       <h2 className="text-sm font-semibold text-gray-900 m-0 mb-4 flex items-center gap-2">
-                        <span className="text-[10px] font-semibold text-gray-400 bg-gray-100 rounded px-1.5 py-0.5">1</span>
+                        <span className="text-[10px] font-semibold text-gray-400 bg-gray-100 rounded px-1.5 py-0.5">
+                          1
+                        </span>
                         Delivery Information
                       </h2>
                       <div className="grid grid-cols-2 gap-3">
                         <div className="col-span-2 sm:col-span-1">
-                          <label className="text-xs font-medium text-gray-700 mb-1 block">Email</label>
+                          <label className="text-xs font-medium text-gray-700 mb-1 block">
+                            Email
+                          </label>
                           <input
                             className="w-full h-10 border border-gray-200 rounded-lg px-3 text-sm outline-none transition-colors focus:border-gray-400 bg-white"
                             type="email"
@@ -217,7 +221,9 @@ const Checkout = () => {
                           />
                         </div>
                         <div className="col-span-2 sm:col-span-1">
-                          <label className="text-xs font-medium text-gray-700 mb-1 block">Full name</label>
+                          <label className="text-xs font-medium text-gray-700 mb-1 block">
+                            Full name
+                          </label>
                           <input
                             className="w-full h-10 border border-gray-200 rounded-lg px-3 text-sm outline-none transition-colors focus:border-gray-400 bg-white"
                             type="text"
@@ -227,7 +233,9 @@ const Checkout = () => {
                           />
                         </div>
                         <div className="col-span-2">
-                          <label className="text-xs font-medium text-gray-700 mb-1 block">Address line 1</label>
+                          <label className="text-xs font-medium text-gray-700 mb-1 block">
+                            Address line 1
+                          </label>
                           <input
                             className="w-full h-10 border border-gray-200 rounded-lg px-3 text-sm outline-none transition-colors focus:border-gray-400 bg-white"
                             type="text"
@@ -237,7 +245,10 @@ const Checkout = () => {
                           />
                         </div>
                         <div className="col-span-2">
-                          <label className="text-xs font-medium text-gray-700 mb-1 block">Address line 2 <span className="text-gray-300 font-normal">(optional)</span></label>
+                          <label className="text-xs font-medium text-gray-700 mb-1 block">
+                            Address line 2{' '}
+                            <span className="text-gray-300 font-normal">(optional)</span>
+                          </label>
                           <input
                             className="w-full h-10 border border-gray-200 rounded-lg px-3 text-sm outline-none transition-colors focus:border-gray-400 bg-white"
                             type="text"
@@ -246,7 +257,9 @@ const Checkout = () => {
                           />
                         </div>
                         <div>
-                          <label className="text-xs font-medium text-gray-700 mb-1 block">Zip code</label>
+                          <label className="text-xs font-medium text-gray-700 mb-1 block">
+                            Zip code
+                          </label>
                           <input
                             className="w-full h-10 border border-gray-200 rounded-lg px-3 text-sm outline-none transition-colors focus:border-gray-400 bg-white"
                             type="text"
@@ -256,7 +269,9 @@ const Checkout = () => {
                           />
                         </div>
                         <div>
-                          <label className="text-xs font-medium text-gray-700 mb-1 block">Country</label>
+                          <label className="text-xs font-medium text-gray-700 mb-1 block">
+                            Country
+                          </label>
                           <select
                             className="w-full h-10 border border-gray-200 rounded-lg px-3 text-sm outline-none transition-colors focus:border-gray-400 bg-white"
                             value={selectedCountry}
@@ -265,12 +280,16 @@ const Checkout = () => {
                           >
                             <option value="">Select country</option>
                             {Country.getAllCountries().map((c) => (
-                              <option key={c.isoCode} value={c.isoCode}>{c.name}</option>
+                              <option key={c.isoCode} value={c.isoCode}>
+                                {c.name}
+                              </option>
                             ))}
                           </select>
                         </div>
                         <div>
-                          <label className="text-xs font-medium text-gray-700 mb-1 block">State</label>
+                          <label className="text-xs font-medium text-gray-700 mb-1 block">
+                            State
+                          </label>
                           <select
                             className="w-full h-10 border border-gray-200 rounded-lg px-3 text-sm outline-none transition-colors focus:border-gray-400 bg-white"
                             value={selectedState}
@@ -279,7 +298,9 @@ const Checkout = () => {
                           >
                             <option value="">Select state</option>
                             {states.map((s) => (
-                              <option key={s.isoCode} value={s.isoCode}>{s.name}</option>
+                              <option key={s.isoCode} value={s.isoCode}>
+                                {s.name}
+                              </option>
                             ))}
                           </select>
                         </div>
@@ -290,11 +311,22 @@ const Checkout = () => {
                   {/* Shipping */}
                   {paymentMethod === 'card' && (
                     <div className="border border-gray-200 rounded-xl p-5">
-                      <h2 className="text-sm font-semibold text-gray-900 m-0 mb-3">Shipping Method</h2>
+                      <h2 className="text-sm font-semibold text-gray-900 m-0 mb-3">
+                        Shipping Method
+                      </h2>
                       <div className="flex flex-col gap-2">
-                        <label className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors ${shippingMethod === 'free' ? 'border-gray-900 bg-gray-50' : 'border-gray-200 hover:border-gray-300'}`}>
+                        <label
+                          className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors ${shippingMethod === 'free' ? 'border-gray-900 bg-gray-50' : 'border-gray-200 hover:border-gray-300'}`}
+                        >
                           <div className="flex items-center gap-3">
-                            <input type="radio" name="shipping" value="free" checked={shippingMethod === 'free'} onChange={() => setShippingMethod('free')} className="accent-gray-900" />
+                            <input
+                              type="radio"
+                              name="shipping"
+                              value="free"
+                              checked={shippingMethod === 'free'}
+                              onChange={() => setShippingMethod('free')}
+                              className="accent-gray-900"
+                            />
                             <div>
                               <div className="text-sm font-medium text-gray-900">Free shipping</div>
                               <div className="text-xs text-gray-400">7-20 business days</div>
@@ -302,11 +334,22 @@ const Checkout = () => {
                           </div>
                           <span className="text-sm font-semibold text-gray-900">$0</span>
                         </label>
-                        <label className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors ${shippingMethod === 'express' ? 'border-gray-900 bg-gray-50' : 'border-gray-200 hover:border-gray-300'}`}>
+                        <label
+                          className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors ${shippingMethod === 'express' ? 'border-gray-900 bg-gray-50' : 'border-gray-200 hover:border-gray-300'}`}
+                        >
                           <div className="flex items-center gap-3">
-                            <input type="radio" name="shipping" value="express" checked={shippingMethod === 'express'} onChange={() => setShippingMethod('express')} className="accent-gray-900" />
+                            <input
+                              type="radio"
+                              name="shipping"
+                              value="express"
+                              checked={shippingMethod === 'express'}
+                              onChange={() => setShippingMethod('express')}
+                              className="accent-gray-900"
+                            />
                             <div>
-                              <div className="text-sm font-medium text-gray-900">Express shipping</div>
+                              <div className="text-sm font-medium text-gray-900">
+                                Express shipping
+                              </div>
                               <div className="text-xs text-gray-400">1-3 business days</div>
                             </div>
                           </div>
@@ -319,7 +362,9 @@ const Checkout = () => {
                   {/* Payment */}
                   <div className="border border-gray-200 rounded-xl p-5">
                     <h2 className="text-sm font-semibold text-gray-900 m-0 mb-3 flex items-center gap-2">
-                      <span className="text-[10px] font-semibold text-gray-400 bg-gray-100 rounded px-1.5 py-0.5">{paymentMethod === 'card' ? '3' : '2'}</span>
+                      <span className="text-[10px] font-semibold text-gray-400 bg-gray-100 rounded px-1.5 py-0.5">
+                        {paymentMethod === 'card' ? '3' : '2'}
+                      </span>
                       Payment Method
                     </h2>
                     <div className="grid grid-cols-2 gap-2 mb-4">
@@ -328,7 +373,16 @@ const Checkout = () => {
                         className={`flex items-center gap-3 p-3 border rounded-lg bg-white cursor-pointer text-left transition-colors ${paymentMethod === 'card' ? 'border-gray-900 bg-gray-50' : 'border-gray-200 hover:border-gray-300'}`}
                         onClick={() => setPaymentMethod('card')}
                       >
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <svg
+                          width="22"
+                          height="22"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="#6b7280"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
                           <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
                           <line x1="1" y1="10" x2="23" y2="10" />
                         </svg>
@@ -336,21 +390,38 @@ const Checkout = () => {
                           <div className="text-sm font-medium text-gray-900">Card</div>
                           <div className="text-xs text-gray-400">Visa / Mastercard</div>
                         </div>
-                        {paymentMethod === 'card' && <span className="ml-auto w-5 h-5 rounded-full bg-gray-900 text-white text-[10px] font-bold flex items-center justify-center">✓</span>}
+                        {paymentMethod === 'card' && (
+                          <span className="ml-auto w-5 h-5 rounded-full bg-gray-900 text-white text-[10px] font-bold flex items-center justify-center">
+                            ✓
+                          </span>
+                        )}
                       </button>
                       <button
                         type="button"
                         className={`flex items-center gap-3 p-3 border rounded-lg bg-white cursor-pointer text-left transition-colors ${paymentMethod === 'googlePay' ? 'border-gray-900 bg-gray-50' : 'border-gray-200 hover:border-gray-300'}`}
                         onClick={() => setPaymentMethod('googlePay')}
                       >
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <svg
+                          width="22"
+                          height="22"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="#6b7280"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
                           <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
                         </svg>
                         <div>
                           <div className="text-sm font-medium text-gray-900">Google Pay</div>
                           <div className="text-xs text-gray-400">Fast & secure</div>
                         </div>
-                        {paymentMethod === 'googlePay' && <span className="ml-auto w-5 h-5 rounded-full bg-gray-900 text-white text-[10px] font-bold flex items-center justify-center">✓</span>}
+                        {paymentMethod === 'googlePay' && (
+                          <span className="ml-auto w-5 h-5 rounded-full bg-gray-900 text-white text-[10px] font-bold flex items-center justify-center">
+                            ✓
+                          </span>
+                        )}
                       </button>
                     </div>
 
@@ -360,7 +431,10 @@ const Checkout = () => {
                           <CardElement options={CARD_STYLE} />
                         </div>
                         <p className="text-[11px] text-gray-400 mt-2 m-0">
-                          Test: <code className="bg-gray-100 border border-gray-200 rounded px-1 py-px text-[11px]">4242 4242 4242 4242</code>
+                          Test:{' '}
+                          <code className="bg-gray-100 border border-gray-200 rounded px-1 py-px text-[11px]">
+                            4242 4242 4242 4242
+                          </code>
                         </p>
                       </div>
                     )}
@@ -377,7 +451,9 @@ const Checkout = () => {
                             onPaymentDataChanged={(d) => getUpdatedPaymentData(paymentRequest, d)}
                           />
                         ) : (
-                          <p className="text-sm text-gray-400 m-0">{user ? 'Preparing...' : 'Please log in to use Google Pay.'}</p>
+                          <p className="text-sm text-gray-400 m-0">
+                            {user ? 'Preparing...' : 'Please log in to use Google Pay.'}
+                          </p>
                         )}
                       </div>
                     )}
@@ -402,7 +478,10 @@ const Checkout = () => {
 
                   <div className="flex flex-col gap-3 mb-4 max-h-[300px] overflow-y-auto">
                     {cart.map((item, i) => (
-                      <div key={i} className="flex items-center gap-3 pb-3 border-b border-gray-200 last:border-b-0 last:pb-0">
+                      <div
+                        key={i}
+                        className="flex items-center gap-3 pb-3 border-b border-gray-200 last:border-b-0 last:pb-0"
+                      >
                         <div className="w-11 h-11 bg-white rounded-lg border border-gray-200 flex items-center justify-center shrink-0">
                           <img
                             className="w-9 h-9 object-contain"
@@ -411,10 +490,14 @@ const Checkout = () => {
                           />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 m-0 truncate">{item.products.name}</p>
+                          <p className="text-sm font-medium text-gray-900 m-0 truncate">
+                            {item.products.name}
+                          </p>
                           <p className="text-xs text-gray-400 m-0">Qty: {item.quantity}</p>
                         </div>
-                        <span className="text-sm font-semibold text-gray-900 shrink-0">${(item.amount * item.quantity).toFixed(2)}</span>
+                        <span className="text-sm font-semibold text-gray-900 shrink-0">
+                          ${(item.amount * item.quantity).toFixed(2)}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -426,7 +509,11 @@ const Checkout = () => {
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-500">Shipping</span>
-                      <span className={shipping === 0 ? 'text-green-600 font-medium' : 'text-gray-900'}>{shipping === 0 ? 'Free' : `$${shipping}`}</span>
+                      <span
+                        className={shipping === 0 ? 'text-green-600 font-medium' : 'text-gray-900'}
+                      >
+                        {shipping === 0 ? 'Free' : `$${shipping}`}
+                      </span>
                     </div>
                     <div className="flex justify-between text-base font-bold text-gray-900 pt-3 border-t border-gray-200 mt-1">
                       <span>Total</span>
@@ -434,7 +521,9 @@ const Checkout = () => {
                     </div>
                   </div>
 
-                  <p className="text-[11px] text-gray-400 mt-3 text-center m-0">🔒 Secure payment</p>
+                  <p className="text-[11px] text-gray-400 mt-3 text-center m-0">
+                    🔒 Secure payment
+                  </p>
                 </div>
               </div>
             </div>
@@ -443,20 +532,41 @@ const Checkout = () => {
           /* Success */
           <div className="flex flex-col items-center justify-center gap-4 min-h-[calc(100vh-64px)] text-center px-8">
             <div className="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#059669"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <polyline points="20 6 9 17 4 12" />
               </svg>
             </div>
             <h2 className="text-xl font-semibold text-gray-900 m-0">Order placed!</h2>
             <p className="text-sm text-gray-400 m-0">Your order has been confirmed</p>
-            <Link to="/order" className="mt-2 bg-gray-900 text-white border-none rounded-lg px-6 py-2.5 text-sm font-medium no-underline cursor-pointer transition-colors hover:bg-gray-800">
+            <Link
+              to="/order"
+              className="mt-2 bg-gray-900 text-white border-none rounded-lg px-6 py-2.5 text-sm font-medium no-underline cursor-pointer transition-colors hover:bg-gray-800"
+            >
               View Orders
             </Link>
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center gap-4 min-h-[calc(100vh-64px)] text-center px-8">
             <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#d1d5db"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <circle cx="9" cy="21" r="1" />
                 <circle cx="20" cy="21" r="1" />
                 <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
@@ -464,7 +574,10 @@ const Checkout = () => {
             </div>
             <h2 className="text-xl font-semibold text-gray-900 m-0">Your cart is empty</h2>
             <p className="text-sm text-gray-400 m-0">Add some items before checking out</p>
-            <Link to="/" className="mt-2 bg-gray-900 text-white border-none rounded-lg px-6 py-2.5 text-sm font-medium no-underline cursor-pointer transition-colors hover:bg-gray-800">
+            <Link
+              to="/"
+              className="mt-2 bg-gray-900 text-white border-none rounded-lg px-6 py-2.5 text-sm font-medium no-underline cursor-pointer transition-colors hover:bg-gray-800"
+            >
               Continue shopping
             </Link>
           </div>

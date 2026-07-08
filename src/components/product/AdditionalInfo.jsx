@@ -290,9 +290,7 @@ const AdditionalInfo = ({ product_reviews }) => {
                     </ul>
                   </div>
                   <div className="flex flex-col gap-4">
-                    <h3 className="text-[17px] font-semibold text-gray-900 m-0">
-                      Top Features
-                    </h3>
+                    <h3 className="text-[17px] font-semibold text-gray-900 m-0">Top Features</h3>
                     <ol className="my-3 pl-6">
                       <li className="text-[15px] leading-6 text-gray-900 mb-2">
                         Face Unlock & In-display Fingerprint Sensor
@@ -307,9 +305,7 @@ const AdditionalInfo = ({ product_reviews }) => {
                   </div>
                 </div>
                 <div className="flex flex-col gap-4">
-                  <h3 className="text-[17px] font-semibold text-gray-900 m-0">
-                    Material & Build
-                  </h3>
+                  <h3 className="text-[17px] font-semibold text-gray-900 m-0">Material & Build</h3>
                   <p
                     className="text-[15px] font-normal leading-7 text-gray-900 m-0"
                     style={{ marginTop: '-10px' }}
@@ -333,20 +329,14 @@ const AdditionalInfo = ({ product_reviews }) => {
                   <div
                     key={idx}
                     className={`grid grid-cols-2 items-center gap-6 py-4 ${
-                      idx < arr.length - 1
-                        ? 'border-b'
-                        : ''
+                      idx < arr.length - 1 ? 'border-b' : ''
                     }`}
                     style={{
                       borderColor: idx < arr.length - 1 ? '#e5e7eb' : 'transparent',
                     }}
                   >
-                    <h6 className="text-[15px] font-semibold text-gray-900 m-0">
-                      {item.label}
-                    </h6>
-                    <p className="text-[15px] font-normal text-gray-500 m-0">
-                      {item.value}
-                    </p>
+                    <h6 className="text-[15px] font-semibold text-gray-900 m-0">{item.label}</h6>
+                    <p className="text-[15px] font-normal text-gray-500 m-0">{item.value}</p>
                   </div>
                 ))}
               </div>
@@ -391,7 +381,9 @@ const AdditionalInfo = ({ product_reviews }) => {
                                 ))}
                               </div>
                             </div>
-                            <p className="text-muted text-sm mb-0">{formatDate(reviewItem.created_at)}</p>
+                            <p className="text-muted text-sm mb-0">
+                              {formatDate(reviewItem.created_at)}
+                            </p>
                           </div>
 
                           {/* Comment */}
@@ -481,9 +473,7 @@ const AdditionalInfo = ({ product_reviews }) => {
 
                             <div
                               className={`border-2 border-dashed rounded-lg px-3.5 py-4 text-center cursor-pointer transition-all duration-[0.16s] ${
-                                dragActive
-                                  ? 'drag-drop-active'
-                                  : ''
+                                dragActive ? 'drag-drop-active' : ''
                               }`}
                               style={{
                                 borderColor: dragActive ? '#111827' : '#e5e7eb',

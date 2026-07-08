@@ -33,7 +33,9 @@ const Footer = () => {
               <img src={logo} alt="" Z className="bg-transparent" />
             </div>
 
-            <p className="text-sm text-gray-500">1418 River Drive, Suite 35 Cottonhall, CA 9622 United States</p>
+            <p className="text-sm text-gray-500">
+              1418 River Drive, Suite 35 Cottonhall, CA 9622 United States
+            </p>
 
             <div className="flex flex-col mb-2">
               <strong className="text-sm font-semibold"> sale@uomo.com </strong>
@@ -50,31 +52,48 @@ const Footer = () => {
           </div>
 
           <div className="flex flex-col gap-6">
-            <h5 className="text-sm font-semibold uppercase tracking-wider text-gray-900">Company</h5>
+            <h5 className="text-sm font-semibold uppercase tracking-wider text-gray-900">
+              Company
+            </h5>
             <div>
               <ul onClick={scrollToTop} className="flex flex-col gap-4 list-none">
                 <li>
-                  <Link to="/about" className="text-gray-500 no-underline text-sm transition-colors duration-200 hover:text-gray-900">
+                  <Link
+                    to="/about"
+                    className="text-gray-500 no-underline text-sm transition-colors duration-200 hover:text-gray-900"
+                  >
                     About Us
                   </Link>
                 </li>
                 <li>
-                  <Link to="/about" className="text-gray-500 no-underline text-sm transition-colors duration-200 hover:text-gray-900">
+                  <Link
+                    to="/about"
+                    className="text-gray-500 no-underline text-sm transition-colors duration-200 hover:text-gray-900"
+                  >
                     Career
                   </Link>
                 </li>
                 <li>
-                  <Link to="*" className="text-gray-500 no-underline text-sm transition-colors duration-200 hover:text-gray-900">
+                  <Link
+                    to="*"
+                    className="text-gray-500 no-underline text-sm transition-colors duration-200 hover:text-gray-900"
+                  >
                     Affilates
                   </Link>
                 </li>
                 <li>
-                  <Link to="/blog" className="text-gray-500 no-underline text-sm transition-colors duration-200 hover:text-gray-900">
+                  <Link
+                    to="/blog"
+                    className="text-gray-500 no-underline text-sm transition-colors duration-200 hover:text-gray-900"
+                  >
                     Blog
                   </Link>
                 </li>
                 <li>
-                  <Link to="/contact" className="text-gray-500 no-underline text-sm transition-colors duration-200 hover:text-gray-900">
+                  <Link
+                    to="/contact"
+                    className="text-gray-500 no-underline text-sm transition-colors duration-200 hover:text-gray-900"
+                  >
                     Contact Us
                   </Link>
                 </li>
@@ -86,27 +105,42 @@ const Footer = () => {
             <div>
               <ul onClick={scrollToTop} className="flex flex-col gap-4 list-none">
                 <li>
-                  <Link to="/shop" className="text-gray-500 no-underline text-sm transition-colors duration-200 hover:text-gray-900">
+                  <Link
+                    to="/shop"
+                    className="text-gray-500 no-underline text-sm transition-colors duration-200 hover:text-gray-900"
+                  >
                     Mobile
                   </Link>
                 </li>
                 <li>
-                  <Link to="/shop" className="text-gray-500 no-underline text-sm transition-colors duration-200 hover:text-gray-900">
+                  <Link
+                    to="/shop"
+                    className="text-gray-500 no-underline text-sm transition-colors duration-200 hover:text-gray-900"
+                  >
                     Tablet
                   </Link>
                 </li>
                 <li>
-                  <Link to="/shop" className="text-gray-500 no-underline text-sm transition-colors duration-200 hover:text-gray-900">
+                  <Link
+                    to="/shop"
+                    className="text-gray-500 no-underline text-sm transition-colors duration-200 hover:text-gray-900"
+                  >
                     Monitor
                   </Link>
                 </li>
                 <li>
-                  <Link to="/shop" className="text-gray-500 no-underline text-sm transition-colors duration-200 hover:text-gray-900">
+                  <Link
+                    to="/shop"
+                    className="text-gray-500 no-underline text-sm transition-colors duration-200 hover:text-gray-900"
+                  >
                     Watch
                   </Link>
                 </li>
                 <li>
-                  <Link to="/shop" className="text-gray-500 no-underline text-sm transition-colors duration-200 hover:text-gray-900">
+                  <Link
+                    to="/shop"
+                    className="text-gray-500 no-underline text-sm transition-colors duration-200 hover:text-gray-900"
+                  >
                     Shop All
                   </Link>
                 </li>
@@ -118,32 +152,50 @@ const Footer = () => {
             <div>
               <ul onClick={scrollToTop} className="flex flex-col gap-4 list-none">
                 <li>
-                  <Link to="/contact" className="text-gray-500 no-underline text-sm transition-colors duration-200 hover:text-gray-900">
+                  <Link
+                    to="/contact"
+                    className="text-gray-500 no-underline text-sm transition-colors duration-200 hover:text-gray-900"
+                  >
                     Customer Service
                   </Link>
                 </li>
                 <li>
-                  <Link to="/loginSignUp" className="text-gray-500 no-underline text-sm transition-colors duration-200 hover:text-gray-900">
+                  <Link
+                    to="/loginSignUp"
+                    className="text-gray-500 no-underline text-sm transition-colors duration-200 hover:text-gray-900"
+                  >
                     My Account
                   </Link>
                 </li>
                 <li>
-                  <Link to="/contact" className="text-gray-500 no-underline text-sm transition-colors duration-200 hover:text-gray-900">
+                  <Link
+                    to="/contact"
+                    className="text-gray-500 no-underline text-sm transition-colors duration-200 hover:text-gray-900"
+                  >
                     Find a Store
                   </Link>
                 </li>
                 <li>
-                  <Link to="/terms" className="text-gray-500 no-underline text-sm transition-colors duration-200 hover:text-gray-900">
+                  <Link
+                    to="/terms"
+                    className="text-gray-500 no-underline text-sm transition-colors duration-200 hover:text-gray-900"
+                  >
                     Legal & Privacy
                   </Link>
                 </li>
                 <li>
-                  <Link to="/contact" className="text-gray-500 no-underline text-sm transition-colors duration-200 hover:text-gray-900">
+                  <Link
+                    to="/contact"
+                    className="text-gray-500 no-underline text-sm transition-colors duration-200 hover:text-gray-900"
+                  >
                     Contact
                   </Link>
                 </li>
                 <li>
-                  <Link to="/" className="text-gray-500 no-underline text-sm transition-colors duration-200 hover:text-gray-900">
+                  <Link
+                    to="/"
+                    className="text-gray-500 no-underline text-sm transition-colors duration-200 hover:text-gray-900"
+                  >
                     Gift Card
                   </Link>
                 </li>
@@ -151,12 +203,24 @@ const Footer = () => {
             </div>
           </div>
           <div className="flex flex-col gap-6">
-            <h5 className="text-sm font-semibold uppercase tracking-wider text-gray-900">Subscribe</h5>
-            <p className="text-sm text-gray-500">Be the first to get the latest news about trends, promotions, and much more!</p>
+            <h5 className="text-sm font-semibold uppercase tracking-wider text-gray-900">
+              Subscribe
+            </h5>
+            <p className="text-sm text-gray-500">
+              Be the first to get the latest news about trends, promotions, and much more!
+            </p>
 
             <form onSubmit={handleSubscribe} className="flex">
-              <input type="email" placeholder="Your email address" required className="flex-1 h-[44px] px-4 border border-gray-200 rounded-l-[10px] outline-none text-sm bg-white focus:border-gray-300" />
-              <button type="submit" className="h-[44px] px-4 bg-primary text-white border-0 rounded-r-[10px] cursor-pointer uppercase text-xs font-semibold tracking-wider hover:bg-primary-hover">
+              <input
+                type="email"
+                placeholder="Your email address"
+                required
+                className="flex-1 h-[44px] px-4 border border-gray-200 rounded-l-[10px] outline-none text-sm bg-white focus:border-gray-300"
+              />
+              <button
+                type="submit"
+                className="h-[44px] px-4 bg-primary text-white border-0 rounded-r-[10px] cursor-pointer uppercase text-xs font-semibold tracking-wider hover:bg-primary-hover"
+              >
                 Join
               </button>
             </form>
@@ -183,7 +247,11 @@ const Footer = () => {
           <div className="flex gap-2 sm:gap-6 flex-wrap">
             <div className="flex items-center gap-6">
               <p className="text-gray-500">Language</p>
-              <select name="language" id="language" className="border-0 outline-none bg-transparent text-sm text-gray-500 cursor-pointer">
+              <select
+                name="language"
+                id="language"
+                className="border-0 outline-none bg-transparent text-sm text-gray-500 cursor-pointer"
+              >
                 <option value="english">United States | English</option>
                 <option value="Hindi">Hindi</option>
                 <option value="Germany">Germany</option>
@@ -192,7 +260,11 @@ const Footer = () => {
             </div>
             <div className="flex items-center gap-6">
               <p className="text-gray-500">Currency</p>
-              <select name="currency" id="currency" className="border-0 outline-none bg-transparent text-sm text-gray-500 cursor-pointer">
+              <select
+                name="currency"
+                id="currency"
+                className="border-0 outline-none bg-transparent text-sm text-gray-500 cursor-pointer"
+              >
                 <option value="USD">$ USD</option>
                 <option value="INR">₹ INR</option>
                 <option value="EUR">€ EUR</option>

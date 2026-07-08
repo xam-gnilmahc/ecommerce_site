@@ -123,7 +123,9 @@ const ProductImageGallery = ({ images = [], productName = '', bannerUrl = '' }) 
         >
           <img
             className={`max-w-full max-h-[480px] object-contain rounded-lg transition-transform duration-[0.25s] ease-out block ${
-              isZoomed ? 'scale-[2.2] cursor-zoom-out max-[991px]:scale-[2] max-[480px]:scale-[1.8]' : ''
+              isZoomed
+                ? 'scale-[2.2] cursor-zoom-out max-[991px]:scale-[2] max-[480px]:scale-[1.8]'
+                : ''
             }`}
             src={currentSrc}
             alt={productName}
@@ -152,7 +154,9 @@ const ProductImageGallery = ({ images = [], productName = '', bannerUrl = '' }) 
                 <line x1="11" y1="8" x2="11" y2="14" />
                 <line x1="8" y1="11" x2="14" y2="11" />
               </svg>
-              <span className="max-[480px]:text-xs max-[480px]:py-[5px] max-[480px]:px-2.5">Hover to zoom</span>
+              <span className="max-[480px]:text-xs max-[480px]:py-[5px] max-[480px]:px-2.5">
+                Hover to zoom
+              </span>
             </div>
           )}
         </div>

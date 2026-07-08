@@ -13,7 +13,9 @@
     box-sizing: border-box;
   }
 
-  html, body, #root {
+  html,
+  body,
+  #root {
     height: 100%;
   }
 
@@ -25,7 +27,16 @@
   }
 
   body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family:
+      'Inter',
+      -apple-system,
+      BlinkMacSystemFont,
+      'SF Pro Display',
+      'SF Pro Text',
+      'Helvetica Neue',
+      Helvetica,
+      Arial,
+      sans-serif;
     font-weight: 400;
     color: #1d1d1f;
     background: #ffffff;
@@ -33,20 +44,58 @@
     letter-spacing: -0.022em;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family:
+      'Inter',
+      -apple-system,
+      BlinkMacSystemFont,
+      'SF Pro Display',
+      'SF Pro Text',
+      'Helvetica Neue',
+      Helvetica,
+      Arial,
+      sans-serif;
     font-weight: 600;
     color: #1d1d1f;
     letter-spacing: -0.022em;
     line-height: 1.12;
   }
 
-  h1 { font-size: clamp(2.5rem, 5vw, 4.5rem); font-weight: 700; letter-spacing: -0.03em; }
-  h2 { font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 700; letter-spacing: -0.025em; }
-  h3 { font-size: clamp(1.5rem, 3vw, 2.5rem); font-weight: 600; letter-spacing: -0.02em; }
-  h4 { font-size: clamp(1.25rem, 2.5vw, 1.75rem); font-weight: 600; letter-spacing: -0.015em; }
-  h5 { font-size: clamp(1.125rem, 2vw, 1.375rem); font-weight: 600; letter-spacing: -0.01em; }
-  h6 { font-size: clamp(1rem, 1.5vw, 1.125rem); font-weight: 600; letter-spacing: -0.005em; }
+  h1 {
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+  h2 {
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+  h3 {
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  h4 {
+    font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+  h5 {
+    font-size: clamp(1.125rem, 2vw, 1.375rem);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  h6 {
+    font-size: clamp(1rem, 1.5vw, 1.125rem);
+    font-weight: 600;
+    letter-spacing: -0.005em;
+  }
 
   a {
     text-decoration: none;
@@ -62,14 +111,17 @@
     outline: none;
   }
 
-  input, textarea, select {
+  input,
+  textarea,
+  select {
     font-family: inherit;
     font-size: 17px;
     color: #1d1d1f;
     outline: none;
   }
 
-  input::placeholder, textarea::placeholder {
+  input::placeholder,
+  textarea::placeholder {
     color: #86868b;
   }
 

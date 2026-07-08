@@ -54,7 +54,9 @@ const CancelledOrderPage = () => {
             <p>Refunded or cancelled purchases</p>
           </div>
 
-          <div className="text-sm font-semibold px-3 py-1 rounded-full bg-red-100 text-red-700">{orders.length} Cancelled</div>
+          <div className="text-sm font-semibold px-3 py-1 rounded-full bg-red-100 text-red-700">
+            {orders.length} Cancelled
+          </div>
         </div>
 
         {/* LOADING */}
@@ -74,7 +76,10 @@ const CancelledOrderPage = () => {
             <FaBoxOpen size={48} />
             <h3>No Cancelled Orders</h3>
             <p>No cancelled orders found yet.</p>
-            <Link to="/" className="mt-4 bg-gray-900 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-gray-800">
+            <Link
+              to="/"
+              className="mt-4 bg-gray-900 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-gray-800"
+            >
               Continue Shopping
             </Link>
           </div>
@@ -93,7 +98,9 @@ const CancelledOrderPage = () => {
                   {/* TOP */}
                   <div className="flex justify-between items-center mb-2 gap-2 flex-wrap">
                     <div>
-                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">ORDER #{order.id}</p>
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        ORDER #{order.id}
+                      </p>
                       <h4>{order.order_items?.length || 0} Items</h4>
                     </div>
 
@@ -138,11 +145,15 @@ const CancelledOrderPage = () => {
                         />
 
                         <div className="flex-1 min-w-0">
-                          <h5 className="text-sm font-medium text-gray-900 truncate">{item.products.name}</h5>
+                          <h5 className="text-sm font-medium text-gray-900 truncate">
+                            {item.products.name}
+                          </h5>
                           <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
                         </div>
 
-                        <strong className="text-sm font-bold text-gray-900 shrink-0">${(item.price_each * item.quantity).toFixed(2)}</strong>
+                        <strong className="text-sm font-bold text-gray-900 shrink-0">
+                          ${(item.price_each * item.quantity).toFixed(2)}
+                        </strong>
                       </div>
                     ))}
                   </div>

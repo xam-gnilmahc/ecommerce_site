@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BiSearch } from 'react-icons/bi';
 
-const FILTER_CATEGORIES = [
-  'Mobile', 'Laptop', 'Watch', 'Earbuds', 'Tablet', 'Monitor', 'Keyboard',
-];
+const FILTER_CATEGORIES = ['Mobile', 'Laptop', 'Watch', 'Earbuds', 'Tablet', 'Monitor', 'Keyboard'];
 
 const FILTER_COLORS = [
   { name: 'Navy', hex: '#0B2472' },
@@ -95,7 +93,9 @@ const Filter = ({ onApplyFilters, searchQuery }) => {
     <div className="flex flex-col gap-2.5">
       {/* Colors */}
       <div>
-        <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-1.5">Color</p>
+        <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-1.5">
+          Color
+        </p>
         <div className="flex flex-wrap gap-1">
           {FILTER_COLORS.map(({ name, hex }) => {
             const isSelected = selectedColors.includes(hex);
@@ -109,7 +109,10 @@ const Filter = ({ onApplyFilters, searchQuery }) => {
                   borderColor: isSelected ? '#1d1d1f' : '#e5e5ea',
                 }}
               >
-                <span className="w-3 h-3 rounded-full block shrink-0" style={{ backgroundColor: hex }} />
+                <span
+                  className="w-3 h-3 rounded-full block shrink-0"
+                  style={{ backgroundColor: hex }}
+                />
                 <span style={{ color: isSelected ? '#1d1d1f' : '#86868b' }}>{name}</span>
               </button>
             );
@@ -119,7 +122,9 @@ const Filter = ({ onApplyFilters, searchQuery }) => {
 
       {/* Category */}
       <div>
-        <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-1.5">Category</p>
+        <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-1.5">
+          Category
+        </p>
         <div className="flex flex-wrap gap-1">
           {FILTER_CATEGORIES.map((cat) => {
             const isSelected = selectedCategory.includes(cat);
@@ -142,7 +147,9 @@ const Filter = ({ onApplyFilters, searchQuery }) => {
 
       {/* Brand */}
       <div>
-        <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-1.5">Brand</p>
+        <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-1.5">
+          Brand
+        </p>
         <div className="relative mb-1.5">
           <BiSearch className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-300 text-xs" />
           <input
@@ -169,7 +176,16 @@ const Filter = ({ onApplyFilters, searchQuery }) => {
                   }}
                 >
                   {isSelected && (
-                    <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <svg
+                      width="8"
+                      height="8"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#fff"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
                       <polyline points="20 6 9 17 4 12" />
                     </svg>
                   )}
@@ -184,7 +200,9 @@ const Filter = ({ onApplyFilters, searchQuery }) => {
 
       {/* Price */}
       <div>
-        <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-1.5">Price</p>
+        <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-1.5">
+          Price
+        </p>
         <div className="flex items-center gap-1.5 mb-1">
           <span className="text-xs font-medium text-gray-900 min-w-[50px]">${priceRange[0]}</span>
           <span className="text-[10px] text-gray-300">—</span>

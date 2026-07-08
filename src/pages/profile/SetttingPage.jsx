@@ -28,7 +28,9 @@ const Toggle = ({ value, onChange }) => (
     aria-checked={value}
     role="switch"
   >
-    <span className={`absolute top-[2px] left-[2px] w-[18px] h-[18px] rounded-full bg-white transition-transform duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] block ${value ? 'translate-x-[18px]' : ''}`} />
+    <span
+      className={`absolute top-[2px] left-[2px] w-[18px] h-[18px] rounded-full bg-white transition-transform duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] block ${value ? 'translate-x-[18px]' : ''}`}
+    />
   </button>
 );
 
@@ -36,7 +38,9 @@ const Toggle = ({ value, onChange }) => (
 const Section = ({ icon, title, children }) => (
   <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
     <div className="flex items-center gap-2 p-4 border-b border-gray-200 bg-gray-50">
-      <span className="w-[28px] h-[28px] bg-gray-900 text-white rounded flex items-center justify-center text-[11px] shrink-0">{icon}</span>
+      <span className="w-[28px] h-[28px] bg-gray-900 text-white rounded flex items-center justify-center text-[11px] shrink-0">
+        {icon}
+      </span>
       <h2 className="text-[13px] font-semibold text-gray-900 m-0">{title}</h2>
     </div>
     <div className="py-1">{children}</div>
@@ -60,11 +64,19 @@ const LinkRow = ({ label, sub, value, onClick, danger }) => (
     onClick={onClick}
   >
     <div className="flex flex-col gap-[2px] min-w-0">
-      <span className={`text-[13px] font-semibold truncate ${danger ? 'text-red-600' : 'text-gray-900'}`}>{label}</span>
+      <span
+        className={`text-[13px] font-semibold truncate ${danger ? 'text-red-600' : 'text-gray-900'}`}
+      >
+        {label}
+      </span>
       {sub && <span className="text-[11px] text-gray-400 truncate">{sub}</span>}
     </div>
     <div className="flex items-center gap-2 shrink-0">
-      {value && <span className="text-[11px] text-gray-400 bg-gray-50 py-[3px] px-[8px] rounded whitespace-nowrap font-semibold">{value}</span>}
+      {value && (
+        <span className="text-[11px] text-gray-400 bg-gray-50 py-[3px] px-[8px] rounded whitespace-nowrap font-semibold">
+          {value}
+        </span>
+      )}
       <FaChevronRight className="text-[11px] text-gray-300 group-hover:text-gray-900" />
     </div>
   </button>
@@ -98,7 +110,9 @@ const SettingsPage = () => {
         <div className="max-w-[900px] mx-auto">
           {/* ── PAGE TITLE ───────────────────────────── */}
           <div className="mb-6">
-            <h1 className="text-xl md:text-[26px] font-extrabold text-gray-900 mb-1 tracking-[-0.3px]">Settings</h1>
+            <h1 className="text-xl md:text-[26px] font-extrabold text-gray-900 mb-1 tracking-[-0.3px]">
+              Settings
+            </h1>
             <p className="text-[13px] text-gray-400 m-0">Manage your account and preferences</p>
           </div>
 
@@ -121,13 +135,17 @@ const SettingsPage = () => {
               </button>
             </div>
             <div className="flex-1 z-10">
-              <p className="text-[18px] font-bold text-white mb-[2px]">{user?.full_name || user?.name || '—'}</p>
+              <p className="text-[18px] font-bold text-white mb-[2px]">
+                {user?.full_name || user?.name || '—'}
+              </p>
               <p className="text-[11px] text-white/55 mb-2">{user?.email || '—'}</p>
               <span className="bg-white/10 border border-white/20 text-white/80 text-[11px] font-semibold py-[3px] px-[10px] rounded-full tracking-[0.3px]">
                 {user?.email_verified ? '✓ Verified Account' : 'Unverified'}
               </span>
             </div>
-            <button className="bg-white/10 border border-white/25 text-white text-[11px] font-semibold py-2 px-4 rounded cursor-pointer transition-colors duration-200 ease-out z-10 whitespace-nowrap hover:bg-white/18 max-md:w-full max-md:text-center max-md:justify-center">Edit Profile</button>
+            <button className="bg-white/10 border border-white/25 text-white text-[11px] font-semibold py-2 px-4 rounded cursor-pointer transition-colors duration-200 ease-out z-10 whitespace-nowrap hover:bg-white/18 max-md:w-full max-md:text-center max-md:justify-center">
+              Edit Profile
+            </button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -179,7 +197,9 @@ const SettingsPage = () => {
                 value={notif.sms}
                 onChange={() => toggle('sms')}
               />
-              <div className="text-[10px] font-semibold uppercase tracking-[0.7px] text-gray-500 py-[10px] px-[18px]">What to notify you about</div>
+              <div className="text-[10px] font-semibold uppercase tracking-[0.7px] text-gray-500 py-[10px] px-[18px]">
+                What to notify you about
+              </div>
               <ToggleRow
                 label="Order Updates"
                 sub="Shipping, delivery & cancellations"

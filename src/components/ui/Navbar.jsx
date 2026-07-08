@@ -140,7 +140,11 @@ const Navbar = () => {
                   onClick={() => setProfileOpen(!profileOpen)}
                 >
                   {user.picture ? (
-                    <img src={user.picture} alt="profile" className="w-7 h-7 rounded-full object-cover" />
+                    <img
+                      src={user.picture}
+                      alt="profile"
+                      className="w-7 h-7 rounded-full object-cover"
+                    />
                   ) : (
                     <FaRegUser size={18} />
                   )}
@@ -221,7 +225,10 @@ const Navbar = () => {
         </div>
 
         {mobileMenuOpen && (
-          <div className="fixed inset-0 bg-black/40 z-[3000]" onClick={() => setMobileMenuOpen(false)} />
+          <div
+            className="fixed inset-0 bg-black/40 z-[3000]"
+            onClick={() => setMobileMenuOpen(false)}
+          />
         )}
 
         <div

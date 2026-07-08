@@ -21,7 +21,8 @@ const CollectionBox = () => {
     }),
   };
 
-  const cardBase = 'min-h-full flex flex-col justify-end rounded-lg p-[30px] relative overflow-hidden';
+  const cardBase =
+    'min-h-full flex flex-col justify-end rounded-lg p-[30px] relative overflow-hidden';
 
   const overlayStyle =
     "before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-t before:from-black/55 before:via-black/15 before:to-transparent before:rounded-lg before:z-[1] [&>*]:relative [&>*]:z-[2]";
