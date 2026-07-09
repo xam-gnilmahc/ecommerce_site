@@ -8,10 +8,10 @@ import Skeleton from 'react-loading-skeleton';
 import { supabase } from '../../supaBaseClient';
 import { FaStar } from 'react-icons/fa';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
+import { SUPABASE_STORAGE_URL } from '../../utils/supabaseStorage';
 import './RelatedProducts.css';
 
-const SUPABASE_IMG_BASE =
-  'https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/';
+const SUPABASE_IMG_BASE = `${SUPABASE_STORAGE_URL}productimages/`;
 
 const swiperConfig = {
   navigation: {

@@ -1,0 +1,9 @@
+export const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL || '';
+export const SUPABASE_ANON_KEY = process.env.REACT_APP_SUPABASE_ANON_KEY || '';
+export const STRIPE_URL = process.env.REACT_APP_STRIPE_URL || '';
+export const SMART_HANDLER_TOKEN = process.env.REACT_APP_SMART_HANDLER_TOKEN || '';
+export const SMART_HANDLER_URL = process.env.REACT_APP_SMART_HANDLER_URL || '';
+export const FACEBOOK_APP_ID = process.env.REACT_APP_FACEBOOK_APP_ID || '';
+export const GOOGLE_PAY_MERCHANT_ID = process.env.REACT_APP_GOOGLE_PAY_MERCHANT_ID || '';
+export const PUSHER_APP_KEY = process.env.REACT_APP_PUSHER_APP_KEY || '';
+export const PUSHER_CLUSTER = process.env.REACT_APP_PUSHER_CLUSTER || '';

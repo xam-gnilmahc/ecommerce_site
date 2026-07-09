@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import Pusher from 'pusher-js';
 import { useAuth } from '../../context/authContext';
+import { PUSHER_APP_KEY, PUSHER_CLUSTER } from '../../config/env';
 import { FaCheckCircle } from 'react-icons/fa';
 import { FiBell, FiSettings } from 'react-icons/fi';
 import { IoMdCheckmark } from 'react-icons/io';
@@ -66,8 +67,8 @@ const NotificationPage = () => {
     if (!user?.id) return;
 
     // Setup Pusher for real-time updates (same as before)
-    const pusher = new Pusher('8a749302cc2bbbaf87b5', {
-      cluster: 'ap1',
+    const pusher = new Pusher(PUSHER_APP_KEY, {
+      cluster: PUSHER_CLUSTER,
       encrypted: true,
     });
 

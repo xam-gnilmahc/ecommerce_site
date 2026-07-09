@@ -1,5 +1,6 @@
 import { CardElement } from '@stripe/react-stripe-js';
 import type { Stripe, StripeElements, StripeCardElement } from '@stripe/stripe-js';
+import { SMART_HANDLER_URL, SMART_HANDLER_TOKEN } from '../config/env';
 
 /** Google Pay payment data returned by the Google Pay button callback */
 export interface GooglePayPaymentData {
@@ -71,9 +72,7 @@ export interface PaymentResponse {
   result: PaymentResult;
 }
 
-const SMART_HANDLER_URL = 'https://fzliiwigydluhgbuvnmr.supabase.co/functions/v1/smart-handler';
-
-const BEARER = `Bearer ${process.env.REACT_APP_SMART_HANDLER_URL}`;
+const BEARER = `Bearer ${SMART_HANDLER_TOKEN}`;
 
 /**
  * Processes a Google Pay payment. Parses the token from Google Pay,
@@ -145,18 +144,9 @@ export async function processCardPayment(
 
   const { token, error } = await stripe.createToken(cardElement);
 
-  if (error) {
-    throw new Error(error.message);
-  }
+  if (error) throw new Error(error.message);
 
-  const finalData: FinalPaymentData = {
-    token: token.id,
-    amount,
-    name,
-    email,
-    address,
-    comment,
-  };
+  const finalData: FinalPaymentData = { token: token.id, amount, name, email, address, comment };
 
   const response = await fetch(SMART_HANDLER_URL, {
     method: 'POST',

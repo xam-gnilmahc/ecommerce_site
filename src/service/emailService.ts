@@ -1,3 +1,5 @@
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../config/env';
+
 /** Parameters for the order confirmation email */
 export interface OrderEmailParams {
   userName: string;
@@ -63,10 +65,10 @@ export async function sendOrderEmail(
   };
 
   try {
-    await fetch(`${process.env.REACT_APP_SUPABASE_URL}/functions/v1/clever-function`, {
+    await fetch(`${SUPABASE_URL}/functions/v1/clever-function`, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_ANON_KEY}`,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(payload),
@@ -82,10 +84,10 @@ export async function sendOrderEmail(
  */
 export async function sendDeliveryEmail(payload: DeliveryEmailPayload): Promise<void> {
   try {
-    const res = await fetch(`${process.env.REACT_APP_SUPABASE_URL}/functions/v1/deliveryMail`, {
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/deliveryMail`, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_ANON_KEY}`,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(payload),
@@ -107,10 +109,10 @@ export async function sendDeliveryEmail(payload: DeliveryEmailPayload): Promise<
  */
 export async function sendNotification(payload: NotificationPayload): Promise<void> {
   try {
-    const res = await fetch(`${process.env.REACT_APP_SUPABASE_URL}/functions/v1/smart-endpoint`, {
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/smart-endpoint`, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_ANON_KEY}`,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(payload),

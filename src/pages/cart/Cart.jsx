@@ -14,6 +14,7 @@ import {
   removeItemDirectlyFromCart,
 } from '../../redux/slice/userCart.ts';
 import { trackAddToCart } from '../../utils/tracking.ts';
+import { SUPABASE_STORAGE_URL } from '../../utils/supabaseStorage';
 import Navbar from '../../components/ui/Navbar';
 
 const Cart = () => {
@@ -91,7 +92,7 @@ const Cart = () => {
                     {/* Image */}
                     <div className="cart-item-img">
                       <img
-                        src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.products.banner_url}`}
+                        src={`${SUPABASE_STORAGE_URL}productimages/${item.products.banner_url}`}
                         alt={item.products.name}
                       />
                     </div>

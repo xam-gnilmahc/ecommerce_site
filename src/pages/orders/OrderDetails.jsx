@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/authContext';
 import Skeleton from 'react-loading-skeleton';
 
+import { SUPABASE_STORAGE_URL } from '../../utils/supabaseStorage';
 import {
   FaMapMarkerAlt,
   FaUser,
@@ -179,7 +180,7 @@ const OrderDetailsPage = () => {
               <div className="od-item" key={i}>
                 <div className="od-item-img">
                   <img
-                    src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.products.banner_url}`}
+                    src={`${SUPABASE_STORAGE_URL}productimages/${item.products.banner_url}`}
                     alt={item.products?.name}
                   />
                 </div>

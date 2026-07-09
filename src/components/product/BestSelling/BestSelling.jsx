@@ -14,6 +14,7 @@ import { addToCart } from '../../../redux/slice/userCart.ts';
 import { useAppDispatch } from '../../../redux/index.ts';
 import { trackAddToCart } from '../../../utils/tracking.ts';
 import { supabase } from '../../../supaBaseClient';
+import { SUPABASE_STORAGE_URL } from '../../../utils/supabaseStorage';
 
 import toast from 'react-hot-toast';
 import Skeleton from 'react-loading-skeleton';
@@ -96,7 +97,7 @@ const BestSelling = () => {
       <div className="lpImageContainer">
         <Link to={`/product/${product.id}`} onClick={() => trackProduct(product.id)}>
           <img
-            src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${product.banner_url}`}
+            src={`${SUPABASE_STORAGE_URL}productimages/${product.banner_url}`}
             className="lpImage"
             alt={product.name}
           />

@@ -18,6 +18,7 @@ import { searchProducts } from '../../redux/slice/searchProduct.ts';
 import { fetchFilteredProducts } from '../../redux/slice/filterProduct.ts';
 import { trackAddToCart, trackSearch } from '../../utils/tracking.ts';
 import { addToCart } from '../../redux/slice/userCart.ts';
+import { SUPABASE_STORAGE_URL } from '../../utils/supabaseStorage';
 import './Products.css';
 
 const Products = () => {
@@ -232,7 +233,7 @@ const Products = () => {
                   onClick={() => trackProduct(product.id)}
                 >
                   <img
-                    src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${product.banner_url}`}
+                    src={`${SUPABASE_STORAGE_URL}productimages/${product.banner_url}`}
                     alt={product.name}
                   />
                 </Link>

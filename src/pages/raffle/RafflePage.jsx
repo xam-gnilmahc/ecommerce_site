@@ -3,14 +3,13 @@ import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import { useAuth } from '../../context/authContext';
 import { supabase } from '../../supaBaseClient';
+import { SUPABASE_STORAGE_URL } from '../../utils/supabaseStorage';
 import './RafflePage.css';
-
-const SUPABASE_URL = 'https://fzliiwigydluhgbuvnmr.supabase.co';
 
 const getRaffleImageUrl = (path) => {
   if (!path) return null;
 
-  return `${SUPABASE_URL}/storage/v1/object/public/raffle/${path}`;
+  return `${SUPABASE_STORAGE_URL}raffle/${path}`;
 };
 
 const getRaffleStatus = (raffle) => {

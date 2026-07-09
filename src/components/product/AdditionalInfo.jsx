@@ -4,7 +4,8 @@ import toast from 'react-hot-toast';
 
 import { FaStar, FaThumbsUp, FaThumbsDown } from 'react-icons/fa';
 import Rating from '@mui/material/Rating';
-import DeleteIcon from '@mui/icons-material/Delete'; // Import Delete icon
+import DeleteIcon from '@mui/icons-material/Delete';
+import { SUPABASE_STORAGE_URL } from '../../utils/supabaseStorage';
 import IconButton from '@mui/material/IconButton';
 
 const AdditionalInfo = ({ product_reviews }) => {
@@ -293,7 +294,7 @@ const AdditionalInfo = ({ product_reviews }) => {
                             {(() => {
                               const url = String(review.picture).startsWith('http')
                                 ? review.picture
-                                : `https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/lol/${review.picture}`;
+                                : `${SUPABASE_STORAGE_URL}lol/${review.picture}`;
                               return (
                                 <button
                                   type="button"

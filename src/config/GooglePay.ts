@@ -1,4 +1,5 @@
 import { shippingOptionParameters } from './ShippingOptions.ts';
+import { STRIPE_URL, GOOGLE_PAY_MERCHANT_ID } from './env';
 
 /** Allowed payment method configuration for Google Pay (card via Stripe gateway) */
 interface PaymentRequestAllowedMethod {
@@ -63,14 +64,14 @@ export const paymentRequest: GooglePayPaymentRequest = {
         parameters: {
           gateway: 'stripe',
           'stripe:version': '2018-10-31',
-          'stripe:publishableKey': `${process.env.REACT_APP_STRIPE_URL}`,
+          'stripe:publishableKey': `${STRIPE_URL}`,
         },
       },
     },
   ],
 
   merchantInfo: {
-    merchantId: '17613812255336763067',
+    merchantId: `${GOOGLE_PAY_MERCHANT_ID}`,
     merchantName: 'Demo Only (you will not be charged)',
   },
 

@@ -4,6 +4,7 @@ import { supabase } from '../../supaBaseClient';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/authContext';
 import FacebookLogin from 'react-facebook-login';
+import { FACEBOOK_APP_ID } from '../../config/env';
 import './Login.css';
 
 const Login = () => {
@@ -115,7 +116,7 @@ const Login = () => {
                 <i className="fab fa-google me-2"></i> Continue with Google
               </button>
               <FacebookLogin
-                appId="1206302750908024"
+                appId={FACEBOOK_APP_ID}
                 autoLoad={false}
                 fields="name,email,picture"
                 callback={responseFacebook}

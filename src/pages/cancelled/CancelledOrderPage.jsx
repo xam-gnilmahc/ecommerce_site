@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useAuth } from '../../context/authContext';
 import { Link, useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/ui/Sidebar';
+import { SUPABASE_STORAGE_URL } from '../../utils/supabaseStorage';
 import { HiLocationMarker } from 'react-icons/hi';
 import { FaTruck, FaTimesCircle, FaBoxOpen } from 'react-icons/fa';
 import Skeleton from 'react-loading-skeleton';
@@ -133,7 +134,7 @@ const CancelledOrderPage = () => {
                     {order.order_items?.slice(0, 2).map((item, index) => (
                       <div key={index} className="product-item">
                         <img
-                          src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.products.banner_url}`}
+                          src={`${SUPABASE_STORAGE_URL}productimages/${item.products.banner_url}`}
                           alt={item.products.name}
                         />
 

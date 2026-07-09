@@ -12,6 +12,8 @@ import {
 } from '../../components/product/GooglePlay.tsx';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/authContext';
+import { SUPABASE_STORAGE_URL } from '../../utils/supabaseStorage';
+import { STRIPE_URL } from '../../config/env';
 import './Animation.css';
 import './checkout.css';
 import { fetchTotalCart } from '../../redux/slice/userCart.ts';
@@ -21,7 +23,7 @@ import { fetchCartItems } from '../../redux/slice/userCart.ts';
 import { trackPurchase } from '../../utils/tracking.ts';
 import { processCardPayment, processGooglePay } from '../../service/googlePayService.ts';
 
-const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_URL);
+const stripePromise = loadStripe(STRIPE_URL);
 
 const CARD_STYLE = {
   style: {
@@ -453,7 +455,7 @@ const Checkout = () => {
                     <div key={i} className="ck-item">
                       <div className="ck-item-img">
                         <img
-                          src={`https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/${item.products.banner_url}`}
+                          src={`${SUPABASE_STORAGE_URL}productimages/${item.products.banner_url}`}
                           alt={item.products.name}
                         />
                         <span className="ck-item-qty">{item.quantity}</span>

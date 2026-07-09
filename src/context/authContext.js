@@ -5,6 +5,7 @@ import populateUserRecommendations from '../service/populateUserRecommendations.
 import { sendOrderEmail, sendDeliveryEmail, sendNotification } from '../service/emailService.ts';
 import { useNavigate } from 'react-router-dom';
 import Pusher from 'pusher-js';
+import { PUSHER_APP_KEY, PUSHER_CLUSTER } from '../config/env';
 import { useVisitorCookie } from '../Hook/useVisitorCookie.ts'; // ← added
 
 const AuthContext = createContext();
@@ -34,8 +35,8 @@ export const AuthProvider = ({ children }) => {
   // trackProduct → call on any product click: trackProduct(product.id)
   // clearVisitor → wipe cookie on logout
 
-  const pusher = new Pusher('8a749302cc2bbbaf87b5', {
-    cluster: 'ap1',
+  const pusher = new Pusher(PUSHER_APP_KEY, {
+    cluster: PUSHER_CLUSTER,
     encrypted: true,
   });
 

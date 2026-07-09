@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import './ProductImageGallery.css';
+import { SUPABASE_STORAGE_URL } from '../../utils/supabaseStorage';
 
-const SUPABASE_IMG_BASE =
-  'https://fzliiwigydluhgbuvnmr.supabase.co/storage/v1/object/public/productimages/';
+const SUPABASE_IMG_BASE = `${SUPABASE_STORAGE_URL}productimages/`;
 
 const ProductImageGallery = ({ images = [], productName = '', bannerUrl = '' }) => {
   const [activeIndex, setActiveIndex] = useState(0);
