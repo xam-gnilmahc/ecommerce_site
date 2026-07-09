@@ -122,7 +122,7 @@ const Navbar = () => {
         {/* RIGHT */}
         <div className="nav-right">
           {/* 🎟️ RAFFLES LINK — always visible */}
-          <NavLink
+          {/* <NavLink
             to="/raffles"
             className="nav-raffle-link"
             style={({ isActive }) => ({
@@ -143,7 +143,7 @@ const Navbar = () => {
           >
             <MdConfirmationNumber size={15} />
             Raffles
-          </NavLink>
+          </NavLink> */}
 
           {!user ? (
             <>
@@ -266,9 +266,9 @@ const Navbar = () => {
 
             <div className="mobile-menuFooter">
               {/* 🎟️ Raffles in mobile menu */}
-              <Link to="/raffles" onClick={toggleMobileMenu}>
+              {/* <Link to="/raffles" onClick={toggleMobileMenu}>
                 🎟️ Raffles
-              </Link>
+              </Link> */}
 
               <Link to="/order" onClick={toggleMobileMenu}>
                 Orders

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../supaBaseClient';
-import { useNavigate, useSearchParams } from 'react-router-dom'; // For redirection
+import { useNavigate, useSearchParams, Navigate } from 'react-router-dom'; // For redirection
+import { useAuth } from '../../context/authContext';
 import toast from 'react-hot-toast';
 
 // Function to generate a random secure password
@@ -15,11 +16,13 @@ const generatePassword = () => {
 };
 
 const UpdatePassword = () => {
+  const { user } = useAuth();
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate(); // For redirecting after successful update
+
   const [searchParams] = useSearchParams(); // Get the search params from the URL (the recovery token)
   const recoveryToken = searchParams.get('token'); // Get recovery token from the URL
 
@@ -30,6 +33,8 @@ const UpdatePassword = () => {
       navigate('/login');
     }
   }, [recoveryToken]);
+
+  if (user) return <Navigate to="/" replace />;
 
   const handleSubmit = async (e) => {
     e.preventDefault();

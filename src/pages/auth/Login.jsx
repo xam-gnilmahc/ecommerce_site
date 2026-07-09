@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { supabase } from '../../supaBaseClient';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/authContext';
@@ -9,11 +9,13 @@ import './Login.css';
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { user } = useAuth();
 
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  if (user) return <Navigate to="/" replace />;
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
