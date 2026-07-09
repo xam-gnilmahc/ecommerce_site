@@ -10,6 +10,10 @@ import { useVisitorCookie } from '../Hook/useVisitorCookie.ts'; // ← added
 
 const AuthContext = createContext();
 
+/**
+ * Custom hook to access the authentication context.
+ * @returns The authentication context, providing user state and authentication-related functions.
+ */
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -18,6 +22,11 @@ export const useAuth = () => {
   return context;
 };
 
+/**
+ * AuthProvider component to provide authentication context to the application.
+ * @param {*} param0 - The props object containing children elements.
+ * @returns The AuthContext provider wrapping the children elements.
+ */
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
@@ -31,25 +40,31 @@ export const AuthProvider = ({ children }) => {
 
   // ── Visitor cookie — pass user.id, hook does the rest ──────────────────────
   const { visitor, trackProduct, clearVisitor } = useVisitorCookie(user?.id);
-  // visitor      → full cookie object { visitor_id, visit_count, pages_visited, product_ids, ... }
-  // trackProduct → call on any product click: trackProduct(product.id)
-  // clearVisitor → wipe cookie on logout
 
+  /**
+   * Pusher instance for real-time notifications.
+   */
   const pusher = new Pusher(PUSHER_APP_KEY, {
     cluster: PUSHER_CLUSTER,
     encrypted: true,
   });
 
+  /**
+   * Subscribe to Pusher channels
+   */
   useEffect(() => {
     if (!user?.id) return;
     const channel = pusher.subscribe(`user.${user.id}`);
-    console.log(`🔔 Pusher initialized for user: ${user.id}`);
+    console.log(`Pusher initialized for user`);
     return () => {
       pusher.unsubscribe(`user-${user.id}`);
-      console.log(`🧹 Pusher unsubscribed for user: ${user.id}`);
+      console.log(`Pusher unsubscribed for user`);
     };
   }, [user?.id]);
 
+  /**
+   * Handle user data in Supabase so that we can store additional information and manage user records.
+   */
   const handleUserInSupabase = async (authenticatedUser) => {
     try {
       setLoading(true);
@@ -89,10 +104,10 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // check for an existing session on mount (handles page refresh),
-  // then keep listening for future auth changes (login/logout/token refresh).
-  // The empty dependency array means this effect runs ONCE on mount only —
-  // it does NOT re-run on navigation, menu clicks, or other re-renders.
+  /**
+   * Check for existing session on mount and set up auth state change listener
+   * provides real-time updates to user state when they log in or out.
+   */
   useEffect(() => {
     const initSession = async () => {
       try {
@@ -129,6 +144,10 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
 
+  /**
+   * Recalculate user interest every 30 seconds to keep recommendations up-to-date.
+   * This is a background process that runs as long as the user is logged in.
+   */
   useEffect(() => {
     if (!user?.id) return undefined;
     let running = false,
@@ -177,15 +196,22 @@ export const AuthProvider = ({ children }) => {
     };
   }, [user?.id]);
 
+  /**
+   * Logout function clears local storage, resets user state, and navigates to the login page.
+   */
   const logout = () => {
     localStorage.clear();
-    //clearVisitor(); // ← wipe the tracking cookie on logout
     setUser(null);
     setToken(null);
     setCart([]);
     navigate('/login');
   };
 
+  /**
+   * Fetch cart items for a specific user.
+   * @param {*} userId
+   * @returns
+   */
   const fetchCartItems = async (userId) => {
     const { data, error } = await supabase
       .from('cart')
@@ -201,23 +227,30 @@ export const AuthProvider = ({ children }) => {
     return data;
   };
 
-  // Cart mutations are handled by the redux slice (userCart).
-  // The repository uses the redux async thunks for add/remove/fetch operations
-  // (see src/redux/slice/userCart.ts). Keeping fetchCartItems internally for
-  // the provider to refresh state when needed, but direct add/remove helpers
-  // are implemented in redux — so we avoid exposing duplicate functions here.
-
+  /**
+   * Remove items from the cart after an order is placed.
+   * @returns {Promise<void>}
+   */
   const removeFromCartAfterOrder = async () => {
     if (!user) return;
     await supabase.from('cart').delete().eq('user_id', user.id);
     await fetchCartItems(user.id);
   };
 
+  /**
+   * Generate a unique tracking code for an order.
+   * @returns {string} The generated tracking code.
+   */
   const generateTrackingCode = () => {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     return `ORD-${Array.from({ length: 8 }, () => chars[Math.floor(Math.random() * chars.length)]).join('')}`;
   };
 
+  /**
+   * Create and finalize an order in the system.
+   * @param {*} param0 - The order details.
+   * @returns {Promise<void>}
+   */
   const createAndFinalizeOrder = async ({
     data,
     orderItems,
@@ -322,6 +355,12 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  /**
+   * Places an order in the system.
+   * @param {*} data - The order details.
+   * @param {*} stripe - The Stripe payment information.
+   * @returns {Promise<string>} The ID of the created order.
+   */
   const placeOrder = async (data, stripe) => {
     setOrderLoading(true);
     const carts = await fetchCartItems(user.id);
@@ -351,6 +390,14 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  /**
+   * Places an order in the system.
+   * @param {*} data - The order details.
+   * @param {*} stripe - The Stripe payment information.
+   * @param {*} product - The product being ordered.
+   * @param {*} quantity - The quantity of the product.
+   * @returns {Promise<string>} The ID of the created order.
+   */
   const placeOrderSingle = async (data, stripe, product, quantity = 1) => {
     setOrderLoading(true);
     if (!user || !product) return;
@@ -374,6 +421,12 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  /**
+   * Fetch notifications for a user within a specific range.
+   * @param {*} start - The start index for pagination.
+   * @param {*} end - The end index for pagination.
+   * @returns {Promise<Array>} The list of notifications.
+   */
   const getNotificationsByUserId = async (start, end) => {
     if (!user?.id) return [];
     try {
@@ -394,6 +447,10 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  /**
+   * Fetches the orders for the current user.
+   * @returns {Promise<Array>} The list of user orders.
+   */
   const fetchUserOrders = async () => {
     if (!user) return [];
     setLoading(true);
@@ -415,6 +472,10 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  /**
+   * Fetches the cancelled orders for the current user.
+   * @returns {Promise<Array>} The list of cancelled orders for the current user.
+   */
   const fetchUserCancelledOrders = async () => {
     if (!user) return [];
     setLoading(true);
@@ -441,6 +502,11 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  /**
+   * Fetches the details of a specific order.
+   * @param {*} orderId - The ID of the order to fetch.
+   * @returns {Promise<Object>} The details of the order.
+   */
   const getOrderDetails = async (orderId) => {
     setOrderLoading(true);
     try {
@@ -461,57 +527,10 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const sendAllDeliveryEmails = async () => {
-    setLoading(true);
-    try {
-      const today = new Date();
-      const startOfDay = new Date(today.setHours(0, 0, 0, 0)).toISOString();
-      const endOfDay = new Date(today.setHours(23, 59, 59, 999)).toISOString();
-      const { data: orders, error } = await supabase
-        .from('orders')
-        .select(
-          `*, order_items (*, products:product_id (id, name, banner_url, amount, description))`
-        )
-        .gte('order_date', startOfDay)
-        .lt('order_date', endOfDay);
-      if (error) throw error;
-      const userIds = [...new Set(orders.map((o) => o.user_id))];
-      const { data: users, error: userError } = await supabase
-        .from('users')
-        .select(`id, name, email`)
-        .in('id', userIds);
-      if (userError) throw userError;
-      const usersMap = Object.fromEntries(users.map((u) => [u.id, u]));
-      await Promise.all(
-        orders
-          .filter((order) => usersMap[order.user_id])
-          .map(async (order) => {
-            const user = usersMap[order.user_id];
-            const address = JSON.parse(order.shipping_address || '{}');
-            await sendDeliveryEmail({
-              userName: user.name,
-              userEmail: user.email,
-              orderItems: order.order_items.map((item) => ({
-                name: item.products?.name || 'Unnamed',
-                quantity: item.quantity,
-                amount: item.price_each,
-                image: item.products?.banner_url,
-              })),
-              address: `${address.addressLine1 || ''} ${address.addressLine2 || ''}, ${address.state || ''}, ${address.country || ''} - ${address.zipCode || ''}`,
-              cartTotal: order.total_amount,
-              orderId: order.id,
-              orderDate: order.order_date,
-            });
-          })
-      );
-      console.log('All emails sent.');
-    } catch (error) {
-      console.error('Error sending delivery emails:', error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  /**
+   * Fetches the best selling products.
+   * @returns {Promise<Array>} The list of best selling products.
+   */
   const bestSellingProduct = async () => {
     const { data, error } = await supabase
       .from('best_selling_product')
@@ -542,7 +561,6 @@ export const AuthProvider = ({ children }) => {
         fetchUserOrders,
         getOrderDetails,
         fetchUserCancelledOrders,
-        sendAllDeliveryEmails,
         bestSellingProduct,
         getNotificationsByUserId,
         fetchCartItems,
