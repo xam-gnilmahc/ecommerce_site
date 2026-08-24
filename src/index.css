@@ -1,20 +1,54 @@
-/* =========================
-   GLOBAL TYPOGRAPHY SYSTEM
-   Apple-inspired clean system font
-========================= */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
+/* ═══════════════════════════════════════════════
+   GLOBAL DESIGN TOKENS — Gadget Store
+   Modern clean tech palette
+═══════════════════════════════════════════════ */
 :root {
+  /* ── TYPOGRAPHY ── */
   --font-main:
-    -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Helvetica,
-    Arial, sans-serif;
+    'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue',
+    Helvetica, Arial, sans-serif;
 
-  /* optional type scale */
   --text-xs: 12px;
   --text-sm: 14px;
   --text-md: 16px;
   --text-lg: 18px;
   --text-xl: 22px;
   --text-2xl: 28px;
+
+  /* ── NEUTRALS ── */
+  --ink: #0f1115;          /* primary text / headings */
+  --ink-secondary: #3f4550; /* body text */
+  --muted: #878d99;         /* secondary text */
+  --bg: #ffffff;            /* page background */
+  --surface: #ffffff;       /* cards */
+  --surface-tint: #fafafb;  /* subtle fills */
+  --border: #e6e8ee;
+  --border-strong: #d3d7df;
+
+  /* ── BRAND ACCENT ── */
+  --accent: #2563eb;        /* electric blue — buttons, links, highlights */
+  --accent-hover: #1d4ed8;
+  --accent-soft: #eff4ff;   /* tinted backgrounds */
+
+  /* ── SEMANTIC ── */
+  --success: #16a34a;
+  --danger: #dc2626;
+  --warning: #f59e0b;
+
+  /* legacy aliases (used by checkout/cart/orders css) */
+  --ck-black: #0f1115;
+  --ck-off: #fafafb;
+  --ck-muted: #878d99;
+
+  /* ── SHAPE & DEPTH ── */
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --shadow-xs: 0 1px 2px rgba(15, 17, 21, 0.05);
+  --shadow-sm: 0 2px 8px rgba(15, 17, 21, 0.06);
+  --shadow-md: 0 8px 24px rgba(15, 17, 21, 0.1);
 }
 
 /* apply globally */
@@ -22,8 +56,8 @@ html,
 body {
   font-family: var(--font-main);
   font-size: var(--text-md);
-  color: #111827;
-  background: #fff;
+  color: var(--ink);
+  background: var(--bg);
 
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -52,17 +86,20 @@ h6 {
   font-family: var(--font-main);
   font-weight: 700;
   letter-spacing: -0.02em;
-  color: #111827;
+  color: var(--ink);
 }
 
 /* paragraph consistency */
 p {
   font-size: var(--text-md);
   line-height: 1.6;
-  color: #374151;
+  color: var(--ink-secondary);
 }
 
 /* buttons */
-button {
+button,
+input,
+select,
+textarea {
   font-family: var(--font-main);
 }

@@ -12,6 +12,8 @@ import {
   removeFromCart,
   fetchCartItems,
   removeItemDirectlyFromCart,
+  incrementQtyOptimistic,
+  decrementQtyOptimistic,
 } from '../../redux/slice/userCart.ts';
 import { trackAddToCart } from '../../utils/tracking.ts';
 import { SUPABASE_STORAGE_URL } from '../../utils/supabaseStorage';
@@ -24,14 +26,16 @@ const Cart = () => {
 
   useEffect(() => {
     if (user?.id) dispatch(fetchCartItems(user.id));
-  }, [dispatch, cart.length]);
+  }, [dispatch, user?.id]);
 
   const updateItemQuantity = async (product, action) => {
     if (!user) return;
     if (action === 'increase') {
+      dispatch(incrementQtyOptimistic(product.id));
       dispatch(addToCart({ userId: user.id, product }));
       trackAddToCart(dispatch, user?.id, product);
     } else if (action === 'decrease') {
+      dispatch(decrementQtyOptimistic(product.id));
       dispatch(removeFromCart({ userId: user.id, product }));
     }
   };
@@ -155,12 +159,15 @@ const Cart = () => {
             {/* ── RIGHT: summary ──────────────────── */}
             <div className="cart-right">
               <div className="cart-summary">
-                <h2 className="cart-summary-title">Order summary</h2>
+                <div className="cart-summary-head">
+                  <h2 className="cart-summary-title">Order summary</h2>
+                  <span className="cart-summary-count">{totalItems} items</span>
+                </div>
 
                 <ul className="cart-totals">
                   <li className="cart-total-row">
                     <span className="row-label">
-                      Subtotal ({totalItems} items)
+                      Subtotal
                       <FaQuestion className="info-icon" />
                     </span>
                     <span>${Math.round(subtotal)}</span>
@@ -173,11 +180,11 @@ const Cart = () => {
                     <span className="row-label">
                       Estimated tax <FaQuestion className="info-icon" />
                     </span>
-                    <span style={{ color: 'var(--ck-muted)' }}>—</span>
+                    <span>—</span>
                   </li>
-                  <li className="cart-total-row cart-total-row--final">
+                  <li className="cart-total-final">
                     <span>Total</span>
-                    <span>${Math.round(subtotal)}</span>
+                    <span className="cart-total-amount">${Math.round(subtotal)}</span>
                   </li>
                 </ul>
 
@@ -185,7 +192,9 @@ const Cart = () => {
                   Proceed to checkout
                 </Link>
 
-                <p className="cart-secure-note">🔒 Payments secured by Stripe</p>
+                <p className="cart-secure-note">
+                  <span className="cart-lock">🔒</span> Payments secured by Stripe
+                </p>
               </div>
             </div>
           </div>
@@ -245,7 +254,7 @@ const Cart = () => {
   return (
     <>
       <div className="cart-root">
-        {fetchLoading ? <CartSkeleton /> : cart.length ? <ShowCart /> : <EmptyCart />}
+        {(fetchLoading && !cart.length) ? <CartSkeleton /> : cart.length ? <ShowCart /> : <EmptyCart />}
       </div>
     </>
   );

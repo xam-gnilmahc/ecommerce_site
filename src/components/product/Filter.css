@@ -1,64 +1,214 @@
 /* =========================
-   BASE (DESKTOP)
+   WRAPPER + TOGGLE BUTTON
 ========================= */
-
-.filterSection {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-
-  padding: 10px 0;
-  max-width: 320px;
-
+.filterWrap {
   position: relative;
-  height: auto;
-
-  background: transparent;
-  box-shadow: none;
+  display: inline-block;
 }
 
-/* hide mobile button on desktop */
-.mobileFilterBtn {
-  display: none;
+.filterToggleBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  border: 1.5px solid #e8eaef;
+  border-radius: 999px;
+  background: #fff;
+  color: #26292f;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease;
 }
 
-/* overlay hidden on desktop */
-.filterOverlay {
-  display: none;
+.filterToggleBtn:hover,
+.filterToggleBtn.open {
+  border-color: #9aa0ac;
+  background: #fafafb;
+  color: #101216;
+}
+
+.filterBadge {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #101216;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* =========================
-   HEADER
+   POPUP
 ========================= */
+.filterPopup {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  z-index: 1200;
 
+  width: 320px;
+  max-width: calc(100vw - 32px);
+  max-height: min(520px, calc(100vh - 140px));
+
+  background: #fff;
+  border: 1px solid #e8eaef;
+  border-radius: 14px;
+  box-shadow: 0 16px 40px rgba(16, 22, 35, 0.14);
+
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  opacity: 0;
+  transform: translateY(-6px) scale(0.98);
+  pointer-events: none;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.filterPopup.open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+/* header */
 .filterHeader {
-  display: none;
+  display: flex;
   justify-content: space-between;
   align-items: center;
-
-  padding-bottom: 10px;
-  border-bottom: 1px solid #eee;
+  padding: 14px 16px;
+  border-bottom: 1px solid #e8eaef;
+  flex-shrink: 0;
 }
 
 .filterHeader h4 {
   margin: 0;
-  font-size: 18px;
+  font-size: 14px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #101216;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filterHeaderCount {
+  font-size: 10px;
+  font-weight: 700;
+  color: #5c6169;
+  background: #f1f2f5;
+  border: 1px solid #e3e5ea;
+  border-radius: 999px;
+  padding: 1px 7px;
 }
 
 .closeBtn {
   border: none;
   background: transparent;
-  font-size: 22px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+  color: #878d99;
+  font-size: 18px;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.closeBtn:hover {
+  background: #f1f2f5;
+  color: #101216;
+}
+
+/* scrollable body */
+.filterPopupBody {
+  overflow-y: auto;
+  padding: 4px 16px 8px;
+  scrollbar-width: thin;
+  scrollbar-color: #d6d9e0 transparent;
+}
+
+.filterPopupBody::-webkit-scrollbar {
+  width: 5px;
+}
+
+.filterPopupBody::-webkit-scrollbar-thumb {
+  background: #d6d9e0;
+  border-radius: 999px;
+}
+
+/* footer */
+.filterPopupFooter {
+  display: flex;
+  gap: 10px;
+  padding: 12px 16px;
+  border-top: 1px solid #e8eaef;
+  flex-shrink: 0;
+  background: #fafafb;
+}
+
+.clearFilterBtn {
+  flex: 1;
+  padding: 11px;
+  border: 1.5px solid #e8eaef;
+  border-radius: 999px;
+  background: #fff;
+  color: #878d99;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.clearFilterBtn:hover {
+  border-color: #9aa0ac;
+  color: #101216;
+}
+
+.applyFilterBtn {
+  flex: 1;
+  padding: 11px;
+  border: none;
+  border-radius: 999px;
+  background: #101216;
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.applyFilterBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(16, 22, 35, 0.16);
 }
 
 /* =========================
    HEADING
 ========================= */
-
 .filterHeading {
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 700;
   color: #111827;
   margin: 0;
 }
@@ -66,7 +216,6 @@
 /* =========================
    ACCORDION RESET
 ========================= */
-
 .MuiAccordion-root {
   background: transparent !important;
   box-shadow: none !important;
@@ -84,13 +233,12 @@
 }
 
 .MuiAccordionDetails-root {
-  padding: 10px 0 !important;
+  padding: 6px 0 12px !important;
 }
 
 /* =========================
    COLORS
 ========================= */
-
 .filterColorBtn {
   display: flex;
   flex-wrap: wrap;
@@ -98,8 +246,8 @@
 }
 
 .filterColorBtn button {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   border: none;
   cursor: pointer;
@@ -118,19 +266,18 @@
 /* =========================
    CATEGORY
 ========================= */
-
 .sizeButtons {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
 }
 
 .sizeButton {
-  padding: 8px 14px;
+  padding: 7px 13px;
   border: none;
   border-radius: 999px;
   background: #f3f4f6;
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 500;
   cursor: pointer;
   transition: 0.25s ease;
@@ -148,24 +295,21 @@
 /* =========================
    SEARCH
 ========================= */
-
 .searchBar {
   position: relative;
-  margin-top: 10px;
+  margin-top: 8px;
 }
 
 .searchBar input {
   width: 100%;
-  padding: 12px 40px 12px 14px;
-
+  padding: 10px 38px 10px 13px;
   border: 1px solid #e5e7eb;
-  border-radius: 12px;
-
+  border-radius: 10px;
   background: #f9fafb;
   font-size: 13px;
-
   outline: none;
   transition: 0.25s ease;
+  box-sizing: border-box;
 }
 
 .searchBar input:focus {
@@ -175,7 +319,7 @@
 
 .searchIcon {
   position: absolute;
-  right: 14px;
+  right: 13px;
   top: 50%;
   transform: translateY(-50%);
   color: #6b7280;
@@ -184,14 +328,12 @@
 /* =========================
    BRAND LIST
 ========================= */
-
 .brandList {
-  margin-top: 12px;
+  margin-top: 10px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-
-  max-height: 220px;
+  gap: 4px;
+  max-height: 180px;
   overflow-y: auto;
   padding-right: 4px;
 }
@@ -200,10 +342,8 @@
   display: flex;
   align-items: center;
   gap: 10px;
-
-  padding: 8px 10px;
-  border-radius: 10px;
-
+  padding: 7px 9px;
+  border-radius: 9px;
   cursor: pointer;
   transition: 0.2s ease;
 }
@@ -213,8 +353,8 @@
 }
 
 .brandItem input {
-  width: 16px;
-  height: 16px;
+  width: 15px;
+  height: 15px;
 }
 
 .brandItem span {
@@ -225,149 +365,4 @@
 .brandItem small {
   margin-left: auto;
   color: #6b7280;
-}
-
-/* =========================
-   PRICE
-========================= */
-
-.priceRange {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 12px;
-
-  font-size: 13px;
-  color: #4b5563;
-}
-
-.priceRange span {
-  font-weight: 600;
-  color: #111827;
-}
-
-/* =========================
-   APPLY BUTTON
-========================= */
-
-.applyFilterBtn {
-  width: 100%;
-  padding: 14px;
-
-  border: none;
-  border-radius: 14px;
-
-  background: #111827;
-  color: white;
-
-  font-size: 14px;
-  font-weight: 600;
-
-  cursor: pointer;
-  transition: 0.25s ease;
-}
-
-.applyFilterBtn:hover {
-  transform: translateY(-2px);
-  opacity: 0.95;
-}
-
-/* =========================
-   MOBILE STYLES
-========================= */
-
-@media (max-width: 992px) {
-  /* show filter button */
-  .mobileFilterBtn {
-    display: block;
-    width: 100%;
-    padding: 12px 14px;
-
-    border: none;
-    border-radius: 12px;
-
-    background: #111827;
-    color: white;
-
-    font-size: 14px;
-    font-weight: 600;
-
-    cursor: pointer;
-
-    margin-bottom: 12px;
-  }
-
-  /* overlay */
-  .filterOverlay {
-    display: block;
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.45);
-    z-index: 1999;
-  }
-
-  /* drawer */
-  .filterSection {
-    position: fixed;
-    top: 0;
-    left: -100%;
-
-    width: 85%;
-    max-width: 340px;
-    height: 100vh;
-
-    background: white;
-    z-index: 2000;
-
-    padding: 16px;
-
-    overflow-y: auto;
-
-    transition: left 0.35s ease;
-    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.12);
-  }
-
-  .filterSection.active {
-    left: 0;
-  }
-
-  .filterHeader {
-    display: flex;
-  }
-
-  .sizeButton {
-    flex: 1 1 calc(50% - 8px);
-    text-align: center;
-  }
-
-  .brandList {
-    max-height: 180px;
-  }
-}
-
-/* =========================
-   SMALL MOBILE
-========================= */
-
-@media (max-width: 480px) {
-  .filterSection {
-    padding: 14px;
-  }
-
-  .searchBar input {
-    font-size: 12px;
-  }
-
-  .sizeButton {
-    font-size: 12px;
-    padding: 10px;
-  }
-
-  .applyFilterBtn {
-    font-size: 13px;
-    padding: 13px;
-  }
-
-  .brandItem span {
-    font-size: 12px;
-  }
 }

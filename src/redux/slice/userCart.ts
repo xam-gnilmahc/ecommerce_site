@@ -114,7 +114,7 @@ export const addToCart = createAsyncThunk(
           .single();
 
         if (updateError) return rejectWithValue(updateError.message);
-        toast.success('Cart updated!');
+        toast.success('Quantity updated!');
         await dispatch(fetchTotalCart(userId));
         return updated;
       }
@@ -143,9 +143,11 @@ export const removeItemDirectlyFromCart = createAsyncThunk(
       const { error: deleteError } = await supabase.from('cart').delete().eq('id', existingItem.id);
 
       if (deleteError) {
+        toast.error(`Failed to remove item: ${deleteError.message}`);
         return rejectWithValue(deleteError.message);
       }
 
+      toast.success('Item removed from cart');
       await dispatch(fetchTotalCart(userId));
       return { removedId: existingItem.id };
     } catch (err) {
@@ -190,6 +192,7 @@ export const removeFromCart = createAsyncThunk(
           return rejectWithValue(updateError.message);
         }
 
+        toast.success('Quantity updated!');
         return updated;
       } else {
         const { error: deleteError } = await supabase
@@ -201,6 +204,7 @@ export const removeFromCart = createAsyncThunk(
           toast.error(`Failed to remove item from cart: ${deleteError.message}`);
           return rejectWithValue(deleteError.message);
         }
+        toast.success('Item removed from cart');
         await dispatch(fetchTotalCart(userId));
         return { removedId: existingItem.id };
       }
@@ -214,7 +218,19 @@ export const removeFromCart = createAsyncThunk(
 const cartSlice = createSlice({
   name: 'cart',
   initialState,
-  reducers: {},
+  reducers: {
+    incrementQtyOptimistic(state, action) {
+      const index = state.items.findIndex((item) => item.product_id === action.payload);
+      if (index !== -1) state.items[index].quantity += 1;
+    },
+    decrementQtyOptimistic(state, action) {
+      const index = state.items.findIndex((item) => item.product_id === action.payload);
+      if (index !== -1) {
+        state.items[index].quantity -= 1;
+        if (state.items[index].quantity <= 0) state.items.splice(index, 1);
+      }
+    },
+  },
   extraReducers: (builder) => {
     builder
       // Add to Cart
@@ -292,4 +308,5 @@ const cartSlice = createSlice({
   },
 });
 
+export const { incrementQtyOptimistic, decrementQtyOptimistic } = cartSlice.actions;
 export default cartSlice.reducer;

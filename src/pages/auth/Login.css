@@ -2,184 +2,287 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding-top: 50px;
-  padding-bottom: 70px;
+  min-height: calc(100vh - 120px);
+  padding: 40px 16px;
 }
 
 .loginSignUpContainer {
+  width: 100%;
+  max-width: 620px;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 40px 36px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  gap: 10px;
+  gap: 24px;
 }
 
 .loginSignUpTabs {
+  width: 100%;
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
   justify-content: center;
+  text-align: center;
 }
 
 .loginSignUpTabs p {
   border: none;
   cursor: pointer;
-  text-decoration: none;
   text-transform: uppercase;
   font-size: 26px;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #111827;
+  margin: 0 auto;
   position: relative;
-  color: #2f2a2a;
-  text-decoration: none;
+  text-align: center;
 }
 
-/* Tab1 Content */
+.loginSignUpTabs p::after {
+  content: '';
+  display: block;
+  width: 44px;
+  height: 3px;
+  margin: 8px auto 0;
+  border-radius: 3px;
+  background: #111827;
+}
 
-.loginSignUpTabsContentLogin form {
+.loginSignUpTabsContentLogin,
+.loginSignUpTabsContentLogin form,
+.loginSignUpTabsContentRegister,
+.loginSignUpTabsContentRegister form {
+  width: 100%;
+}
+
+.loginSignUpTabsContentLogin form,
+.loginSignUpTabsContentRegister form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  width: 500px;
 }
 
-.loginSignUpTabsContentLogin form input {
-  padding: 20px;
-  border: 2px solid #e4e4e4;
-  outline-color: black;
+/* one field = one row: label + input + hint */
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 22px;
+}
+
+.form-row:last-of-type {
+  margin-bottom: 10px;
+}
+
+.form-row label {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #111827;
+  letter-spacing: 0.2px;
+}
+
+.loginSignUpTabsContentLogin form input,
+.loginSignUpTabsContentRegister form input {
+  width: 100%;
+  padding: 13px 16px;
+  font-size: 15px;
+  border: 1px solid #e4e7ec;
+  border-radius: 12px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.loginSignUpTabsContentLogin form input:focus,
+.loginSignUpTabsContentRegister form input:focus {
+  border-color: #111827;
+  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.08);
+}
+
+/* small helper info under each field */
+.form-hint {
+  font-size: 12.5px;
+  color: #9ca3af;
+  line-height: 1.45;
+  margin: 0;
 }
 
 .loginSignUpForgetPass {
   display: flex;
   justify-content: space-between;
-  padding-bottom: 10px;
+  align-items: center;
+  margin: 4px 0 16px;
 }
 
-.loginSignUpForgetPass label {
-  display: flex;
-  align-items: center;
+.loginSignUpForgetPass p {
+  margin: 0;
+  font-size: 14px;
 }
 
 .loginSignUpForgetPass a {
-  font-size: 14px;
-  color: black;
+  color: #374151;
+  text-decoration: none;
+  transition: color 0.15s ease;
 }
 
-/* custom radio button */
-
-.loginSignUpForgetPass label input {
-  appearance: none;
-  border: 2px solid #e4e4e4;
-  position: relative;
-  cursor: pointer;
-  outline: none;
-  padding: 6px !important;
+.loginSignUpForgetPass a:hover {
+  color: #000;
+  text-decoration: underline;
 }
 
-.loginSignUpForgetPass label input:checked {
-  border: 2px solid #000000;
-}
-
-.loginSignUpForgetPass label input::after {
-  content: '';
-  display: block;
-  width: 8px;
-  height: 8px;
-  background-color: black;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0);
-  transition: transform 0.2s ease-in-out;
-}
-
-.loginSignUpForgetPass label input:checked::after {
-  transform: translate(-50%, -50%) scale(1);
-}
-
-/* custom radio button end */
-
-.loginSignUpForgetPass p {
-  color: #767676;
-  font-size: 14px;
-}
-
-.loginSignUpTabsContentLogin button {
-  padding: 15px;
-  background-color: black;
-  color: white;
+.loginSignUpTabsContentLogin .login-submit-btn,
+.loginSignUpTabsContentRegister .login-submit-btn {
+  width: 100%;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #111827;
+  color: #fff;
   border: none;
+  border-radius: 12px;
   cursor: pointer;
+  text-align: center;
   text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 14px;
   font-weight: 600;
+  transition: background-color 0.15s ease, transform 0.1s ease, opacity 0.15s ease;
+}
+
+.loginSignUpTabsContentLogin .login-submit-btn:hover:not(:disabled),
+.loginSignUpTabsContentRegister .login-submit-btn:hover:not(:disabled) {
+  background-color: #000;
+}
+
+.loginSignUpTabsContentLogin .login-submit-btn:active:not(:disabled),
+.loginSignUpTabsContentRegister .login-submit-btn:active:not(:disabled) {
+  transform: scale(0.99);
+}
+
+.loginSignUpTabsContentLogin .login-submit-btn:disabled,
+.loginSignUpTabsContentRegister .login-submit-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* divider */
+.login-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 10px 0 4px;
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+.login-divider::before,
+.login-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #eef0f4;
+}
+
+/* social buttons */
+.social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 12px;
+  border: 1px solid #e4e7ec;
+  background: #fff;
+  color: #374151 !important;
+  text-decoration: none !important;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.social-btn i {
+  font-size: 15px;
+}
+
+.social-btn:hover {
+  background: #f9fafb;
+  border-color: #d5d9e0;
+}
+
+.social-btn:active {
+  transform: scale(0.99);
+}
+
+.social-btn.google-btn {
+  color: #ea4335 !important;
+}
+
+.social-btn.fb-btn {
+  margin-top: 10px;
+  color: #1877f2 !important;
+}
+
+/* register extras */
+.register-privacy-note {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin: 4px 0 18px;
+}
+
+.register-privacy-note i {
+  color: #6b7280;
+  font-size: 14px;
+  margin-top: 2px;
+}
+
+.register-privacy-note p {
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.register-privacy-note a {
+  color: #c32929;
+  font-weight: 500;
 }
 
 .loginSignUpTabsContentLoginText {
-  padding-top: 20px;
+  padding-top: 12px;
 }
 
 .loginSignUpTabsContentLoginText p {
   font-size: 14px;
   text-align: center;
   color: #767676;
+  margin: 0;
 }
 
-.loginSignUpTabsContentLoginText p span {
-  color: black;
+.loginSignUpTabsContentLoginText p span,
+.loginSignUpTabsContentLoginText p a {
+  color: #111827;
   cursor: pointer;
   text-decoration: underline;
+  text-underline-offset: 2px;
   font-weight: 500;
-}
-
-/* Tab Content 2 */
-
-.loginSignUpTabsContentRegister form {
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
-  width: 500px;
-}
-
-.loginSignUpTabsContentRegister input {
-  padding: 20px;
-  border: 2px solid #e4e4e4;
-  outline-color: black;
-}
-
-.loginSignUpTabsContentRegister p {
-  color: #767676;
-  font-size: 14px;
-}
-
-.loginSignUpTabsContentRegister button {
-  padding: 20px;
-  background-color: black;
-  color: white;
-  border: none;
-  cursor: pointer;
-  text-transform: uppercase;
-  font-weight: 600;
 }
 
 @media screen and (max-width: 450px) {
   .loginSignUpSection {
-    padding-bottom: 30px;
+    padding: 24px 12px;
   }
 
-  .loginSignUpTabsContentLogin form {
-    width: 330px;
+  .loginSignUpContainer {
+    padding: 28px 20px;
+    border-radius: 16px;
   }
 
-  .loginSignUpTabsContentRegister form {
-    width: 330px;
-  }
-}
-
-@media screen and (max-width: 320px) {
-  .loginSignUpTabsContentLogin form {
-    width: 280px;
-  }
-
-  .loginSignUpTabsContentRegister form {
-    width: 280px;
+  .loginSignUpTabs p {
+    font-size: 22px;
   }
 }

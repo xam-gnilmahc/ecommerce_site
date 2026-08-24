@@ -76,62 +76,64 @@ const Login = () => {
           </div>
           <div className="loginSignUpTabsContentLogin">
             <form onSubmit={handleSubmit}>
-              <input
-                type="email"
-                className="form-control"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="Email address *"
-                required
-              />
+              <div className="form-row">
+                <label htmlFor="email">Email address</label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="name@example.com"
+                  required
+                />
+                <p className="form-hint">Use the email you registered with. We never share it.</p>
+              </div>
 
-              <input
-                type="password"
-                className="form-control"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Password *"
-                required
-              />
+              <div className="form-row">
+                <label htmlFor="password">Password</label>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Enter your password"
+                  required
+                />
+                <p className="form-hint">Passwords are case-sensitive.</p>
+              </div>
 
               <div className="loginSignUpForgetPass">
-                <p style={{ margin: 0 }}>
+                <p>
                   <Link to="/forgot-password">Lost password?</Link>
                 </p>
               </div>
 
-              <button type="submit" disabled={loading}>
+              <button type="submit" className="login-submit-btn" disabled={loading}>
                 {loading ? 'Logging in...' : 'Login'}
               </button>
 
-              <div className="text-center mb-3 text-muted">or continue with</div>
+              <div className="login-divider">or continue with</div>
 
-              <button
-                onClick={loginWithGoogle}
-                type="button"
-                className="btn btn-outline-danger w-100 "
-              >
-                <i className="fab fa-google me-2"></i> Continue with Google
+              <button onClick={loginWithGoogle} type="button" className="social-btn google-btn">
+                <i className="fa fa-google"></i> Continue with Google
               </button>
               <FacebookLogin
                 appId={FACEBOOK_APP_ID}
                 autoLoad={false}
                 fields="name,email,picture"
                 callback={responseFacebook}
-                icon="fa-facebook me-2"
+                icon="fa-facebook"
                 textButton="Continue with Facebook"
-                cssClass="btn btn-outline-primary w-100 mb-2 d-flex align-items-center justify-content-center"
+                cssClass="social-btn fb-btn"
               />
 
               <div className="loginSignUpTabsContentLoginText">
                 <p>
                   No account yet?{' '}
-                  <Link to="/register" className="text-decoration-underline text-info">
-                    Create Account
+                  <Link to="/register">
+                    <span>Create Account</span>
                   </Link>
                 </p>
               </div>

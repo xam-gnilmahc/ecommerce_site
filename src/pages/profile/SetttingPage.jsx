@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Navbar from '../../components/ui/Navbar';
 import './settingsPage.css';
 import {
   FaUser,

@@ -58,61 +58,74 @@ const Register = () => {
           </div>
           <div className="loginSignUpTabsContentRegister">
             <form onSubmit={handleSubmit} autoComplete="off">
-              <input
-                type="text"
-                className="form-control"
-                id="Name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="Enter Your Name"
-                required
-              />
+              <div className="form-row">
+                <label htmlFor="Name">Full name</label>
+                <input
+                  type="text"
+                  id="Name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="e.g. Alex Johnson"
+                  required
+                />
+                <p className="form-hint">This name will appear on your orders and profile.</p>
+              </div>
 
-              <input
-                type="email"
-                className="form-control"
-                id="Email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="name@example.com"
-                required
-              />
+              <div className="form-row">
+                <label htmlFor="Email">Email address</label>
+                <input
+                  type="email"
+                  id="Email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="name@example.com"
+                  required
+                />
+                <p className="form-hint">Order updates and receipts will be sent to this email.</p>
+              </div>
 
-              <input
-                type="password"
-                className="form-control"
-                id="Password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Password"
-                required
-              />
+              <div className="form-row">
+                <label htmlFor="Password">Password</label>
+                <input
+                  type="password"
+                  id="Password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Create a password"
+                  required
+                  minLength={6}
+                />
+                <p className="form-hint">Use at least 6 characters. A mix of letters and numbers is stronger.</p>
+              </div>
 
-              <p>
-                Your personal data will be used to support your experience throughout this website,
-                to manage access to your account, and for other purposes described in our
-                <Link to="/terms" style={{ textDecoration: 'none', color: '#c32929' }}>
-                  {' '}
-                  privacy policy
-                </Link>
-                .
-              </p>
-
-              <div className="my-3">
+              <div className="register-privacy-note">
+                <i className="fa fa-lock"></i>
                 <p>
-                  Already have an account?{' '}
-                  <Link to="/login" className="text-decoration-underline text-info">
-                    Login
+                  Your personal data will be used to support your experience throughout this
+                  website, to manage access to your account, and for other purposes described in
+                  our{' '}
+                  <Link to="/terms">
+                    privacy policy
                   </Link>
+                  .
                 </p>
               </div>
 
-              <button type="submit" disabled={loading}>
+              <button type="submit" className="login-submit-btn" disabled={loading}>
                 {loading ? 'Registering...' : 'Register'}
               </button>
+
+              <div className="loginSignUpTabsContentLoginText">
+                <p>
+                  Already have an account?{' '}
+                  <Link to="/login">
+                    <span>Login</span>
+                  </Link>
+                </p>
+              </div>
             </form>
           </div>
         </div>
