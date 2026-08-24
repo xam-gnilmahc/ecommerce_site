@@ -25,6 +25,7 @@ import ForgotPassword from './pages/auth/ForgotPassword';
 import NotificationPage from './pages/profile/NotificationPage';
 import NotificationSettings from './pages/profile/SetttingPage';
 import RafflePage from './pages/raffle/RafflePage';
+import AddAddress from './pages/address/AddAddress';
 import Navbar from './components/ui/Navbar';
 import Footer from './components/ui/Footer';
 
@@ -65,6 +66,7 @@ const RoutesComponent = () => (
         <Route path="/orders/:orderId" element={<OrderDetailsPage />} />
         <Route path="/notification" element={<NotificationPage />} />
         <Route path="/settings" element={<NotificationSettings />} />
+        <Route path="/add-address" element={<AddAddress />} />
       </Route>
     </Routes>
 
