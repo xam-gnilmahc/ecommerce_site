@@ -5,14 +5,62 @@ import { FiSearch, FiArrowRight, FiTrendingUp, FiZap } from 'react-icons/fi';
 import './Main.css';
 
 const CATEGORIES = [
-  { label: 'Mobiles', emoji: '📱', q: 'mobile', color: '#FF6B35', bg: '#FFF0EB' },
-  { label: 'Laptops', emoji: '💻', q: 'laptop', color: '#0066FF', bg: '#EBF0FF' },
-  { label: 'Tablets', emoji: '⬜', q: 'tablet', color: '#9333EA', bg: '#F3EBFF' },
-  { label: 'Watches', emoji: '⌚', q: 'watch', color: '#059669', bg: '#EBFFF6' },
-  { label: 'Audio', emoji: '🎧', q: 'earbuds', color: '#DC2626', bg: '#FFEBEB' },
-  { label: 'Keyboards', emoji: '⌨️', q: 'keyboard', color: '#D97706', bg: '#FFF8EB' },
-  { label: 'Cameras', emoji: '📷', q: 'camera', color: '#0891B2', bg: '#EBF9FF' },
-  { label: 'Gaming', emoji: '🎮', q: 'gaming', color: '#7C3AED', bg: '#F0EBFF' },
+  {
+    label: 'Mobiles',
+    img: 'https://static0.anpoimages.com/wordpress/wp-content/uploads/2025/08/pixel-10.png?q=70&fit=contain&w=420&dpr=1',
+    q: 'mobile',
+    color: '#FF6B35',
+    bg: '#FFF0EB',
+  },
+  {
+    label: 'Laptops',
+    img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQn8vQdgMccG_FBU1O6qew_sRa6hiU04vHWcw3HPif8bkbKUwvex9JZrWg&s=10',
+    q: 'laptop',
+    color: '#0066FF',
+    bg: '#EBF0FF',
+  },
+  {
+    label: 'Tablets',
+    img: 'https://brother-mart.com/cdn/shop/files/buy-ipad-air-13-m4-nepal-online-ipad-air-13-m4-price-nepal-2026.png?v=1775825788&width=900',
+    q: 'tablet',
+    color: '#9333EA',
+    bg: '#F3EBFF',
+  },
+  {
+    label: 'Watches',
+    img: 'https://img.fatafatsewa.com/products/3362/apple-watch-ultra-orange-alpine-loop-2023.jpg',
+    q: 'watch',
+    color: '#059669',
+    bg: '#EBFFF6',
+  },
+  {
+    label: 'Audio',
+    img: 'https://www.apple.com/v/airpods/ae/images/overview/airpods_max_blue__fsfaleh1smuu_large.png',
+    q: 'earbuds',
+    color: '#DC2626',
+    bg: '#FFEBEB',
+  },
+  {
+    label: 'Keyboards',
+    img: 'https://www.sbsupply.eu/media/amasty/webp/catalog/product/cache/207e23213cf636ccdef205098cf3c8a3/a/p/apple-magic-keyboard-with-touch-id-qwerty-white_1_1_jpg.webp',
+    q: 'keyboard',
+    color: '#D97706',
+    bg: '#FFF8EB',
+  },
+  {
+    label: 'Cameras',
+    img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwMhMPKgXBWitbl80BdsIWRX3gkxaKfx5A8q3QMkb0T43K0_iOePg0jBEW&s=10',
+    q: 'camera',
+    color: '#0891B2',
+    bg: '#EBF9FF',
+  },
+  {
+    label: 'Gaming',
+    img: 'https://img.drz.lazcdn.com/static/np/p/abbc459a041c762e4844600be6e7e14a.png_720x720q80.png',
+    q: 'gaming',
+    color: '#7C3AED',
+    bg: '#F0EBFF',
+  },
 ];
 
 const HOT_SEARCHES = ['iPhone 17 Pro', 'MacBook Pro', 'Galaxy S26', 'Apple AirPods', 'Imac'];
@@ -75,7 +123,7 @@ export default function Home() {
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
           >
-            Search <FiArrowRight />
+            <span>Search</span> <FiArrowRight />
           </motion.button>
         </motion.div>
 
@@ -114,7 +162,9 @@ export default function Home() {
               whileHover={{ y: -6, scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
             >
-              <span className="hp-cat-emoji">{cat.emoji}</span>
+              <span className="hp-cat-emoji">
+                <img src={cat.img} alt={cat.label} className="hp-cat-img" />
+              </span>
               <span className="hp-cat-label">{cat.label}</span>
               <FiArrowRight className="hp-cat-arrow" />
             </motion.button>
@@ -149,7 +199,6 @@ export default function Home() {
             <button className="hp-deal-cta">
               Shop now <FiArrowRight />
             </button>
-            <div className="hp-deal-deco">💻</div>
           </motion.div>
 
           {/* 2 stacked banners */}
@@ -164,7 +213,6 @@ export default function Home() {
               <div className="hp-deal-tag">⚡ New arrivals</div>
               <div className="hp-deal-title">Mobiles</div>
               <div className="hp-deal-sub">iPhone, Samsung & more</div>
-              <div className="hp-deal-deco">📱</div>
             </motion.div>
 
             <motion.div
@@ -177,7 +225,6 @@ export default function Home() {
               <div className="hp-deal-tag">🎯 Best sellers</div>
               <div className="hp-deal-title">Wearables</div>
               <div className="hp-deal-sub">Watches & fitness bands</div>
-              <div className="hp-deal-deco">⌚</div>
             </motion.div>
           </div>
         </div>

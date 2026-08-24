@@ -19,10 +19,12 @@ import { fetchFilteredProducts } from '../../redux/slice/filterProduct.ts';
 import { trackAddToCart, trackSearch } from '../../utils/tracking.ts';
 import { addToCart } from '../../redux/slice/userCart.ts';
 import { SUPABASE_STORAGE_URL } from '../../utils/supabaseStorage';
+import { supabase } from '../../supaBaseClient';
 import './Products.css';
 
 const Products = () => {
   const [displayProducts, setDisplayProducts] = useState([]);
+  const [outOfStockMap, setOutOfStockMap] = useState({});
   const [wishList, setWishList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -46,9 +48,12 @@ const Products = () => {
 
   const { recommendations, status: recStatus } = useSelector((state) => state.userRecommendations);
 
-  // Load initial products / recommendations
+  // Load initial products / recommendations (once per mount)
+  const initialLoadDone = useRef(false);
   useEffect(() => {
     if (!searchQuery) {
+      if (initialLoadDone.current) return;
+      initialLoadDone.current = true;
       if (user?.id) {
         dispatch(fetchUserRecommendations(user.id));
       } else {
@@ -137,6 +142,46 @@ const Products = () => {
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
   const currentPosts = sortedProducts.slice(indexOfFirstPost, indexOfLastPost);
 
+  // ── INVENTORY CHECK (same rule as product details page:
+  //    no inventory row OR stock_quantity === 0 → out of stock) ────────────
+  useEffect(() => {
+    const ids = currentPosts.map((p) => p.id);
+    if (ids.length === 0) return;
+
+    let cancelled = false;
+    const checkStock = async () => {
+      const { data } = await supabase
+        .from('inventory')
+        .select('product_id, stock_quantity')
+        .in('product_id', ids);
+
+      if (cancelled || !data) {
+        if (!cancelled && !data) {
+          // couldn't load inventory — treat everything as out of stock,
+          // matching details-page behaviour on fetch error
+          setOutOfStockMap(Object.fromEntries(ids.map((pid) => [pid, true])));
+        }
+        return;
+      }
+
+      const map = {};
+      ids.forEach((pid) => {
+        const row = data.find((d) => d.product_id === pid);
+        map[pid] = !row || Number(row.stock_quantity) === 0;
+      });
+      setOutOfStockMap(map);
+    };
+
+    setOutOfStockMap({});
+    checkStock();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [displayProducts, sortBy, currentPage]);
+
+  const isOutOfStock = (productId) => outOfStockMap[productId] === true;
+
   // CART
   const handleAddToCart = async (product) => {
     if (!user) {
@@ -158,6 +203,10 @@ const Products = () => {
 
   // FILTER
   const handleFilterChange = (filters) => {
+    if (searchQuery) {
+      navigate('/search', { replace: true });
+    }
+    setDisplayProducts([]); // clear old list immediately
     dispatch(fetchFilteredProducts(filters));
     setCurrentPage(1);
   };
@@ -168,7 +217,12 @@ const Products = () => {
     setCurrentPage(1);
   };
 
+  // a new search query is in the URL but its fetch hasn't started yet
+  // (prevents the previous list from flashing before the skeleton)
+  const searchPending = Boolean(searchQuery) && lastExecutedQuery.current !== searchQuery;
+
   const isLoading =
+    searchPending ||
     (searchQuery && searchStatus === 'loading') ||
     (!searchQuery && (productsLoading || recStatus === 'loading')) ||
     filterStatus === 'loading';
@@ -226,7 +280,7 @@ const Products = () => {
         ) : (
           currentPosts.map((product) => (
             <div key={product.id} className="sdProductContainer">
-              <div className="sdProductImages">
+              <div className={`sdProductImages ${isOutOfStock(product.id) ? 'out-of-stock' : ''}`}>
                 <Link
                   to={`/product/${product.id}`}
                   rel="noopener noreferrer"
@@ -237,6 +291,10 @@ const Products = () => {
                     alt={product.name}
                   />
                 </Link>
+
+                {isOutOfStock(product.id) && (
+                  <span className="sdOutOfStockBadge">Currently Out of Stock</span>
+                )}
 
                 {/* <button
                   className="add-to-cart-button"
@@ -277,16 +335,15 @@ const Products = () => {
   return (
     <div className="shopDetails">
       <div className="shopDetailMain">
-        <div className="shopDetails__left">
-          <Filters onApplyFilters={handleFilterChange} searchQuery={searchQuery} />
-        </div>
-
         <div className="shopDetails__right">
-          <SortBar
-            sortBy={sortBy}
-            onSortChange={handleSortChange}
-            totalProducts={displayProducts.length}
-          />
+          <div className="shopToolbar">
+            <Filters onApplyFilters={handleFilterChange} searchQuery={searchQuery} />
+            <SortBar
+              sortBy={sortBy}
+              onSortChange={handleSortChange}
+              totalProducts={displayProducts.length}
+            />
+          </div>
           <div className="row">{isLoading ? <LoadingSkeleton /> : <ProductList />}</div>
 
           <Pagination

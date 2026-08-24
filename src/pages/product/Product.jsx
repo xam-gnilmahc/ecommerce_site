@@ -170,8 +170,44 @@ const Product = () => {
 
   const [clicked, setClicked] = useState(false);
 
-  const sizes = ['XS', 'S', 'M', 'L', 'XL'];
-  const sizesFullName = ['Extra Small', 'Small', 'Medium', 'Large', 'Extra Large'];
+  // ── Sizes: real sizes from this product's items, brand-aware fallback ────
+  const DEFAULT_SIZES = ['XS', 'S', 'M', 'L', 'XL'];
+  // footwear/sports brands use numeric scales instead of XS–XL
+  const SHOE_BRANDS = ['nike shoes', 'adidas shoes', 'bata', 'campus', 'woodland', 'red tape'];
+
+  const availableSizes = (() => {
+    const fromItems = (product?.product_items || [])
+      .map((it) => it.size)
+      .filter(Boolean)
+      .map(String);
+    const unique = [...new Set(fromItems)];
+    if (unique.length > 0) return unique;
+
+    const brand = String(product?.brand || '')
+      .toLowerCase()
+      .trim();
+    const isShoe = SHOE_BRANDS.some((b) => brand.includes(b));
+    if (isShoe) return ['6', '7', '8', '9', '10', '11'];
+
+    return DEFAULT_SIZES;
+  })();
+
+  useEffect(() => {
+    if (availableSizes.length > 0 && !availableSizes.includes(selectSize)) {
+      setSelectSize(availableSizes[0]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product?.id]);
+
+  const sizesFullName = {
+    XS: 'Extra Small',
+    S: 'Small',
+    M: 'Medium',
+    L: 'Large',
+    XL: 'Extra Large',
+    XXL: 'Double Extra Large',
+  };
+
   const [selectSize, setSelectSize] = useState('S');
 
   const [highlightedColor, setHighlightedColor] = useState('#C8393D');
@@ -267,15 +303,11 @@ const Product = () => {
           <div className="product-page-title">{product.name}</div>
         </div>
 
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            gap: '100px',
-          }}
-        >
-          <h2 className="productPrice">${product.amount}</h2>
+        <div className="priceRow">
+          <h2 className="productPrice">
+            ${product.amount}
+            <span className="priceNote">incl. all taxes</span>
+          </h2>
           <p className="productRating">
             {Array.from({ length: 5 }, (_, i) => {
               const rating = product?.rating || 0;
@@ -284,7 +316,7 @@ const Product = () => {
                 return <i key={i} className="fa fa-star-half-o text-warning"></i>;
               return <i key={i} className="fa fa-star-o text-warning"></i>;
             })}
-            <div>({product?.rating || 0} / 5)</div>
+            <span>({Number(product?.rating || 0).toFixed(1)} / 5)</span>
           </p>
         </div>
 
@@ -292,23 +324,23 @@ const Product = () => {
         <StockBadge />
 
         <h3 className="product-section-title">Description</h3>
-        <p className="productDescription text-muted">{product.description?.substring(0, 200)}</p>
+        <p className="productDescription">{product.description?.substring(0, 200)}</p>
 
         <div className="productSizeColor">
           <div className="productSize">
-            <p style={{ margin: 0 }}>Sizes</p>
+            <p className="optionLabel">Sizes</p>
             <div className="sizeBtn">
-              {sizes.map((size, index) => (
+              {availableSizes.map((size) => (
                 <Tooltip
                   key={size}
-                  title={sizesFullName[index]}
+                  title={sizesFullName[size] || `Size ${size}`}
                   placement="top"
                   TransitionComponent={Zoom}
                   enterTouchDelay={0}
                   arrow
                 >
                   <button
-                    style={{ borderColor: selectSize === size ? '#000' : '#e0e0e0' }}
+                    className={selectSize === size ? 'selected' : ''}
                     onClick={() => setSelectSize(size)}
                   >
                     {size}
@@ -318,7 +350,7 @@ const Product = () => {
             </div>
           </div>
           <div className="productColor">
-            <p style={{ margin: 0 }}>Color</p>
+            <p className="optionLabel">Color</p>
             <div className="colorBtn">
               {colors.map((color, index) => (
                 <Tooltip
@@ -387,12 +419,12 @@ const Product = () => {
           <div className="productWishList">
             <button onClick={handleWishClick}>
               <FiHeart color={clicked ? 'red' : ''} size={17} />
-              <p style={{ margin: 0 }}>Add to Wishlist</p>
+              <span>Add to Wishlist</span>
             </button>
           </div>
           <div className="productShare">
-            <PiShareNetworkLight size={22} />
-            <p style={{ margin: 0 }}>Share</p>
+            <PiShareNetworkLight size={18} />
+            <span>Share</span>
           </div>
         </div>
 

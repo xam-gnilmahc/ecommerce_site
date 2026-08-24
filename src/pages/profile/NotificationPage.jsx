@@ -180,14 +180,24 @@ const NotificationPage = () => {
           <div className="notification-header">
             <h4>Notifications</h4>
 
-            <FiSettings size={18} />
+            <button
+              type="button"
+              className="notification-settings-btn"
+              onClick={() => window.open('/settings', '_self')}
+              aria-label="Notification settings"
+            >
+              <FiSettings size={17} />
+            </button>
           </div>
 
           {/* LIST */}
 
           <div className="notification-list" ref={listRef} onScroll={onScroll}>
             {notifications.length === 0 ? (
-              <div className="notification-empty">No notifications</div>
+              <div className="notification-empty">
+                <div style={{ fontSize: 34, marginBottom: 8 }}>🔔</div>
+                No notifications yet
+              </div>
             ) : (
               notifications.map(({ id, order_id, message, created_at, type }) => (
                 <div

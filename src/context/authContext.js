@@ -321,7 +321,7 @@ export const AuthProvider = ({ children }) => {
           {
             user_id: user.id,
             order_id: orderId,
-            message: `✨Your order <a href="/orders/${orderId}" target="_blank" rel="noopener noreferrer" style="color:#0d6efd; text-decoration:underline;">#${orderId}</a> has been placed successfully. Thank you for shopping with us!`,
+            message: `Order #${orderId} has been placed successfully. Thank you for shopping with us!`,
             read: false,
             type: 0,
           },
@@ -341,7 +341,7 @@ export const AuthProvider = ({ children }) => {
           event: 'order-placed',
           message: {
             orderId,
-            message: `Your order <a href="/orders/${orderId}" target="_blank" rel="noopener noreferrer" style="color:#0d6efd; text-decoration:underline;">#${orderId}</a> has been placed successfully. Thank you for shopping with us`,
+            message: `Order #${orderId} has been placed successfully. Thank you for shopping with us`,
             type: 0,
           },
         }),

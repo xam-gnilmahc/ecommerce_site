@@ -1,22 +1,23 @@
 /* ═══════════════════════════════════════════════
-   DESIGN TOKENS (matches orders page)
+   DESIGN TOKENS
 ═══════════════════════════════════════════════ */
 .sett-layout {
   --ck-black: #0a0a0a;
   --ck-white: #ffffff;
   --ck-off: #f5f5f7;
-  --ck-border: #e8e8e8;
+  --ck-border: #e5e7eb;
   --ck-muted: #6b7280;
   --ck-radius: 12px;
 
   background: var(--ck-off);
   min-height: 100vh;
-  padding: 28px 60px 60px;
+  padding: 32px 20px 60px;
   font-family: var(--font-main);
+  color: var(--ck-black);
 }
 
 .sett-container {
-  max-width: 960px;
+  max-width: 720px;
   margin: 0 auto;
 }
 
@@ -24,20 +25,20 @@
    PAGE HEADER
 ═══════════════════════════════════════════════ */
 .sett-page-header {
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 
 .sett-page-title {
   font-family: var(--font-main);
-  font-size: 26px;
+  font-size: 28px;
   font-weight: 800;
   color: var(--ck-black);
-  margin: 0 0 4px;
+  margin: 0 0 6px;
   letter-spacing: -0.3px;
 }
 
 .sett-page-sub {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--ck-muted);
   margin: 0;
 }
@@ -47,12 +48,12 @@
 ═══════════════════════════════════════════════ */
 .sett-profile-card {
   background: var(--ck-black);
-  border-radius: 14px;
-  padding: 24px 28px;
+  border-radius: 16px;
+  padding: 28px;
   display: flex;
   align-items: center;
   gap: 20px;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
   position: relative;
   overflow: hidden;
 }
@@ -85,8 +86,8 @@
 }
 
 .sett-avatar {
-  width: 64px;
-  height: 64px;
+  width: 68px;
+  height: 68px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.12);
   border: 2.5px solid rgba(255, 255, 255, 0.3);
@@ -94,18 +95,27 @@
   align-items: center;
   justify-content: center;
   font-family: var(--font-main);
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 800;
   color: #fff;
   letter-spacing: 1px;
+}
+
+.sett-avatar-img {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2.5px solid rgba(255, 255, 255, 0.3);
+  display: block;
 }
 
 .sett-avatar-edit {
   position: absolute;
   bottom: 0;
   right: 0;
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   background: var(--ck-white);
   border: none;
@@ -125,29 +135,31 @@
 .sett-profile-info {
   flex: 1;
   z-index: 1;
+  min-width: 0;
 }
 
 .sett-profile-name {
   font-family: var(--font-main);
   font-size: 18px;
   font-weight: 700;
-  color: var(--ck-white);
-  margin: 0 0 2px;
+  color: #ffffff;
+  margin: 0 0 4px;
 }
 
 .sett-profile-email {
-  font-size: 12px;
+  font-size: 13px;
   color: rgba(255, 255, 255, 0.55);
-  margin: 0 0 8px;
+  margin: 0 0 10px;
 }
 
 .sett-profile-badge {
+  display: inline-block;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: rgba(255, 255, 255, 0.8);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
-  padding: 3px 10px;
+  padding: 4px 12px;
   border-radius: 999px;
   letter-spacing: 0.3px;
 }
@@ -155,15 +167,16 @@
 .sett-edit-profile-btn {
   background: rgba(255, 255, 255, 0.1);
   border: 1.5px solid rgba(255, 255, 255, 0.25);
-  color: var(--ck-white);
-  font-size: 12px;
+  color: #ffffff;
+  font-size: 13px;
   font-weight: 600;
-  padding: 8px 18px;
-  border-radius: 8px;
+  padding: 10px 20px;
+  border-radius: 10px;
   cursor: pointer;
   transition: background 0.2s;
   z-index: 1;
   white-space: nowrap;
+  font-family: var(--font-main);
 }
 
 .sett-edit-profile-btn:hover {
@@ -177,7 +190,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
-  margin-bottom: 20px;
+  margin-bottom: 28px;
 }
 
 /* ═══════════════════════════════════════════════
@@ -186,7 +199,7 @@
 .sett-section {
   background: var(--ck-white);
   border-radius: 14px;
-  border: 1.5px solid var(--ck-border);
+  border: 1px solid var(--ck-border);
   overflow: hidden;
 }
 
@@ -196,7 +209,7 @@
   gap: 10px;
   padding: 14px 18px;
   border-bottom: 1px solid var(--ck-border);
-  background: var(--ck-off);
+  background: #fafafa;
 }
 
 .sett-section-icon {
@@ -213,7 +226,7 @@
 }
 
 .sett-section-title {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--ck-black);
   margin: 0;
@@ -221,7 +234,7 @@
 }
 
 .sett-section-body {
-  padding: 4px 0;
+  padding: 2px 0;
 }
 
 /* ═══════════════════════════════════════════════
@@ -231,7 +244,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 18px;
+  padding: 13px 18px;
   gap: 12px;
   border-bottom: 1px solid var(--ck-border);
   width: 100%;
@@ -242,6 +255,7 @@
   text-align: left;
   cursor: default;
   font-family: var(--font-main);
+  transition: background 0.15s;
 }
 
 .sett-row:last-child {
@@ -250,15 +264,14 @@
 
 .sett-row--link {
   cursor: pointer;
-  transition: background 0.15s;
 }
 
 .sett-row--link:hover {
-  background: var(--ck-off);
+  background: #f9fafb;
 }
 
 .sett-row--danger .sett-row-label {
-  color: #e53935;
+  color: #dc2626;
 }
 
 .sett-row-text {
@@ -278,7 +291,7 @@
 }
 
 .sett-row-sub {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--ck-muted);
   white-space: nowrap;
   overflow: hidden;
@@ -296,15 +309,16 @@
   font-size: 11px;
   color: var(--ck-muted);
   background: var(--ck-off);
-  padding: 3px 8px;
+  padding: 3px 10px;
   border-radius: 6px;
   white-space: nowrap;
   font-weight: 600;
 }
 
 .sett-row-chevron {
-  font-size: 11px;
-  color: #ccc;
+  font-size: 12px;
+  color: #d1d5db;
+  transition: color 0.15s;
 }
 
 .sett-row--link:hover .sett-row-chevron {
@@ -313,12 +327,12 @@
 
 /* sub-group label */
 .sett-row-group-label {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.7px;
+  letter-spacing: 0.6px;
   color: var(--ck-muted);
-  padding: 10px 18px 4px;
+  padding: 12px 18px 6px;
   font-family: var(--font-main);
 }
 
@@ -326,10 +340,10 @@
    TOGGLE
 ═══════════════════════════════════════════════ */
 .sett-toggle {
-  width: 42px;
+  width: 44px;
   height: 24px;
   border-radius: 999px;
-  background: #ddd;
+  background: #d1d5db;
   border: none;
   cursor: pointer;
   position: relative;
@@ -356,7 +370,7 @@
 }
 
 .sett-toggle.on .sett-toggle-knob {
-  transform: translateX(18px);
+  transform: translateX(20px);
 }
 
 /* ═══════════════════════════════════════════════
@@ -365,11 +379,11 @@
 .sett-select {
   border: 1.5px solid var(--ck-border);
   border-radius: 8px;
-  padding: 6px 10px;
-  font-size: 12px;
+  padding: 7px 12px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--ck-black);
-  background: var(--ck-off);
+  background: var(--ck-white);
   cursor: pointer;
   outline: none;
   transition: border-color 0.2s;
@@ -386,14 +400,15 @@
 .sett-danger-zone {
   display: flex;
   gap: 12px;
-  justify-content: flex-end;
+  justify-content: center;
+  padding-top: 8px;
 }
 
 .sett-danger-btn {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 20px;
+  padding: 12px 24px;
   border-radius: 10px;
   font-size: 13px;
   font-weight: 600;
@@ -405,24 +420,24 @@
 
 .sett-logout-btn {
   background: var(--ck-white);
-  color: #555;
+  color: var(--ck-black);
   border-color: var(--ck-border);
 }
 
 .sett-logout-btn:hover {
   background: var(--ck-off);
-  border-color: #bbb;
+  border-color: #d1d5db;
 }
 
 .sett-delete-btn {
-  background: #fff5f5;
-  color: #e53935;
-  border-color: #ffcdd2;
+  background: #fef2f2;
+  color: #dc2626;
+  border-color: #fecaca;
 }
 
 .sett-delete-btn:hover {
-  background: #ffebee;
-  border-color: #e53935;
+  background: #fee2e2;
+  border-color: #dc2626;
 }
 
 /* ═══════════════════════════════════════════════
@@ -430,7 +445,7 @@
 ═══════════════════════════════════════════════ */
 @media (max-width: 768px) {
   .sett-layout {
-    padding: 16px 12px 40px;
+    padding: 20px 14px 40px;
   }
 
   .sett-grid {
@@ -439,6 +454,7 @@
 
   .sett-profile-card {
     flex-wrap: wrap;
+    padding: 20px;
   }
 
   .sett-edit-profile-btn {
@@ -454,14 +470,4 @@
   .sett-danger-btn {
     justify-content: center;
   }
-}
-
-/* real google avatar image */
-.sett-avatar-img {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2.5px solid rgba(255, 255, 255, 0.3);
-  display: block;
 }

@@ -139,11 +139,12 @@ const OrdersPage = () => {
           {/* ── LIST COLUMN ─────────────────────────────── */}
           <div className="orders-list-col">
             {/* Page heading */}
-            {/* <p className="orders-page-label">Account</p>
-            <h1 className="orders-page-title">My <em>orders</em></h1> */}
+            <div className="orders-header">
+              <h1 className="orders-page-title">
+                My <em>orders</em>
+              </h1>
 
-            {/* Toggle */}
-            <div className="orders-toggle-wrapper">
+              {/* Toggle */}
               <div className="toggle-slider">
                 <div className={`toggle-highlight ${showCancelled ? 'right' : ''}`} />
                 <button
@@ -173,49 +174,135 @@ const OrdersPage = () => {
               </div>
             ) : (
               <div className="order-list">
-                {(showCancelled ? cancelledOrders : orders).map((order) => (
-                  <div
-                    className={`order-card ${activeId === order.id ? 'order-card--active' : ''}`}
-                    key={order.id}
-                    onClick={() => handleOrderClick(order.id)}
-                  >
-                    <div className="order-top">
-                      <div className="tracking">#{order.tracking_number || 'N/A'}</div>
-                      <div className={`status ${order.status?.toLowerCase()}`}>
-                        {getStatusIcon(order.status)}
-                        <span>{order.status}</span>
+                {(showCancelled ? cancelledOrders : orders).map((order) => {
+                  const itemCount = order.order_items?.length || 0;
+                  const isDelivered = order.status === 'Delivered';
+                  return (
+                    <div
+                      className={`order-card ${activeId === order.id ? 'order-card--active' : ''}`}
+                      key={order.id}
+                      onClick={() => handleOrderClick(order.id)}
+                    >
+                      {/* Amazon-style grey header band */}
+                      <div className="order-card-band">
+                        <div className="band-col">
+                          <span className="band-label">Order placed</span>
+                          <span className="band-value">{formatDate(order.created_at)}</span>
+                        </div>
+                        <div className="band-col">
+                          <span className="band-label">Total</span>
+                          <span className="band-value">
+                            ${Number(order.total_amount).toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="band-col band-col--ship">
+                          <span className="band-label">Ship to</span>
+                          <span className="band-value band-ship-name">{user?.name}</span>
+                        </div>
+                        <div className="band-right">
+                          <span className="band-order-no">
+                            Order #{order.tracking_number || order.id}
+                          </span>
+                          <button
+                            type="button"
+                            className="band-view-link"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleOrderClick(order.id);
+                            }}
+                          >
+                            View order details
+                            <svg
+                              width="10"
+                              height="10"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="3"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path d="M9 18l6-6-6-6" />
+                            </svg>
+                          </button>
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="product-list">
-                      {order.order_items?.slice(0, 2).map((item, i) => (
-                        <div className="product-row" key={i}>
-                          <img
-                            src={`${SUPABASE_STORAGE_URL}productimages/${item.products.banner_url}`}
-                            alt=""
-                          />
-                          <div className="product-info">
-                            <div className="name">{item.products.name}</div>
-                            <div className="qty">Qty: {item.quantity}</div>
-                          </div>
-                          <div className="price">
-                            ${(item.price_each * item.quantity).toFixed(2)}
+                      <div className="order-card-body">
+                        {/* Amazon: big green headline line */}
+                        <div className="ship-line">
+                          {showCancelled || order.status === 'Cancelled' ? (
+                            <span className="ship-headline cancelled">
+                              <FaTimes /> Order cancelled
+                            </span>
+                          ) : isDelivered ? (
+                            <span className="ship-headline delivered">
+                              <FaCheckCircle /> Delivered{' '}
+                              <strong>
+                                {formatDate(order.estimated_date || order.updated_at)}
+                              </strong>
+                            </span>
+                          ) : (
+                            <span className="ship-headline">
+                              Arriving <strong>{formatDate(order.estimated_date)}</strong>
+                            </span>
+                          )}
+                          <div className={`status ${order.status?.toLowerCase()}`}>
+                            {getStatusIcon(order.status)}
+                            <span>{order.status}</span>
                           </div>
                         </div>
-                      ))}
-                    </div>
 
-                    <div className="order-footer">
-                      <div className="total">
-                        Total: ${Number(order.total_amount).toLocaleString()}
-                      </div>
-                      <div className="delivery-right">
-                        <span>Delivery:</span>
-                        <strong>{formatDate(order.delivery_date || order.estimated_date)}</strong>
+                        {/* Flipkart-style meta line */}
+                        <div className="order-meta-line">
+                          <span>
+                            {itemCount} item{itemCount > 1 ? 's' : ''}
+                          </span>
+                          <i>·</i>
+                          <span>Sold by UOM</span>
+                          <i>·</i>
+                          <span className="meta-paid">
+                            Paid ${Number(order.total_amount).toFixed(2)}
+                          </span>
+                        </div>
+
+                        {/* product thumbnails in one row */}
+                        <div className="product-list">
+                          {order.order_items?.slice(0, 2).map((item, i) => (
+                            <div className="product-thumb" key={i}>
+                              <img
+                                src={`${SUPABASE_STORAGE_URL}productimages/${item.products.banner_url}`}
+                                alt={item.products.name}
+                              />
+                              {item.quantity > 1 && (
+                                <span className="thumb-qty-badge">×{item.quantity}</span>
+                              )}
+                            </div>
+                          ))}
+                          {itemCount > 2 && (
+                            <button
+                              type="button"
+                              className="product-more-tile"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleOrderClick(order.id);
+                              }}
+                            >
+                              +{itemCount - 2}
+                              <small>more</small>
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
+                {!showCancelled && orders.length === 0 && !loading && (
+                  <div className="orders-empty">No orders yet — start shopping!</div>
+                )}
+                {showCancelled && cancelledOrders.length === 0 && !loading && (
+                  <div className="orders-empty">No cancelled orders</div>
+                )}
               </div>
             )}
           </div>

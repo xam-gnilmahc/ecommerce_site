@@ -8,17 +8,13 @@ import Badge from '@mui/material/Badge';
 
 import { RiShoppingBagLine, RiMenu2Line } from 'react-icons/ri';
 
-import { FaRegUser, FaChevronDown, FaBoxOpen, FaCog, FaSignOutAlt } from 'react-icons/fa';
+import { FaChevronDown, FaBoxOpen, FaCog, FaSignOutAlt } from 'react-icons/fa';
 
 import { MdOutlineClose } from 'react-icons/md';
 import { FiSearch } from 'react-icons/fi';
-import { MdConfirmationNumber } from 'react-icons/md';
 
 import logo from '../cart/assets/logo.png';
-
 import './Navbar.css';
-
-import NotificationPage from '../../pages/profile/NotificationPage';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -40,6 +36,8 @@ const Navbar = () => {
   const { totalCart } = useSelector((state) => state.addToCart);
 
   const isSearchPage = location.pathname === '/search';
+
+  const isAuthPage = ['/login', '/register'].includes(location.pathname);
 
   const searchQuery = new URLSearchParams(location.search).get('q') || '';
 
@@ -96,123 +94,104 @@ const Navbar = () => {
   return (
     <>
       <div ref={navRef} className={`navBar ${isSticky ? 'fixed' : ''}`}>
-        {/* LEFT */}
-        <div className="logoContainer">
-          <Link to="/">
-            <img src={logo} alt="Logo" />
-          </Link>
-        </div>
-
-        {/* SEARCH */}
-        {isSearchPage && (
-          <div className="navbar-search">
-            <div className="search-box">
-              <FiSearch className="search-icon" />
-              <input
-                type="text"
-                placeholder="Search for products..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                onKeyDown={handleSearch}
-              />
-            </div>
+        <div className="nav-inner">
+          {/* LEFT */}
+          <div className="logoContainer">
+            <Link to="/">
+              <img src={logo} alt="Logo" />
+            </Link>
           </div>
-        )}
 
-        {/* RIGHT */}
-        <div className="nav-right">
-          {/* 🎟️ RAFFLES LINK — always visible */}
-          {/* <NavLink
-            to="/raffles"
-            className="nav-raffle-link"
-            style={({ isActive }) => ({
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '6px 14px',
-              borderRadius: '100px',
-              border: '1.5px solid',
-              borderColor: isActive ? '#1a1a2e' : '#e0ddd6',
-              background: isActive ? '#1a1a2e' : 'transparent',
-              color: isActive ? '#ffffff' : '#1a1a2e',
-              fontWeight: 600,
-              fontSize: '13px',
-              textDecoration: 'none',
-              transition: 'all 0.2s ease',
-            })}
-          >
-            <MdConfirmationNumber size={15} />
-            Raffles
-          </NavLink> */}
-
-          {!user ? (
-            <>
-              <NavLink to="/login" className="nav-btn">
-                Login
-              </NavLink>
-              <NavLink to="/register" className="nav-btn">
-                Register
-              </NavLink>
-            </>
-          ) : (
-            <>
-              <NotificationPage embedded />
-
-              {/* PROFILE DROPDOWN */}
-              <div className="profile-dropdown" ref={profileRef}>
-                <button className="profile-trigger" onClick={() => setProfileOpen(!profileOpen)}>
-                  {user.picture ? (
-                    <img src={user.picture} alt="profile" className="profile-avatar" />
-                  ) : (
-                    <FaRegUser size={18} />
-                  )}
-                  <FaChevronDown className={`arrow ${profileOpen ? 'rotate' : ''}`} />
-                </button>
-
-                {profileOpen && (
-                  <div className="profile-menu">
-                    <button
-                      onClick={() => {
-                        navigate('/order');
-                        setProfileOpen(false);
-                      }}
-                    >
-                      <FaBoxOpen />
-                      Orders
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        navigate('/settings');
-                        setProfileOpen(false);
-                      }}
-                    >
-                      <FaCog />
-                      Settings
-                    </button>
-
-                    <button
-                      className="logout-btn"
-                      onClick={() => {
-                        logout();
-                        setProfileOpen(false);
-                      }}
-                    >
-                      <FaSignOutAlt />
-                      Logout
-                    </button>
-                  </div>
-                )}
+          {/* SEARCH */}
+          {isSearchPage && (
+            <div className="navbar-search">
+              <div className="search-box">
+                <FiSearch className="search-icon" />
+                <input
+                  type="text"
+                  placeholder="Search for products..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  onKeyDown={handleSearch}
+                />
               </div>
-
-              {/* CART */}
-              <NavLink to="/cart">
-                <Badge badgeContent={totalCart || '0'} color="primary">
-                  <RiShoppingBagLine size={22} />
-                </Badge>
-              </NavLink>
-            </>
+            </div>
           )}
+
+          {/* RIGHT */}
+          <div className="nav-right">
+            {!user ? (
+              !isAuthPage && (
+                <>
+                  <NavLink to="/login" className="nav-login">
+                    Login
+                  </NavLink>
+                  <NavLink to="/register" className="nav-register">
+                    Register
+                  </NavLink>
+                </>
+              )
+            ) : (
+              <>
+                {/* PROFILE DROPDOWN */}
+                <div className="profile-dropdown" ref={profileRef}>
+                  <button className="profile-trigger" onClick={() => setProfileOpen(!profileOpen)}>
+                    {user.picture ? (
+                      <img src={user.picture} alt="profile" className="profile-avatar" />
+                    ) : (
+                      <span className="profile-avatar profile-initial">
+                        {(user.name || user.full_name || 'U').charAt(0).toUpperCase()}
+                      </span>
+                    )}
+                    <span className="profile-name">{user.name || user.full_name || 'Account'}</span>
+                    <FaChevronDown className={`arrow ${profileOpen ? 'rotate' : ''}`} />
+                  </button>
+
+                  {profileOpen && (
+                    <div className="profile-menu">
+                      <button
+                        onClick={() => {
+                          navigate('/order');
+                          setProfileOpen(false);
+                        }}
+                      >
+                        <FaBoxOpen />
+                        Orders
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          navigate('/settings');
+                          setProfileOpen(false);
+                        }}
+                      >
+                        <FaCog />
+                        Settings
+                      </button>
+
+                      <button
+                        className="logout-btn"
+                        onClick={() => {
+                          logout();
+                          setProfileOpen(false);
+                        }}
+                      >
+                        <FaSignOutAlt />
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* CART */}
+                <NavLink to="/cart" className="cart-link">
+                  <Badge badgeContent={totalCart || '0'} color="primary">
+                    <RiShoppingBagLine size={21} />
+                  </Badge>
+                </NavLink>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
@@ -286,6 +265,7 @@ const Navbar = () => {
                     setMobileMenuOpen(false);
                   }}
                 >
+                  <FaSignOutAlt />
                   Logout
                 </button>
               ) : (
