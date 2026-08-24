@@ -12,6 +12,7 @@ const NotificationTicker = () => {
   const { user, getNotificationsByUserId } = useAuth();
   const [items, setItems] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const unreadCountRef = useRef(0);
   const hasSeenRef = useRef(false);
   const pendingTimers = useRef([]);
   const seenTimer = useRef(null);
@@ -23,12 +24,14 @@ const NotificationTicker = () => {
       .select('*', { count: 'exact', head: true })
       .eq('user_id', user.id)
       .eq('read', false);
-    if (!error) setUnreadCount(count || 0);
+    if (!error) {
+      setUnreadCount(count || 0);
+      unreadCountRef.current = count || 0;
+    }
   };
 
-  // called after the user hovers the ticker for 2 seconds
   const markAllSeen = async () => {
-    if (hasSeenRef.current || !user?.id || unreadCount === 0) return;
+    if (hasSeenRef.current || !user?.id || unreadCountRef.current === 0) return;
     hasSeenRef.current = true;
 
     seenTimer.current = setTimeout(async () => {
@@ -38,11 +41,11 @@ const NotificationTicker = () => {
         .eq('user_id', user.id)
         .eq('read', false);
       setUnreadCount(0);
-      hasSeenRef.current = false; // allow future batches to be marked too
+      unreadCountRef.current = 0;
+      hasSeenRef.current = false;
     }, 2000);
   };
 
-  // user moved away before 2s — cancel, they didn't really read it
   const cancelMarkSeen = () => {
     if (seenTimer.current) {
       clearTimeout(seenTimer.current);
@@ -68,8 +71,6 @@ const NotificationTicker = () => {
     const channel = pusher.subscribe(`user-${user.id}`);
 
     channel.bind('order-placed', (data) => {
-      // small delay so the order row actually exists in DB
-      // before we show it / user clicks it
       const timer = setTimeout(() => {
         setItems((prev) =>
           [
@@ -84,6 +85,7 @@ const NotificationTicker = () => {
           ].slice(0, TICKER_SIZE)
         );
         setUnreadCount((c) => c + 1);
+        unreadCountRef.current += 1;
       }, 1000);
       pendingTimers.current.push(timer);
     });
