@@ -69,7 +69,9 @@
   align-items: center;
   gap: 10px;
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 }
 
 .sb-logout:hover {

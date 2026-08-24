@@ -33,11 +33,13 @@ const ProductQuickView = ({ productId, onClose }) => {
       setLoading(true);
       const { data, error } = await supabase
         .from('products')
-        .select(`
+        .select(
+          `
           *,
           product_items(id, size, sku_number, color),
           product_images(id, image_url, is_primary)
-        `)
+        `
+        )
         .eq('id', productId)
         .single();
 
@@ -176,7 +178,9 @@ const ProductQuickView = ({ productId, onClose }) => {
       `}</style>
       <div
         className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
-        onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+        onClick={(e) => {
+          if (e.target === e.currentTarget) onClose();
+        }}
       >
         <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
         <div className="relative bg-white shadow-2xl w-full max-w-[1100px] max-h-[90vh] overflow-y-auto animate-quick-in">
@@ -210,14 +214,20 @@ const ProductQuickView = ({ productId, onClose }) => {
                 <div className="flex items-center gap-3 mt-4">
                   <div className="flex items-center gap-0.5">
                     {[...Array(5)].map((_, i) => (
-                      <FaStar key={i} size={14} color={i < (product.rating || 0) ? '#f6b100' : '#e0e0e0'} />
+                      <FaStar
+                        key={i}
+                        size={14}
+                        color={i < (product.rating || 0) ? '#f6b100' : '#e0e0e0'}
+                      />
                     ))}
                   </div>
                   <span className="text-[13px] text-[#64748b]">({product.rating || 0})</span>
                 </div>
 
                 <div className="flex items-baseline gap-4 mt-4">
-                  <p className="text-[30px] sm:text-[34px] font-bold text-[#0a0a0a] m-0">${product.amount}</p>
+                  <p className="text-[30px] sm:text-[34px] font-bold text-[#0a0a0a] m-0">
+                    ${product.amount}
+                  </p>
                   <StockBadge />
                 </div>
 
@@ -230,7 +240,9 @@ const ProductQuickView = ({ productId, onClose }) => {
 
                 {sizes.length > 0 && (
                   <div className="mt-6">
-                    <p className="text-[13px] font-semibold text-[#222] m-0 mb-2.5">Storage / Size</p>
+                    <p className="text-[13px] font-semibold text-[#222] m-0 mb-2.5">
+                      Storage / Size
+                    </p>
                     <div className="flex flex-wrap gap-2">
                       {sizes.map((size) => (
                         <button

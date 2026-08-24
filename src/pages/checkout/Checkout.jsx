@@ -336,8 +336,8 @@ const Checkout = () => {
                                 </div>
                                 <div className="ck-addr-text">
                                   {a.address_line1}
-                                  {a.address_line2 ? `, ${a.address_line2}` : ''},{' '}
-                                  {a.state}, {a.country} {a.zip_code}
+                                  {a.address_line2 ? `, ${a.address_line2}` : ''}, {a.state},{' '}
+                                  {a.country} {a.zip_code}
                                 </div>
                               </div>
                               {selectedAddressId === a.id && (
@@ -633,10 +633,7 @@ const Checkout = () => {
                         className={`ck-seg-btn ${paymentMethod === 'card' ? 'active' : ''}`}
                         onClick={() => setPaymentMethod('card')}
                       >
-                        <img
-                          src="https://cdn-icons-png.flaticon.com/512/179/179457.png"
-                          alt=""
-                        />
+                        <img src="https://cdn-icons-png.flaticon.com/512/179/179457.png" alt="" />
                         Card
                       </button>
                       <button

@@ -554,7 +554,9 @@
   width: calc(50% - 4px);
   background: #fff;
   border-radius: 999px;
-  box-shadow: 0 2px 8px rgba(16, 22, 35, 0.1), 0 0 0 1px rgba(16, 22, 35, 0.04);
+  box-shadow:
+    0 2px 8px rgba(16, 22, 35, 0.1),
+    0 0 0 1px rgba(16, 22, 35, 0.04);
   transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
 }
 

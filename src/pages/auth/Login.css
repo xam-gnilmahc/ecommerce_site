@@ -88,7 +88,9 @@
   border: 1px solid #e4e7ec;
   border-radius: 12px;
   outline: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .loginSignUpTabsContentLogin form input:focus,
@@ -145,7 +147,10 @@
   letter-spacing: 1px;
   font-size: 14px;
   font-weight: 600;
-  transition: background-color 0.15s ease, transform 0.1s ease, opacity 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    transform 0.1s ease,
+    opacity 0.15s ease;
 }
 
 .loginSignUpTabsContentLogin .login-submit-btn:hover:not(:disabled),
@@ -198,7 +203,10 @@
   color: #374151 !important;
   text-decoration: none !important;
   cursor: pointer;
-  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.1s ease;
 }
 
 .social-btn i {

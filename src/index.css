@@ -18,19 +18,19 @@
   --text-2xl: 28px;
 
   /* ── NEUTRALS ── */
-  --ink: #0f1115;          /* primary text / headings */
+  --ink: #0f1115; /* primary text / headings */
   --ink-secondary: #3f4550; /* body text */
-  --muted: #878d99;         /* secondary text */
-  --bg: #ffffff;            /* page background */
-  --surface: #ffffff;       /* cards */
-  --surface-tint: #fafafb;  /* subtle fills */
+  --muted: #878d99; /* secondary text */
+  --bg: #ffffff; /* page background */
+  --surface: #ffffff; /* cards */
+  --surface-tint: #fafafb; /* subtle fills */
   --border: #e6e8ee;
   --border-strong: #d3d7df;
 
   /* ── BRAND ACCENT ── */
-  --accent: #2563eb;        /* electric blue — buttons, links, highlights */
+  --accent: #2563eb; /* electric blue — buttons, links, highlights */
   --accent-hover: #1d4ed8;
-  --accent-soft: #eff4ff;   /* tinted backgrounds */
+  --accent-soft: #eff4ff; /* tinted backgrounds */
 
   /* ── SEMANTIC ── */
   --success: #16a34a;

@@ -44,9 +44,7 @@ const Filter = ({ onApplyFilters, searchQuery }) => {
   }, [open]);
 
   useEffect(() => {
-    setActiveCount(
-      selectedBrands.length + selectedCategory.length + selectedColors.length
-    );
+    setActiveCount(selectedBrands.length + selectedCategory.length + selectedColors.length);
   }, [selectedBrands, selectedCategory, selectedColors]);
 
   const brandsData = [
@@ -133,11 +131,7 @@ const Filter = ({ onApplyFilters, searchQuery }) => {
             Filters
             {activeCount > 0 && <span className="filterHeaderCount">{activeCount}</span>}
           </h4>
-          <button
-            className="closeBtn"
-            onClick={() => setOpen(false)}
-            aria-label="Close filters"
-          >
+          <button className="closeBtn" onClick={() => setOpen(false)} aria-label="Close filters">
             <IoClose />
           </button>
         </div>

@@ -280,9 +280,7 @@ const Products = () => {
         ) : (
           currentPosts.map((product) => (
             <div key={product.id} className="sdProductContainer">
-              <div
-                className={`sdProductImages ${isOutOfStock(product.id) ? 'out-of-stock' : ''}`}
-              >
+              <div className={`sdProductImages ${isOutOfStock(product.id) ? 'out-of-stock' : ''}`}>
                 <Link
                   to={`/product/${product.id}`}
                   rel="noopener noreferrer"

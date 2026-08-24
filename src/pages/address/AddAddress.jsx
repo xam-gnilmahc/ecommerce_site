@@ -78,7 +78,9 @@ const AddAddress = () => {
           </div>
 
           <div className="flex flex-col gap-[6px]">
-            <label className="text-xs font-semibold text-[#0a0a0a] tracking-[0.02em]">Address line 1</label>
+            <label className="text-xs font-semibold text-[#0a0a0a] tracking-[0.02em]">
+              Address line 1
+            </label>
             <input
               className="h-12 border-[1.5px] border-[#e8e8e8] rounded-xl px-4 text-sm text-[#0a0a0a] outline-none bg-white w-full focus:border-[#0a0a0a] focus:shadow-[3px_3px_0_#0a0a0a] transition-all duration-200"
               type="text"
@@ -102,21 +104,30 @@ const AddAddress = () => {
 
           <div className="grid grid-cols-2 gap-3 max-[500px]:grid-cols-1">
             <div className="flex flex-col gap-[6px]">
-              <label className="text-xs font-semibold text-[#0a0a0a] tracking-[0.02em]">Country</label>
+              <label className="text-xs font-semibold text-[#0a0a0a] tracking-[0.02em]">
+                Country
+              </label>
               <select
                 className="h-12 border-[1.5px] border-[#e8e8e8] rounded-xl px-4 text-sm text-[#0a0a0a] outline-none bg-white w-full appearance-none focus:border-[#0a0a0a] focus:shadow-[3px_3px_0_#0a0a0a] transition-all duration-200"
                 value={country}
-                onChange={(e) => { setCountry(e.target.value); setState(''); }}
+                onChange={(e) => {
+                  setCountry(e.target.value);
+                  setState('');
+                }}
                 required
               >
                 <option value="">Select country</option>
                 {Country.getAllCountries().map((c) => (
-                  <option key={c.isoCode} value={c.isoCode}>{c.name}</option>
+                  <option key={c.isoCode} value={c.isoCode}>
+                    {c.name}
+                  </option>
                 ))}
               </select>
             </div>
             <div className="flex flex-col gap-[6px]">
-              <label className="text-xs font-semibold text-[#0a0a0a] tracking-[0.02em]">State</label>
+              <label className="text-xs font-semibold text-[#0a0a0a] tracking-[0.02em]">
+                State
+              </label>
               <select
                 className="h-12 border-[1.5px] border-[#e8e8e8] rounded-xl px-4 text-sm text-[#0a0a0a] outline-none bg-white w-full appearance-none focus:border-[#0a0a0a] focus:shadow-[3px_3px_0_#0a0a0a] transition-all duration-200"
                 value={state}
@@ -125,14 +136,18 @@ const AddAddress = () => {
               >
                 <option value="">Select state</option>
                 {states.map((s) => (
-                  <option key={s.isoCode} value={s.isoCode}>{s.name}</option>
+                  <option key={s.isoCode} value={s.isoCode}>
+                    {s.name}
+                  </option>
                 ))}
               </select>
             </div>
           </div>
 
           <div className="flex flex-col gap-[6px]">
-            <label className="text-xs font-semibold text-[#0a0a0a] tracking-[0.02em]">Zip code</label>
+            <label className="text-xs font-semibold text-[#0a0a0a] tracking-[0.02em]">
+              Zip code
+            </label>
             <input
               className="h-12 border-[1.5px] border-[#e8e8e8] rounded-xl px-4 text-sm text-[#0a0a0a] outline-none bg-white w-full focus:border-[#0a0a0a] focus:shadow-[3px_3px_0_#0a0a0a] transition-all duration-200"
               type="text"

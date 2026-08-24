@@ -254,7 +254,13 @@ const Cart = () => {
   return (
     <>
       <div className="cart-root">
-        {(fetchLoading && !cart.length) ? <CartSkeleton /> : cart.length ? <ShowCart /> : <EmptyCart />}
+        {fetchLoading && !cart.length ? (
+          <CartSkeleton />
+        ) : cart.length ? (
+          <ShowCart />
+        ) : (
+          <EmptyCart />
+        )}
       </div>
     </>
   );

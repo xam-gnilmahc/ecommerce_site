@@ -53,9 +53,9 @@ const AboutPage = () => {
           delivered to your door
         </h1>
         <p className="about-sub">
-          UOM is an online electronics store for mobile phones, laptops, tablets and wearables.
-          We keep it simple: genuine products, honest prices, and delivery that actually shows up
-          on time.
+          UOM is an online electronics store for mobile phones, laptops, tablets and wearables. We
+          keep it simple: genuine products, honest prices, and delivery that actually shows up on
+          time.
         </p>
         <Link to="/search" className="about-cta">
           Start shopping <BsArrowRight />

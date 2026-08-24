@@ -183,7 +183,9 @@ const Product = () => {
     const unique = [...new Set(fromItems)];
     if (unique.length > 0) return unique;
 
-    const brand = String(product?.brand || '').toLowerCase().trim();
+    const brand = String(product?.brand || '')
+      .toLowerCase()
+      .trim();
     const isShoe = SHOE_BRANDS.some((b) => brand.includes(b));
     if (isShoe) return ['6', '7', '8', '9', '10', '11'];
 

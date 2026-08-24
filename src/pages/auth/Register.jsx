@@ -98,19 +98,17 @@ const Register = () => {
                   required
                   minLength={6}
                 />
-                <p className="form-hint">Use at least 6 characters. A mix of letters and numbers is stronger.</p>
+                <p className="form-hint">
+                  Use at least 6 characters. A mix of letters and numbers is stronger.
+                </p>
               </div>
 
               <div className="register-privacy-note">
                 <i className="fa fa-lock"></i>
                 <p>
                   Your personal data will be used to support your experience throughout this
-                  website, to manage access to your account, and for other purposes described in
-                  our{' '}
-                  <Link to="/terms">
-                    privacy policy
-                  </Link>
-                  .
+                  website, to manage access to your account, and for other purposes described in our{' '}
+                  <Link to="/terms">privacy policy</Link>.
                 </p>
               </div>
 

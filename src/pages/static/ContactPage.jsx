@@ -61,8 +61,8 @@ const ContactPage = () => {
           to help
         </h1>
         <p className="contact-sub">
-          Question about an order, a product, or a delivery? Reach out — a real person will get
-          back to you.
+          Question about an order, a product, or a delivery? Reach out — a real person will get back
+          to you.
         </p>
       </section>
 
@@ -133,8 +133,8 @@ const ContactPage = () => {
             Browse products <BsArrowRight />
           </Link>
           <div className="aside-note">
-            For order issues, have your order number ready — it's in your confirmation email and
-            on the Orders page.
+            For order issues, have your order number ready — it's in your confirmation email and on
+            the Orders page.
           </div>
         </aside>
       </section>
