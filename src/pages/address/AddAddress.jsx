@@ -4,6 +4,8 @@ import { supabase } from '../../supaBaseClient';
 import { Country, State } from 'country-state-city';
 import { useAuth } from '../../context/authContext';
 import toast from 'react-hot-toast';
+import { FaMapMarkerAlt, FaArrowLeft } from 'react-icons/fa';
+import './AddAddress.css';
 
 const LABELS = ['Home', 'Work', 'Other'];
 
@@ -49,66 +51,71 @@ const AddAddress = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-start justify-center pt-16 pb-20 px-4">
-      <div className="w-full max-w-lg">
-        <h1 className="text-[28px] font-black italic uppercase tracking-[-0.02em] text-[#0a0a0a] mb-8">
-          Add your
-          <br />
-          <em className="italic text-transparent" style={{ WebkitTextStroke: '2px #0a0a0a' }}>
-            address
-          </em>
-        </h1>
+    <div className="addr-layout">
+      <div className="addr-container">
+        <button className="addr-back" onClick={() => navigate(-1)}>
+          <FaArrowLeft /> Back
+        </button>
 
-        <form onSubmit={handleSave} className="flex flex-col gap-5" autoComplete="off">
-          <div className="flex gap-2">
+        <div className="addr-header">
+          <div className="addr-header-icon">
+            <FaMapMarkerAlt />
+          </div>
+          <div>
+            <h1 className="addr-title">Add shipping address</h1>
+            <p className="addr-subtitle">Where should we deliver your orders?</p>
+          </div>
+        </div>
+
+        <form onSubmit={handleSave} className="addr-card" autoComplete="off">
+          <div className="addr-section-label">Address type</div>
+          <div className="addr-labels">
             {LABELS.map((l) => (
               <button
                 type="button"
                 key={l}
-                className={`px-4 py-2 rounded-lg text-[13px] font-medium cursor-pointer border transition-all duration-200 ${
-                  label === l
-                    ? 'bg-[#0a0a0a] text-white border-[#0a0a0a]'
-                    : 'bg-white text-[#555] border-[#e0e0e0] hover:border-[#999]'
-                }`}
+                className={`addr-label-btn ${label === l ? 'active' : ''}`}
                 onClick={() => setLabel(l)}
               >
-                {l}
+                {l === 'Home' ? '🏠' : l === 'Work' ? '💼' : '📍'} {l}
               </button>
             ))}
           </div>
 
-          <div className="flex flex-col gap-[6px]">
-            <label className="text-xs font-semibold text-[#0a0a0a] tracking-[0.02em]">
-              Address line 1
-            </label>
+          <div className="addr-divider" />
+
+          <div className="addr-section-label">Address details</div>
+
+          <div className="addr-field">
+            <label className="addr-field-label">Address line 1</label>
             <input
-              className="h-12 border-[1.5px] border-[#e8e8e8] rounded-xl px-4 text-sm text-[#0a0a0a] outline-none bg-white w-full focus:border-[#0a0a0a] focus:shadow-[3px_3px_0_#0a0a0a] transition-all duration-200"
+              className="addr-input"
               type="text"
+              placeholder="Street address, building number"
               value={addressLine1}
               onChange={(e) => setAddressLine1(e.target.value)}
               required
             />
           </div>
 
-          <div className="flex flex-col gap-[6px]">
-            <label className="text-xs font-semibold text-[#0a0a0a] tracking-[0.02em]">
-              Address line 2 <span className="text-[#999] font-normal">(optional)</span>
+          <div className="addr-field">
+            <label className="addr-field-label">
+              Address line 2 <span className="addr-optional">(optional)</span>
             </label>
             <input
-              className="h-12 border-[1.5px] border-[#e8e8e8] rounded-xl px-4 text-sm text-[#0a0a0a] outline-none bg-white w-full focus:border-[#0a0a0a] focus:shadow-[3px_3px_0_#0a0a0a] transition-all duration-200"
+              className="addr-input"
               type="text"
+              placeholder="Apartment, suite, floor"
               value={addressLine2}
               onChange={(e) => setAddressLine2(e.target.value)}
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3 max-[500px]:grid-cols-1">
-            <div className="flex flex-col gap-[6px]">
-              <label className="text-xs font-semibold text-[#0a0a0a] tracking-[0.02em]">
-                Country
-              </label>
+          <div className="addr-row">
+            <div className="addr-field">
+              <label className="addr-field-label">Country</label>
               <select
-                className="h-12 border-[1.5px] border-[#e8e8e8] rounded-xl px-4 text-sm text-[#0a0a0a] outline-none bg-white w-full appearance-none focus:border-[#0a0a0a] focus:shadow-[3px_3px_0_#0a0a0a] transition-all duration-200"
+                className="addr-select"
                 value={country}
                 onChange={(e) => {
                   setCountry(e.target.value);
@@ -124,12 +131,10 @@ const AddAddress = () => {
                 ))}
               </select>
             </div>
-            <div className="flex flex-col gap-[6px]">
-              <label className="text-xs font-semibold text-[#0a0a0a] tracking-[0.02em]">
-                State
-              </label>
+            <div className="addr-field">
+              <label className="addr-field-label">State</label>
               <select
-                className="h-12 border-[1.5px] border-[#e8e8e8] rounded-xl px-4 text-sm text-[#0a0a0a] outline-none bg-white w-full appearance-none focus:border-[#0a0a0a] focus:shadow-[3px_3px_0_#0a0a0a] transition-all duration-200"
+                className="addr-select"
                 value={state}
                 onChange={(e) => setState(e.target.value)}
                 required
@@ -144,13 +149,12 @@ const AddAddress = () => {
             </div>
           </div>
 
-          <div className="flex flex-col gap-[6px]">
-            <label className="text-xs font-semibold text-[#0a0a0a] tracking-[0.02em]">
-              Zip code
-            </label>
+          <div className="addr-field">
+            <label className="addr-field-label">Zip code</label>
             <input
-              className="h-12 border-[1.5px] border-[#e8e8e8] rounded-xl px-4 text-sm text-[#0a0a0a] outline-none bg-white w-full focus:border-[#0a0a0a] focus:shadow-[3px_3px_0_#0a0a0a] transition-all duration-200"
+              className="addr-input"
               type="text"
+              placeholder="Postal code"
               value={zipCode}
               onChange={(e) => setZipCode(e.target.value)}
               required
@@ -160,7 +164,7 @@ const AddAddress = () => {
           <button
             type="submit"
             disabled={saving}
-            className="w-full h-14 bg-[#0a0a0a] text-white border-none rounded-xl text-base font-bold tracking-[0.02em] cursor-pointer transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(0,0,0,0.18)] disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+            className="addr-submit"
           >
             {saving ? 'Saving...' : 'Save address'}
           </button>
