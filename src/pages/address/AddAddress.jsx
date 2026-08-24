@@ -161,11 +161,7 @@ const AddAddress = () => {
             />
           </div>
 
-          <button
-            type="submit"
-            disabled={saving}
-            className="addr-submit"
-          >
+          <button type="submit" disabled={saving} className="addr-submit">
             {saving ? 'Saving...' : 'Save address'}
           </button>
         </form>

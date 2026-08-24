@@ -193,7 +193,9 @@
   cursor: pointer;
   margin-top: 8px;
   font-family: var(--font-main);
-  transition: transform 0.15s, opacity 0.15s;
+  transition:
+    transform 0.15s,
+    opacity 0.15s;
 }
 
 .addr-submit:hover:not(:disabled) {
