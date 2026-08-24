@@ -37,6 +37,7 @@ export const AuthProvider = ({ children }) => {
   const [orderLoading, setOrderLoading] = useState(false);
   const [processed, setProcessed] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
+  const [addressChecked, setAddressChecked] = useState(false);
 
   // ── Visitor cookie — pass user.id, hook does the rest ──────────────────────
   const { visitor, trackProduct, clearVisitor } = useVisitorCookie(user?.id);
@@ -145,6 +146,37 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   /**
+   * After login, check if user has a saved shipping address.
+   * If not, redirect to /add-address.
+   */
+  useEffect(() => {
+    if (!user?.id || addressChecked) return;
+
+    const checkAddress = async () => {
+      const { data, error } = await supabase
+        .from('shipping_addresses')
+        .select('id')
+        .eq('user_id', user.id)
+        .limit(1);
+
+      setAddressChecked(true);
+
+      if (error) {
+        console.warn('Error checking shipping address:', error.message);
+        return;
+      }
+      if (!data || data.length === 0) {
+        const currentPath = window.location.pathname;
+        if (currentPath !== '/add-address' && currentPath !== '/checkout') {
+          navigate('/add-address');
+        }
+      }
+    };
+
+    checkAddress();
+  }, [user?.id, addressChecked, navigate]);
+
+  /**
    * Recalculate user interest every 30 seconds to keep recommendations up-to-date.
    * This is a background process that runs as long as the user is logged in.
    */
@@ -199,11 +231,12 @@ export const AuthProvider = ({ children }) => {
   /**
    * Logout function clears local storage, resets user state, and navigates to the login page.
    */
-  const logout = () => {
-    localStorage.clear();
+  const logout = async () => {
+    await supabase.auth.signOut();
     setUser(null);
     setToken(null);
     setCart([]);
+    setAddressChecked(false);
     navigate('/login');
   };
 
