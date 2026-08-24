@@ -181,6 +181,9 @@
 .addr-submit {
   width: 100%;
   height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: #0a0a0a;
   color: #fff;
   border: none;
@@ -190,7 +193,7 @@
   cursor: pointer;
   margin-top: 8px;
   font-family: var(--font-main);
-  transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+  transition: transform 0.15s, opacity 0.15s;
 }
 
 .addr-submit:hover:not(:disabled) {
