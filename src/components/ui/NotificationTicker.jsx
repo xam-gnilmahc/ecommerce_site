@@ -62,7 +62,9 @@ const NotificationTicker = () => {
       setItems(data || []);
     };
     load();
-    fetchUnreadCount();
+    fetchUnreadCount().then(() => {
+      setTimeout(() => markAllSeen(), 2000);
+    });
 
     const pusher = new Pusher(PUSHER_APP_KEY, {
       cluster: PUSHER_CLUSTER,
