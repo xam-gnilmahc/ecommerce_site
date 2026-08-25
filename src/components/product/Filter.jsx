@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Filter.css';
 
-import { IoIosArrowForward, IoIosArrowDown, IoClose } from 'react-icons/io';
+import { IoIosArrowForward, IoIosArrowDown, IoIosClose } from 'react-icons/io';
 import { FiFilter } from 'react-icons/fi';
 
 const Filter = ({ onApplyFilters }) => {
@@ -246,7 +246,7 @@ const Filter = ({ onApplyFilters }) => {
                 setExpandedCategory(null);
               }}
             >
-              <IoClose size={18} />
+              <IoIosClose size={18} />
             </button>
           </div>
 
