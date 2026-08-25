@@ -214,82 +214,112 @@
 }
 
 /* =========================
-   ACCORDION RESET
+   FILTER SECTION
 ========================= */
-.MuiAccordion-root {
-  background: transparent !important;
-  box-shadow: none !important;
-  border: none !important;
-  margin: 0 !important;
+.filterSection {
+  border-bottom: 1px solid #f1f2f5;
+  padding: 12px 0;
 }
 
-.MuiAccordion-root::before {
-  display: none !important;
+.filterSection:last-child {
+  border-bottom: none;
 }
 
-.MuiAccordionSummary-root {
-  padding: 0 !important;
-  min-height: 42px !important;
-}
-
-.MuiAccordionDetails-root {
-  padding: 6px 0 12px !important;
-}
-
-/* =========================
-   COLORS
-========================= */
-.filterColorBtn {
+.filterSectionHeader {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.filterColorBtn button {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0;
   border: none;
+  background: transparent;
   cursor: pointer;
-  transition: 0.25s ease;
+  color: #111827;
+  transition: color 0.2s ease;
 }
 
-.filterColorBtn button:hover {
-  transform: scale(1.1);
+.filterSectionHeader:hover {
+  color: #6b7280;
 }
 
-.filterColorBtn button.selected {
-  outline: 2px solid #111827;
-  outline-offset: 3px;
+.filterSectionHeader svg {
+  font-size: 16px;
+  color: #6b7280;
+  transition: transform 0.3s ease;
+}
+
+.filterSectionContent {
+  padding-top: 10px;
 }
 
 /* =========================
    CATEGORY
 ========================= */
-.sizeButtons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+.categoryItem {
+  position: relative;
 }
 
-.sizeButton {
-  padding: 7px 13px;
+.categoryBtn {
+  width: 100%;
+  padding: 8px 12px;
   border: none;
-  border-radius: 999px;
-  background: #f3f4f6;
-  font-size: 12.5px;
+  border-radius: 8px;
+  background: transparent;
+  font-size: 13px;
   font-weight: 500;
+  color: #374151;
   cursor: pointer;
-  transition: 0.25s ease;
+  text-align: left;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 }
 
-.sizeButton:hover {
-  background: #e5e7eb;
+.categoryBtn:hover {
+  background: #f3f4f6;
+  color: #111827;
 }
 
-.sizeButton.selected {
+.categoryBtn.selected {
   background: #111827;
   color: white;
+}
+
+.subcategoryList {
+  display: none;
+  padding-left: 20px;
+  padding-top: 4px;
+}
+
+.categoryItem:hover .subcategoryList {
+  display: block;
+}
+
+.subcategoryBtn {
+  width: 100%;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 400;
+  color: #6b7280;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.subcategoryBtn:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.subcategoryBtn.selected {
+  background: #e5e7eb;
+  color: #111827;
+  font-weight: 500;
 }
 
 /* =========================
@@ -297,7 +327,7 @@
 ========================= */
 .searchBar {
   position: relative;
-  margin-top: 8px;
+  margin-bottom: 10px;
 }
 
 .searchBar input {
@@ -329,11 +359,10 @@
    BRAND LIST
 ========================= */
 .brandList {
-  margin-top: 10px;
   display: flex;
   flex-direction: column;
   gap: 4px;
-  max-height: 180px;
+  max-height: 200px;
   overflow-y: auto;
   padding-right: 4px;
 }
@@ -365,4 +394,48 @@
 .brandItem small {
   margin-left: auto;
   color: #6b7280;
+}
+
+.showMoreBtn {
+  margin-top: 8px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  text-align: left;
+  transition: color 0.2s ease;
+}
+
+.showMoreBtn:hover {
+  color: #111827;
+}
+
+/* =========================
+   COLORS
+========================= */
+.filterColorBtn {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.filterColorBtn button {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.filterColorBtn button:hover {
+  transform: scale(1.1);
+}
+
+.filterColorBtn button.selected {
+  outline: 2px solid #111827;
+  outline-offset: 3px;
 }

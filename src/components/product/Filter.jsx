@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Filter.css';
 
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import { IoIosArrowDown } from 'react-icons/io';
+import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { BiSearch } from 'react-icons/bi';
 import { FiFilter } from 'react-icons/fi';
 import { IoClose } from 'react-icons/io5';
@@ -17,6 +14,13 @@ const Filter = ({ onApplyFilters, searchQuery }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedBrands, setSelectedBrands] = useState([]);
   const [activeCount, setActiveCount] = useState(0);
+  const [openSections, setOpenSections] = useState({
+    category: true,
+    brands: true,
+    price: true,
+    colors: true,
+  });
+  const [showAllBrands, setShowAllBrands] = useState(false);
 
   const [open, setOpen] = useState(false);
   const wrapRef = useRef(null);
@@ -31,7 +35,6 @@ const Filter = ({ onApplyFilters, searchQuery }) => {
     }
   }, [searchQuery]);
 
-  // close on outside click
   useEffect(() => {
     if (!open) return;
     const handleClickOutside = (e) => {
@@ -47,6 +50,10 @@ const Filter = ({ onApplyFilters, searchQuery }) => {
     setActiveCount(selectedBrands.length + selectedCategory.length + selectedColors.length);
   }, [selectedBrands, selectedCategory, selectedColors]);
 
+  const toggleSection = (section) => {
+    setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }));
+  };
+
   const brandsData = [
     { name: 'Apple', count: 24 },
     { name: 'Google', count: 3 },
@@ -57,13 +64,13 @@ const Filter = ({ onApplyFilters, searchQuery }) => {
   ];
 
   const filterCategories = [
-    'Mobile',
-    'Laptop',
-    'Watch',
-    'Earbuds',
-    'Tablet',
-    'Monitor',
-    'Keyboard',
+    { name: 'Mobile', subcategories: ['iPhone', 'Samsung Galaxy', 'Pixel'] },
+    { name: 'Laptop', subcategories: ['MacBook', 'ThinkPad', 'Chromebook'] },
+    { name: 'Watch', subcategories: ['Apple Watch', 'Galaxy Watch', 'Fitbit'] },
+    { name: 'Earbuds', subcategories: ['AirPods', 'Galaxy Buds', 'Pixel Buds'] },
+    { name: 'Tablet', subcategories: ['iPad', 'Galaxy Tab', 'Pixel Tablet'] },
+    { name: 'Monitor', subcategories: ['4K', 'Ultrawide', 'Portable'] },
+    { name: 'Keyboard', subcategories: ['Mechanical', 'Wireless', 'Gaming'] },
   ];
 
   const filterColors = [
@@ -93,26 +100,7 @@ const Filter = ({ onApplyFilters, searchQuery }) => {
     b.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const accordionProps = {
-    defaultExpanded: true,
-    disableGutters: true,
-    elevation: 0,
-    square: true,
-    sx: {
-      boxShadow: 'none',
-      border: 'none',
-      '&:before': { display: 'none' },
-    },
-  };
-
-  const accordionSummarySX = {
-    padding: 0,
-    margin: 0,
-    minHeight: 0,
-    '& .MuiAccordionSummary-content': { margin: 0 },
-  };
-
-  const accordionDetailsSX = { padding: 0, margin: 0 };
+  const displayedBrands = showAllBrands ? filteredBrands : filteredBrands.slice(0, 5);
 
   return (
     <div className="filterWrap" ref={wrapRef}>
@@ -137,105 +125,139 @@ const Filter = ({ onApplyFilters, searchQuery }) => {
         </div>
 
         <div className="filterPopupBody">
-          {/* COLORS */}
-          <Accordion {...accordionProps}>
-            <AccordionSummary expandIcon={<IoIosArrowDown />} sx={accordionSummarySX}>
-              <h5 className="filterHeading">Colors</h5>
-            </AccordionSummary>
-            <AccordionDetails sx={accordionDetailsSX}>
-              <div className="filterColorBtn">
-                {filterColors.map((color) => (
-                  <button
-                    key={color}
-                    style={{ backgroundColor: color }}
-                    className={selectedColors.includes(color) ? 'selected' : ''}
-                    onClick={() =>
-                      setSelectedColors((prev) =>
-                        prev.includes(color) ? prev.filter((c) => c !== color) : [...prev, color]
-                      )
-                    }
-                  />
-                ))}
-              </div>
-            </AccordionDetails>
-          </Accordion>
-
           {/* CATEGORY */}
-          <Accordion {...accordionProps}>
-            <AccordionSummary expandIcon={<IoIosArrowDown />} sx={accordionSummarySX}>
+          <div className="filterSection">
+            <button className="filterSectionHeader" onClick={() => toggleSection('category')}>
               <h5 className="filterHeading">Category</h5>
-            </AccordionSummary>
-            <AccordionDetails sx={accordionDetailsSX}>
-              <div className="sizeButtons">
+              {openSections.category ? <IoIosArrowUp /> : <IoIosArrowDown />}
+            </button>
+            {openSections.category && (
+              <div className="filterSectionContent">
                 {filterCategories.map((cat) => (
-                  <button
-                    key={cat}
-                    className={`sizeButton ${selectedCategory.includes(cat) ? 'selected' : ''}`}
-                    onClick={() =>
-                      setSelectedCategory((prev) =>
-                        prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
-                      )
-                    }
-                  >
-                    {cat}
-                  </button>
+                  <div key={cat.name} className="categoryItem">
+                    <button
+                      className={`categoryBtn ${selectedCategory.includes(cat.name) ? 'selected' : ''}`}
+                      onClick={() =>
+                        setSelectedCategory((prev) =>
+                          prev.includes(cat.name)
+                            ? prev.filter((c) => c !== cat.name)
+                            : [...prev, cat.name]
+                        )
+                      }
+                    >
+                      {cat.name}
+                    </button>
+                    {cat.subcategories && (
+                      <div className="subcategoryList">
+                        {cat.subcategories.map((sub) => (
+                          <button
+                            key={sub}
+                            className={`subcategoryBtn ${selectedCategory.includes(sub) ? 'selected' : ''}`}
+                            onClick={() =>
+                              setSelectedCategory((prev) =>
+                                prev.includes(sub) ? prev.filter((c) => c !== sub) : [...prev, sub]
+                              )
+                            }
+                          >
+                            {sub}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 ))}
               </div>
-            </AccordionDetails>
-          </Accordion>
+            )}
+          </div>
 
           {/* BRANDS */}
-          <Accordion {...accordionProps}>
-            <AccordionSummary expandIcon={<IoIosArrowDown />} sx={accordionSummarySX}>
+          <div className="filterSection">
+            <button className="filterSectionHeader" onClick={() => toggleSection('brands')}>
               <h5 className="filterHeading">Brands</h5>
-            </AccordionSummary>
-            <AccordionDetails sx={accordionDetailsSX}>
-              <div className="searchBar">
-                <BiSearch className="searchIcon" />
-                <input
-                  placeholder="Search brands"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+              {openSections.brands ? <IoIosArrowUp /> : <IoIosArrowDown />}
+            </button>
+            {openSections.brands && (
+              <div className="filterSectionContent">
+                <div className="searchBar">
+                  <BiSearch className="searchIcon" />
+                  <input
+                    placeholder="Search brands"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <div className="brandList">
+                  {displayedBrands.map((brand) => (
+                    <label className="brandItem" key={brand.name}>
+                      <input
+                        type="checkbox"
+                        checked={selectedBrands.includes(brand.name)}
+                        onChange={() =>
+                          setSelectedBrands((prev) =>
+                            prev.includes(brand.name)
+                              ? prev.filter((b) => b !== brand.name)
+                              : [...prev, brand.name]
+                          )
+                        }
+                      />
+                      <span>{brand.name}</span>
+                      <small>{brand.count}</small>
+                    </label>
+                  ))}
+                </div>
+                {filteredBrands.length > 5 && (
+                  <button className="showMoreBtn" onClick={() => setShowAllBrands(!showAllBrands)}>
+                    {showAllBrands ? 'Show less' : 'Show more'}
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* PRICE */}
+          <div className="filterSection">
+            <button className="filterSectionHeader" onClick={() => toggleSection('price')}>
+              <h5 className="filterHeading">Price</h5>
+              {openSections.price ? <IoIosArrowUp /> : <IoIosArrowDown />}
+            </button>
+            {openSections.price && (
+              <div className="filterSectionContent">
+                <Slider
+                  value={value}
+                  onChange={(e, val) => setValue(val)}
+                  min={0}
+                  max={10000}
+                  valueLabelDisplay="auto"
                 />
               </div>
+            )}
+          </div>
 
-              <div className="brandList">
-                {filteredBrands.map((brand) => (
-                  <label className="brandItem" key={brand.name}>
-                    <input
-                      type="checkbox"
-                      checked={selectedBrands.includes(brand.name)}
-                      onChange={() =>
-                        setSelectedBrands((prev) =>
-                          prev.includes(brand.name)
-                            ? prev.filter((b) => b !== brand.name)
-                            : [...prev, brand.name]
+          {/* COLORS */}
+          <div className="filterSection">
+            <button className="filterSectionHeader" onClick={() => toggleSection('colors')}>
+              <h5 className="filterHeading">Colors</h5>
+              {openSections.colors ? <IoIosArrowUp /> : <IoIosArrowDown />}
+            </button>
+            {openSections.colors && (
+              <div className="filterSectionContent">
+                <div className="filterColorBtn">
+                  {filterColors.map((color) => (
+                    <button
+                      key={color}
+                      style={{ backgroundColor: color }}
+                      className={selectedColors.includes(color) ? 'selected' : ''}
+                      onClick={() =>
+                        setSelectedColors((prev) =>
+                          prev.includes(color) ? prev.filter((c) => c !== color) : [...prev, color]
                         )
                       }
                     />
-                    <span>{brand.name}</span>
-                    <small>{brand.count}</small>
-                  </label>
-                ))}
+                  ))}
+                </div>
               </div>
-            </AccordionDetails>
-          </Accordion>
-
-          {/* PRICE */}
-          <Accordion {...accordionProps}>
-            <AccordionSummary expandIcon={<IoIosArrowDown />} sx={accordionSummarySX}>
-              <h5 className="filterHeading">Price</h5>
-            </AccordionSummary>
-            <AccordionDetails sx={accordionDetailsSX}>
-              <Slider
-                value={value}
-                onChange={(e, val) => setValue(val)}
-                min={0}
-                max={10000}
-                valueLabelDisplay="auto"
-              />
-            </AccordionDetails>
-          </Accordion>
+            )}
+          </div>
         </div>
 
         <div className="filterPopupFooter">
@@ -247,6 +269,7 @@ const Filter = ({ onApplyFilters, searchQuery }) => {
               setSelectedColors([]);
               setValue([0, 2000]);
               setSearchTerm('');
+              setShowAllBrands(false);
             }}
           >
             Clear
