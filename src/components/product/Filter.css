@@ -59,6 +59,7 @@
   position: absolute;
   top: calc(100% + 8px);
   left: 0;
+  display: flex;
   background: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
@@ -68,43 +69,81 @@
 }
 
 /* =========================
-   COLUMNS
+   BRANDS LIST (LEFT)
 ========================= */
-.filterColumns {
+.filterBrandsList {
+  width: 200px;
+  border-right: 1px solid #f3f4f6;
+  overflow-y: auto;
+  max-height: 360px;
+}
+
+.filterBrandItem {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border-bottom: 1px solid #f9fafb;
+}
+
+.filterBrandItem:hover,
+.filterBrandItem.hovered {
+  background: #f0fdf4;
+}
+
+.filterBrandItem.selected {
+  background: #10b981;
+  color: white;
+}
+
+.filterBrandName {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.filterBrandArrow {
+  font-size: 12px;
+  color: #9ca3af;
+  transition: transform 0.2s ease;
+}
+
+.filterBrandItem:hover .filterBrandArrow,
+.filterBrandItem.hovered .filterBrandArrow {
+  color: #10b981;
+  transform: translateX(3px);
+}
+
+.filterBrandItem.selected .filterBrandArrow {
+  color: white;
 }
 
 /* =========================
-   COLUMN
+   CATEGORIES FLYOUT (RIGHT)
 ========================= */
-.filterColumn {
-  width: 200px;
-  border-right: 1px solid #f3f4f6;
+.filterCategoriesFlyout {
+  width: 220px;
+  padding: 16px;
+  background: #fff;
 }
 
-.filterColumn:last-child {
-  border-right: none;
-}
-
-.filterColumnTitle {
-  margin: 0;
-  padding: 14px 16px;
+.filterCategoriesTitle {
+  margin: 0 0 12px 0;
+  padding-bottom: 10px;
   font-size: 14px;
   font-weight: 700;
   color: #111827;
-  background: #f9fafb;
   border-bottom: 1px solid #f3f4f6;
 }
 
-.filterItemList {
-  padding: 8px;
-  max-height: 320px;
-  overflow-y: auto;
+.filterCategoriesList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.filterItem {
-  display: block;
-  width: 100%;
+.filterCategoryItem {
   padding: 10px 12px;
   border: none;
   background: transparent;
@@ -117,12 +156,12 @@
   transition: all 0.15s ease;
 }
 
-.filterItem:hover {
+.filterCategoryItem:hover {
   background: #f3f4f6;
   color: #111827;
 }
 
-.filterItem.selected {
+.filterCategoryItem.selected {
   background: #10b981;
   color: white;
 }
@@ -130,11 +169,11 @@
 /* =========================
    SCROLLBAR
 ========================= */
-.filterItemList::-webkit-scrollbar {
+.filterBrandsList::-webkit-scrollbar {
   width: 4px;
 }
 
-.filterItemList::-webkit-scrollbar-thumb {
+.filterBrandsList::-webkit-scrollbar-thumb {
   background: #d1d5db;
   border-radius: 4px;
 }
@@ -149,19 +188,17 @@
     left: 50%;
     transform: translate(-50%, -50%);
     width: calc(100vw - 32px);
-  }
-
-  .filterColumns {
     flex-direction: column;
   }
 
-  .filterColumn {
+  .filterBrandsList {
     width: 100%;
     border-right: none;
     border-bottom: 1px solid #f3f4f6;
+    max-height: 200px;
   }
 
-  .filterColumn:last-child {
-    border-bottom: none;
+  .filterCategoriesFlyout {
+    width: 100%;
   }
 }
