@@ -36,17 +36,6 @@ const Filter = ({ onApplyFilters }) => {
     Amazon: ['Mobile', 'Tablet', 'Watch', 'Earbuds'],
   };
 
-  const allCategories = [
-    'Mobile',
-    'Drones',
-    'Watch',
-    'Earbuds',
-    'Laptop',
-    'Tablet',
-    'Monitor',
-    'Keyboard',
-  ];
-
   const handleBrandHover = (brand) => {
     clearTimeout(hoverTimeoutRef.current);
     hoverTimeoutRef.current = setTimeout(() => {
@@ -72,18 +61,27 @@ const Filter = ({ onApplyFilters }) => {
   };
 
   const handleCategoryClick = (category) => {
-    const newCategory = selectedCategory === category ? null : category;
-    setSelectedCategory(newCategory);
-    setSelectedBrand(hoveredBrand);
-    onApplyFilters({
-      brands: [],
-      category: newCategory ? [newCategory] : [],
-      priceRange: null,
-    });
+    if (selectedCategory === category) {
+      setSelectedCategory(null);
+      setSelectedBrand(null);
+      onApplyFilters({
+        brands: [],
+        category: [],
+        priceRange: null,
+      });
+    } else {
+      setSelectedCategory(category);
+      setSelectedBrand(hoveredBrand);
+      onApplyFilters({
+        brands: [hoveredBrand],
+        category: [category],
+        priceRange: null,
+      });
+    }
   };
 
+  const activeBrandCategories = hoveredBrand ? brandsData[hoveredBrand] || [] : [];
   const activeFilters = selectedCategory ? 1 : 0;
-  const activeBrandCategories = hoveredBrand ? brandsData[hoveredBrand] || [] : allCategories;
 
   return (
     <div className="filterContainer" ref={wrapRef}>
