@@ -1,147 +1,257 @@
 /* =========================
-   SIDEBAR WRAPPER
+   FILTER CONTAINER
 ========================= */
-.filterSidebarWrap {
+.filterContainer {
   position: relative;
   display: inline-block;
 }
 
 /* =========================
-   SIDEBAR MENU
+   TOGGLE BUTTON
 ========================= */
-.filterSidebar {
-  width: 240px;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.filterSidebarItem {
-  display: flex;
+.filterToggle {
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 16px;
+  gap: 8px;
+  padding: 10px 18px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
   cursor: pointer;
   transition: all 0.2s ease;
-  border-bottom: 1px solid #f3f4f6;
 }
 
-.filterSidebarItem:last-child {
-  border-bottom: none;
+.filterToggle:hover {
+  border-color: #10b981;
+  color: #10b981;
 }
 
-.filterSidebarItem:hover,
-.filterSidebarItem.active {
-  background: #f9fafb;
-  color: #111827;
-}
-
-.filterSidebarItem.active {
+.filterToggle.active {
   background: #10b981;
+  border-color: #10b981;
   color: white;
 }
 
-.filterSidebarIcon {
-  font-size: 16px;
-  width: 20px;
+.filterCount {
+  background: #fff;
+  color: #10b981;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 18px;
   text-align: center;
 }
 
-.filterSidebarLabel {
+.filterToggle.active .filterCount {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+/* =========================
+   FILTER PANEL
+========================= */
+.filterPanel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 580px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.filterPanelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.filterPanelHeader h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.filterClose {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: #f3f4f6;
+  border-radius: 6px;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filterClose:hover {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.filterPanelBody {
+  display: flex;
+  min-height: 350px;
+}
+
+/* =========================
+   CATEGORY LIST (LEFT)
+========================= */
+.filterCategoryList {
+  width: 240px;
+  border-right: 1px solid #f3f4f6;
+  overflow-y: auto;
+}
+
+.filterCategoryItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 16px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  border-bottom: 1px solid #f9fafb;
+}
+
+.filterCategoryItem:hover {
+  background: #f9fafb;
+}
+
+.filterCategoryItem.expanded {
+  background: #f0fdf4;
+  border-right: 3px solid #10b981;
+}
+
+.filterCategoryIcon {
+  font-size: 18px;
+  width: 24px;
+  text-align: center;
+}
+
+.filterCategoryLabel {
   flex: 1;
   font-size: 13px;
   font-weight: 500;
+  color: #374151;
 }
 
-.filterSidebarArrow {
+.filterCategoryItem.expanded .filterCategoryLabel {
+  color: #10b981;
+  font-weight: 600;
+}
+
+.filterCategoryArrow {
   font-size: 12px;
   color: #9ca3af;
   transition: transform 0.2s ease;
 }
 
-.filterSidebarItem:hover .filterSidebarArrow,
-.filterSidebarItem.active .filterSidebarArrow {
-  color: inherit;
-  transform: translateX(3px);
+.filterCategoryItem.expanded .filterCategoryArrow {
+  color: #10b981;
 }
 
 /* =========================
-   FLYOUT PANEL
+   SUB PANEL (RIGHT)
 ========================= */
-.filterFlyout {
-  position: absolute;
-  top: 0;
-  left: 100%;
-  width: 480px;
-  min-height: 300px;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+.filterSubPanel {
+  flex: 1;
   padding: 20px;
-  z-index: 1000;
-  margin-left: 8px;
+  overflow-y: auto;
 }
 
-.filterFlyoutTitle {
-  font-size: 16px;
+.filterSubPanelHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.filterSubPanelIcon {
+  font-size: 20px;
+}
+
+.filterSubPanelHeader h4 {
+  margin: 0;
+  font-size: 15px;
   font-weight: 700;
   color: #111827;
-  margin: 0 0 16px 0;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #e5e7eb;
 }
 
-.filterFlyoutGrid {
+.filterSubPanelGrid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
 }
 
-.filterFlyoutItem {
-  padding: 8px 12px;
-  border: none;
-  background: transparent;
-  font-size: 13px;
+.filterSubItem {
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  font-size: 12px;
   font-weight: 500;
   color: #374151;
   cursor: pointer;
-  text-align: left;
+  text-align: center;
   border-radius: 6px;
   transition: all 0.2s ease;
 }
 
-.filterFlyoutItem:hover {
-  background: #f3f4f6;
-  color: #111827;
+.filterSubItem:hover {
+  border-color: #10b981;
+  color: #10b981;
+  background: #f0fdf4;
 }
 
-.filterFlyoutItem.selected {
+.filterSubItem.selected {
   background: #10b981;
+  border-color: #10b981;
   color: white;
 }
 
 /* =========================
    RESPONSIVE
 ========================= */
-@media (max-width: 768px) {
-  .filterSidebar {
-    width: 100%;
-  }
-
-  .filterFlyout {
+@media (max-width: 640px) {
+  .filterPanel {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: calc(100vw - 40px);
-    max-width: 400px;
-    max-height: 70vh;
-    overflow-y: auto;
+    width: calc(100vw - 32px);
+    max-height: 80vh;
   }
 
-  .filterFlyoutGrid {
+  .filterPanelBody {
+    flex-direction: column;
+  }
+
+  .filterCategoryList {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #f3f4f6;
+    max-height: 200px;
+  }
+
+  .filterSubPanelGrid {
     grid-template-columns: repeat(2, 1fr);
   }
 }

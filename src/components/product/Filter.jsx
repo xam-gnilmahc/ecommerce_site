@@ -1,21 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Filter.css';
 
-import { IoIosArrowForward } from 'react-icons/io';
+import { IoIosArrowForward, IoIosArrowDown, IoClose } from 'react-icons/io';
+import { FiFilter } from 'react-icons/fi';
 
 const Filter = ({ onApplyFilters }) => {
-  const [activeCategory, setActiveCategory] = useState(null);
-  const [selectedBrands, setSelectedBrands] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState([]);
-  const [selectedColors, setSelectedColors] = useState([]);
-  const [value, setValue] = useState([0, 2000]);
+  const [expandedCategory, setExpandedCategory] = useState(null);
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
   const wrapRef = useRef(null);
-  const hoverTimeoutRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (wrapRef.current && !wrapRef.current.contains(e.target)) {
-        setActiveCategory(null);
+        setExpandedCategory(null);
+        setIsOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -211,79 +210,84 @@ const Filter = ({ onApplyFilters }) => {
     },
   ];
 
-  const handleMouseEnter = (menuId) => {
-    clearTimeout(hoverTimeoutRef.current);
-    hoverTimeoutRef.current = setTimeout(() => {
-      setActiveCategory(menuId);
-    }, 100);
-  };
-
-  const handleMouseLeave = () => {
-    clearTimeout(hoverTimeoutRef.current);
-    hoverTimeoutRef.current = setTimeout(() => {
-      setActiveCategory(null);
-    }, 300);
-  };
-
-  const handleFlyoutMouseEnter = () => {
-    clearTimeout(hoverTimeoutRef.current);
-  };
-
-  const handleFlyoutMouseLeave = () => {
-    hoverTimeoutRef.current = setTimeout(() => {
-      setActiveCategory(null);
-    }, 200);
+  const handleCategoryClick = (menuId) => {
+    setExpandedCategory(expandedCategory === menuId ? null : menuId);
   };
 
   const handleItemClick = (item) => {
-    const newCategory = selectedCategory.includes(item)
-      ? selectedCategory.filter((c) => c !== item)
-      : [...selectedCategory, item];
-    setSelectedCategory(newCategory);
-    onApplyFilters({
-      brands: selectedBrands,
-      priceRange: value,
-      category: newCategory,
-      colors: selectedColors,
-    });
+    const newSelected = selectedItems.includes(item)
+      ? selectedItems.filter((i) => i !== item)
+      : [...selectedItems, item];
+    setSelectedItems(newSelected);
+    onApplyFilters({ category: newSelected });
   };
 
-  const activeMenu = filterMenu.find((m) => m.id === activeCategory);
+  const activeMenu = filterMenu.find((m) => m.id === expandedCategory);
 
   return (
-    <div className="filterSidebarWrap" ref={wrapRef}>
-      <div className="filterSidebar">
-        {filterMenu.map((menu) => (
-          <div
-            key={menu.id}
-            className={`filterSidebarItem ${activeCategory === menu.id ? 'active' : ''}`}
-            onMouseEnter={() => handleMouseEnter(menu.id)}
-            onMouseLeave={handleMouseLeave}
-          >
-            <span className="filterSidebarIcon">{menu.icon}</span>
-            <span className="filterSidebarLabel">{menu.label}</span>
-            <IoIosArrowForward className="filterSidebarArrow" />
-          </div>
-        ))}
-      </div>
+    <div className="filterContainer" ref={wrapRef}>
+      <button
+        className={`filterToggle ${isOpen ? 'active' : ''}`}
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <FiFilter size={16} />
+        <span>Filters</span>
+        {selectedItems.length > 0 && <span className="filterCount">{selectedItems.length}</span>}
+      </button>
 
-      {activeMenu && (
-        <div
-          className="filterFlyout"
-          onMouseEnter={handleFlyoutMouseEnter}
-          onMouseLeave={handleFlyoutMouseLeave}
-        >
-          <h4 className="filterFlyoutTitle">{activeMenu.label}</h4>
-          <div className="filterFlyoutGrid">
-            {activeMenu.items.map((item) => (
-              <button
-                key={item}
-                className={`filterFlyoutItem ${selectedCategory.includes(item) ? 'selected' : ''}`}
-                onClick={() => handleItemClick(item)}
-              >
-                {item}
-              </button>
-            ))}
+      {isOpen && (
+        <div className="filterPanel">
+          <div className="filterPanelHeader">
+            <h3>Categories</h3>
+            <button
+              className="filterClose"
+              onClick={() => {
+                setIsOpen(false);
+                setExpandedCategory(null);
+              }}
+            >
+              <IoClose size={18} />
+            </button>
+          </div>
+
+          <div className="filterPanelBody">
+            <div className="filterCategoryList">
+              {filterMenu.map((menu) => (
+                <button
+                  key={menu.id}
+                  className={`filterCategoryItem ${expandedCategory === menu.id ? 'expanded' : ''}`}
+                  onClick={() => handleCategoryClick(menu.id)}
+                >
+                  <span className="filterCategoryIcon">{menu.icon}</span>
+                  <span className="filterCategoryLabel">{menu.label}</span>
+                  {expandedCategory === menu.id ? (
+                    <IoIosArrowDown className="filterCategoryArrow" />
+                  ) : (
+                    <IoIosArrowForward className="filterCategoryArrow" />
+                  )}
+                </button>
+              ))}
+            </div>
+
+            {activeMenu && (
+              <div className="filterSubPanel">
+                <div className="filterSubPanelHeader">
+                  <span className="filterSubPanelIcon">{activeMenu.icon}</span>
+                  <h4>{activeMenu.label}</h4>
+                </div>
+                <div className="filterSubPanelGrid">
+                  {activeMenu.items.map((item) => (
+                    <button
+                      key={item}
+                      className={`filterSubItem ${selectedItems.includes(item) ? 'selected' : ''}`}
+                      onClick={() => handleItemClick(item)}
+                    >
+                      {item}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
