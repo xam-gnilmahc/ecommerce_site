@@ -59,7 +59,6 @@
   position: absolute;
   top: calc(100% + 8px);
   left: 0;
-  width: 580px;
   background: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
@@ -68,190 +67,101 @@
   overflow: hidden;
 }
 
-.filterPanelHeader {
+/* =========================
+   COLUMNS
+========================= */
+.filterColumns {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px;
-  border-bottom: 1px solid #f3f4f6;
-}
-
-.filterPanelHeader h3 {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 700;
-  color: #111827;
-}
-
-.filterClose {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border: none;
-  background: #f3f4f6;
-  border-radius: 6px;
-  color: #6b7280;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.filterClose:hover {
-  background: #e5e7eb;
-  color: #111827;
-}
-
-.filterPanelBody {
-  display: flex;
-  min-height: 350px;
 }
 
 /* =========================
-   CATEGORY LIST (LEFT)
+   COLUMN
 ========================= */
-.filterCategoryList {
-  width: 240px;
+.filterColumn {
+  width: 200px;
   border-right: 1px solid #f3f4f6;
+}
+
+.filterColumn:last-child {
+  border-right: none;
+}
+
+.filterColumnTitle {
+  margin: 0;
+  padding: 14px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+  background: #f9fafb;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.filterItemList {
+  padding: 8px;
+  max-height: 320px;
   overflow-y: auto;
 }
 
-.filterCategoryItem {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.filterItem {
+  display: block;
   width: 100%;
-  padding: 14px 16px;
+  padding: 10px 12px;
   border: none;
   background: transparent;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: left;
-  border-bottom: 1px solid #f9fafb;
-}
-
-.filterCategoryItem:hover {
-  background: #f9fafb;
-}
-
-.filterCategoryItem.expanded {
-  background: #f0fdf4;
-  border-right: 3px solid #10b981;
-}
-
-.filterCategoryIcon {
-  font-size: 18px;
-  width: 24px;
-  text-align: center;
-}
-
-.filterCategoryLabel {
-  flex: 1;
   font-size: 13px;
   font-weight: 500;
   color: #374151;
+  cursor: pointer;
+  text-align: left;
+  border-radius: 6px;
+  transition: all 0.15s ease;
 }
 
-.filterCategoryItem.expanded .filterCategoryLabel {
-  color: #10b981;
-  font-weight: 600;
-}
-
-.filterCategoryArrow {
-  font-size: 12px;
-  color: #9ca3af;
-  transition: transform 0.2s ease;
-}
-
-.filterCategoryItem.expanded .filterCategoryArrow {
-  color: #10b981;
-}
-
-/* =========================
-   SUB PANEL (RIGHT)
-========================= */
-.filterSubPanel {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
-}
-
-.filterSubPanelHeader {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #f3f4f6;
-}
-
-.filterSubPanelIcon {
-  font-size: 20px;
-}
-
-.filterSubPanelHeader h4 {
-  margin: 0;
-  font-size: 15px;
-  font-weight: 700;
+.filterItem:hover {
+  background: #f3f4f6;
   color: #111827;
 }
 
-.filterSubPanelGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-}
-
-.filterSubItem {
-  padding: 10px 12px;
-  border: 1px solid #e5e7eb;
-  background: #fff;
-  font-size: 12px;
-  font-weight: 500;
-  color: #374151;
-  cursor: pointer;
-  text-align: center;
-  border-radius: 6px;
-  transition: all 0.2s ease;
-}
-
-.filterSubItem:hover {
-  border-color: #10b981;
-  color: #10b981;
-  background: #f0fdf4;
-}
-
-.filterSubItem.selected {
+.filterItem.selected {
   background: #10b981;
-  border-color: #10b981;
   color: white;
+}
+
+/* =========================
+   SCROLLBAR
+========================= */
+.filterItemList::-webkit-scrollbar {
+  width: 4px;
+}
+
+.filterItemList::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 4px;
 }
 
 /* =========================
    RESPONSIVE
 ========================= */
-@media (max-width: 640px) {
+@media (max-width: 500px) {
   .filterPanel {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: calc(100vw - 32px);
-    max-height: 80vh;
   }
 
-  .filterPanelBody {
+  .filterColumns {
     flex-direction: column;
   }
 
-  .filterCategoryList {
+  .filterColumn {
     width: 100%;
     border-right: none;
     border-bottom: 1px solid #f3f4f6;
-    max-height: 200px;
   }
 
-  .filterSubPanelGrid {
-    grid-template-columns: repeat(2, 1fr);
+  .filterColumn:last-child {
+    border-bottom: none;
   }
 }

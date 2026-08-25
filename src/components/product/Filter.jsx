@@ -1,19 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Filter.css';
 
-import { IoIosArrowForward, IoIosArrowDown, IoIosClose } from 'react-icons/io';
-import { FiFilter } from 'react-icons/fi';
+import { IoIosFunnel } from 'react-icons/io';
 
 const Filter = ({ onApplyFilters }) => {
-  const [expandedCategory, setExpandedCategory] = useState(null);
-  const [selectedItems, setSelectedItems] = useState([]);
+  const [selectedBrand, setSelectedBrand] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const wrapRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (wrapRef.current && !wrapRef.current.contains(e.target)) {
-        setExpandedCategory(null);
         setIsOpen(false);
       }
     };
@@ -21,208 +19,50 @@ const Filter = ({ onApplyFilters }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const filterMenu = [
-    {
-      id: 'brands',
-      label: 'Shop By Brands',
-      icon: '🏷️',
-      items: [
-        'Apple',
-        'Samsung',
-        'Google',
-        'Sony',
-        'Xiaomi',
-        'OnePlus',
-        'Huawei',
-        'LG',
-        'Dell',
-        'HP',
-        'Lenovo',
-        'Asus',
-        'Acer',
-        'MSI',
-        'Razer',
-        'Microsoft',
-        'JBL',
-        'Bose',
-        'Sennheiser',
-        'Audio-Technica',
-        'Marshall',
-        'Nothing',
-        'Realme',
-        'Vivo',
-        'Oppo',
-        'Honor',
-        'Motorola',
-        'Nokia',
-      ],
-    },
-    {
-      id: 'laptops',
-      label: 'Laptops & Computers',
-      icon: '💻',
-      items: [
-        'MacBook',
-        'ThinkPad',
-        'Dell XPS',
-        'HP Spectre',
-        'Asus ROG',
-        'MSI Gaming',
-        'Surface',
-        'Chromebook',
-        'Mac Mini',
-        'iMac',
-      ],
-    },
-    {
-      id: 'audio',
-      label: 'Audio | Headphones',
-      icon: '🎧',
-      items: [
-        'AirPods',
-        'Galaxy Buds',
-        'Sony WH',
-        'Bose QC',
-        'JBL Tune',
-        'Sennheiser',
-        'Marshall',
-        'Beats',
-        'Pixel Buds',
-        'Nothing Ear',
-      ],
-    },
-    {
-      id: 'mobiles',
-      label: 'Mobiles | Tablets',
-      icon: '📱',
-      items: [
-        'iPhone',
-        'Samsung Galaxy',
-        'Pixel',
-        'OnePlus',
-        'Xiaomi',
-        'iPad',
-        'Galaxy Tab',
-        'Surface Pro',
-        'Lenovo Tab',
-        'Realme',
-      ],
-    },
-    {
-      id: 'cameras',
-      label: 'Cameras',
-      icon: '📷',
-      items: [
-        'Canon',
-        'Nikon',
-        'Sony Alpha',
-        'Fujifilm',
-        'GoPro',
-        'DJI',
-        'Panasonic',
-        'Leica',
-        'Olympus',
-        'Insta360',
-      ],
-    },
-    {
-      id: 'home',
-      label: 'Home | Kitchen',
-      icon: '🏠',
-      items: [
-        'Dyson',
-        'iRobot',
-        'Philips',
-        'Braun',
-        'Kenwood',
-        'Ninja',
-        'Instant Pot',
-        'Ring',
-        'Nest',
-        'Alexa',
-      ],
-    },
-    {
-      id: 'fitness',
-      label: 'Fitness | Health Care',
-      icon: '⌚',
-      items: [
-        'Apple Watch',
-        'Galaxy Watch',
-        'Fitbit',
-        'Garmin',
-        'Whoop',
-        'Oura',
-        'Mi Band',
-        'Amazfit',
-        'Polar',
-        'Withings',
-      ],
-    },
-    {
-      id: 'car',
-      label: 'Car Accessories',
-      icon: '🚗',
-      items: [
-        'Dash Cam',
-        'Car Charger',
-        'Phone Mount',
-        'Bluetooth Adapter',
-        'OBD Scanner',
-        'GPS Tracker',
-        'Seat Cover',
-        'Floor Mats',
-      ],
-    },
-    {
-      id: 'gaming',
-      label: 'Gaming',
-      icon: '🎮',
-      items: [
-        'PS5',
-        'Xbox',
-        'Nintendo Switch',
-        'Steam Deck',
-        'Gaming Chair',
-        'Controllers',
-        'Headsets',
-        'Keyboards',
-        'Mouse',
-        'Monitors',
-      ],
-    },
-    {
-      id: 'accessories',
-      label: 'Computer Peripherals',
-      icon: '🖱️',
-      items: [
-        'Keyboard',
-        'Mouse',
-        'Monitor',
-        'Webcam',
-        'Printer',
-        'Scanner',
-        'External SSD',
-        'USB Hub',
-        'Cable',
-        'Adapter',
-      ],
-    },
+  const brands = [
+    'Apple',
+    'Google',
+    'Samsung',
+    'Redmi',
+    'Nothing',
+    'Acer',
+    'Bose',
+    'Sony',
+    'Nikon',
+    'Nvidia',
+    'Amazon',
   ];
 
-  const handleCategoryClick = (menuId) => {
-    setExpandedCategory(expandedCategory === menuId ? null : menuId);
+  const categories = [
+    'Mobile',
+    'Drones',
+    'Watch',
+    'Earbuds',
+    'Laptop',
+    'Tablet',
+    'Monitor',
+    'Keyboard',
+  ];
+
+  const handleBrandClick = (brand) => {
+    const newBrand = selectedBrand === brand ? null : brand;
+    setSelectedBrand(newBrand);
+    onApplyFilters({
+      brand: newBrand,
+      category: selectedCategory,
+    });
   };
 
-  const handleItemClick = (item) => {
-    const newSelected = selectedItems.includes(item)
-      ? selectedItems.filter((i) => i !== item)
-      : [...selectedItems, item];
-    setSelectedItems(newSelected);
-    onApplyFilters({ category: newSelected });
+  const handleCategoryClick = (category) => {
+    const newCategory = selectedCategory === category ? null : category;
+    setSelectedCategory(newCategory);
+    onApplyFilters({
+      brand: selectedBrand,
+      category: newCategory,
+    });
   };
 
-  const activeMenu = filterMenu.find((m) => m.id === expandedCategory);
+  const activeFilters = (selectedBrand ? 1 : 0) + (selectedCategory ? 1 : 0);
 
   return (
     <div className="filterContainer" ref={wrapRef}>
@@ -230,64 +70,45 @@ const Filter = ({ onApplyFilters }) => {
         className={`filterToggle ${isOpen ? 'active' : ''}`}
         onClick={() => setIsOpen(!isOpen)}
       >
-        <FiFilter size={16} />
+        <IoIosFunnel size={16} />
         <span>Filters</span>
-        {selectedItems.length > 0 && <span className="filterCount">{selectedItems.length}</span>}
+        {activeFilters > 0 && <span className="filterCount">{activeFilters}</span>}
       </button>
 
       {isOpen && (
         <div className="filterPanel">
-          <div className="filterPanelHeader">
-            <h3>Categories</h3>
-            <button
-              className="filterClose"
-              onClick={() => {
-                setIsOpen(false);
-                setExpandedCategory(null);
-              }}
-            >
-              <IoIosClose size={18} />
-            </button>
-          </div>
-
-          <div className="filterPanelBody">
-            <div className="filterCategoryList">
-              {filterMenu.map((menu) => (
-                <button
-                  key={menu.id}
-                  className={`filterCategoryItem ${expandedCategory === menu.id ? 'expanded' : ''}`}
-                  onClick={() => handleCategoryClick(menu.id)}
-                >
-                  <span className="filterCategoryIcon">{menu.icon}</span>
-                  <span className="filterCategoryLabel">{menu.label}</span>
-                  {expandedCategory === menu.id ? (
-                    <IoIosArrowDown className="filterCategoryArrow" />
-                  ) : (
-                    <IoIosArrowForward className="filterCategoryArrow" />
-                  )}
-                </button>
-              ))}
+          <div className="filterColumns">
+            {/* BRANDS COLUMN */}
+            <div className="filterColumn">
+              <h4 className="filterColumnTitle">Brands</h4>
+              <div className="filterItemList">
+                {brands.map((brand) => (
+                  <button
+                    key={brand}
+                    className={`filterItem ${selectedBrand === brand ? 'selected' : ''}`}
+                    onClick={() => handleBrandClick(brand)}
+                  >
+                    {brand}
+                  </button>
+                ))}
+              </div>
             </div>
 
-            {activeMenu && (
-              <div className="filterSubPanel">
-                <div className="filterSubPanelHeader">
-                  <span className="filterSubPanelIcon">{activeMenu.icon}</span>
-                  <h4>{activeMenu.label}</h4>
-                </div>
-                <div className="filterSubPanelGrid">
-                  {activeMenu.items.map((item) => (
-                    <button
-                      key={item}
-                      className={`filterSubItem ${selectedItems.includes(item) ? 'selected' : ''}`}
-                      onClick={() => handleItemClick(item)}
-                    >
-                      {item}
-                    </button>
-                  ))}
-                </div>
+            {/* CATEGORIES COLUMN */}
+            <div className="filterColumn">
+              <h4 className="filterColumnTitle">Categories</h4>
+              <div className="filterItemList">
+                {categories.map((category) => (
+                  <button
+                    key={category}
+                    className={`filterItem ${selectedCategory === category ? 'selected' : ''}`}
+                    onClick={() => handleCategoryClick(category)}
+                  >
+                    {category}
+                  </button>
+                ))}
               </div>
-            )}
+            </div>
           </div>
         </div>
       )}
