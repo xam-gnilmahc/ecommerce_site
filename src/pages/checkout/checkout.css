@@ -12,7 +12,7 @@
   --ck-hover: #b9bec8;
   --ck-active: #9aa0ac;
   --ck-tint: #fafafb;
-  --ck-radius: 14px;
+  --ck-radius: 0px;
   --ck-radius-sm: 10px;
   --ck-shadow-sm: 0 1px 2px rgba(15, 17, 21, 0.05);
   --ck-shadow-md: 0 8px 28px rgba(15, 17, 21, 0.08);
@@ -45,7 +45,6 @@
   height: 42px;
   border: 3px solid var(--ck-border);
   border-top-color: var(--ck-black);
-  border-radius: 50%;
   animation: ckSpin 0.75s linear infinite;
 }
 
@@ -122,7 +121,6 @@
 .ck-block {
   background: var(--ck-card);
   border: 1px solid var(--ck-border);
-  border-radius: var(--ck-radius);
   box-shadow: var(--ck-shadow-sm);
   padding: 24px;
   display: flex;
@@ -150,7 +148,6 @@
   color: var(--ck-muted);
   background: var(--ck-tint);
   border: 1px solid var(--ck-border);
-  border-radius: 999px;
   padding: 3px 10px;
   letter-spacing: 0.04em;
 }
@@ -186,7 +183,6 @@
 .ck-input {
   height: 46px;
   border: 1.5px solid var(--ck-border);
-  border-radius: var(--ck-radius-sm);
   padding: 0 14px;
   font-size: 14px;
   font-family: var(--font-main);
@@ -219,7 +215,6 @@
   gap: 12px;
   padding: 14px 16px;
   border: 1.5px solid var(--ck-border);
-  border-radius: var(--ck-radius-sm);
   background: #fff;
   cursor: pointer;
   transition:
@@ -257,7 +252,6 @@
   align-items: center !important;
   gap: 12px;
   padding: 11px 16px;
-  border-radius: 999px;
 }
 
 .ck-ship-left {
@@ -272,7 +266,6 @@
   flex-shrink: 0;
   width: 34px;
   height: 34px;
-  border-radius: var(--ck-radius-sm);
   background: var(--ck-tint);
   border: 1px solid var(--ck-border);
   display: flex;
@@ -282,7 +275,6 @@
 }
 
 .ck-shipping-row .ck-ship-icon {
-  border-radius: 50%;
 }
 
 .ck-ship-name {
@@ -310,7 +302,6 @@
   flex-shrink: 0;
   width: 18px;
   height: 18px;
-  border-radius: 50%;
   border: 1.5px solid var(--ck-border-strong);
   background: #fff;
   display: flex;
@@ -324,7 +315,6 @@
 .ck-ship-radio-dot {
   width: 8px;
   height: 8px;
-  border-radius: 50%;
   background: var(--ck-black);
   transform: scale(0);
   transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -384,7 +374,6 @@
   background: #f1f2f5;
   color: #5c6169;
   border: 1px solid #e3e5ea;
-  border-radius: 999px;
   padding: 2px 8px;
   text-transform: uppercase;
   white-space: nowrap;
@@ -411,7 +400,6 @@
   border: 1px solid #dfe1e6;
   width: 20px;
   height: 20px;
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -431,7 +419,6 @@
   gap: 6px;
   background: #fff;
   border: 1.5px dashed var(--ck-border-strong);
-  border-radius: 999px;
   color: var(--ck-muted);
   font-size: 12px;
   font-weight: 600;
@@ -459,7 +446,6 @@
 /* add-address inline form */
 .ck-addr-form {
   border: 1.5px solid var(--ck-border);
-  border-radius: var(--ck-radius-sm);
   background: var(--ck-tint);
   padding: 18px;
   display: flex;
@@ -481,7 +467,6 @@
 .ck-addr-cancel {
   background: #fff;
   border: 1.5px solid var(--ck-border);
-  border-radius: 999px;
   color: var(--ck-muted);
   font-size: 13px;
   font-weight: 600;
@@ -501,7 +486,6 @@
 .ck-addr-save {
   background: var(--ck-black);
   border: none;
-  border-radius: 999px;
   color: #fff;
   font-size: 13px;
   font-weight: 700;
@@ -541,7 +525,6 @@
   grid-template-columns: 1fr 1fr;
   background: var(--ck-tint);
   border: 1px solid var(--ck-border);
-  border-radius: 999px;
   padding: 4px;
   min-width: 260px;
 }
@@ -553,7 +536,6 @@
   left: 4px;
   width: calc(50% - 4px);
   background: #fff;
-  border-radius: 999px;
   box-shadow:
     0 2px 8px rgba(16, 22, 35, 0.1),
     0 0 0 1px rgba(16, 22, 35, 0.04);
@@ -574,7 +556,6 @@
   padding: 9px 18px;
   border: none;
   background: none;
-  border-radius: 999px;
   font-family: var(--font-main);
   font-size: 13px;
   font-weight: 700;
@@ -619,7 +600,6 @@
 /* stripe box */
 .ck-stripe-box {
   border: 1.5px solid var(--ck-border);
-  border-radius: var(--ck-radius-sm);
   padding: 16px 18px;
   background: var(--ck-tint);
   animation: ckFadeUp 0.3s ease both;
@@ -635,13 +615,11 @@
 .ck-test-cards code {
   background: #fff;
   border: 1px solid var(--ck-border);
-  border-radius: 5px;
   padding: 1px 6px;
   font-size: 11px;
 }
 
 .ck-gpay-box {
-  border-radius: var(--ck-radius-sm);
   overflow: hidden;
   animation: ckFadeUp 0.3s ease both;
 }
@@ -668,7 +646,6 @@
   background: var(--ck-black);
   color: #fff;
   border: none;
-  border-radius: var(--ck-radius);
   font-size: 15px;
   font-weight: 700;
   font-family: var(--font-main);
@@ -701,7 +678,6 @@
 .ck-summary {
   background: var(--ck-card);
   border: 1px solid var(--ck-border);
-  border-radius: var(--ck-radius);
   box-shadow: var(--ck-shadow-sm);
   padding: 24px;
   overflow: hidden;
@@ -743,7 +719,6 @@
   color: var(--ck-muted);
   background: var(--ck-tint);
   border: 1px solid var(--ck-border);
-  border-radius: 999px;
   padding: 3px 10px;
   white-space: nowrap;
 }
@@ -770,7 +745,6 @@
   width: 68px;
   height: 68px;
   background: var(--ck-tint);
-  border-radius: var(--ck-radius-sm);
   overflow: visible;
   display: flex;
   align-items: center;
@@ -794,7 +768,6 @@
   font-weight: 700;
   width: 19px;
   height: 19px;
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -863,7 +836,6 @@
   align-items: center;
   background: var(--ck-tint);
   border: 1px solid var(--ck-border);
-  border-radius: var(--ck-radius-sm);
   padding: 14px 16px;
   margin-top: 4px;
 }
@@ -893,7 +865,6 @@
   color: var(--ck-muted);
   background: var(--ck-tint);
   border: 1px solid var(--ck-border);
-  border-radius: 999px;
   padding: 8px 14px;
   margin: 16px 0 0;
 }
@@ -941,7 +912,6 @@
   background: var(--ck-black);
   color: #fff;
   border: none;
-  border-radius: 999px;
   padding: 13px 30px;
   font-size: 14px;
   font-weight: 700;
@@ -1006,7 +976,6 @@
 
   .ck-block {
     padding: 18px;
-    border-radius: 12px;
   }
 
   .ck-fields {

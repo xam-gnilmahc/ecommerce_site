@@ -267,18 +267,18 @@ const Checkout = () => {
             <div className="ck-left">
               <Skeleton height={28} width={180} style={{ marginBottom: 24 }} />
               {[1, 2, 3].map((i) => (
-                <Skeleton key={i} height={52} style={{ marginBottom: 12, borderRadius: 10 }} />
+                <Skeleton key={i} height={52} style={{ marginBottom: 12, borderRadius: 0 }} />
               ))}
               <Skeleton height={28} width={160} style={{ margin: '24px 0 12px' }} />
               {[1, 2].map((i) => (
-                <Skeleton key={i} height={72} style={{ marginBottom: 12, borderRadius: 12 }} />
+                <Skeleton key={i} height={72} style={{ marginBottom: 12, borderRadius: 0 }} />
               ))}
             </div>
             <div className="ck-right">
               <Skeleton height={28} width={140} style={{ marginBottom: 20 }} />
               {[1, 2].map((i) => (
                 <div key={i} style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
-                  <Skeleton width={56} height={56} borderRadius={10} />
+                  <Skeleton width={56} height={56} borderRadius={0} />
                   <div style={{ flex: 1 }}>
                     <Skeleton height={14} style={{ marginBottom: 6 }} />
                     <Skeleton height={12} width="60%" />

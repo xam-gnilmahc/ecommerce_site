@@ -13,7 +13,7 @@
   --bg-muted: #f9f9f9;
   --card-bg: #ffffff;
   --text-dark: #1f2937;
-  --radius: 12px;
+  --radius: 0px;
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
@@ -221,7 +221,6 @@
 }
 
 .aiTabReviewContainer .border.rounded {
-  border-radius: var(--radius) !important;
 }
 
 .aiTabReviewContainer .badge {
@@ -282,7 +281,6 @@
 .userReviewImg img {
   width: 48px;
   height: 48px;
-  border-radius: 50%;
   object-fit: cover;
   border: 1px solid var(--border-color);
 }
@@ -353,7 +351,6 @@
   padding: 5px 8px; /* smaller buttons */
   background-color: transparent;
   border: 1px solid var(--border-color);
-  border-radius: 6px;
   cursor: pointer;
   color: var(--muted-text);
   font-size: 13px;
@@ -384,7 +381,6 @@
   background: var(--primary);
   color: #fff;
   border: none;
-  border-radius: 8px;
   cursor: pointer;
   font-weight: 700;
   box-shadow: none;
@@ -406,7 +402,6 @@
   width: 100%;
   max-width: 680px;
   background: var(--card-bg);
-  border-radius: 10px;
   padding: 14px 16px; /* more compact form */
   box-shadow: none;
   border: 1px solid var(--border-color);
@@ -443,7 +438,6 @@
 .modal-row textarea.form-control {
   width: 100%;
   padding: 10px;
-  border-radius: 8px;
   border: 1px solid var(--border-color);
   resize: vertical;
 }
@@ -458,7 +452,6 @@
   color: white;
   border: none;
   padding: 10px 16px;
-  border-radius: 8px;
   cursor: pointer;
   font-weight: 700;
 }
@@ -466,7 +459,6 @@
   background: transparent;
   border: 1px solid var(--border-color);
   padding: 10px 14px;
-  border-radius: 8px;
   cursor: pointer;
 }
 
@@ -496,7 +488,6 @@
   gap: 16px;
   padding: 20px;
   background: linear-gradient(135deg, var(--primary-light) 0%, rgba(91, 124, 255, 0.08) 100%);
-  border-radius: var(--radius);
   border: 1px solid rgba(91, 124, 255, 0.1);
   transition: all 0.3s ease;
 }
@@ -527,7 +518,6 @@
 .userNewReviewForm {
   background-color: rgba(91, 124, 255, 0.02);
   padding: 28px;
-  border-radius: var(--radius);
   border: 1px solid var(--border-color);
 }
 
@@ -541,7 +531,6 @@
   padding: 14px 16px;
   border: 1px solid var(--border-color);
   font-size: 14px;
-  border-radius: var(--radius);
   font-family: inherit;
   color: var(--text-dark);
   background-color: var(--card-bg);
@@ -565,7 +554,6 @@
   padding: 14px 16px;
   font-size: 14px;
   border: 1px solid var(--border-color);
-  border-radius: var(--radius);
   background-color: var(--card-bg);
   color: var(--text-dark);
   transition: border-color 0.3s ease;
@@ -585,7 +573,6 @@
   background-color: var(--primary);
   color: white;
   border: none;
-  border-radius: var(--radius);
   cursor: pointer;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -606,7 +593,6 @@
 /* Drag and Drop Area */
 .drag-drop-zone {
   border: 2px dashed var(--border-color);
-  border-radius: 8px;
   padding: 16px 14px; /* smaller drop area */
   text-align: center;
   background-color: var(--bg-muted);
@@ -645,7 +631,6 @@
 
 .file-preview-item {
   position: relative;
-  border-radius: 8px;
   overflow: hidden;
   background-color: var(--bg-muted);
   aspect-ratio: 1;
@@ -662,7 +647,6 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: var(--radius);
 }
 
 /* Review media thumbnails inside listing */
@@ -679,7 +663,6 @@
   padding: 0;
   border: 1px solid var(--border-color);
   background: var(--card-bg);
-  border-radius: 8px;
   overflow: hidden;
   display: inline-flex;
   align-items: center;
@@ -732,12 +715,10 @@
   width: auto;
   height: auto;
   object-fit: contain;
-  border-radius: 8px;
 }
 .viewer-video {
   max-width: clamp(320px, 80vw, 900px);
   max-height: clamp(240px, 75vh, 700px);
-  border-radius: 8px;
 }
 
 .viewer-close {
@@ -748,7 +729,6 @@
   border: none;
   font-size: 22px;
   padding: 6px 10px;
-  border-radius: 6px;
   cursor: pointer;
 }
 .viewer-controls {
@@ -768,7 +748,6 @@
   border: none;
   font-size: 28px;
   padding: 8px 12px;
-  border-radius: 6px;
   cursor: pointer;
 }
 
@@ -793,7 +772,6 @@
   top: 6px;
   right: 6px;
   background-color: rgba(255, 255, 255, 0.9);
-  border-radius: 50%;
   padding: 4px;
   cursor: pointer;
   display: flex;
@@ -819,7 +797,6 @@
   margin-right: 10px;
   display: inline-block;
   vertical-align: middle;
-  border-radius: 3px;
   transition: all 0.2s ease;
 }
 

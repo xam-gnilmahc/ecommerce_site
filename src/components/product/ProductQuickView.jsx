@@ -136,10 +136,10 @@ const ProductQuickView = ({ productId, onClose }) => {
   const LoadingSkeleton = () => (
     <div className="flex flex-col md:flex-row gap-6 p-6">
       <div className="md:w-1/2">
-        <Skeleton height={360} borderRadius={12} />
+        <Skeleton height={360} borderRadius={0} />
         <div className="flex gap-2 mt-3">
           {[...Array(4)].map((_, i) => (
-            <Skeleton key={i} width={60} height={60} borderRadius={8} />
+            <Skeleton key={i} width={60} height={60} borderRadius={0} />
           ))}
         </div>
       </div>
@@ -152,10 +152,10 @@ const ProductQuickView = ({ productId, onClose }) => {
         <Skeleton height={60} />
         <div className="flex gap-2 mt-2">
           {[...Array(5)].map((_, i) => (
-            <Skeleton key={i} width={40} height={36} borderRadius={8} />
+            <Skeleton key={i} width={40} height={36} borderRadius={0} />
           ))}
         </div>
-        <Skeleton height={48} borderRadius={10} className="mt-2" />
+        <Skeleton height={48} borderRadius={0} className="mt-2" />
       </div>
     </div>
   );

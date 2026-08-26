@@ -24,11 +24,7 @@ const PageNotFound = () => {
             Sorry, the page you're looking for doesn’t exist or may have been moved. Please check
             the URL or return to the homepage.
           </p>
-          <Link
-            to="/"
-            className="btn btn-outline-dark mt-4 px-4 py-2"
-            style={{ borderRadius: '30px' }}
-          >
+          <Link to="/" className="btn btn-outline-dark mt-4 px-4 py-2" style={{ borderRadius: 0 }}>
             Go Home
           </Link>
         </div>

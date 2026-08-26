@@ -112,7 +112,7 @@ const RaffleCardSkeleton = () => (
       <Skeleton
         height={40}
         style={{
-          borderRadius: 12,
+          borderRadius: 0,
           marginTop: 'auto',
         }}
       />

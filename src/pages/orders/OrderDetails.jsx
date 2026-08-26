@@ -54,9 +54,9 @@ const OrderDetailsPage = () => {
     return (
       <div className="od-page">
         <div className="od-container">
-          <Skeleton height={160} borderRadius={24} style={{ marginBottom: 16 }} />
-          <Skeleton height={320} borderRadius={24} style={{ marginBottom: 16 }} />
-          <Skeleton height={200} borderRadius={24} />
+          <Skeleton height={160} borderRadius={0} style={{ marginBottom: 16 }} />
+          <Skeleton height={320} borderRadius={0} style={{ marginBottom: 16 }} />
+          <Skeleton height={200} borderRadius={0} />
         </div>
       </div>
     );
