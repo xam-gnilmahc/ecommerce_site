@@ -43,6 +43,7 @@
   gap: 8px;
   height: 46px;
   padding: 0 26px;
+  border-radius: 999px;
   background: #2563eb;
   color: #fff;
   font-size: 14px;
@@ -75,6 +76,7 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   border: 1px solid #eef0f4;
+  border-radius: 16px;
   overflow: hidden;
   margin-bottom: 64px;
 }
@@ -128,6 +130,7 @@
 .about-cat {
   padding: 24px 22px;
   border: 1px solid #eef0f4;
+  border-radius: 14px;
   transition:
     border-color 0.18s ease,
     box-shadow 0.18s ease,
@@ -162,6 +165,7 @@
 
 .about-perk {
   padding: 24px 22px;
+  border-radius: 14px;
   background: #f8f9fb;
 }
 
@@ -171,6 +175,7 @@
   justify-content: center;
   width: 44px;
   height: 44px;
+  border-radius: 12px;
   background: #fff;
   color: #2563eb;
   box-shadow: 0 2px 8px rgba(16, 24, 40, 0.06);
@@ -195,6 +200,7 @@
 .about-banner {
   text-align: center;
   padding: 52px 24px;
+  border-radius: 20px;
   background: linear-gradient(135deg, #f5f8ff, #eef2fb);
 }
 

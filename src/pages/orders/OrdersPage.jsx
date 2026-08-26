@@ -318,24 +318,29 @@ const OrdersPage = () => {
                 <div className="od-skeleton-wrap">
                   <div className="skel-band">
                     <div className="skel-band-left">
-                      <Skeleton width={60} height={22} borderRadius={0} />
-                      <Skeleton width={90} height={11} borderRadius={0} style={{ marginTop: 6 }} />
+                      <Skeleton width={60} height={22} borderRadius={4} />
+                      <Skeleton width={90} height={11} borderRadius={4} style={{ marginTop: 6 }} />
                     </div>
                     <div className="skel-band-right">
-                      <Skeleton width={110} height={13} borderRadius={0} />
-                      <Skeleton width={80} height={11} borderRadius={0} style={{ marginTop: 5 }} />
-                      <Skeleton width={90} height={24} borderRadius={0} style={{ marginTop: 7 }} />
+                      <Skeleton width={110} height={13} borderRadius={4} />
+                      <Skeleton width={80} height={11} borderRadius={4} style={{ marginTop: 5 }} />
+                      <Skeleton
+                        width={90}
+                        height={24}
+                        borderRadius={999}
+                        style={{ marginTop: 7 }}
+                      />
                     </div>
                   </div>
                   <div className="skel-status-row">
-                    <Skeleton width={80} height={24} borderRadius={0} />
-                    <Skeleton width={160} height={13} borderRadius={0} />
+                    <Skeleton width={80} height={24} borderRadius={999} />
+                    <Skeleton width={160} height={13} borderRadius={4} />
                   </div>
                   <div className="skel-track-section">
                     <Skeleton
                       width={70}
                       height={10}
-                      borderRadius={0}
+                      borderRadius={4}
                       style={{ marginBottom: 16 }}
                     />
                     <div className="skel-track-steps">
@@ -345,7 +350,7 @@ const OrdersPage = () => {
                           <Skeleton
                             width={40}
                             height={9}
-                            borderRadius={0}
+                            borderRadius={4}
                             style={{ marginTop: 6 }}
                           />
                         </div>
@@ -358,29 +363,29 @@ const OrdersPage = () => {
                       <Skeleton
                         width={100}
                         height={10}
-                        borderRadius={0}
+                        borderRadius={4}
                         style={{ marginBottom: 12 }}
                       />
                       <div className="skel-meta-row">
                         <Skeleton circle width={14} height={14} />
-                        <Skeleton width={90} height={13} borderRadius={0} />
+                        <Skeleton width={90} height={13} borderRadius={4} />
                       </div>
                       <div className="skel-meta-row">
                         <Skeleton circle width={14} height={14} />
-                        <Skeleton width={130} height={13} borderRadius={0} />
+                        <Skeleton width={130} height={13} borderRadius={4} />
                       </div>
                     </div>
                     <div className="skel-meta-block skel-meta-block--right">
                       <Skeleton
                         width={70}
                         height={10}
-                        borderRadius={0}
+                        borderRadius={4}
                         style={{ marginBottom: 12 }}
                       />
                       <div className="skel-meta-row">
-                        <Skeleton width={28} height={20} borderRadius={0} />
-                        <Skeleton width={50} height={13} borderRadius={0} />
-                        <Skeleton width={55} height={13} borderRadius={0} />
+                        <Skeleton width={28} height={20} borderRadius={4} />
+                        <Skeleton width={50} height={13} borderRadius={4} />
+                        <Skeleton width={55} height={13} borderRadius={4} />
                       </div>
                     </div>
                   </div>
@@ -389,33 +394,33 @@ const OrdersPage = () => {
                     <Skeleton
                       width={90}
                       height={10}
-                      borderRadius={0}
+                      borderRadius={4}
                       style={{ marginBottom: 14 }}
                     />
                     {Array.from({ length: 3 }).map((_, i) => (
                       <div className="skel-item-row" key={i}>
-                        <Skeleton width={48} height={48} borderRadius={0} />
+                        <Skeleton width={48} height={48} borderRadius={8} />
                         <div className="skel-item-info">
-                          <Skeleton width={140} height={13} borderRadius={0} />
+                          <Skeleton width={140} height={13} borderRadius={4} />
                           <Skeleton
                             width={60}
                             height={11}
-                            borderRadius={0}
+                            borderRadius={4}
                             style={{ marginTop: 5 }}
                           />
                         </div>
-                        <Skeleton width={48} height={16} borderRadius={0} />
+                        <Skeleton width={48} height={16} borderRadius={4} />
                       </div>
                     ))}
                   </div>
                   <div className="skel-footer">
                     <div>
-                      <Skeleton width={160} height={11} borderRadius={0} />
-                      <Skeleton width={120} height={11} borderRadius={0} style={{ marginTop: 5 }} />
+                      <Skeleton width={160} height={11} borderRadius={4} />
+                      <Skeleton width={120} height={11} borderRadius={4} style={{ marginTop: 5 }} />
                     </div>
                     <div className="skel-total">
-                      <Skeleton width={60} height={10} borderRadius={0} />
-                      <Skeleton width={80} height={24} borderRadius={0} style={{ marginTop: 5 }} />
+                      <Skeleton width={60} height={10} borderRadius={4} />
+                      <Skeleton width={80} height={24} borderRadius={4} style={{ marginTop: 5 }} />
                     </div>
                   </div>
                 </div>

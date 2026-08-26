@@ -20,7 +20,7 @@ const OrderDetailsSheet = () => {
         <MDBContainer className="py-5 h-100">
           <MDBRow className="justify-content-center align-items-center h-100">
             <MDBCol lg="10" xl="8">
-              <MDBCard style={{ borderRadius: 0 }}>
+              <MDBCard style={{ borderRadius: '10px' }}>
                 <MDBCardHeader className="px-4 py-5">
                   <MDBTypography tag="h5" className="text-muted mb-0">
                     Thanks for your Order, <span style={{ color: '#a8729a' }}>Max</span>!
@@ -81,10 +81,10 @@ const OrderDetailsSheet = () => {
                           <p className="text-muted mb-0 small">Track Order</p>
                         </MDBCol>
                         <MDBCol md="10">
-                          <MDBProgress style={{ height: '6px', borderRadius: 0 }}>
+                          <MDBProgress style={{ height: '6px', borderRadius: '16px' }}>
                             <MDBProgressBar
                               style={{
-                                borderRadius: 0,
+                                borderRadius: '16px',
                                 backgroundColor: '#a8729a',
                               }}
                               width={65}
@@ -148,10 +148,10 @@ const OrderDetailsSheet = () => {
                           <p className="text-muted mb-0 small">Track Order</p>
                         </MDBCol>
                         <MDBCol md="10">
-                          <MDBProgress style={{ height: '6px', borderRadius: 0 }}>
+                          <MDBProgress style={{ height: '6px', borderRadius: '16px' }}>
                             <MDBProgressBar
                               style={{
-                                borderRadius: 0,
+                                borderRadius: '16px',
                                 backgroundColor: '#a8729a',
                               }}
                               width={20}

@@ -89,7 +89,7 @@ const RelatedProducts = ({ brand, category }) => {
             ? [...Array(5)].map((_, i) => (
                 <SwiperSlide key={i}>
                   <div className="rp-card">
-                    <Skeleton height={180} borderRadius={0} />
+                    <Skeleton height={180} borderRadius={10} />
                     <div style={{ padding: '10px 0' }}>
                       <Skeleton height={14} width="80%" />
                       <Skeleton height={12} width="40%" style={{ marginTop: 6 }} />

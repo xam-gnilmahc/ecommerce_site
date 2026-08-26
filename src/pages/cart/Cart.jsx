@@ -221,11 +221,11 @@ const Cart = () => {
                   borderBottom: '1px solid #e8e8e8',
                 }}
               >
-                <Skeleton width={72} height={72} borderRadius={0} />
+                <Skeleton width={72} height={72} borderRadius={12} />
                 <div style={{ flex: 1 }}>
                   <Skeleton height={14} width="60%" style={{ marginBottom: 6 }} />
                   <Skeleton height={12} width="80%" style={{ marginBottom: 10 }} />
-                  <Skeleton height={32} width={96} borderRadius={0} />
+                  <Skeleton height={32} width={96} borderRadius={8} />
                 </div>
                 <Skeleton height={20} width={50} />
               </div>
@@ -243,7 +243,7 @@ const Cart = () => {
                   <Skeleton height={14} width={50} />
                 </div>
               ))}
-              <Skeleton height={56} borderRadius={0} style={{ marginTop: 24 }} />
+              <Skeleton height={56} borderRadius={12} style={{ marginTop: 24 }} />
             </div>
           </div>
         </div>

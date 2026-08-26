@@ -6,7 +6,7 @@
   --ck-border-strong: #d3d7df;
   --ck-muted: #878d99;
   --ck-ink: #3f4550;
-  --ck-radius: 0px;
+  --ck-radius: 14px;
   --ck-radius-sm: 10px;
   --ck-shadow-sm: 0 1px 2px rgba(15, 17, 21, 0.05);
 }
@@ -80,6 +80,7 @@
   display: flex;
   align-items: center;
   background: var(--ck-white);
+  border-radius: 999px;
   padding: 4px;
   border: 1px solid var(--ck-border);
   width: 220px;
@@ -94,6 +95,7 @@
   width: calc(50% - 4px);
   height: calc(100% - 8px);
   background: var(--ck-black);
+  border-radius: 999px;
   transition: 0.25s ease;
 }
 
@@ -129,6 +131,7 @@
 
 .order-card {
   background: var(--ck-white);
+  border-radius: var(--ck-radius);
   border: 1px solid var(--ck-border);
   box-shadow: var(--ck-shadow-sm);
   overflow: hidden;
@@ -160,6 +163,7 @@
   padding: 12px 18px;
   background: #f0f2f2;
   border-bottom: 1px solid var(--ck-border);
+  border-radius: var(--ck-radius) var(--ck-radius) 0 0;
 }
 
 .band-col {
@@ -295,6 +299,7 @@
   gap: 5px;
   font-size: 11px;
   padding: 5px 11px;
+  border-radius: 999px;
   font-weight: 700;
   white-space: nowrap;
 }
@@ -370,6 +375,7 @@
   width: 84px;
   height: 84px;
   object-fit: contain;
+  border-radius: var(--ck-radius-sm);
   border: 1px solid var(--ck-border);
   background: #fff;
   padding: 7px;
@@ -384,6 +390,7 @@
   min-width: 20px;
   height: 20px;
   padding: 0 6px;
+  border-radius: 999px;
   background: var(--ck-black);
   color: var(--ck-white);
   font-size: 10.5px;
@@ -398,6 +405,7 @@
   flex-shrink: 0;
   width: 84px;
   height: 84px;
+  border-radius: var(--ck-radius-sm);
   border: 1.5px dashed var(--ck-border-strong);
   background: none;
   display: flex;
@@ -461,6 +469,7 @@
 
 .od-panel-inner {
   background: var(--ck-white);
+  border-radius: 14px;
   border: 1.5px solid var(--ck-border);
   overflow: hidden;
   position: relative;
@@ -481,6 +490,7 @@
   color: var(--ck-white);
   width: 28px;
   height: 28px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -558,6 +568,7 @@
   font-weight: 600;
   font-family: var(--font-main);
   padding: 4px 11px;
+  border-radius: 999px;
   cursor: pointer;
   transition: background 0.2s;
 }
@@ -581,6 +592,7 @@
   font-size: 11px;
   font-weight: 700;
   padding: 4px 11px;
+  border-radius: 999px;
   font-family: var(--font-main);
 }
 
@@ -649,6 +661,7 @@
   top: 14px;
   left: 10%;
   height: 3px;
+  border-radius: 2px;
 }
 
 .od-track-line-bg {
@@ -672,6 +685,7 @@
 .od-track-circle {
   width: 28px;
   height: 28px;
+  border-radius: 50%;
   border: 2px solid var(--ck-border);
   background: var(--ck-white);
   display: flex;
@@ -787,6 +801,7 @@
   width: 48px;
   height: 48px;
   background: var(--ck-off);
+  border-radius: 8px;
   overflow: hidden;
   flex-shrink: 0;
 }
@@ -1059,6 +1074,7 @@
     max-width: 680px;
     margin: 0 auto;
     border: 1px solid #ddd;
+    border-radius: 0;
     box-shadow: none;
   }
 

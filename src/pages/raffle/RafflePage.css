@@ -7,7 +7,7 @@
   --ck-off: #f5f5f7;
   --ck-border: #e8e8e8;
   --ck-muted: #6b7280;
-  --ck-radius: 0px;
+  --ck-radius: 12px;
 
   --rf-live: #059669;
   --rf-upcoming: #d97706;
@@ -46,6 +46,7 @@
   color: var(--ck-muted);
   background: var(--ck-off);
   border: 1.5px solid var(--ck-border);
+  border-radius: 999px;
   padding: 5px 14px;
   margin-bottom: 20px;
 }
@@ -54,6 +55,7 @@
   content: '';
   width: 6px;
   height: 6px;
+  border-radius: 50%;
   background: var(--rf-live);
   animation: rf-blink 1.4s ease-in-out infinite;
 }
@@ -121,6 +123,8 @@
   background: #f59e0b;
   color: white;
 
+  border-radius: 999px;
+
   padding: 6px 12px;
 
   font-size: 11px;
@@ -161,6 +165,7 @@
   gap: 7px;
   padding: 9px 20px;
   border: 1.5px solid var(--ck-border);
+  border-radius: 999px;
   background: var(--ck-white);
   font-family: var(--font-main);
   font-size: 13px;
@@ -189,6 +194,7 @@
 .raffle-filter-count {
   font-size: 11px;
   font-weight: 700;
+  border-radius: 999px;
   padding: 2px 8px;
   letter-spacing: 0;
   background: rgba(255, 255, 255, 0.18);
@@ -230,6 +236,7 @@
 .raffle-card-modern {
   border: 1px solid rgba(0, 0, 0, 0.08);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+  border-radius: 16px;
   overflow: hidden;
   transition: all 0.25s ease;
 }
@@ -242,6 +249,7 @@
 /* cleaner state blocks */
 .raffle-state {
   padding: 10px 12px;
+  border-radius: 10px;
   font-size: 12px;
   font-weight: 700;
   text-align: center;
@@ -259,6 +267,7 @@
 
 /* softer button */
 .raffle-enter-btn {
+  border-radius: 10px;
 }
 
 /* cleaner progress */
@@ -270,6 +279,7 @@
 ═══════════════════════════════════════════════ */
 .raffle-card {
   border: 1.5px solid var(--ck-border);
+  border-radius: var(--ck-radius);
   overflow: hidden;
   background: var(--ck-white);
   display: flex;
@@ -317,6 +327,7 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   padding: 5px 12px;
+  border-radius: 999px;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
@@ -343,6 +354,7 @@
   display: inline-block;
   width: 7px;
   height: 7px;
+  border-radius: 50%;
   background: var(--rf-live);
   animation: rf-blink 1.4s ease-in-out infinite;
 }
@@ -435,6 +447,7 @@
   align-items: center;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
   padding: 6px 10px;
   min-width: 44px;
 }
@@ -541,6 +554,7 @@
 .raffle-progress-bar {
   height: 3px;
   background: var(--ck-border);
+  border-radius: 999px;
   margin-top: 6px;
   overflow: hidden;
 }
@@ -548,6 +562,7 @@
 .raffle-progress-fill {
   height: 100%;
   background: var(--ck-black);
+  border-radius: 999px;
   transition: width 0.4s ease;
 }
 
@@ -558,6 +573,7 @@
   align-items: center;
   background: var(--ck-off);
   border: 1.5px dashed var(--ck-border);
+  border-radius: 8px;
   padding: 7px 12px;
   margin-bottom: 10px;
   font-size: 12px;
@@ -585,6 +601,7 @@
 .raffle-message {
   font-size: 12px;
   padding: 7px 12px;
+  border-radius: 8px;
   margin-bottom: 10px;
   font-weight: 600;
 }
@@ -614,6 +631,7 @@
   background: var(--ck-black);
   color: var(--ck-white);
   border: none;
+  border-radius: var(--ck-radius);
   font-family: var(--font-main);
   font-size: 13px;
   font-weight: 700;
