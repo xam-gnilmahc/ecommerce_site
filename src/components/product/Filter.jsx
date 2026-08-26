@@ -15,7 +15,6 @@ import {
 
 const Filter = ({ onApplyFilters }) => {
   const [hoveredCategory, setHoveredCategory] = useState(null);
-  const [hoveredBrand, setHoveredBrand] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedBrand, setSelectedBrand] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -27,7 +26,6 @@ const Filter = ({ onApplyFilters }) => {
       if (wrapRef.current && !wrapRef.current.contains(e.target)) {
         setIsOpen(false);
         setHoveredCategory(null);
-        setHoveredBrand(null);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -37,76 +35,35 @@ const Filter = ({ onApplyFilters }) => {
   const categoriesData = {
     Mobile: {
       icon: <IoIosPhonePortrait />,
-      brands: {
-        Apple: ['iPhone 15', 'iPhone 14', 'iPhone SE'],
-        Samsung: ['Galaxy S24', 'Galaxy A54', 'Galaxy Z Flip'],
-        Google: ['Pixel 8', 'Pixel 7a'],
-        Redmi: ['Note 13', '13C', '12'],
-        OnePlus: ['12', '11', 'Nord'],
-      },
+      brands: ['Apple', 'Samsung', 'Google', 'Redmi', 'OnePlus', 'Nothing', 'Vivo', 'Oppo'],
     },
     Laptop: {
       icon: <IoIosLaptop />,
-      brands: {
-        Apple: ['MacBook Air', 'MacBook Pro'],
-        Dell: ['XPS 15', 'Inspiron', 'Latitude'],
-        HP: ['Spectre', 'Envy', 'Pavilion'],
-        Lenovo: ['ThinkPad', 'IdeaPad', 'Legion'],
-        Asus: ['ROG', 'ZenBook', 'VivoBook'],
-      },
+      brands: ['Apple', 'Dell', 'HP', 'Lenovo', 'Asus', 'Acer', 'MSI'],
     },
     Watch: {
       icon: <IoIosWatch />,
-      brands: {
-        Apple: ['Apple Watch Ultra', 'Apple Watch SE'],
-        Samsung: ['Galaxy Watch 6', 'Galaxy Watch FE'],
-        Garmin: ['Venu 3', 'Forerunner'],
-        Fitbit: ['Versa 4', 'Sense 2'],
-      },
+      brands: ['Apple', 'Samsung', 'Garmin', 'Fitbit', 'Amazfit'],
     },
     Earbuds: {
       icon: <IoIosHeadset />,
-      brands: {
-        Apple: ['AirPods Pro', 'AirPods 3'],
-        Samsung: ['Galaxy Buds 3', 'Galaxy Buds FE'],
-        Sony: ['WF-1000XM5', 'LinkBuds'],
-        Bose: ['QuietComfort Ultra', 'Sport Earbuds'],
-        JBL: ['Tour Pro 2', 'Tune 230'],
-      },
+      brands: ['Apple', 'Samsung', 'Sony', 'Bose', 'JBL', 'Nothing'],
     },
     Tablet: {
       icon: <IoIosTabletLandscape />,
-      brands: {
-        Apple: ['iPad Pro', 'iPad Air', 'iPad Mini'],
-        Samsung: ['Galaxy Tab S9', 'Galaxy Tab A9'],
-        Lenovo: ['Tab P12', 'Tab M10'],
-      },
+      brands: ['Apple', 'Samsung', 'Lenovo'],
     },
     Monitor: {
       icon: <IoIosDesktop />,
-      brands: {
-        Samsung: ['Odyssey G7', 'ViewFinity'],
-        LG: ['UltraGear', 'UltraWide'],
-        Dell: ['UltraSharp', 'Gaming'],
-        Acer: ['Predator', 'Nitro'],
-      },
+      brands: ['Samsung', 'LG', 'Dell', 'Acer', 'MSI'],
     },
     Keyboard: {
       icon: <IoIosOptions />,
-      brands: {
-        Logitech: ['MX Keys', 'G Pro'],
-        Razer: ['BlackWidow', 'Huntsman'],
-        Corsair: ['K100', 'K70'],
-        SteelSeries: ['Apex Pro', 'Apex 3'],
-      },
+      brands: ['Logitech', 'Razer', 'Corsair', 'SteelSeries'],
     },
     Drones: {
       icon: <IoIosRadio />,
-      brands: {
-        DJI: ['Mavic 3', 'Mini 4', 'Air 3'],
-        Nikon: ['KeyMission'],
-        GoPro: ['Karma'],
-      },
+      brands: ['DJI', 'Nikon', 'GoPro'],
     },
   };
 
@@ -114,7 +71,6 @@ const Filter = ({ onApplyFilters }) => {
     clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
       setHoveredCategory(category);
-      setHoveredBrand(null);
     }, 80);
   };
 
@@ -122,7 +78,6 @@ const Filter = ({ onApplyFilters }) => {
     clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
       setHoveredCategory(null);
-      setHoveredBrand(null);
     }, 150);
   };
 
@@ -133,31 +88,6 @@ const Filter = ({ onApplyFilters }) => {
   const handleBrandsLeave = () => {
     timeoutRef.current = setTimeout(() => {
       setHoveredCategory(null);
-      setHoveredBrand(null);
-    }, 150);
-  };
-
-  const handleBrandHover = (brand) => {
-    clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => {
-      setHoveredBrand(brand);
-    }, 80);
-  };
-
-  const handleBrandLeave = () => {
-    clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => {
-      setHoveredBrand(null);
-    }, 150);
-  };
-
-  const handleSubCategoryEnter = () => {
-    clearTimeout(timeoutRef.current);
-  };
-
-  const handleSubCategoryLeave = () => {
-    timeoutRef.current = setTimeout(() => {
-      setHoveredBrand(null);
     }, 150);
   };
 
@@ -171,27 +101,9 @@ const Filter = ({ onApplyFilters }) => {
     });
     setIsOpen(false);
     setHoveredCategory(null);
-    setHoveredBrand(null);
   };
 
-  const handleSubCategoryClick = (sub) => {
-    setSelectedCategory(hoveredCategory);
-    setSelectedBrand(hoveredBrand);
-    onApplyFilters({
-      brands: [hoveredBrand],
-      category: [hoveredCategory],
-      priceRange: null,
-    });
-    setIsOpen(false);
-    setHoveredCategory(null);
-    setHoveredBrand(null);
-  };
-
-  const brands = hoveredCategory ? Object.keys(categoriesData[hoveredCategory]?.brands || {}) : [];
-  const subCategories =
-    hoveredBrand && hoveredCategory
-      ? categoriesData[hoveredCategory]?.brands[hoveredBrand] || []
-      : [];
+  const brands = hoveredCategory ? categoriesData[hoveredCategory]?.brands || [] : [];
   const activeCount = selectedCategory ? 1 : 0;
 
   return (
@@ -206,7 +118,6 @@ const Filter = ({ onApplyFilters }) => {
 
       {isOpen && (
         <div className="filterSidebar">
-          {/* CATEGORIES */}
           <div className="filterCategoryColumn">
             {Object.entries(categoriesData).map(([category, data]) => (
               <div
@@ -222,7 +133,6 @@ const Filter = ({ onApplyFilters }) => {
             ))}
           </div>
 
-          {/* BRANDS */}
           {hoveredCategory && (
             <div
               className="filterBrandColumn"
@@ -232,33 +142,11 @@ const Filter = ({ onApplyFilters }) => {
               {brands.map((brand) => (
                 <div
                   key={brand}
-                  className={`filterBrandRow ${hoveredBrand === brand ? 'hovered' : ''} ${selectedBrand === brand ? 'selected' : ''}`}
-                  onMouseEnter={() => handleBrandHover(brand)}
-                  onMouseLeave={handleBrandLeave}
+                  className={`filterBrandRow ${selectedBrand === brand && selectedCategory === hoveredCategory ? 'selected' : ''}`}
                   onClick={() => handleBrandClick(brand)}
                 >
                   <span className="filterBrandName">{brand}</span>
-                  <IoIosArrowForward className="filterBrandArrow" />
                 </div>
-              ))}
-            </div>
-          )}
-
-          {/* SUB CATEGORIES */}
-          {hoveredBrand && subCategories.length > 0 && (
-            <div
-              className="filterSubCategoryColumn"
-              onMouseEnter={handleSubCategoryEnter}
-              onMouseLeave={handleSubCategoryLeave}
-            >
-              {subCategories.map((sub) => (
-                <button
-                  key={sub}
-                  className="filterSubCategoryItem"
-                  onClick={() => handleSubCategoryClick(sub)}
-                >
-                  {sub}
-                </button>
               ))}
             </div>
           )}

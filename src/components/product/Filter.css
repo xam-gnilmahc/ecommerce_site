@@ -97,8 +97,7 @@
   color: #9ca3af;
 }
 
-.filterCategoryRow:hover .filterCatArrow,
-.filterCategoryRow.hovered .filterCatArrow {
+.filterCategoryRow:hover .filterCatArrow {
   color: #fff;
 }
 
@@ -116,15 +115,13 @@
 .filterBrandRow {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding: 12px 16px;
   cursor: pointer;
   transition: background 0.15s ease;
   border-bottom: 1px solid #f9fafb;
 }
 
-.filterBrandRow:hover,
-.filterBrandRow.hovered {
+.filterBrandRow:hover {
   background: #f3f4f6;
 }
 
@@ -138,58 +135,16 @@
   font-weight: 500;
 }
 
-.filterBrandArrow {
-  font-size: 12px;
-  color: #9ca3af;
-}
-
-.filterBrandRow:hover .filterBrandArrow {
-  color: #10b981;
-}
-
-/* =========================
-   SUB CATEGORY COLUMN
-========================= */
-.filterSubCategoryColumn {
-  width: 220px;
-  background: #fff;
-  border-left: 1px solid #f3f4f6;
-  padding: 12px;
-  overflow-y: auto;
-  max-height: 400px;
-}
-
-.filterSubCategoryItem {
-  display: block;
-  width: 100%;
-  padding: 10px 12px;
-  border: none;
-  background: transparent;
-  font-size: 13px;
-  font-weight: 500;
-  color: #374151;
-  cursor: pointer;
-  text-align: left;
-  transition: all 0.15s ease;
-}
-
-.filterSubCategoryItem:hover {
-  background: #f3f4f6;
-  color: #111827;
-}
-
 /* =========================
    SCROLLBAR
 ========================= */
 .filterCategoryColumn::-webkit-scrollbar,
-.filterBrandColumn::-webkit-scrollbar,
-.filterSubCategoryColumn::-webkit-scrollbar {
+.filterBrandColumn::-webkit-scrollbar {
   width: 4px;
 }
 
 .filterCategoryColumn::-webkit-scrollbar-thumb,
-.filterBrandColumn::-webkit-scrollbar-thumb,
-.filterSubCategoryColumn::-webkit-scrollbar-thumb {
+.filterBrandColumn::-webkit-scrollbar-thumb {
   background: #d1d5db;
 }
 
@@ -207,8 +162,7 @@
   }
 
   .filterCategoryColumn,
-  .filterBrandColumn,
-  .filterSubCategoryColumn {
+  .filterBrandColumn {
     width: 100%;
     max-height: none;
     border-left: none;
