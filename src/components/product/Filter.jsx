@@ -161,6 +161,19 @@ const Filter = ({ onApplyFilters }) => {
     }, 150);
   };
 
+  const handleBrandClick = (brand) => {
+    setSelectedCategory(hoveredCategory);
+    setSelectedBrand(brand);
+    onApplyFilters({
+      brands: [brand],
+      category: [hoveredCategory],
+      priceRange: null,
+    });
+    setIsOpen(false);
+    setHoveredCategory(null);
+    setHoveredBrand(null);
+  };
+
   const handleSubCategoryClick = (sub) => {
     setSelectedCategory(hoveredCategory);
     setSelectedBrand(hoveredBrand);
@@ -222,6 +235,7 @@ const Filter = ({ onApplyFilters }) => {
                   className={`filterBrandRow ${hoveredBrand === brand ? 'hovered' : ''} ${selectedBrand === brand ? 'selected' : ''}`}
                   onMouseEnter={() => handleBrandHover(brand)}
                   onMouseLeave={handleBrandLeave}
+                  onClick={() => handleBrandClick(brand)}
                 >
                   <span className="filterBrandName">{brand}</span>
                   <IoIosArrowForward className="filterBrandArrow" />
