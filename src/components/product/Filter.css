@@ -7,93 +7,128 @@
 }
 
 /* =========================
-   TOGGLE BUTTON
+   MENU BUTTON
 ========================= */
-.filterToggle {
+.filterMenuButton {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 18px;
-  border: 1.5px solid #e5e7eb;
-  border-radius: 8px;
-  background: #fff;
-  color: #374151;
+  padding: 10px 16px;
+  background: transparent;
+  color: #111827;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   font-family: inherit;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: color 0.15s ease;
 }
 
-.filterToggle:hover {
-  border-color: #10b981;
+.filterMenuButton:hover {
   color: #10b981;
 }
 
-.filterToggle.active {
-  background: #10b981;
-  border-color: #10b981;
-  color: white;
-}
-
-.filterCount {
-  background: #fff;
+.filterMenuButton.active {
   color: #10b981;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 10px;
-  min-width: 18px;
-  text-align: center;
 }
 
-.filterToggle.active .filterCount {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
+.filterMenuIcon {
+  font-size: 18px;
 }
 
 /* =========================
-   FILTER PANEL
+   SIDEBAR
 ========================= */
-.filterPanel {
+.filterSidebar {
   position: absolute;
-  top: calc(100% + 8px);
+  top: 100%;
   left: 0;
   display: flex;
   background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   z-index: 1000;
-  overflow: hidden;
 }
 
 /* =========================
-   BRANDS LIST (LEFT)
+   CATEGORY COLUMN
 ========================= */
-.filterBrandsList {
-  width: 200px;
-  border-right: 1px solid #f3f4f6;
+.filterCategoryColumn {
+  width: 220px;
+  background: #232f3e;
   overflow-y: auto;
-  max-height: 360px;
+  max-height: 400px;
 }
 
-.filterBrandItem {
+.filterCategoryRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  color: #fff;
+}
+
+.filterCategoryRow:hover,
+.filterCategoryRow.hovered {
+  background: #37475a;
+}
+
+.filterCategoryRow.selected {
+  background: #febd69;
+  color: #111;
+}
+
+.filterCatIcon {
+  font-size: 18px;
+  width: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.filterCatName {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.filterCatArrow {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.filterCategoryRow:hover .filterCatArrow,
+.filterCategoryRow.hovered .filterCatArrow {
+  color: #fff;
+}
+
+/* =========================
+   BRAND COLUMN
+========================= */
+.filterBrandColumn {
+  width: 200px;
+  background: #fff;
+  border-left: 1px solid #f3f4f6;
+  overflow-y: auto;
+  max-height: 400px;
+}
+
+.filterBrandRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background 0.15s ease;
   border-bottom: 1px solid #f9fafb;
 }
 
-.filterBrandItem:hover,
-.filterBrandItem.hovered {
-  background: #f0fdf4;
+.filterBrandRow:hover,
+.filterBrandRow.hovered {
+  background: #f3f4f6;
 }
 
-.filterBrandItem.selected {
+.filterBrandRow.selected {
   background: #10b981;
   color: white;
 }
@@ -106,44 +141,27 @@
 .filterBrandArrow {
   font-size: 12px;
   color: #9ca3af;
-  transition: transform 0.2s ease;
 }
 
-.filterBrandItem:hover .filterBrandArrow,
-.filterBrandItem.hovered .filterBrandArrow {
+.filterBrandRow:hover .filterBrandArrow {
   color: #10b981;
-  transform: translateX(3px);
-}
-
-.filterBrandItem.selected .filterBrandArrow {
-  color: white;
 }
 
 /* =========================
-   CATEGORIES FLYOUT (RIGHT)
+   SUB CATEGORY COLUMN
 ========================= */
-.filterCategoriesFlyout {
+.filterSubCategoryColumn {
   width: 220px;
-  padding: 16px;
   background: #fff;
+  border-left: 1px solid #f3f4f6;
+  padding: 12px;
+  overflow-y: auto;
+  max-height: 400px;
 }
 
-.filterCategoriesTitle {
-  margin: 0 0 12px 0;
-  padding-bottom: 10px;
-  font-size: 14px;
-  font-weight: 700;
-  color: #111827;
-  border-bottom: 1px solid #f3f4f6;
-}
-
-.filterCategoriesList {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.filterCategoryItem {
+.filterSubCategoryItem {
+  display: block;
+  width: 100%;
   padding: 10px 12px;
   border: none;
   background: transparent;
@@ -152,53 +170,48 @@
   color: #374151;
   cursor: pointer;
   text-align: left;
-  border-radius: 6px;
   transition: all 0.15s ease;
 }
 
-.filterCategoryItem:hover {
+.filterSubCategoryItem:hover {
   background: #f3f4f6;
   color: #111827;
-}
-
-.filterCategoryItem.selected {
-  background: #10b981;
-  color: white;
 }
 
 /* =========================
    SCROLLBAR
 ========================= */
-.filterBrandsList::-webkit-scrollbar {
+.filterCategoryColumn::-webkit-scrollbar,
+.filterBrandColumn::-webkit-scrollbar,
+.filterSubCategoryColumn::-webkit-scrollbar {
   width: 4px;
 }
 
-.filterBrandsList::-webkit-scrollbar-thumb {
+.filterCategoryColumn::-webkit-scrollbar-thumb,
+.filterBrandColumn::-webkit-scrollbar-thumb,
+.filterSubCategoryColumn::-webkit-scrollbar-thumb {
   background: #d1d5db;
-  border-radius: 4px;
 }
 
 /* =========================
    RESPONSIVE
 ========================= */
-@media (max-width: 500px) {
-  .filterPanel {
+@media (max-width: 640px) {
+  .filterSidebar {
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: calc(100vw - 32px);
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
     flex-direction: column;
   }
 
-  .filterBrandsList {
+  .filterCategoryColumn,
+  .filterBrandColumn,
+  .filterSubCategoryColumn {
     width: 100%;
-    border-right: none;
+    max-height: none;
+    border-left: none;
     border-bottom: 1px solid #f3f4f6;
-    max-height: 200px;
-  }
-
-  .filterCategoriesFlyout {
-    width: 100%;
   }
 }

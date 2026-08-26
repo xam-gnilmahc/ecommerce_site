@@ -1,20 +1,32 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Filter.css';
 
-import { IoIosFunnel, IoIosArrowForward } from 'react-icons/io';
+import {
+  IoIosArrowForward,
+  IoIosLaptop,
+  IoIosWatch,
+  IoIosHeadset,
+  IoIosPhonePortrait,
+  IoIosTabletLandscape,
+  IoIosMonitor,
+  IoIosKeypad,
+  IoIosRadio,
+} from 'react-icons/io';
 
 const Filter = ({ onApplyFilters }) => {
-  const [selectedBrand, setSelectedBrand] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [hoveredCategory, setHoveredCategory] = useState(null);
   const [hoveredBrand, setHoveredBrand] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedBrand, setSelectedBrand] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const wrapRef = useRef(null);
-  const hoverTimeoutRef = useRef(null);
+  const timeoutRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (wrapRef.current && !wrapRef.current.contains(e.target)) {
         setIsOpen(false);
+        setHoveredCategory(null);
         setHoveredBrand(null);
       }
     };
@@ -22,104 +34,218 @@ const Filter = ({ onApplyFilters }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const brandsData = {
-    Apple: ['Mobile', 'Laptop', 'Watch', 'Tablet'],
-    Google: ['Mobile', 'Tablet', 'Earbuds'],
-    Samsung: ['Mobile', 'Laptop', 'Watch', 'Tablet', 'Monitor'],
-    Redmi: ['Mobile', 'Laptop', 'Watch', 'Earbuds'],
-    Nothing: ['Mobile', 'Earbuds'],
-    Acer: ['Laptop', 'Monitor', 'Keyboard'],
-    Bose: ['Earbuds'],
-    Sony: ['Mobile', 'Watch', 'Earbuds', 'Monitor'],
-    Nikon: ['Drones'],
-    Nvidia: ['Monitor'],
-    Amazon: ['Mobile', 'Tablet', 'Watch', 'Earbuds'],
+  const categoriesData = {
+    Mobile: {
+      icon: <IoIosPhonePortrait />,
+      brands: {
+        Apple: ['iPhone 15', 'iPhone 14', 'iPhone SE'],
+        Samsung: ['Galaxy S24', 'Galaxy A54', 'Galaxy Z Flip'],
+        Google: ['Pixel 8', 'Pixel 7a'],
+        Redmi: ['Note 13', '13C', '12'],
+        OnePlus: ['12', '11', 'Nord'],
+      },
+    },
+    Laptop: {
+      icon: <IoIosLaptop />,
+      brands: {
+        Apple: ['MacBook Air', 'MacBook Pro'],
+        Dell: ['XPS 15', 'Inspiron', 'Latitude'],
+        HP: ['Spectre', 'Envy', 'Pavilion'],
+        Lenovo: ['ThinkPad', 'IdeaPad', 'Legion'],
+        Asus: ['ROG', 'ZenBook', 'VivoBook'],
+      },
+    },
+    Watch: {
+      icon: <IoIosWatch />,
+      brands: {
+        Apple: ['Apple Watch Ultra', 'Apple Watch SE'],
+        Samsung: ['Galaxy Watch 6', 'Galaxy Watch FE'],
+        Garmin: ['Venu 3', 'Forerunner'],
+        Fitbit: ['Versa 4', 'Sense 2'],
+      },
+    },
+    Earbuds: {
+      icon: <IoIosHeadset />,
+      brands: {
+        Apple: ['AirPods Pro', 'AirPods 3'],
+        Samsung: ['Galaxy Buds 3', 'Galaxy Buds FE'],
+        Sony: ['WF-1000XM5', 'LinkBuds'],
+        Bose: ['QuietComfort Ultra', 'Sport Earbuds'],
+        JBL: ['Tour Pro 2', 'Tune 230'],
+      },
+    },
+    Tablet: {
+      icon: <IoIosTabletLandscape />,
+      brands: {
+        Apple: ['iPad Pro', 'iPad Air', 'iPad Mini'],
+        Samsung: ['Galaxy Tab S9', 'Galaxy Tab A9'],
+        Lenovo: ['Tab P12', 'Tab M10'],
+      },
+    },
+    Monitor: {
+      icon: <IoIosMonitor />,
+      brands: {
+        Samsung: ['Odyssey G7', 'ViewFinity'],
+        LG: ['UltraGear', 'UltraWide'],
+        Dell: ['UltraSharp', 'Gaming'],
+        Acer: ['Predator', 'Nitro'],
+      },
+    },
+    Keyboard: {
+      icon: <IoIosKeypad />,
+      brands: {
+        Logitech: ['MX Keys', 'G Pro'],
+        Razer: ['BlackWidow', 'Huntsman'],
+        Corsair: ['K100', 'K70'],
+        SteelSeries: ['Apex Pro', 'Apex 3'],
+      },
+    },
+    Drones: {
+      icon: <IoIosRadio />,
+      brands: {
+        DJI: ['Mavic 3', 'Mini 4', 'Air 3'],
+        Nikon: ['KeyMission'],
+        GoPro: ['Karma'],
+      },
+    },
+  };
+
+  const handleCategoryHover = (category) => {
+    clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => {
+      setHoveredCategory(category);
+      setHoveredBrand(null);
+    }, 80);
+  };
+
+  const handleCategoryLeave = () => {
+    clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => {
+      setHoveredCategory(null);
+      setHoveredBrand(null);
+    }, 150);
+  };
+
+  const handleBrandsEnter = () => {
+    clearTimeout(timeoutRef.current);
+  };
+
+  const handleBrandsLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setHoveredCategory(null);
+      setHoveredBrand(null);
+    }, 150);
   };
 
   const handleBrandHover = (brand) => {
-    clearTimeout(hoverTimeoutRef.current);
-    hoverTimeoutRef.current = setTimeout(() => {
+    clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => {
       setHoveredBrand(brand);
     }, 80);
   };
 
   const handleBrandLeave = () => {
-    clearTimeout(hoverTimeoutRef.current);
-    hoverTimeoutRef.current = setTimeout(() => {
+    clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => {
       setHoveredBrand(null);
     }, 150);
   };
 
-  const handleFlyoutEnter = () => {
-    clearTimeout(hoverTimeoutRef.current);
+  const handleSubCategoryEnter = () => {
+    clearTimeout(timeoutRef.current);
   };
 
-  const handleFlyoutLeave = () => {
-    hoverTimeoutRef.current = setTimeout(() => {
+  const handleSubCategoryLeave = () => {
+    timeoutRef.current = setTimeout(() => {
       setHoveredBrand(null);
     }, 150);
   };
 
-  const handleCategoryClick = (category) => {
-    if (selectedBrand === hoveredBrand && selectedCategory === category) {
-      setSelectedBrand(null);
-      setSelectedCategory(null);
-      onApplyFilters({ brands: [], category: [], priceRange: null });
-    } else {
-      setSelectedBrand(hoveredBrand);
-      setSelectedCategory(category);
-      onApplyFilters({ brands: [hoveredBrand], category: [category], priceRange: null });
-    }
+  const handleSubCategoryClick = (sub) => {
+    setSelectedCategory(hoveredCategory);
+    setSelectedBrand(hoveredBrand);
+    onApplyFilters({
+      brands: [hoveredBrand],
+      category: [hoveredCategory],
+      priceRange: null,
+    });
+    setIsOpen(false);
+    setHoveredCategory(null);
+    setHoveredBrand(null);
   };
 
-  const categories = hoveredBrand ? brandsData[hoveredBrand] || [] : [];
+  const brands = hoveredCategory ? Object.keys(categoriesData[hoveredCategory]?.brands || {}) : [];
+  const subCategories =
+    hoveredBrand && hoveredCategory
+      ? categoriesData[hoveredCategory]?.brands[hoveredBrand] || []
+      : [];
   const activeCount = selectedCategory ? 1 : 0;
 
   return (
     <div className="filterContainer" ref={wrapRef}>
-      <button
-        className={`filterToggle ${isOpen ? 'active' : ''}`}
+      <div
+        className={`filterMenuButton ${isOpen ? 'active' : ''}`}
         onClick={() => setIsOpen(!isOpen)}
       >
-        <IoIosFunnel size={16} />
-        <span>Filters</span>
-        {activeCount > 0 && <span className="filterCount">{activeCount}</span>}
-      </button>
+        <span className="filterMenuIcon">☰</span>
+        <span>All</span>
+      </div>
 
       {isOpen && (
-        <div className="filterPanel">
-          <div className="filterBrandsList">
-            {Object.keys(brandsData).map((brand) => (
+        <div className="filterSidebar">
+          {/* CATEGORIES */}
+          <div className="filterCategoryColumn">
+            {Object.entries(categoriesData).map(([category, data]) => (
               <div
-                key={brand}
-                className={`filterBrandItem ${selectedBrand === brand ? 'selected' : ''} ${hoveredBrand === brand ? 'hovered' : ''}`}
-                onMouseEnter={() => handleBrandHover(brand)}
-                onMouseLeave={handleBrandLeave}
+                key={category}
+                className={`filterCategoryRow ${hoveredCategory === category ? 'hovered' : ''} ${selectedCategory === category ? 'selected' : ''}`}
+                onMouseEnter={() => handleCategoryHover(category)}
+                onMouseLeave={handleCategoryLeave}
               >
-                <span className="filterBrandName">{brand}</span>
-                <IoIosArrowForward className="filterBrandArrow" />
+                <span className="filterCatIcon">{data.icon}</span>
+                <span className="filterCatName">{category}</span>
+                <IoIosArrowForward className="filterCatArrow" />
               </div>
             ))}
           </div>
 
-          {hoveredBrand && (
+          {/* BRANDS */}
+          {hoveredCategory && (
             <div
-              className="filterCategoriesFlyout"
-              onMouseEnter={handleFlyoutEnter}
-              onMouseLeave={handleFlyoutLeave}
+              className="filterBrandColumn"
+              onMouseEnter={handleBrandsEnter}
+              onMouseLeave={handleBrandsLeave}
             >
-              <h4 className="filterCategoriesTitle">{hoveredBrand}</h4>
-              <div className="filterCategoriesList">
-                {categories.map((category) => (
-                  <button
-                    key={category}
-                    className={`filterCategoryItem ${selectedBrand === hoveredBrand && selectedCategory === category ? 'selected' : ''}`}
-                    onClick={() => handleCategoryClick(category)}
-                  >
-                    {category}
-                  </button>
-                ))}
-              </div>
+              {brands.map((brand) => (
+                <div
+                  key={brand}
+                  className={`filterBrandRow ${hoveredBrand === brand ? 'hovered' : ''} ${selectedBrand === brand ? 'selected' : ''}`}
+                  onMouseEnter={() => handleBrandHover(brand)}
+                  onMouseLeave={handleBrandLeave}
+                >
+                  <span className="filterBrandName">{brand}</span>
+                  <IoIosArrowForward className="filterBrandArrow" />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* SUB CATEGORIES */}
+          {hoveredBrand && subCategories.length > 0 && (
+            <div
+              className="filterSubCategoryColumn"
+              onMouseEnter={handleSubCategoryEnter}
+              onMouseLeave={handleSubCategoryLeave}
+            >
+              {subCategories.map((sub) => (
+                <button
+                  key={sub}
+                  className="filterSubCategoryItem"
+                  onClick={() => handleSubCategoryClick(sub)}
+                >
+                  {sub}
+                </button>
+              ))}
             </div>
           )}
         </div>
