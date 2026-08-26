@@ -905,6 +905,9 @@
   color: #555;
   cursor: pointer;
   transition: color 0.15s ease;
+  max-width: 400px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .notif-ticker-item:hover {
