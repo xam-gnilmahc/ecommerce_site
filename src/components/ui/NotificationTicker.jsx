@@ -102,6 +102,7 @@ const NotificationTicker = () => {
   }, [user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!user) return null;
+  if (items.length === 0) return null;
 
   const groups = items.length > 0 ? [items, items] : [[], []];
 
