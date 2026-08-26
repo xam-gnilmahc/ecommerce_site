@@ -8,8 +8,8 @@ import {
   IoIosHeadset,
   IoIosPhonePortrait,
   IoIosTabletLandscape,
-  IoIosMonitor,
-  IoIosKeypad,
+  IoIosDesktop,
+  IoIosOptions,
   IoIosRadio,
 } from 'react-icons/io';
 
@@ -83,7 +83,7 @@ const Filter = ({ onApplyFilters }) => {
       },
     },
     Monitor: {
-      icon: <IoIosMonitor />,
+      icon: <IoIosDesktop />,
       brands: {
         Samsung: ['Odyssey G7', 'ViewFinity'],
         LG: ['UltraGear', 'UltraWide'],
@@ -92,7 +92,7 @@ const Filter = ({ onApplyFilters }) => {
       },
     },
     Keyboard: {
-      icon: <IoIosKeypad />,
+      icon: <IoIosOptions />,
       brands: {
         Logitech: ['MX Keys', 'G Pro'],
         Razer: ['BlackWidow', 'Huntsman'],
