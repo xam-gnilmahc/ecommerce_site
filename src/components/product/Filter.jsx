@@ -43,7 +43,7 @@ const Filter = ({ onApplyFilters }) => {
     },
     Watch: {
       icon: <IoIosWatch />,
-      brands: ['Apple', 'Samsung', 'Garmin', 'Fitbit', 'Amazfit'],
+      brands: ['Samsung', 'Apple', 'Google', 'Redmi', 'Huawei'],
     },
     Earbuds: {
       icon: <IoIosHeadset />,
