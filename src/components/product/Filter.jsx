@@ -63,7 +63,7 @@ const Filter = ({ onApplyFilters }) => {
     },
     Drones: {
       icon: <IoIosRadio />,
-      brands: ['DJI', 'Nikon', 'GoPro'],
+      brands: ['Antman'],
     },
   };
 
