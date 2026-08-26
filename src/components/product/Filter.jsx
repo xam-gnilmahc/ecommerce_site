@@ -5,8 +5,8 @@ import { IoIosFunnel, IoIosArrowForward } from 'react-icons/io';
 
 const Filter = ({ onApplyFilters }) => {
   const [selectedBrand, setSelectedBrand] = useState(null);
-  const [hoveredBrand, setHoveredBrand] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [hoveredBrand, setHoveredBrand] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const wrapRef = useRef(null);
   const hoverTimeoutRef = useRef(null);
@@ -40,14 +40,14 @@ const Filter = ({ onApplyFilters }) => {
     clearTimeout(hoverTimeoutRef.current);
     hoverTimeoutRef.current = setTimeout(() => {
       setHoveredBrand(brand);
-    }, 100);
+    }, 80);
   };
 
   const handleBrandLeave = () => {
     clearTimeout(hoverTimeoutRef.current);
     hoverTimeoutRef.current = setTimeout(() => {
       setHoveredBrand(null);
-    }, 200);
+    }, 150);
   };
 
   const handleFlyoutEnter = () => {
@@ -57,31 +57,23 @@ const Filter = ({ onApplyFilters }) => {
   const handleFlyoutLeave = () => {
     hoverTimeoutRef.current = setTimeout(() => {
       setHoveredBrand(null);
-    }, 200);
+    }, 150);
   };
 
   const handleCategoryClick = (category) => {
-    if (selectedCategory === category) {
-      setSelectedCategory(null);
+    if (selectedBrand === hoveredBrand && selectedCategory === category) {
       setSelectedBrand(null);
-      onApplyFilters({
-        brands: [],
-        category: [],
-        priceRange: null,
-      });
+      setSelectedCategory(null);
+      onApplyFilters({ brands: [], category: [], priceRange: null });
     } else {
-      setSelectedCategory(category);
       setSelectedBrand(hoveredBrand);
-      onApplyFilters({
-        brands: [hoveredBrand],
-        category: [category],
-        priceRange: null,
-      });
+      setSelectedCategory(category);
+      onApplyFilters({ brands: [hoveredBrand], category: [category], priceRange: null });
     }
   };
 
-  const activeBrandCategories = hoveredBrand ? brandsData[hoveredBrand] || [] : [];
-  const activeFilters = selectedCategory ? 1 : 0;
+  const categories = hoveredBrand ? brandsData[hoveredBrand] || [] : [];
+  const activeCount = selectedCategory ? 1 : 0;
 
   return (
     <div className="filterContainer" ref={wrapRef}>
@@ -91,12 +83,11 @@ const Filter = ({ onApplyFilters }) => {
       >
         <IoIosFunnel size={16} />
         <span>Filters</span>
-        {activeFilters > 0 && <span className="filterCount">{activeFilters}</span>}
+        {activeCount > 0 && <span className="filterCount">{activeCount}</span>}
       </button>
 
       {isOpen && (
         <div className="filterPanel">
-          {/* BRANDS COLUMN */}
           <div className="filterBrandsList">
             {Object.keys(brandsData).map((brand) => (
               <div
@@ -111,7 +102,6 @@ const Filter = ({ onApplyFilters }) => {
             ))}
           </div>
 
-          {/* CATEGORIES FLYOUT */}
           {hoveredBrand && (
             <div
               className="filterCategoriesFlyout"
@@ -120,10 +110,10 @@ const Filter = ({ onApplyFilters }) => {
             >
               <h4 className="filterCategoriesTitle">{hoveredBrand}</h4>
               <div className="filterCategoriesList">
-                {activeBrandCategories.map((category) => (
+                {categories.map((category) => (
                   <button
                     key={category}
-                    className={`filterCategoryItem ${selectedCategory === category ? 'selected' : ''}`}
+                    className={`filterCategoryItem ${selectedBrand === hoveredBrand && selectedCategory === category ? 'selected' : ''}`}
                     onClick={() => handleCategoryClick(category)}
                   >
                     {category}
