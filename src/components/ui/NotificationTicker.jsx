@@ -104,7 +104,7 @@ const NotificationTicker = () => {
   if (!user) return null;
   if (items.length === 0) return null;
 
-  const groups = items.length > 0 ? [items, items] : [[], []];
+  const groups = items.length > 0 ? [items] : [];
 
   return (
     <div className="notif-ticker" onMouseEnter={markAllSeen} onMouseLeave={cancelMarkSeen}>
