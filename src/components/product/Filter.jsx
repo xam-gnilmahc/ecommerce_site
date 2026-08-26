@@ -59,7 +59,7 @@ const Filter = ({ onApplyFilters }) => {
     },
     Keyboard: {
       icon: <IoIosOptions />,
-      brands: ['Apple'],
+      brands: ['Apple', 'Redmi', 'Huawei', 'Google'],
     },
     Drones: {
       icon: <IoIosRadio />,
