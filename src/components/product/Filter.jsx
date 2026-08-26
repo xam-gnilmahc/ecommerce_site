@@ -12,6 +12,7 @@ import {
   IoIosOptions,
   IoIosRadio,
 } from 'react-icons/io';
+import { FiMousePointer } from 'react-icons/fi';
 
 const Filter = ({ onApplyFilters }) => {
   const [hoveredCategory, setHoveredCategory] = useState(null);
@@ -99,8 +100,6 @@ const Filter = ({ onApplyFilters }) => {
       category: [hoveredCategory],
       priceRange: null,
     });
-    setIsOpen(false);
-    setHoveredCategory(null);
   };
 
   const brands = hoveredCategory ? categoriesData[hoveredCategory]?.brands || [] : [];
@@ -146,6 +145,7 @@ const Filter = ({ onApplyFilters }) => {
                   onClick={() => handleBrandClick(brand)}
                 >
                   <span className="filterBrandName">{brand}</span>
+                  <FiMousePointer className="filterBrandCursor" />
                 </div>
               ))}
             </div>

@@ -105,24 +105,29 @@
    BRAND COLUMN
 ========================= */
 .filterBrandColumn {
-  width: 200px;
+  width: 220px;
   background: #fff;
   border-left: 1px solid #f3f4f6;
   overflow-y: auto;
   max-height: 400px;
+  padding: 6px;
 }
 
 .filterBrandRow {
   display: flex;
   align-items: center;
-  padding: 12px 16px;
+  justify-content: space-between;
+  padding: 11px 14px;
   cursor: pointer;
-  transition: background 0.15s ease;
-  border-bottom: 1px solid #f9fafb;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+  border-radius: 6px;
 }
 
 .filterBrandRow:hover {
-  background: #f3f4f6;
+  background: #f0fdf4;
+  color: #059669;
 }
 
 .filterBrandRow.selected {
@@ -133,6 +138,25 @@
 .filterBrandName {
   font-size: 13px;
   font-weight: 500;
+}
+
+.filterBrandCursor {
+  font-size: 13px;
+  color: #d1d5db;
+  opacity: 0;
+  transition:
+    opacity 0.15s ease,
+    color 0.15s ease;
+}
+
+.filterBrandRow:hover .filterBrandCursor {
+  opacity: 1;
+  color: #10b981;
+}
+
+.filterBrandRow.selected .filterBrandCursor {
+  opacity: 1;
+  color: white;
 }
 
 /* =========================
