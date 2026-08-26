@@ -55,11 +55,11 @@ const Filter = ({ onApplyFilters }) => {
     },
     Monitor: {
       icon: <IoIosDesktop />,
-      brands: ['Samsung', 'LG', 'Dell', 'Acer', 'MSI'],
+      brands: ['Apple'],
     },
     Keyboard: {
       icon: <IoIosOptions />,
-      brands: ['Logitech', 'Razer', 'Corsair', 'SteelSeries'],
+      brands: ['Apple'],
     },
     Drones: {
       icon: <IoIosRadio />,
