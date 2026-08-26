@@ -11,6 +11,7 @@ import {
   IoIosDesktop,
   IoIosOptions,
   IoIosRadio,
+  IoIosMenu,
 } from 'react-icons/io';
 import { FiMousePointer } from 'react-icons/fi';
 
@@ -107,13 +108,15 @@ const Filter = ({ onApplyFilters }) => {
 
   return (
     <div className="filterContainer" ref={wrapRef}>
-      <div
+      <button
         className={`filterMenuButton ${isOpen ? 'active' : ''}`}
         onClick={() => setIsOpen(!isOpen)}
+        onMouseEnter={() => setIsOpen(true)}
       >
-        <span className="filterMenuIcon">☰</span>
-        <span>All</span>
-      </div>
+        <IoIosMenu className="filterMenuIcon" />
+        <span className="filterMenuLabel">Categories</span>
+        {activeCount > 0 && <span className="filterMenuCount">{activeCount}</span>}
+      </button>
 
       {isOpen && (
         <div className="filterSidebar">
