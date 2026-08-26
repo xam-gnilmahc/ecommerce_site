@@ -12,7 +12,11 @@ export const fetchFilteredProducts = createAsyncThunk<Product[], Filters, { reje
   'products/fetchFilteredProducts',
   async (filters, { rejectWithValue }) => {
     try {
-      let query = supabase.from('products').select('*').limit(1000);
+      let query = supabase
+        .from('products')
+        .select('*')
+        .order('id', { ascending: false })
+        .limit(1000);
 
       // Filter by brands
       if (filters.brands.length > 0) {
