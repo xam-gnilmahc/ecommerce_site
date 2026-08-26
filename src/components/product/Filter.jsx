@@ -51,7 +51,7 @@ const Filter = ({ onApplyFilters }) => {
     },
     Tablet: {
       icon: <IoIosTabletLandscape />,
-      brands: ['Apple', 'Samsung', 'Lenovo'],
+      brands: ['Apple', 'Samsung', 'Redmi', 'Google', 'Huawei', 'Vivo'],
     },
     Monitor: {
       icon: <IoIosDesktop />,
