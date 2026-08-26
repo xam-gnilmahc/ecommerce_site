@@ -354,7 +354,7 @@ export const AuthProvider = ({ children }) => {
           {
             user_id: user.id,
             order_id: orderId,
-            message: `Order #${orderId} has been placed successfully. Thank you for shopping with us!`,
+            message: `Your order has been placed! 🎉 Total: $${data.amount}. You'll receive a confirmation email shortly.`,
             read: false,
             type: 0,
           },
@@ -374,7 +374,7 @@ export const AuthProvider = ({ children }) => {
           event: 'order-placed',
           message: {
             orderId,
-            message: `Order #${orderId} has been placed successfully. Thank you for shopping with us`,
+            message: `Your order has been placed! 🎉 Total: $${data.amount}. You'll receive a confirmation email shortly.`,
             type: 0,
           },
         }),
