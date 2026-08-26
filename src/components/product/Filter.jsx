@@ -47,7 +47,7 @@ const Filter = ({ onApplyFilters }) => {
     },
     Earbuds: {
       icon: <IoIosHeadset />,
-      brands: ['Apple', 'Samsung', 'Sony', 'Bose', 'JBL', 'Nothing'],
+      brands: ['Google', 'Samsung', 'Apple', 'OnePlus', 'Redmi', 'Huawei', 'Bose', 'Sony', 'Nothing', 'Beats'],
     },
     Tablet: {
       icon: <IoIosTabletLandscape />,
