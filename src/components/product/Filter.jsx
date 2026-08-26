@@ -35,7 +35,7 @@ const Filter = ({ onApplyFilters }) => {
   const categoriesData = {
     Mobile: {
       icon: <IoIosPhonePortrait />,
-      brands: ['Apple', 'Samsung', 'Google', 'Redmi', 'OnePlus', 'Nothing', 'Vivo', 'Oppo'],
+      brands: ['Apple', 'Samsung', 'Google', 'Redmi', 'Oneplus', 'Nothing', 'Vivo', 'Oppo'],
     },
     Laptop: {
       icon: <IoIosLaptop />,
