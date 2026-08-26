@@ -149,8 +149,6 @@
   padding: 16px 52px 16px 16px;
   background: var(--ck-card);
   border: 1px solid var(--ck-border);
-  border-radius: var(--ck-radius);
-  box-shadow: var(--ck-shadow-sm);
   box-sizing: border-box;
   width: 100%;
 }
@@ -162,7 +160,6 @@
   width: 76px;
   height: 76px;
   background: var(--ck-tint);
-  border-radius: var(--ck-radius-sm);
   border: 1px solid var(--ck-border);
   display: flex;
   align-items: center;
