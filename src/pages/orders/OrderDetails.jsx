@@ -4,13 +4,7 @@ import { useAuth } from '../../context/authContext';
 import Skeleton from 'react-loading-skeleton';
 
 import { SUPABASE_STORAGE_URL } from '../../utils/supabaseStorage';
-import {
-  FaMoneyBillWave,
-  FaCcVisa,
-  FaGooglePay,
-  FaApplePay,
-  FaArrowLeft,
-} from 'react-icons/fa';
+import { FaMoneyBillWave, FaCcVisa, FaGooglePay, FaApplePay, FaArrowLeft } from 'react-icons/fa';
 
 import './orderDetails.css';
 
@@ -70,7 +64,10 @@ const OrderDetailsPage = () => {
     const address = parseAddress(order?.shipping_address);
     const total = order?.order_items?.reduce((a, b) => a + b.price_each * b.quantity, 0) ?? 0;
 
-    const itemsHtml = order?.order_items?.map((item, i) => `
+    const itemsHtml =
+      order?.order_items
+        ?.map(
+          (item, i) => `
       <tr>
         <td style="text-align:center;color:#999">${i + 1}</td>
         <td>${item.products?.name}</td>
@@ -78,17 +75,25 @@ const OrderDetailsPage = () => {
         <td style="text-align:right">$${item.price_each?.toFixed(2)}</td>
         <td style="text-align:right;font-weight:700">$${(item.price_each * item.quantity).toFixed(2)}</td>
       </tr>
-    `).join('') || '';
+    `
+        )
+        .join('') || '';
 
-    const cancelReasonHtml = order?.status === 'Cancelled' && order?.Reason
-      ? `<div class="inv-cancel-reason"><p class="inv-cancel-label">Cancellation Reason</p><p>${order.Reason}</p></div>`
-      : '';
+    const cancelReasonHtml =
+      order?.status === 'Cancelled' && order?.Reason
+        ? `<div class="inv-cancel-reason"><p class="inv-cancel-label">Cancellation Reason</p><p>${order.Reason}</p></div>`
+        : '';
 
-    const paymentHtml = order?.orderpayments_logs?.map((l) => `
+    const paymentHtml =
+      order?.orderpayments_logs
+        ?.map(
+          (l) => `
       <p style="font-size:12.5px;color:#555;margin:0 0 4px;font-family:'Courier New',monospace">
         $${l.amount} — ${l.status}
       </p>
-    `).join('') || '';
+    `
+        )
+        .join('') || '';
 
     const printWindow = window.open('', '_blank');
     printWindow.document.write(`
@@ -209,7 +214,6 @@ const OrderDetailsPage = () => {
     <div className="od-page">
       <div className="od-container">
         <div className="od-receipt">
-
           {/* ── TOP ACTION BAR (BACK + PRINT) ──────────── */}
           <div className="od-print-top">
             <button className="od-back-btn" onClick={() => navigate('/order')}>
@@ -229,10 +233,25 @@ const OrderDetailsPage = () => {
             <div className="od-header-right">
               <h1 className="od-invoice-title">INVOICE</h1>
               <div className="od-invoice-meta">
-                <span><strong>Invoice #</strong> INV-{order?.id}</span>
-                <span><strong>Order #</strong> {order?.id}</span>
-                <span><strong>Date:</strong> {new Date(order?.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
-                {order?.tracking_number && <span><strong>Tracking:</strong> {order?.tracking_number}</span>}
+                <span>
+                  <strong>Invoice #</strong> INV-{order?.id}
+                </span>
+                <span>
+                  <strong>Order #</strong> {order?.id}
+                </span>
+                <span>
+                  <strong>Date:</strong>{' '}
+                  {new Date(order?.created_at).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })}
+                </span>
+                {order?.tracking_number && (
+                  <span>
+                    <strong>Tracking:</strong> {order?.tracking_number}
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -244,7 +263,8 @@ const OrderDetailsPage = () => {
               <p className="od-party-name">{user?.name}</p>
               {address && (
                 <p className="od-party-detail">
-                  {address.addressLine1}{address.state ? `, ${address.state}` : ''}
+                  {address.addressLine1}
+                  {address.state ? `, ${address.state}` : ''}
                 </p>
               )}
             </div>
@@ -316,7 +336,9 @@ const OrderDetailsPage = () => {
               </tbody>
               <tfoot>
                 <tr className="od-total-row">
-                  <td colSpan={4} className="od-total-label">Total Paid</td>
+                  <td colSpan={4} className="od-total-label">
+                    Total Paid
+                  </td>
                   <td className="od-total-value">${total.toFixed(2)}</td>
                 </tr>
               </tfoot>
@@ -328,7 +350,6 @@ const OrderDetailsPage = () => {
             <p className="od-thankyou">Thank you for your purchase!</p>
             <p className="od-contact">Questions? Contact us at maxrai788@gmail.com</p>
           </div>
-
         </div>
       </div>
     </div>

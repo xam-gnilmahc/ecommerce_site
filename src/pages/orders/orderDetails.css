@@ -151,12 +151,30 @@
   background: currentColor;
 }
 
-.od-status-pill.pending { background: #fff8e1; color: #e65100; }
-.od-status-pill.confirmed { background: #e3f2fd; color: #1565c0; }
-.od-status-pill.shipped-out { background: #e8f5e9; color: #2e7d32; }
-.od-status-pill.out-for-delivery { background: #fff8e1; color: #f57f17; }
-.od-status-pill.delivered { background: #e0f2f1; color: #00695c; }
-.od-status-pill.cancelled { background: #fce4ec; color: #c62828; }
+.od-status-pill.pending {
+  background: #fff8e1;
+  color: #e65100;
+}
+.od-status-pill.confirmed {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+.od-status-pill.shipped-out {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+.od-status-pill.out-for-delivery {
+  background: #fff8e1;
+  color: #f57f17;
+}
+.od-status-pill.delivered {
+  background: #e0f2f1;
+  color: #00695c;
+}
+.od-status-pill.cancelled {
+  background: #fce4ec;
+  color: #c62828;
+}
 
 .od-status-desc {
   font-size: 12px;
@@ -294,10 +312,22 @@
   text-align: left;
 }
 
-.od-th-num { width: 40px; text-align: center; }
-.od-th-qty { width: 60px; text-align: center; }
-.od-th-price { width: 100px; text-align: right; }
-.od-th-total { width: 100px; text-align: right; }
+.od-th-num {
+  width: 40px;
+  text-align: center;
+}
+.od-th-qty {
+  width: 60px;
+  text-align: center;
+}
+.od-th-price {
+  width: 100px;
+  text-align: right;
+}
+.od-th-total {
+  width: 100px;
+  text-align: right;
+}
 
 .od-table td {
   padding: 14px 16px;
@@ -309,10 +339,21 @@
   background: #fafafa;
 }
 
-.od-td-num { text-align: center; color: #999; }
-.od-td-qty { text-align: center; font-weight: 600; }
-.od-td-price { text-align: right; }
-.od-td-total { text-align: right; font-weight: 700; }
+.od-td-num {
+  text-align: center;
+  color: #999;
+}
+.od-td-qty {
+  text-align: center;
+  font-weight: 600;
+}
+.od-td-price {
+  text-align: right;
+}
+.od-td-total {
+  text-align: right;
+  font-weight: 700;
+}
 
 .od-total-row td {
   border-bottom: none;

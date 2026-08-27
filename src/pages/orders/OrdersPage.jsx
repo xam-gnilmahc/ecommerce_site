@@ -4,14 +4,7 @@ import { useAuth } from '../../context/authContext';
 import Skeleton from 'react-loading-skeleton';
 import { SUPABASE_STORAGE_URL } from '../../utils/supabaseStorage';
 import './ordersPage.css';
-import {
-  FaBoxOpen,
-  FaCheckCircle,
-  FaClock,
-  FaTruck,
-  FaTimes,
-  FaFileInvoice,
-} from 'react-icons/fa';
+import { FaBoxOpen, FaCheckCircle, FaClock, FaTruck, FaTimes, FaFileInvoice } from 'react-icons/fa';
 
 const OrdersPage = () => {
   const { fetchUserOrders, user } = useAuth();
