@@ -210,6 +210,83 @@ const OrderDetailsPage = () => {
           </div>
         </div>
       </div>
+
+      {/* ═══════════════════════════════════════════════════
+          PRINT-ONLY INVOICE
+      ═══════════════════════════════════════════════════ */}
+      <div className="od-invoice-print">
+        <div className="inv-header">
+          <div className="inv-brand">
+            <span className="inv-brand-name">UOM</span>
+            <span className="inv-brand-tagline">Premium Tech Store</span>
+          </div>
+          <div className="inv-title-block">
+            <h1 className="inv-title">INVOICE</h1>
+            <div className="inv-meta">
+              <span><strong>Invoice #</strong> INV-{order?.id}</span>
+              <span><strong>Order #</strong> {order?.id}</span>
+              <span><strong>Date:</strong> {new Date(order?.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+              {order?.tracking_number && <span><strong>Tracking:</strong> {order?.tracking_number}</span>}
+            </div>
+          </div>
+        </div>
+
+        <div className="inv-parties">
+          <div className="inv-party">
+            <p className="inv-party-label">Bill To</p>
+            <p className="inv-party-name">{user?.name}</p>
+            {address && (
+              <p className="inv-party-detail">
+                {address.addressLine1}
+                {address.state ? `, ${address.state}` : ''}
+              </p>
+            )}
+          </div>
+          <div className="inv-party">
+            <p className="inv-party-label">Payment Method</p>
+            {order?.orderpayments_logs?.map((l, i) => (
+              <p className="inv-party-detail" key={i}>
+                {getPaymentIcon(l.payment_method)}{' '}
+                <span>${l.amount} — {l.status}</span>
+              </p>
+            ))}
+          </div>
+        </div>
+
+        <table className="inv-table">
+          <thead>
+            <tr>
+              <th className="inv-th-num">#</th>
+              <th className="inv-th-item">Item</th>
+              <th className="inv-th-qty">Qty</th>
+              <th className="inv-th-price">Unit Price</th>
+              <th className="inv-th-total">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {order?.order_items?.map((item, i) => (
+              <tr key={i}>
+                <td className="inv-td-num">{i + 1}</td>
+                <td className="inv-td-item">{item.products?.name}</td>
+                <td className="inv-td-qty">{item.quantity}</td>
+                <td className="inv-td-price">${item.price_each?.toFixed(2)}</td>
+                <td className="inv-td-total">${(item.price_each * item.quantity).toFixed(2)}</td>
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr className="inv-total-row">
+              <td colSpan={4} className="inv-total-label">Total Paid</td>
+              <td className="inv-total-value">${total.toFixed(2)}</td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <div className="inv-footer">
+          <p className="inv-thankyou">Thank you for your purchase!</p>
+          <p className="inv-contact">Questions? Contact us at support@uom.com</p>
+        </div>
+      </div>
     </div>
   );
 };
