@@ -150,7 +150,6 @@
   background: var(--ck-card);
   border: 1px solid var(--ck-border);
   border-radius: var(--ck-radius);
-  box-shadow: var(--ck-shadow-sm);
   box-sizing: border-box;
   width: 100%;
 }
@@ -161,9 +160,7 @@
   flex-shrink: 0;
   width: 76px;
   height: 76px;
-  background: var(--ck-tint);
-  border-radius: var(--ck-radius-sm);
-  border: 1px solid var(--ck-border);
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;

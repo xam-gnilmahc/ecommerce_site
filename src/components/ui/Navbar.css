@@ -818,15 +818,15 @@
 .notif-ticker {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   width: 100%;
-  height: 52px;
+  height: 46px;
   padding: 0 20px;
-  background: #f5f6f8;
-  border-bottom: 1px solid #e8eaee;
+  background: linear-gradient(90deg, #111827, #1f2937 55%, #111827);
+  color: #f9fafb;
   overflow: hidden;
   position: fixed;
-  top: 104px;
+  top: 64px;
   left: 0;
   right: 0;
   z-index: 999;
@@ -836,27 +836,13 @@
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-  color: #111;
-}
-
-.notif-ticker-count {
-  display: inline-flex;
-  align-items: center;
   justify-content: center;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 5px;
-  border-radius: 999px;
-  background: #e11d48;
+  width: 30px;
+  height: 30px;
   color: #fff;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
 }
 
 .notif-ticker-viewport {
@@ -893,31 +879,36 @@
 .notif-ticker-item {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   margin-right: 70px;
-  padding: 0;
+  padding: 6px 12px;
   border: none;
-  background: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
   white-space: nowrap;
   font-family: inherit;
-  font-size: 13.5px;
-  font-weight: 500;
-  color: #555;
+  font-size: 13px;
+  font-weight: 600;
+  color: #e5e7eb;
   cursor: pointer;
-  transition: color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 }
 
 .notif-ticker-item:hover {
-  color: #111;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
 }
 
 .notif-ticker-item .tick-icon {
   flex-shrink: 0;
   font-size: 13px;
-  color: #16a34a;
+  color: #34d399;
 }
 
 .notif-ticker-empty {
   font-size: 12px;
-  color: #9aa0a6;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
 }

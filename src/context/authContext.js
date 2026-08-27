@@ -354,7 +354,7 @@ export const AuthProvider = ({ children }) => {
           {
             user_id: user.id,
             order_id: orderId,
-            message: `Order #${orderId} has been placed successfully. Thank you for shopping with us!`,
+            message: `Thank you for your order! We've received your order and it's being processed. You'll get a shipping confirmation when your items are on the way.`,
             read: false,
             type: 0,
           },
@@ -374,7 +374,7 @@ export const AuthProvider = ({ children }) => {
           event: 'order-placed',
           message: {
             orderId,
-            message: `Order #${orderId} has been placed successfully. Thank you for shopping with us`,
+            message: `Thank you for your order! We've received your order and it's being processed. You'll get a shipping confirmation when your items are on the way.`,
             type: 0,
           },
         }),

@@ -1,8 +1,23 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FiSearch, FiArrowRight, FiTrendingUp, FiZap } from 'react-icons/fi';
+import { FiSearch, FiArrowRight, FiZap, FiTruck, FiShield, FiRefreshCw } from 'react-icons/fi';
 import './Main.css';
+
+const SUGGESTIONS = [
+  'iPhone 17 Pro',
+  'MacBook Pro',
+  'Galaxy S26',
+  'Apple Watch',
+  'AirPods Max',
+  'Gaming setup',
+];
+
+const PERKS = [
+  { icon: <FiTruck />, label: 'Free delivery' },
+  { icon: <FiShield />, label: '2-year warranty' },
+  { icon: <FiRefreshCw />, label: 'Easy returns' },
+];
 
 const CATEGORIES = [
   {
@@ -63,8 +78,6 @@ const CATEGORIES = [
   },
 ];
 
-const HOT_SEARCHES = ['iPhone 17 Pro', 'MacBook Pro', 'Galaxy S26', 'Apple AirPods', 'Imac'];
-
 const stagger = (i) => ({
   initial: { opacity: 0, y: 32 },
   animate: { opacity: 1, y: 0 },
@@ -74,7 +87,39 @@ const stagger = (i) => ({
 export default function Home() {
   const [search, setSearch] = useState('');
   const [focused, setFocused] = useState(false);
+  const [typed, setTyped] = useState('');
   const navigate = useNavigate();
+
+  // typewriter placeholder
+  useEffect(() => {
+    let word = 0;
+    let char = 0;
+    let deleting = false;
+    let timer;
+
+    const tick = () => {
+      const current = SUGGESTIONS[word];
+      if (!deleting) {
+        char++;
+        setTyped(current.slice(0, char));
+        if (char === current.length) {
+          deleting = true;
+          timer = setTimeout(tick, 1600);
+          return;
+        }
+      } else {
+        char--;
+        setTyped(current.slice(0, char));
+        if (char === 0) {
+          deleting = false;
+          word = (word + 1) % SUGGESTIONS.length;
+        }
+      }
+      timer = setTimeout(tick, deleting ? 35 : 75);
+    };
+    timer = setTimeout(tick, 600);
+    return () => clearTimeout(timer);
+  }, []);
 
   const go = (q) => {
     if (!q.trim()) return;
@@ -88,55 +133,45 @@ export default function Home() {
   return (
     <div className="hp-root">
       {/* ══════════════════════════════════════
-          HERO — clean white, just search
+          HERO — clean white, animated search
       ══════════════════════════════════════ */}
       <section className="hp-hero">
-        <motion.p className="hp-eyebrow" {...stagger(0)}>
-          <FiZap /> Shop the latest tech
-        </motion.p>
+        {/* looping background video */}
+        <video
+          className="hp-hero-video"
+          src={`${process.env.PUBLIC_URL}/assests/apple.mp4`}
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+        />
+        <div className="hp-hero-overlay" />
 
-        <motion.h1 className="hp-headline" {...stagger(1)}>
-          What are you
-          <br />
-          <span className="hp-headline-em">looking for?</span>
-        </motion.h1>
-
-        {/* BIG SEARCH */}
         <motion.div
           className={`hp-search-wrap ${focused ? 'hp-search-wrap--on' : ''}`}
-          {...stagger(2)}
+          {...stagger(0)}
         >
           <FiSearch className="hp-search-ico" />
           <input
             className="hp-search-input"
             type="text"
-            placeholder="Search mobiles, laptops, watches…"
+            placeholder={search ? '' : typed || 'Search…'}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={handleKey}
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
           />
+          {!search && <span className="hp-search-caret" />}
           <motion.button
             className="hp-search-btn"
             onClick={() => go(search)}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
           >
-            <span>Search</span> <FiArrowRight />
+            <span>Search</span> <FiArrowRight className="hp-search-arrow" />
           </motion.button>
-        </motion.div>
-
-        {/* hot searches */}
-        <motion.div className="hp-hot" {...stagger(3)}>
-          <span className="hp-hot-label">
-            <FiTrendingUp /> Trending:
-          </span>
-          {HOT_SEARCHES.map((h) => (
-            <button key={h} className="hp-hot-chip" onClick={() => go(h)}>
-              {h}
-            </button>
-          ))}
         </motion.div>
       </section>
 
