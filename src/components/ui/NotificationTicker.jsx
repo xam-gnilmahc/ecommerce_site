@@ -110,6 +110,9 @@ const NotificationTicker = () => {
     <div className="notif-ticker" onMouseEnter={markAllSeen} onMouseLeave={cancelMarkSeen}>
       <span className="notif-ticker-badge">
         <FiBell size={14} />
+        {unreadCount > 0 && (
+          <span className="notif-ticker-count">{unreadCount > 9 ? '9+' : unreadCount}</span>
+        )}
       </span>
       <div className="notif-ticker-viewport">
         {items.length === 0 ? (
