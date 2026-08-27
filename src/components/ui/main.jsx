@@ -4,7 +4,14 @@ import { motion } from 'framer-motion';
 import { FiSearch, FiArrowRight, FiZap, FiTruck, FiShield, FiRefreshCw } from 'react-icons/fi';
 import './Main.css';
 
-const SUGGESTIONS = ['iPhone 17 Pro', 'MacBook Pro', 'Galaxy S26', 'Apple Watch', 'AirPods Max', 'Gaming setup'];
+const SUGGESTIONS = [
+  'iPhone 17 Pro',
+  'MacBook Pro',
+  'Galaxy S26',
+  'Apple Watch',
+  'AirPods Max',
+  'Gaming setup',
+];
 
 const PERKS = [
   { icon: <FiTruck />, label: 'Free delivery' },

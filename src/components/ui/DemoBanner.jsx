@@ -9,7 +9,11 @@ const DemoBanner = () => {
 
   return (
     <div className="demo-sticker">
-      <button className="demo-sticker-close" onClick={() => setVisible(false)} aria-label="Close demo sticker">
+      <button
+        className="demo-sticker-close"
+        onClick={() => setVisible(false)}
+        aria-label="Close demo sticker"
+      >
         <IoClose size={13} />
       </button>
       <span className="demo-sticker-text">DEMO SITE</span>
