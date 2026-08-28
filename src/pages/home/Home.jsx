@@ -1,7 +1,7 @@
-import Main from '../../components/ui/main';
-import CollectionBox from '../../components/product/collectionBox/CollectionBox';
-import BestSelling from '../../components/product/BestSelling/BestSelling';
-import NotificationTicker from '../../components/ui/NotificationTicker';
+import Main from '../../components/home/HeroSection';
+import CollectionBox from '../../components/home/CollectionBox/CollectionBox';
+import BestSelling from '../../components/home/BestSelling/BestSelling';
+import NotificationTicker from '../../components/common/NotificationTicker';
 import { useAuth } from '../../context/authContext';
 
 function Home() {

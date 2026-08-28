@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Country, State } from 'country-state-city';
 import Skeleton from 'react-loading-skeleton';
@@ -17,12 +16,11 @@ import { SUPABASE_STORAGE_URL } from '../../utils/supabaseStorage';
 import { STRIPE_URL } from '../../config/env';
 import './Animation.css';
 import './checkout.css';
-import { fetchTotalCart } from '../../redux/slice/userCart.ts';
 import Navbar from '../../components/ui/Navbar';
-import { useAppDispatch } from '../../redux/index.ts';
-import { fetchCartItems } from '../../redux/slice/userCart.ts';
-import { trackPurchase } from '../../utils/tracking.ts';
-import { processCardPayment, processGooglePay } from '../../service/googlePayService.ts';
+import { useCartItems } from '../../tanstack/cart.ts';
+import { usePlaceOrder } from '../../tanstack/orders.ts';
+import { trackPurchase } from '../../tanstack/tracking.ts';
+import { processCardPayment, processGooglePay } from '../../services/googlePayService.ts';
 
 const stripePromise = loadStripe(STRIPE_URL);
 
@@ -40,12 +38,12 @@ const CARD_STYLE = {
 };
 
 const Checkout = () => {
-  const { user, placeOrder } = useAuth();
-  const dispatch = useAppDispatch();
+  const { user } = useAuth();
   const stripe = useStripe();
   const elements = useElements();
+  const placeOrderMutation = usePlaceOrder();
 
-  const { items: cart, fetchLoading: loading } = useSelector((s) => s.addToCart);
+  const { data: cart = [], isLoading: loading } = useCartItems(user?.id);
 
   const [email, setEmail] = useState(user?.email || '');
   const [name, setName] = useState(user?.full_name || '');
@@ -163,10 +161,8 @@ const Checkout = () => {
 
   const handleOrderSuccess = async (orderId) => {
     if (!orderId) return;
-    dispatch(fetchTotalCart(user.id));
-    await trackPurchase(dispatch, user?.id, { id: orderId, items: cart });
+    trackPurchase(user?.id, { id: orderId, items: cart }).catch(() => {});
     setShow(true);
-    toast.success('Payment successful!');
   };
 
   const handlePaymentError = (result) => {
@@ -176,10 +172,6 @@ const Checkout = () => {
     }
     return false;
   };
-
-  useEffect(() => {
-    if (user?.id) dispatch(fetchCartItems(user.id));
-  }, [user?.id]);
 
   const handleCountryChange = (c) => {
     setSelectedCountry(c);
@@ -198,10 +190,13 @@ const Checkout = () => {
         address: getAddress(),
       });
       if (handlePaymentError(result)) return;
-      const orderId = await placeOrder(
-        { ...finalData, payment_status: 'success', shippingMethod },
-        result
-      );
+      const orderId = await placeOrderMutation.mutateAsync({
+        userId: user.id,
+        userName: user.full_name || user.name,
+        userEmail: user.email || email,
+        data: { ...finalData, payment_status: 'success', shippingMethod },
+        stripe: result,
+      });
       await handleOrderSuccess(orderId);
     } catch (err) {
       toast.error(err.message || 'Something went wrong.');
@@ -221,14 +216,17 @@ const Checkout = () => {
         email: user?.email || email,
       });
       if (handlePaymentError(result)) return;
-      const orderId = await placeOrder(
-        {
+      const orderId = await placeOrderMutation.mutateAsync({
+        userId: user.id,
+        userName: user.full_name || user.name,
+        userEmail: user.email || email,
+        data: {
           ...finalData,
           payment_status: 'success',
           shippingMethod: gpayId === 'free' ? 'free' : 'express',
         },
-        result
-      );
+        stripe: result,
+      });
       await handleOrderSuccess(orderId);
     } catch (err) {
       toast.error(err.message || 'Something went wrong.');

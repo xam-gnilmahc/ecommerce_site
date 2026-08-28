@@ -1,20 +1,24 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/authContext';
+import { useUserOrders } from '../../tanstack/orders.ts';
 import Skeleton from 'react-loading-skeleton';
 import { SUPABASE_STORAGE_URL } from '../../utils/supabaseStorage';
 import './ordersPage.css';
 import { FaBoxOpen, FaCheckCircle, FaClock, FaTruck, FaTimes, FaFileInvoice } from 'react-icons/fa';
 
 const OrdersPage = () => {
-  const { fetchUserOrders, user } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
-  const [orders, setOrders] = useState([]);
-  const [cancelledOrders, setCancelledOrders] = useState([]);
+  const { data: allOrders = [], isLoading: loading } = useUserOrders(user?.id);
+
+  const orders = useMemo(() => allOrders.filter((o) => o.status !== 'Cancelled'), [allOrders]);
+  const cancelledOrders = useMemo(
+    () => allOrders.filter((o) => o.status === 'Cancelled'),
+    [allOrders]
+  );
   const [statusFilter, setStatusFilter] = useState('all');
-  const [loading, setLoading] = useState(true);
-  const hasFetched = useRef(false);
 
   const getStatusIcon = (status) => {
     switch (status?.toLowerCase()) {
@@ -31,19 +35,6 @@ const OrdersPage = () => {
         return <FaBoxOpen />;
     }
   };
-
-  useEffect(() => {
-    if (hasFetched.current) return;
-    hasFetched.current = true;
-    const load = async () => {
-      setLoading(true);
-      const data = await fetchUserOrders();
-      setOrders(data?.filter((o) => o.status !== 'Cancelled') || []);
-      setCancelledOrders(data?.filter((o) => o.status === 'Cancelled') || []);
-      setLoading(false);
-    };
-    load();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleOrderClick = (orderId) => {
     navigate(`/orders/${orderId}`);

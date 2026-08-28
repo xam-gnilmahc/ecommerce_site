@@ -19,7 +19,7 @@ import TermsandConditions from './pages/static/TermsandConditions';
 import OrdersPage from './pages/orders/OrdersPage';
 import OrderDetailsPage from './pages/orders/OrderDetails';
 import Profile from './pages/profile/Profile';
-import CancelledOrderPage from './pages/cancelled/CancelledOrderPage';
+import CancelledOrderPage from './pages/orders/CancelledOrderPage';
 import PaymentsPage from './pages/payments/PaymentsPage';
 import ForgotPassword from './pages/auth/ForgotPassword';
 import NotificationPage from './pages/profile/NotificationPage';

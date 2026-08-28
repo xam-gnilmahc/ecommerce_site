@@ -3,13 +3,14 @@ import Pusher from 'pusher-js';
 import { useAuth } from '../../context/authContext';
 import { PUSHER_APP_KEY, PUSHER_CLUSTER } from '../../config/env';
 import { supabase } from '../../supaBaseClient';
+import { fetchNotifications } from '../../tanstack/notifications.ts';
 import { IoMdCheckmark } from 'react-icons/io';
 import { FiBell } from 'react-icons/fi';
 
 const TICKER_SIZE = 8;
 
 const NotificationTicker = () => {
-  const { user, getNotificationsByUserId } = useAuth();
+  const { user } = useAuth();
   const [items, setItems] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const unreadCountRef = useRef(0);
@@ -58,7 +59,7 @@ const NotificationTicker = () => {
     if (!user?.id) return undefined;
 
     const load = async () => {
-      const data = await getNotificationsByUserId(0, TICKER_SIZE - 1);
+      const data = await fetchNotifications(user.id, 0, TICKER_SIZE - 1);
       setItems(data || []);
     };
     load();

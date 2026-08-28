@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FiSearch, FiArrowRight, FiZap, FiTruck, FiShield, FiRefreshCw } from 'react-icons/fi';
-import './Main.css';
+import './HeroSection.css';
 
 const SUGGESTIONS = [
   'iPhone 17 Pro',

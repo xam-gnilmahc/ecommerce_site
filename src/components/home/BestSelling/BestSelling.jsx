@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './BestSelling.css';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
@@ -10,10 +10,9 @@ import { useAuth } from '../../../context/authContext';
 import { FiHeart } from 'react-icons/fi';
 import { FaStar } from 'react-icons/fa';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
-import { addToCart } from '../../../redux/slice/userCart.ts';
-import { useAppDispatch } from '../../../redux/index.ts';
-import { trackAddToCart } from '../../../utils/tracking.ts';
-import { supabase } from '../../../supaBaseClient';
+import { useAddToCart } from '../../../tanstack/cart.ts';
+import { useBestSellingProducts, useRecentlyViewedProducts } from '../../../tanstack/products.ts';
+import { trackAddToCart } from '../../../tanstack/tracking.ts';
 import { SUPABASE_STORAGE_URL } from '../../../utils/supabaseStorage';
 
 import toast from 'react-hot-toast';
@@ -21,59 +20,24 @@ import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 
 const BestSelling = () => {
-  const { bestSellingProduct, user, visitor, trackProduct } = useAuth();
+  const { user, visitor, trackProduct } = useAuth();
   const [wishList, setWishList] = useState({});
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  // Recently visited state
-  const [recentProducts, setRecentProducts] = useState([]);
-  const [recentLoading, setRecentLoading] = useState(false);
+  const { data: bestSelling = [], isLoading: loading } = useBestSellingProducts();
+  const { data: recentProducts = [], isLoading: recentLoading } = useRecentlyViewedProducts(
+    visitor?.product_ids
+  );
 
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
+  const addCartMutation = useAddToCart();
 
   const addProduct = (product) => {
-    dispatch(addToCart({ userId: user.id, product }));
-    trackAddToCart(dispatch, user?.id, product);
+    addCartMutation.mutate({ userId: user.id, product });
+    trackAddToCart(user?.id, product);
   };
 
   const handleWishlistClick = (id) => {
     setWishList((prev) => ({ ...prev, [id]: !prev[id] }));
   };
-
-  // Fetch best selling
-  useEffect(() => {
-    const fetch = async () => {
-      setLoading(true);
-      const result = await bestSellingProduct();
-      setData(result);
-      setLoading(false);
-    };
-    fetch();
-  }, []);
-
-  // Fetch recently visited products from cookie IDs
-  // product_ids are stored oldest→newest, so we reverse to show newest first
-  useEffect(() => {
-    const ids = visitor?.product_ids;
-    if (!ids || ids.length === 0) return; // no cookie data → don't fetch
-
-    const fetchRecent = async () => {
-      setRecentLoading(true);
-      const { data, error } = await supabase.from('products').select('*').in('id', ids);
-
-      if (!error && data) {
-        // sort by the order in cookie (reversed — most recent first)
-        const reversed = [...ids].reverse();
-        const sorted = reversed.map((id) => data.find((p) => p.id === id)).filter(Boolean); // remove any not found
-        setRecentProducts(sorted);
-      }
-      setRecentLoading(false);
-    };
-
-    fetchRecent();
-  }, [visitor?.product_ids]);
 
   const swiperConfig = {
     loop: true,
@@ -189,7 +153,7 @@ const BestSelling = () => {
                     <Skeleton height={300} />
                   </SwiperSlide>
                 ))
-              : data.slice(0, 10).map((item) => {
+              : bestSelling.slice(0, 10).map((item) => {
                   const product = item.products;
                   return (
                     <SwiperSlide key={product.id}>

@@ -4,9 +4,8 @@ import { supabase } from '../../supaBaseClient';
 import { useAuth } from '../../context/authContext';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { useAppDispatch } from '../../redux/index.ts';
-import { addToCart } from '../../redux/slice/userCart.ts';
-import { trackAddToCart } from '../../utils/tracking.ts';
+import { useAddToCart } from '../../tanstack/cart.ts';
+import { trackAddToCart } from '../../tanstack/tracking.ts';
 import { SUPABASE_STORAGE_URL } from '../../utils/supabaseStorage';
 import ProductImageGallery from './ProductImageGallery';
 import { IoClose } from 'react-icons/io5';
@@ -22,7 +21,7 @@ const ProductQuickView = ({ productId, onClose }) => {
 
   const { user, trackProduct } = useAuth();
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
+  const addCartMutation = useAddToCart();
 
   const [selectSize, setSelectSize] = useState('');
 
@@ -79,8 +78,8 @@ const ProductQuickView = ({ productId, onClose }) => {
       navigate('/login');
       return;
     }
-    dispatch(addToCart({ userId: user.id, product }));
-    await trackAddToCart(dispatch, user?.id, product);
+    addCartMutation.mutate({ userId: user.id, product });
+    await trackAddToCart(user?.id, product);
   };
 
   const StockBadge = () => {

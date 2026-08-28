@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import Skeleton from 'react-loading-skeleton';
 import { Link, useParams } from 'react-router-dom';
 import { supabase } from '../../supaBaseClient';
@@ -13,36 +14,64 @@ import { PiShareNetworkLight } from 'react-icons/pi';
 import AdditionalInfo from '../../components/product/AdditionalInfo';
 import ProductImageGallery from '../../components/product/ProductImageGallery';
 import RelatedProducts from '../../components/product/RelatedProducts';
-import { addToCart } from '../../redux/slice/userCart.ts';
-import { useAppDispatch } from '../../redux/index.ts';
-import { trackProductPreview, trackAddToCart } from '../../utils/tracking.ts';
+import { useAddToCart } from '../../tanstack/cart.ts';
+import { usePlaceOrderSingle } from '../../tanstack/orders.ts';
+import { trackProductPreview, trackAddToCart, trackPurchase } from '../../tanstack/tracking.ts';
 import GooglePayButton from '@google-pay/button-react';
-import { fetchTotalCart } from '../../redux/slice/userCart.ts';
-import { trackPurchase } from '../../utils/tracking.ts';
 import {
   buildPaymentRequest,
   getUpdatedPaymentData,
 } from '../../components/product/GooglePlay.tsx';
-import { processGooglePay } from '../../service/googlePayService.ts';
+import { processGooglePay } from '../../services/googlePayService.ts';
 import { shippingOptions } from '../../config/ShippingOptions.ts';
 
 const Product = () => {
   const { id } = useParams();
-  const [product, setProduct] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [orderLoading, setOrderLoading] = useState(false);
-  const { user, placeOrderSingle } = useAuth();
+  const { user } = useAuth();
   const [paymentRequest, setPaymentRequest] = useState(null);
+  const [quantity, setQuantity] = useState(1);
+  const placeOrderSingleMutation = usePlaceOrderSingle();
+
+  // ── Fetch product (TanStack Query) ───────────────────────────────────────
+  const { data: product, isLoading: loading } = useQuery({
+    queryKey: ['product', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('products')
+        .select(
+          `
+          *,
+          product_items(id, size, sku_number, color),
+          product_images(id, image_url, is_primary),
+          product_reviews(
+            id,
+            user_id,
+            picture,
+            comment,
+            rating,
+            created_at,
+            users(id, name, email, profile)
+          )
+        `
+        )
+        .eq('id', id)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!id,
+  });
 
   // ── Inventory state ──────────────────────────────────────────────────────
   const [stockQty, setStockQty] = useState(null); // null = loading
 
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
+  const addCartMutation = useAddToCart();
 
   const addProduct = async (product) => {
-    dispatch(addToCart({ userId: user?.id, product }));
-    await trackAddToCart(dispatch, user?.id, product);
+    addCartMutation.mutate({ userId: user?.id, product });
+    await trackAddToCart(user?.id, product);
   };
 
   async function handleLoadPaymentData(paymentData) {
@@ -84,16 +113,17 @@ const Product = () => {
         toast.error(result?.error || 'Payment processing failed.');
         return;
       }
-      const orderId = await placeOrderSingle(
-        { ...finalData, payment_status: 'success', shippingMethod: shippingMethodSelected },
-        result,
+      const orderId = await placeOrderSingleMutation.mutateAsync({
+        userId: user.id,
+        userName: user.full_name || user.name,
+        userEmail: user.email,
+        data: { ...finalData, payment_status: 'success', shippingMethod: shippingMethodSelected },
+        stripe: result,
         product,
-        quantity
-      );
+        quantity,
+      });
       if (orderId) {
-        dispatch(fetchTotalCart(user.id));
-        await trackPurchase(dispatch, user?.id, { id: orderId });
-        toast.success('Payment processed successfully!');
+        trackPurchase(user?.id, { id: orderId }).catch(() => {});
       }
     } catch (err) {
       toast.error(err.message || 'Something went wrong.');
@@ -110,44 +140,12 @@ const Product = () => {
     setPaymentRequest(newRequest);
   }, [product]);
 
-  // ── Fetch product ────────────────────────────────────────────────────────
+  // ── Track product preview after data loads ───────────────────────────────
   useEffect(() => {
-    const getProduct = async () => {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('products')
-        .select(
-          `
-          *,
-          product_items(id, size, sku_number, color),
-          product_images(id, image_url, is_primary),
-          product_reviews(
-            id,
-            user_id,
-            picture,
-            comment,
-            rating,
-            created_at,
-            users(id, name, email, profile)
-          )
-        `
-        )
-        .eq('id', id)
-        .single();
-
-      if (error) {
-        console.error(error);
-        toast.error('Failed to load product');
-        setLoading(false);
-        return;
-      }
-
-      setProduct(data);
-      if (user) await trackProductPreview(dispatch, user.id, data);
-      setLoading(false);
-    };
-    getProduct();
-  }, [id]);
+    if (product && user) {
+      trackProductPreview(user.id, product);
+    }
+  }, [product, user]);
 
   // ── Fetch inventory for this product ────────────────────────────────────
   useEffect(() => {
@@ -214,7 +212,6 @@ const Product = () => {
   const colors = ['#222222', '#C8393D', '#E4E4E4'];
   const colorsName = ['Black', 'Red', 'Grey'];
 
-  const [quantity, setQuantity] = useState(1);
   const increment = () => setQuantity(quantity + 1);
   const decrement = () => {
     if (quantity > 1) setQuantity(quantity - 1);

@@ -1,5 +1,6 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React from 'react';
 import { useAuth } from '../../context/authContext';
+import { useUserCancelledOrders } from '../../tanstack/orders.ts';
 import { Link, useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/ui/Sidebar';
 import { SUPABASE_STORAGE_URL } from '../../utils/supabaseStorage';
@@ -9,32 +10,10 @@ import Skeleton from 'react-loading-skeleton';
 import '../orders/ordersPage.css';
 
 const CancelledOrderPage = () => {
-  const { fetchUserCancelledOrders } = useAuth();
-
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+  const { data: orders = [], isLoading: loading } = useUserCancelledOrders(user?.id);
 
   const navigate = useNavigate();
-  const hasFetched = useRef(false);
-
-  useEffect(() => {
-    if (hasFetched.current) return;
-    hasFetched.current = true;
-
-    const loadOrders = async () => {
-      try {
-        setLoading(true);
-        const data = await fetchUserCancelledOrders();
-        setOrders(data || []);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadOrders();
-  }, []);
 
   const parseAddress = (addressStr) => {
     try {

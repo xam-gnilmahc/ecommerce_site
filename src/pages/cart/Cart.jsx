@@ -1,48 +1,31 @@
-import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/authContext';
 import { FaTimes, FaQuestion } from 'react-icons/fa';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import './cart.css';
-import { useAppDispatch } from '../../redux/index.ts';
-import {
-  addToCart,
-  removeFromCart,
-  fetchCartItems,
-  removeItemDirectlyFromCart,
-  incrementQtyOptimistic,
-  decrementQtyOptimistic,
-} from '../../redux/slice/userCart.ts';
-import { trackAddToCart } from '../../utils/tracking.ts';
+import { useCartItems, useUpdateCartQuantity, useRemoveFromCart } from '../../tanstack/cart.ts';
 import { SUPABASE_STORAGE_URL } from '../../utils/supabaseStorage';
-import Navbar from '../../components/ui/Navbar';
 
 const Cart = () => {
   const { user } = useAuth();
-  const dispatch = useAppDispatch();
-  const { items: cart, fetchLoading } = useSelector((state) => state.addToCart);
+  const { data: cart = [], isPending: fetchLoading } = useCartItems(user?.id);
+  const updateQuantityMutation = useUpdateCartQuantity();
+  const removeCartMutation = useRemoveFromCart();
 
-  useEffect(() => {
-    if (user?.id) dispatch(fetchCartItems(user.id));
-  }, [dispatch, user?.id]);
-
-  const updateItemQuantity = async (product, action) => {
+  const updateItemQuantity = (item, action) => {
     if (!user) return;
-    if (action === 'increase') {
-      dispatch(incrementQtyOptimistic(product.id));
-      dispatch(addToCart({ userId: user.id, product }));
-      trackAddToCart(dispatch, user?.id, product);
-    } else if (action === 'decrease') {
-      dispatch(decrementQtyOptimistic(product.id));
-      dispatch(removeFromCart({ userId: user.id, product }));
-    }
+    const newQty = action === 'increase' ? item.quantity + 1 : item.quantity - 1;
+    updateQuantityMutation.mutate({
+      userId: user.id,
+      productId: item.product_id,
+      quantity: newQty,
+    });
   };
 
-  const handleRemoveFromCart = (product) => {
+  const handleRemoveFromCart = (item) => {
     if (!user) return;
-    dispatch(removeItemDirectlyFromCart({ userId: user.id, productId: product.id }));
+    removeCartMutation.mutate({ userId: user.id, productId: item.product_id });
   };
 
   const EmptyCart = () => (
@@ -68,8 +51,6 @@ const Cart = () => {
     return (
       <section className="cart-section">
         <div className="container">
-          {/* Page heading */}
-          {/* <p className="cart-page-label">Your bag</p> */}
           <h1 className="cart-page-title">
             Shopping
             <br />
@@ -86,7 +67,7 @@ const Cart = () => {
                   <div key={item.id} className="cart-item">
                     {/* Remove */}
                     <button
-                      onClick={() => handleRemoveFromCart(item.products)}
+                      onClick={() => handleRemoveFromCart(item)}
                       className="remove-btn"
                       aria-label="Remove item"
                     >
@@ -133,14 +114,14 @@ const Cart = () => {
                       <div className="quantity-control">
                         <button
                           className="qty-btn"
-                          onClick={() => updateItemQuantity(item.products, 'decrease')}
+                          onClick={() => updateItemQuantity(item, 'decrease')}
                         >
                           −
                         </button>
                         <span>{item.quantity}</span>
                         <button
                           className="qty-btn"
-                          onClick={() => updateItemQuantity(item.products, 'increase')}
+                          onClick={() => updateItemQuantity(item, 'increase')}
                         >
                           +
                         </button>

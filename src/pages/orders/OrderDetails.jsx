@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/authContext';
+import { useOrderDetails } from '../../tanstack/orders.ts';
 import Skeleton from 'react-loading-skeleton';
 
 import { SUPABASE_STORAGE_URL } from '../../utils/supabaseStorage';
@@ -30,19 +31,9 @@ const STATUS_DESC = {
 const OrderDetailsPage = () => {
   const { orderId } = useParams();
   const navigate = useNavigate();
-  const { getOrderDetails, user } = useAuth();
+  const { user } = useAuth();
 
-  const [loading, setLoading] = useState(true);
-  const [order, setOrder] = useState(null);
-
-  useEffect(() => {
-    (async () => {
-      setLoading(true);
-      const data = await getOrderDetails(orderId);
-      setOrder(data);
-      setLoading(false);
-    })();
-  }, [orderId]);
+  const { data: order, isLoading: loading } = useOrderDetails(orderId);
 
   const parseAddress = (str) => {
     try {
