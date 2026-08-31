@@ -231,7 +231,10 @@ export const useUserOrders = (userId: string | undefined) => {
       const { data, error } = await supabase
         .from('orders')
         .select(
-          `*, order_items (*, products:product_id (id, name, banner_url, amount, description))`
+          `id, user_id, status, total_amount, created_at, order_date, tracking_number,
+           shipping_method, order_type, items_count,
+           order_items (id, product_id, quantity, price_each,
+             products:product_id (id, name, banner_url, amount))`
         )
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
@@ -239,6 +242,7 @@ export const useUserOrders = (userId: string | undefined) => {
       return data;
     },
     enabled: !!userId,
+    staleTime: 1000 * 60 * 2,
   });
 };
 
@@ -249,7 +253,10 @@ export const useUserCancelledOrders = (userId: string | undefined) => {
       const { data, error } = await supabase
         .from('orders')
         .select(
-          `*, order_items (*, products:product_id (id, name, banner_url, amount, description)), orderpayments_logs (*)`
+          `id, user_id, status, total_amount, created_at, order_date, tracking_number,
+           order_items (id, product_id, quantity, price_each,
+             products:product_id (id, name, banner_url, amount)),
+           orderpayments_logs (id, order_id, status, amount, created_at)`
         )
         .eq('user_id', userId)
         .eq('status', 'Cancelled')
@@ -262,6 +269,7 @@ export const useUserCancelledOrders = (userId: string | undefined) => {
       });
     },
     enabled: !!userId,
+    staleTime: 1000 * 60 * 2,
   });
 };
 
@@ -272,7 +280,9 @@ export const useOrderDetails = (orderId: string | undefined) => {
       const { data, error } = await supabase
         .from('orders')
         .select(
-          `*, order_items (*, products:product_id (id, name, banner_url, amount, description)), orderpayments_logs(*)`
+          `*, order_items (id, product_id, quantity, price_each,
+            products:product_id (id, name, banner_url, amount, description)),
+           orderpayments_logs (*)`
         )
         .eq('id', orderId)
         .single();
