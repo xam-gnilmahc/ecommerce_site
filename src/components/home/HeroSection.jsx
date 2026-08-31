@@ -140,11 +140,13 @@ export default function Home() {
         <video
           className="hp-hero-video"
           src={`${process.env.PUBLIC_URL}/assests/apple.mp4`}
+          poster={`${process.env.PUBLIC_URL}/assests/apple-poster.jpg`}
           autoPlay
           loop
           muted
           playsInline
           preload="auto"
+          type="video/mp4"
         />
         <div className="hp-hero-overlay" />
 
