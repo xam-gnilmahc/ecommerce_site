@@ -1,81 +1,113 @@
 import React from 'react';
-import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
-import LaptopMacIcon from '@mui/icons-material/LaptopMac';
-import TabletIcon from '@mui/icons-material/Tablet';
-import WatchIcon from '@mui/icons-material/Watch';
-import StorefrontIcon from '@mui/icons-material/Storefront';
-import DevicesIcon from '@mui/icons-material/Devices';
+import { Link } from 'react-router-dom';
+import { FiTruck, FiShield, FiCreditCard, FiHeadphones } from 'react-icons/fi';
+import { BsArrowRight } from 'react-icons/bs';
+import './AboutPage.css';
 
 const categories = [
+  { title: 'Mobile Phones', tag: 'iPhone, Samsung & more' },
+  { title: 'Laptops', tag: 'Work, gaming & everyday' },
+  { title: 'Tablets', tag: 'iPad, Galaxy Tab & more' },
+  { title: 'Wearables', tag: 'Watches & fitness bands' },
+];
+
+const perks = [
   {
-    title: 'Mobile Phones',
-    icon: <PhoneIphoneIcon fontSize="large" style={{ color: '#3f51b5' }} />,
-    image:
-      'https://images.pexels.com/photos/788946/pexels-photo-788946.jpeg?auto=compress&cs=tinysrgb&w=600',
+    icon: <FiShield size={22} />,
+    title: '100% Genuine Products',
+    text: 'Every device is sourced from authorized distributors with full manufacturer warranty.',
   },
   {
-    title: 'Laptops',
-    icon: <LaptopMacIcon fontSize="large" style={{ color: '#673ab7' }} />,
-    image:
-      'https://images.pexels.com/photos/4592256/pexels-photo-4592256.jpeg?auto=compress&cs=tinysrgb&w=600',
+    icon: <FiTruck size={22} />,
+    title: 'Fast & Free Delivery',
+    text: 'Free standard shipping on every order, or express delivery in 1–3 days when you need it fast.',
   },
   {
-    title: 'Tablets',
-    icon: <TabletIcon fontSize="large" style={{ color: '#f44336' }} />,
-    image:
-      'https://images.pexels.com/photos/5904931/pexels-photo-5904931.jpeg?auto=compress&cs=tinysrgb&w=600',
+    icon: <FiCreditCard size={22} />,
+    title: 'Secure Payments',
+    text: 'Pay safely with Google Pay, credit or debit cards — powered by Stripe encryption.',
   },
   {
-    title: 'Watches',
-    icon: <WatchIcon fontSize="large" style={{ color: '#ff9800' }} />,
-    image:
-      'https://images.pexels.com/photos/1200491/pexels-photo-1200491.jpeg?auto=compress&cs=tinysrgb&w=600',
+    icon: <FiHeadphones size={22} />,
+    title: 'Real Human Support',
+    text: 'Questions about an order or a device? Our support team is one message away.',
   },
-  {
-    title: 'Tech Brands',
-    icon: <StorefrontIcon fontSize="large" style={{ color: '#009688' }} />,
-    image:
-      'https://images.pexels.com/photos/3606228/pexels-photo-3606228.jpeg?auto=compress&cs=tinysrgb&w=600',
-  },
+];
+
+const stats = [
+  { value: '10K+', label: 'Orders delivered' },
+  { value: '50+', label: 'Tech brands' },
+  { value: '4.8★', label: 'Average rating' },
+  { value: '24/7', label: 'Order tracking' },
 ];
 
 const AboutPage = () => {
   return (
-    <>
-      <div className="container py-5">
-        <div className="text-center mb-5">
-          <h1 className="fw-bold display-6">About Our Brand</h1>
-          <p className="lead text-muted mx-auto" style={{ maxWidth: '750px' }}>
-            We specialize in offering top-tier technology, including mobile phones, laptops,
-            tablets, and watches from the best tech brands in the world.
-          </p>
-        </div>
+    <div className="about-page">
+      {/* HERO */}
+      <section className="about-hero">
+        <p className="about-kicker">About us</p>
+        <h1>
+          Tech you love,
+          <br />
+          delivered to your door
+        </h1>
+        <p className="about-sub">
+          UOM is an online electronics store for mobile phones, laptops, tablets and wearables. We
+          keep it simple: genuine products, honest prices, and delivery that actually shows up on
+          time.
+        </p>
+        <Link to="/search" className="about-cta">
+          Start shopping <BsArrowRight />
+        </Link>
+      </section>
 
-        <div className="row justify-content-center">
-          {categories.map((cat, idx) => (
-            <div key={idx} className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
-              <div className="card border-0 shadow-sm h-100 hover-shadow">
-                <img
-                  src={cat.image}
-                  alt={cat.title}
-                  className="card-img-top"
-                  style={{
-                    height: '180px',
-                    objectFit: 'cover',
-                    borderTopLeftRadius: '0.5rem',
-                    borderTopRightRadius: '0.5rem',
-                  }}
-                />
-                <div className="card-body text-center">
-                  <div className="mb-2">{cat.icon}</div>
-                  <h6 className="fw-semibold">{cat.title}</h6>
-                </div>
-              </div>
+      {/* STATS */}
+      <section className="about-stats">
+        {stats.map((s) => (
+          <div className="about-stat" key={s.label}>
+            <span className="stat-value">{s.value}</span>
+            <span className="stat-label">{s.label}</span>
+          </div>
+        ))}
+      </section>
+
+      {/* CATEGORIES */}
+      <section className="about-section">
+        <h2>What we sell</h2>
+        <div className="about-cats">
+          {categories.map((c) => (
+            <div className="about-cat" key={c.title}>
+              <h3>{c.title}</h3>
+              <p>{c.tag}</p>
             </div>
           ))}
         </div>
-      </div>
-    </>
+      </section>
+
+      {/* PERKS */}
+      <section className="about-section">
+        <h2>Why shop with us</h2>
+        <div className="about-perks">
+          {perks.map((p) => (
+            <div className="about-perk" key={p.title}>
+              <span className="perk-icon">{p.icon}</span>
+              <h3>{p.title}</h3>
+              <p>{p.text}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="about-banner">
+        <h2>Ready to upgrade?</h2>
+        <p>Browse the latest phones, laptops, tablets and watches — all in one place.</p>
+        <Link to="/search" className="about-cta dark">
+          Browse products <BsArrowRight />
+        </Link>
+      </section>
+    </div>
   );
 };
 

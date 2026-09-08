@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
@@ -11,98 +10,78 @@ import Pagination from '../ui/Pagination.js';
 import { IoClose } from 'react-icons/io5';
 import { FaStar } from 'react-icons/fa';
 import { FiHeart } from 'react-icons/fi';
-import { useAppDispatch } from '../../redux/index.ts';
-import { fetchProducts } from '../../redux/slice/Product.ts';
-import { fetchUserRecommendations } from '../../redux/slice/userRecommendation.ts';
-import { searchProducts } from '../../redux/slice/searchProduct.ts';
-import { fetchFilteredProducts } from '../../redux/slice/filterProduct.ts';
-import { trackAddToCart, trackSearch } from '../../utils/tracking.ts';
-import { addToCart } from '../../redux/slice/userCart.ts';
+import { trackAddToCart, trackSearch } from '../../tanstack/tracking.ts';
+import { useAddToCart } from '../../tanstack/cart.ts';
+import { useProducts } from '../../tanstack/products.ts';
+import { useSearchProducts } from '../../tanstack/search.ts';
+import { useFilteredProducts } from '../../tanstack/filters.ts';
+import { useUserRecommendations } from '../../tanstack/recommendations.ts';
 import { SUPABASE_STORAGE_URL } from '../../utils/supabaseStorage';
+import { supabase } from '../../supaBaseClient';
 import './Products.css';
 
 const Products = () => {
   const [displayProducts, setDisplayProducts] = useState([]);
+  const [outOfStockMap, setOutOfStockMap] = useState({});
   const [wishList, setWishList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [sortBy, setSortBy] = useState('default');
-  const lastExecutedQuery = useRef('');
+  const [activeFilters, setActiveFilters] = useState(null);
   const postsPerPage = 20;
 
   const { user, trackProduct } = useAuth();
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
   const location = useLocation();
+  const addCartMutation = useAddToCart();
 
   const searchQuery = new URLSearchParams(location.search).get('q')?.toLowerCase().trim();
 
-  // Redux state
-  const { products, loading: productsLoading } = useSelector((state) => state.product);
-
-  const { results: searchResults, status: searchStatus } = useSelector((state) => state.search);
-
-  const { filteredProducts, status: filterStatus } = useSelector((state) => state.filterProduct);
-
-  const { recommendations, status: recStatus } = useSelector((state) => state.userRecommendations);
-
-  // Load initial products / recommendations
-  useEffect(() => {
-    if (!searchQuery) {
-      if (user?.id) {
-        dispatch(fetchUserRecommendations(user.id));
-      } else {
-        dispatch(fetchProducts());
-      }
-    }
-  }, [user?.id, searchQuery, dispatch]);
+  // TanStack Query hooks
+  const { data: products = [], isLoading: productsLoading } = useProducts();
+  const { data: recommendations = [], isLoading: recLoading } = useUserRecommendations(user?.id);
+  const { data: searchResults, status: searchStatus } = useSearchProducts(searchQuery || '');
+  const { data: filteredProducts, status: filterStatus } = useFilteredProducts(
+    activeFilters || { brands: [], category: [], priceRange: null }
+  );
 
   // Set default products
   useEffect(() => {
-    if (!searchQuery) {
-      if (recStatus === 'success' && recommendations?.length > 0) {
+    if (!searchQuery && !activeFilters) {
+      if (recommendations.length > 0) {
         setDisplayProducts(recommendations);
       } else if (!productsLoading && products.length > 0) {
         setDisplayProducts(products);
       }
     }
-  }, [recStatus, recommendations, products, productsLoading, searchQuery]);
+  }, [recommendations, products, productsLoading, searchQuery, activeFilters]);
 
-  // FILTER
+  // Set filtered products
   useEffect(() => {
-    if (filterStatus === 'success') {
-      setDisplayProducts(filteredProducts);
+    if (activeFilters && filterStatus === 'success') {
+      setDisplayProducts(filteredProducts || []);
       setCurrentPage(1);
     }
-  }, [filteredProducts, filterStatus]);
+  }, [filteredProducts, filterStatus, activeFilters]);
 
-  // SEARCH (FIXED - no duplicate calls)
+  // Set search results
   useEffect(() => {
     if (!searchQuery) return;
-
-    if (lastExecutedQuery.current === searchQuery) return;
-
-    lastExecutedQuery.current = searchQuery;
-
-    setCurrentPage(1);
-    setDisplayProducts([]);
-    dispatch(searchProducts(searchQuery));
-    trackSearch(dispatch, user?.id, searchQuery);
-  }, [searchQuery, dispatch, user?.id]);
-
-  // APPLY SEARCH RESULTS
-  useEffect(() => {
-    if (!searchQuery) return;
-
     if (searchStatus === 'success') {
       setDisplayProducts(searchResults || []);
       setCurrentPage(1);
     }
-
-    if (searchStatus === 'failed') {
+    if (searchStatus === 'error') {
       setDisplayProducts([]);
     }
   }, [searchResults, searchStatus, searchQuery]);
+
+  // Track search
+  useEffect(() => {
+    if (searchQuery) {
+      trackSearch(user?.id, searchQuery);
+    }
+  }, [searchQuery, user?.id]);
 
   // SORT
   const sortProducts = (items, sortKey) => {
@@ -137,6 +116,43 @@ const Products = () => {
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
   const currentPosts = sortedProducts.slice(indexOfFirstPost, indexOfLastPost);
 
+  // ── INVENTORY CHECK ──────────────────────────────────────────────────────
+  useEffect(() => {
+    const ids = currentPosts.map((p) => p.id);
+    if (ids.length === 0) return;
+
+    let cancelled = false;
+    const checkStock = async () => {
+      const { data } = await supabase
+        .from('inventory')
+        .select('product_id, stock_quantity')
+        .in('product_id', ids);
+
+      if (cancelled || !data) {
+        if (!cancelled && !data) {
+          setOutOfStockMap(Object.fromEntries(ids.map((pid) => [pid, true])));
+        }
+        return;
+      }
+
+      const map = {};
+      ids.forEach((pid) => {
+        const row = data.find((d) => d.product_id === pid);
+        map[pid] = !row || Number(row.stock_quantity) === 0;
+      });
+      setOutOfStockMap(map);
+    };
+
+    setOutOfStockMap({});
+    checkStock();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [displayProducts, sortBy, currentPage]);
+
+  const isOutOfStock = (productId) => outOfStockMap[productId] === true;
+
   // CART
   const handleAddToCart = async (product) => {
     if (!user) {
@@ -144,8 +160,8 @@ const Products = () => {
       navigate('/login');
       return;
     }
-    dispatch(addToCart({ userId: user.id, product }));
-    await trackAddToCart(dispatch, user?.id, product);
+    addCartMutation.mutate({ userId: user.id, product });
+    await trackAddToCart(user?.id, product);
   };
 
   // WISHLIST
@@ -158,7 +174,11 @@ const Products = () => {
 
   // FILTER
   const handleFilterChange = (filters) => {
-    dispatch(fetchFilteredProducts(filters));
+    if (searchQuery) {
+      navigate('/search', { replace: true });
+    }
+    setDisplayProducts([]);
+    setActiveFilters(filters);
     setCurrentPage(1);
   };
 
@@ -169,9 +189,9 @@ const Products = () => {
   };
 
   const isLoading =
-    (searchQuery && searchStatus === 'loading') ||
-    (!searchQuery && (productsLoading || recStatus === 'loading')) ||
-    filterStatus === 'loading';
+    (searchQuery && searchStatus === 'pending') ||
+    (!searchQuery && !activeFilters && (productsLoading || recLoading)) ||
+    (activeFilters && filterStatus === 'pending');
 
   const LoadingSkeleton = () => {
     return (
@@ -226,7 +246,7 @@ const Products = () => {
         ) : (
           currentPosts.map((product) => (
             <div key={product.id} className="sdProductContainer">
-              <div className="sdProductImages">
+              <div className={`sdProductImages ${isOutOfStock(product.id) ? 'out-of-stock' : ''}`}>
                 <Link
                   to={`/product/${product.id}`}
                   rel="noopener noreferrer"
@@ -238,12 +258,9 @@ const Products = () => {
                   />
                 </Link>
 
-                {/* <button
-                  className="add-to-cart-button"
-                  onClick={() => handleAddToCart(product)}
-                >
-                  Add to Cart
-                </button> */}
+                {isOutOfStock(product.id) && (
+                  <span className="sdOutOfStockBadge">Currently Out of Stock</span>
+                )}
               </div>
 
               <div className="sdProductInfo">
@@ -277,16 +294,15 @@ const Products = () => {
   return (
     <div className="shopDetails">
       <div className="shopDetailMain">
-        <div className="shopDetails__left">
-          <Filters onApplyFilters={handleFilterChange} searchQuery={searchQuery} />
-        </div>
-
         <div className="shopDetails__right">
-          <SortBar
-            sortBy={sortBy}
-            onSortChange={handleSortChange}
-            totalProducts={displayProducts.length}
-          />
+          <div className="shopToolbar">
+            <Filters onApplyFilters={handleFilterChange} searchQuery={searchQuery} />
+            <SortBar
+              sortBy={sortBy}
+              onSortChange={handleSortChange}
+              totalProducts={displayProducts.length}
+            />
+          </div>
           <div className="row">{isLoading ? <LoadingSkeleton /> : <ProductList />}</div>
 
           <Pagination

@@ -20,7 +20,6 @@ const SortBar = ({ sortBy, onSortChange, totalProducts }) => {
         <span className="sort-bar-count">{totalProducts} products</span>
       </div>
       <div className="sort-bar-right">
-        <label className="sort-bar-label">Sort by</label>
         <select
           className="sort-bar-select"
           value={sortBy}

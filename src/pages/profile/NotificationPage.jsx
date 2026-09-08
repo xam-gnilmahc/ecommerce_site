@@ -7,6 +7,7 @@ import { FiBell, FiSettings } from 'react-icons/fi';
 import { IoMdCheckmark } from 'react-icons/io';
 import { IoIosNotifications } from 'react-icons/io';
 import { supabase } from '../../supaBaseClient';
+import { fetchNotifications } from '../../tanstack/notifications.ts';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
@@ -14,7 +15,7 @@ dayjs.extend(relativeTime);
 const PAGE_SIZE = 10; // number of notifications to load per batch
 
 const NotificationPage = () => {
-  const { user, getNotificationsByUserId } = useAuth();
+  const { user } = useAuth();
   const [notifications, setNotifications] = useState([]);
   const [open, setOpen] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -50,7 +51,7 @@ const NotificationPage = () => {
       const start = (pageNum - 1) * PAGE_SIZE;
       const end = start + PAGE_SIZE - 1;
 
-      const newItems = await getNotificationsByUserId(start, end);
+      const newItems = await fetchNotifications(user.id, start, end);
 
       setNotifications((prev) => (pageNum === 1 ? newItems : [...prev, ...newItems]));
 
@@ -180,14 +181,24 @@ const NotificationPage = () => {
           <div className="notification-header">
             <h4>Notifications</h4>
 
-            <FiSettings size={18} />
+            <button
+              type="button"
+              className="notification-settings-btn"
+              onClick={() => window.open('/settings', '_self')}
+              aria-label="Notification settings"
+            >
+              <FiSettings size={17} />
+            </button>
           </div>
 
           {/* LIST */}
 
           <div className="notification-list" ref={listRef} onScroll={onScroll}>
             {notifications.length === 0 ? (
-              <div className="notification-empty">No notifications</div>
+              <div className="notification-empty">
+                <div style={{ fontSize: 34, marginBottom: 8 }}>🔔</div>
+                No notifications yet
+              </div>
             ) : (
               notifications.map(({ id, order_id, message, created_at, type }) => (
                 <div

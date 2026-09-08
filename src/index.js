@@ -8,31 +8,30 @@ import 'swiper/css/navigation';
 import './styles/theme.css';
 
 import { BrowserRouter } from 'react-router-dom';
-import { Provider } from 'react-redux';
+import { QueryClientProvider } from '@tanstack/react-query';
 
-import store from './redux/index.ts';
+import { queryClient } from './tanstack/queryClient.ts';
 
 import { Toaster } from 'react-hot-toast';
 
-import ScrollToTop from './components/ui/ScrollToTop';
-import Popup from './pages/popup/Popup';
+import ScrollToTop from './components/common/ScrollToTop';
 import { CookiesProvider } from 'react-cookie';
 
 import { AuthProvider } from './context/authContext';
 import { PageHeaderProvider } from './context/PageHeaderContext.tsx';
-import OAuthErrorCatcher from './components/ui/OAuthErrorCatcher';
+import OAuthErrorCatcher from './components/common/OAuthErrorCatcher';
 import './index.css';
 
-import RoutesComponent from './RoutesComponent.tsx'; // Move all <Routes> into this separate file for clarity
+import RoutesComponent from './RoutesComponent.tsx';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
-  <BrowserRouter>
-    <OAuthErrorCatcher />
-    <CookiesProvider>
-      <ScrollToTop>
-        <Provider store={store}>
+  <QueryClientProvider client={queryClient}>
+    <BrowserRouter>
+      <OAuthErrorCatcher />
+      <CookiesProvider>
+        <ScrollToTop>
           <AuthProvider>
             <PageHeaderProvider>
               {/* <Popup /> */}
@@ -40,8 +39,8 @@ root.render(
               <Toaster />
             </PageHeaderProvider>
           </AuthProvider>
-        </Provider>
-      </ScrollToTop>
-    </CookiesProvider>
-  </BrowserRouter>
+        </ScrollToTop>
+      </CookiesProvider>
+    </BrowserRouter>
+  </QueryClientProvider>
 );

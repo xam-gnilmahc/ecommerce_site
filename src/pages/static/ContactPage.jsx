@@ -1,93 +1,144 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import { FiMail, FiPhone, FiMapPin, FiClock } from 'react-icons/fi';
+import { BsArrowRight } from 'react-icons/bs';
+import { FiSend } from 'react-icons/fi';
 import './ContactPage.css';
+
+const contactCards = [
+  {
+    icon: <FiMail size={20} />,
+    title: 'Email us',
+    lines: ['support@uom.store', 'We reply within 24 hours'],
+  },
+  {
+    icon: <FiPhone size={20} />,
+    title: 'Call us',
+    lines: ['+44 20 7123 4567', 'Mon–Sat, 9am–6pm'],
+  },
+  {
+    icon: <FiMapPin size={20} />,
+    title: 'Visit us',
+    lines: ['1418 River Drive, Suite 35', 'Cottonhall, CA 9622, UK'],
+  },
+  {
+    icon: <FiClock size={20} />,
+    title: 'Order support',
+    lines: ['Track anytime from Orders', '24/7 status updates'],
+  },
+];
+
 const ContactPage = () => {
-  const [name, setname] = useState('');
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [message, setmessage] = useState('');
+  const [message, setMessage] = useState('');
+  const [sending, setSending] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert(
-      `Thank You ${name} for Contacting Us. We will Get Back to You Soon.\n\nYour Mail Id - ${email}.\nYour Message is - ${message}`
-    );
-    setname('');
-    setEmail('');
-    setmessage('');
+    if (!name.trim() || !email.trim() || !message.trim()) return;
+
+    setSending(true);
+    // simulate sending — wire this to your backend / email service later
+    setTimeout(() => {
+      setSending(false);
+      toast.success(`Thanks ${name.split(' ')[0]}! We'll get back to you soon.`);
+      setName('');
+      setEmail('');
+      setMessage('');
+    }, 800);
   };
 
   return (
-    <>
-      <div className="container my-3 py-3">
-        <div className="contactSection">
-          <div className="contactMap">
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d49206.16593395236!2d2.5776979486328124!3d39.57346430000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x129793280de39c05%3A0x85d5f5ea839d6c2a!2sUOMO!5e0!3m2!1sen!2sin!4v1708798894132!5m2!1sen!2sin"
-              width="800"
-              height="600"
-              allowfullscreen=""
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-              title="uomomap"
-            ></iframe>
+    <div className="contact-page">
+      {/* HERO */}
+      <section className="contact-hero">
+        <p className="contact-kicker">Contact</p>
+        <h1>
+          We're here
+          <br />
+          to help
+        </h1>
+        <p className="contact-sub">
+          Question about an order, a product, or a delivery? Reach out — a real person will get back
+          to you.
+        </p>
+      </section>
+
+      {/* INFO CARDS */}
+      <section className="contact-cards">
+        {contactCards.map((c) => (
+          <div className="contact-card" key={c.title}>
+            <span className="card-icon">{c.icon}</span>
+            <h3>{c.title}</h3>
+            <p>
+              {c.lines[0]}
+              <br />
+              <span>{c.lines[1]}</span>
+            </p>
           </div>
-          <div className="contactInfo">
-            <div className="contactAddress">
-              <div className="address">
-                <h3>Store in London</h3>
-                <p>
-                  1418 River Drive, Suite 35 Cottonhall, CA 9622
-                  <br /> United Kingdom
-                </p>
-                <p>
-                  admin@dummymail.com
-                  <br />
-                  +44 20 7123 4567
-                </p>
-              </div>
-              <div className="address">
-                <h3>Store in India</h3>
-                <p>
-                  A-791, A-791, Bandra Reclamation Rd, Mumbai
-                  <br /> Maharashtra
-                </p>
-                <p>
-                  contact@dummymail.com
-                  <br />
-                  +44 20 7123 4567
-                </p>
-              </div>
-            </div>
-            <div className="contactForm">
-              <h3>Get In Touch</h3>
-              <form onSubmit={handleSubmit}>
+        ))}
+      </section>
+
+      {/* FORM + SIDE */}
+      <section className="contact-main">
+        <div className="contact-form-wrap">
+          <h2>Send us a message</h2>
+          <form onSubmit={handleSubmit}>
+            <div className="form-row">
+              <label>
+                Your name
                 <input
                   type="text"
                   value={name}
-                  placeholder="Name *"
-                  onChange={(e) => setname(e.target.value)}
+                  placeholder="John Carter"
+                  onChange={(e) => setName(e.target.value)}
                   required
                 />
+              </label>
+              <label>
+                Email address
                 <input
                   type="email"
                   value={email}
-                  placeholder="Email address *"
+                  placeholder="john@example.com"
                   onChange={(e) => setEmail(e.target.value)}
                   required
                 />
-                <textarea
-                  rows={10}
-                  cols={40}
-                  placeholder="Your Message"
-                  value={message}
-                  onChange={(e) => setmessage(e.target.value)}
-                />
-                <button type="submit">Submit</button>
-              </form>
+              </label>
             </div>
-          </div>
+            <label>
+              Message
+              <textarea
+                rows={6}
+                value={message}
+                placeholder="How can we help?"
+                onChange={(e) => setMessage(e.target.value)}
+                required
+              />
+            </label>
+            <button type="submit" disabled={sending}>
+              {sending ? 'Sending…' : 'Send message'} <FiSend />
+            </button>
+          </form>
         </div>
-      </div>
-    </>
+
+        <aside className="contact-aside">
+          <h3>Looking for something else?</h3>
+          <Link to="/order" className="aside-link">
+            Track an order <BsArrowRight />
+          </Link>
+          <Link to="/search" className="aside-link">
+            Browse products <BsArrowRight />
+          </Link>
+          <div className="aside-note">
+            For order issues, have your order number ready — it's in your confirmation email and on
+            the Orders page.
+          </div>
+        </aside>
+      </section>
+    </div>
   );
 };
 

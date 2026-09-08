@@ -1,7 +1,7 @@
 // layouts/AuthLayout.tsx
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import ProtectedRoute from '../../ui/ProtectedRoute';
+import ProtectedRoute from '../../common/ProtectedRoute';
 
 const AuthLayout = () => (
   <ProtectedRoute>

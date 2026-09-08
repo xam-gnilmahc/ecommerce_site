@@ -1,23 +1,15 @@
-import Main from '../../components/ui/main';
-import CollectionBox from '../../components/product/collectionBox/CollectionBox';
-import BestSelling from '../../components/product/BestSelling/BestSelling';
+import Main from '../../components/home/HeroSection';
+import CollectionBox from '../../components/home/CollectionBox/CollectionBox';
+import BestSelling from '../../components/home/BestSelling/BestSelling';
+import NotificationTicker from '../../components/common/NotificationTicker';
+import { useAuth } from '../../context/authContext';
 
 function Home() {
+  const { user } = useAuth();
+
   return (
     <>
-      <div
-        style={{
-          background: '#fff3cd',
-          color: '#856404',
-          border: '1px solid #ffeeba',
-          padding: '12px 14px',
-          fontSize: '13px',
-          fontWeight: '500',
-          textAlign: 'center',
-        }}
-      >
-        ⚠️ This is a demo website. No real transactions are processed.
-      </div>
+      {user && <NotificationTicker />}
       <Main />
       <BestSelling />
       <CollectionBox />

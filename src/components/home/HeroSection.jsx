@@ -1,21 +1,82 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FiSearch, FiArrowRight, FiTrendingUp, FiZap } from 'react-icons/fi';
-import './Main.css';
+import { FiSearch, FiArrowRight, FiZap, FiTruck, FiShield, FiRefreshCw } from 'react-icons/fi';
+import './HeroSection.css';
 
-const CATEGORIES = [
-  { label: 'Mobiles', emoji: '📱', q: 'mobile', color: '#FF6B35', bg: '#FFF0EB' },
-  { label: 'Laptops', emoji: '💻', q: 'laptop', color: '#0066FF', bg: '#EBF0FF' },
-  { label: 'Tablets', emoji: '⬜', q: 'tablet', color: '#9333EA', bg: '#F3EBFF' },
-  { label: 'Watches', emoji: '⌚', q: 'watch', color: '#059669', bg: '#EBFFF6' },
-  { label: 'Audio', emoji: '🎧', q: 'earbuds', color: '#DC2626', bg: '#FFEBEB' },
-  { label: 'Keyboards', emoji: '⌨️', q: 'keyboard', color: '#D97706', bg: '#FFF8EB' },
-  { label: 'Cameras', emoji: '📷', q: 'camera', color: '#0891B2', bg: '#EBF9FF' },
-  { label: 'Gaming', emoji: '🎮', q: 'gaming', color: '#7C3AED', bg: '#F0EBFF' },
+const SUGGESTIONS = [
+  'iPhone 17 Pro',
+  'MacBook Pro',
+  'Galaxy S26',
+  'Apple Watch',
+  'AirPods Max',
+  'Gaming setup',
 ];
 
-const HOT_SEARCHES = ['iPhone 17 Pro', 'MacBook Pro', 'Galaxy S26', 'Apple AirPods', 'Imac'];
+const PERKS = [
+  { icon: <FiTruck />, label: 'Free delivery' },
+  { icon: <FiShield />, label: '2-year warranty' },
+  { icon: <FiRefreshCw />, label: 'Easy returns' },
+];
+
+const CATEGORIES = [
+  {
+    label: 'Mobiles',
+    img: 'https://static0.anpoimages.com/wordpress/wp-content/uploads/2025/08/pixel-10.png?q=70&fit=contain&w=420&dpr=1',
+    q: 'mobile',
+    color: '#FF6B35',
+    bg: '#FFF0EB',
+  },
+  {
+    label: 'Laptops',
+    img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQn8vQdgMccG_FBU1O6qew_sRa6hiU04vHWcw3HPif8bkbKUwvex9JZrWg&s=10',
+    q: 'laptop',
+    color: '#0066FF',
+    bg: '#EBF0FF',
+  },
+  {
+    label: 'Tablets',
+    img: 'https://brother-mart.com/cdn/shop/files/buy-ipad-air-13-m4-nepal-online-ipad-air-13-m4-price-nepal-2026.png?v=1775825788&width=900',
+    q: 'tablet',
+    color: '#9333EA',
+    bg: '#F3EBFF',
+  },
+  {
+    label: 'Watches',
+    img: 'https://img.fatafatsewa.com/products/3362/apple-watch-ultra-orange-alpine-loop-2023.jpg',
+    q: 'watch',
+    color: '#059669',
+    bg: '#EBFFF6',
+  },
+  {
+    label: 'Audio',
+    img: 'https://www.apple.com/v/airpods/ae/images/overview/airpods_max_blue__fsfaleh1smuu_large.png',
+    q: 'earbuds',
+    color: '#DC2626',
+    bg: '#FFEBEB',
+  },
+  {
+    label: 'Keyboards',
+    img: 'https://www.sbsupply.eu/media/amasty/webp/catalog/product/cache/207e23213cf636ccdef205098cf3c8a3/a/p/apple-magic-keyboard-with-touch-id-qwerty-white_1_1_jpg.webp',
+    q: 'keyboard',
+    color: '#D97706',
+    bg: '#FFF8EB',
+  },
+  {
+    label: 'Cameras',
+    img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwMhMPKgXBWitbl80BdsIWRX3gkxaKfx5A8q3QMkb0T43K0_iOePg0jBEW&s=10',
+    q: 'camera',
+    color: '#0891B2',
+    bg: '#EBF9FF',
+  },
+  {
+    label: 'Gaming',
+    img: 'https://img.drz.lazcdn.com/static/np/p/abbc459a041c762e4844600be6e7e14a.png_720x720q80.png',
+    q: 'gaming',
+    color: '#7C3AED',
+    bg: '#F0EBFF',
+  },
+];
 
 const stagger = (i) => ({
   initial: { opacity: 0, y: 32 },
@@ -26,7 +87,39 @@ const stagger = (i) => ({
 export default function Home() {
   const [search, setSearch] = useState('');
   const [focused, setFocused] = useState(false);
+  const [typed, setTyped] = useState('');
   const navigate = useNavigate();
+
+  // typewriter placeholder
+  useEffect(() => {
+    let word = 0;
+    let char = 0;
+    let deleting = false;
+    let timer;
+
+    const tick = () => {
+      const current = SUGGESTIONS[word];
+      if (!deleting) {
+        char++;
+        setTyped(current.slice(0, char));
+        if (char === current.length) {
+          deleting = true;
+          timer = setTimeout(tick, 1600);
+          return;
+        }
+      } else {
+        char--;
+        setTyped(current.slice(0, char));
+        if (char === 0) {
+          deleting = false;
+          word = (word + 1) % SUGGESTIONS.length;
+        }
+      }
+      timer = setTimeout(tick, deleting ? 35 : 75);
+    };
+    timer = setTimeout(tick, 600);
+    return () => clearTimeout(timer);
+  }, []);
 
   const go = (q) => {
     if (!q.trim()) return;
@@ -40,55 +133,47 @@ export default function Home() {
   return (
     <div className="hp-root">
       {/* ══════════════════════════════════════
-          HERO — clean white, just search
+          HERO — clean white, animated search
       ══════════════════════════════════════ */}
       <section className="hp-hero">
-        <motion.p className="hp-eyebrow" {...stagger(0)}>
-          <FiZap /> Shop the latest tech
-        </motion.p>
+        {/* looping background video */}
+        <video
+          className="hp-hero-video"
+          src={`${process.env.PUBLIC_URL}/assests/apple.mp4`}
+          poster={`${process.env.PUBLIC_URL}/assests/apple-poster.jpg`}
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          type="video/mp4"
+        />
+        <div className="hp-hero-overlay" />
 
-        <motion.h1 className="hp-headline" {...stagger(1)}>
-          What are you
-          <br />
-          <span className="hp-headline-em">looking for?</span>
-        </motion.h1>
-
-        {/* BIG SEARCH */}
         <motion.div
           className={`hp-search-wrap ${focused ? 'hp-search-wrap--on' : ''}`}
-          {...stagger(2)}
+          {...stagger(0)}
         >
           <FiSearch className="hp-search-ico" />
           <input
             className="hp-search-input"
             type="text"
-            placeholder="Search mobiles, laptops, watches…"
+            placeholder={search ? '' : typed || 'Search…'}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={handleKey}
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
           />
+          {!search && <span className="hp-search-caret" />}
           <motion.button
             className="hp-search-btn"
             onClick={() => go(search)}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
           >
-            Search <FiArrowRight />
+            <span>Search</span> <FiArrowRight className="hp-search-arrow" />
           </motion.button>
-        </motion.div>
-
-        {/* hot searches */}
-        <motion.div className="hp-hot" {...stagger(3)}>
-          <span className="hp-hot-label">
-            <FiTrendingUp /> Trending:
-          </span>
-          {HOT_SEARCHES.map((h) => (
-            <button key={h} className="hp-hot-chip" onClick={() => go(h)}>
-              {h}
-            </button>
-          ))}
         </motion.div>
       </section>
 
@@ -114,7 +199,9 @@ export default function Home() {
               whileHover={{ y: -6, scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
             >
-              <span className="hp-cat-emoji">{cat.emoji}</span>
+              <span className="hp-cat-emoji">
+                <img src={cat.img} alt={cat.label} className="hp-cat-img" />
+              </span>
               <span className="hp-cat-label">{cat.label}</span>
               <FiArrowRight className="hp-cat-arrow" />
             </motion.button>
@@ -149,7 +236,6 @@ export default function Home() {
             <button className="hp-deal-cta">
               Shop now <FiArrowRight />
             </button>
-            <div className="hp-deal-deco">💻</div>
           </motion.div>
 
           {/* 2 stacked banners */}
@@ -164,7 +250,6 @@ export default function Home() {
               <div className="hp-deal-tag">⚡ New arrivals</div>
               <div className="hp-deal-title">Mobiles</div>
               <div className="hp-deal-sub">iPhone, Samsung & more</div>
-              <div className="hp-deal-deco">📱</div>
             </motion.div>
 
             <motion.div
@@ -177,7 +262,6 @@ export default function Home() {
               <div className="hp-deal-tag">🎯 Best sellers</div>
               <div className="hp-deal-title">Wearables</div>
               <div className="hp-deal-sub">Watches & fitness bands</div>
-              <div className="hp-deal-deco">⌚</div>
             </motion.div>
           </div>
         </div>
