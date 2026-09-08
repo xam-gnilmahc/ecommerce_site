@@ -1,36 +1,50 @@
 -- ============================================================
--- Product search — clean install
+-- Product search — uses existing search_vector + GIN index
 -- Run in Supabase SQL Editor
 -- ============================================================
 
--- Trigram extension (for fast substring matching)
-CREATE EXTENSION IF NOT EXISTS pg_trgm;
-
--- Indexes
-CREATE INDEX IF NOT EXISTS idx_products_name_trgm
-  ON products USING GIN (name gin_trgm_ops);
-CREATE INDEX IF NOT EXISTS idx_products_brand_trgm
-  ON products USING GIN (brand gin_trgm_ops);
-CREATE INDEX IF NOT EXISTS idx_products_category_trgm
-  ON products USING GIN (category gin_trgm_ops);
-
--- Drop old FTS stuff if it exists
-DROP TRIGGER IF EXISTS tsvector_products_update ON products;
-DROP FUNCTION IF EXISTS products_search_vector_update();
+-- Drop old search function if it exists
 DROP FUNCTION IF EXISTS search_products(text);
-DROP INDEX IF EXISTS idx_products_search;
-ALTER TABLE products DROP COLUMN IF EXISTS search_vector;
 
--- Simple search function
+-- Fast search using the existing search_vector column + GIN index
 CREATE OR REPLACE FUNCTION search_products(query_text text)
 RETURNS SETOF products AS $$
+DECLARE
+  words text[];
+  tsquery_str text;
+BEGIN
+  -- Split into words: "iphone17 pro" → ['iphone','17','pro']
+  words := ARRAY(
+    SELECT DISTINCT lower(unnest(
+      regexp_split_to_array(trim(lower(query_text)), '\s+')
+    ))
+  );
+
+  -- Further split on digit-letter boundaries
+  words := ARRAY(
+    SELECT DISTINCT unnest(
+      regexp_split_to_array(w, '(?<=\D)(?=\d)|(?<=\d)(?=\D)')
+    )
+    FROM unnest(words) AS w
+    WHERE length(w) > 0
+  );
+
+  -- Build tsquery: 'iphone' & '17' & 'pro'
+  tsquery_str := array_to_string(
+    ARRAY(SELECT unnest(words)), ' & '
+  );
+
+  -- Fallback if nothing to search
+  IF tsquery_str = '' THEN
+    RETURN;
+  END IF;
+
+  RETURN QUERY
   SELECT *
   FROM products
-  WHERE name ILIKE '%' || query_text || '%'
-     OR brand ILIKE '%' || query_text || '%'
-     OR category ILIKE '%' || query_text || '%'
-     OR type ILIKE '%' || query_text || '%'
-  ORDER BY
-    CASE WHEN name ILIKE '%' || query_text || '%' THEN 0 ELSE 1 END,
-    id DESC;
-$$ LANGUAGE sql;
+  WHERE search_vector @@ to_tsquery('english', tsquery_str)
+  ORDER BY ts_rank(search_vector, to_tsquery('english', tsquery_str)) DESC,
+           id DESC
+  LIMIT 1000;
+END;
+$$ LANGUAGE plpgsql;
