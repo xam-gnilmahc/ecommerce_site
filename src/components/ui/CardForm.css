@@ -1,0 +1,281 @@
+/* ═══════════════════════════════════════════════
+   CARD FORM
+   ═══════════════════════════════════════════════ */
+.cf {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Card visual ─────────────────────────────── */
+.cf-card {
+  position: relative;
+  border-radius: 16px;
+  padding: 24px 26px;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+  box-shadow:
+    0 14px 44px rgba(15, 23, 42, 0.4),
+    0 2px 6px rgba(0, 0, 0, 0.25);
+  margin-bottom: 28px;
+  transition:
+    transform 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.45s ease;
+}
+
+.cf-card:hover {
+  transform: translateY(-4px) scale(1.008);
+  box-shadow:
+    0 20px 56px rgba(15, 23, 42, 0.5),
+    0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.cf-card--visa {
+  background: linear-gradient(135deg, #1a237e 0%, #283593 45%, #3949ab 100%);
+}
+
+.cf-card--mastercard {
+  background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 45%, #3d3d56 100%);
+}
+
+.cf-card--amex {
+  background: linear-gradient(135deg, #0d47a1 0%, #1565c0 45%, #1e88e5 100%);
+}
+
+.cf-card-glow {
+  position: absolute;
+  top: -60%;
+  right: -25%;
+  width: 260px;
+  height: 260px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.07) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.cf-card-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.cf-brand {
+  display: flex;
+  align-items: center;
+}
+
+.cf-brand-text {
+  font-size: 22px;
+  font-weight: 800;
+  font-style: italic;
+  letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.cf-brand--amex {
+  font-size: 15px;
+  letter-spacing: 3px;
+}
+
+.cf-brand-mc {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 44px;
+  height: 28px;
+}
+
+.cf-mc-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  position: absolute;
+}
+
+.cf-mc-circle--red {
+  background: #eb001b;
+  left: 0;
+}
+
+.cf-mc-circle--yellow {
+  background: #f79e1b;
+  right: 0;
+  opacity: 0.85;
+}
+
+.cf-card-number {
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: 3.5px;
+  color: rgba(255, 255, 255, 0.92);
+  font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+  margin: 20px 0 18px;
+}
+
+.cf-card-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.cf-card-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cf-card-col--right {
+  text-align: right;
+}
+
+.cf-card-label {
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.cf-card-val {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.88);
+  text-transform: uppercase;
+  font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+}
+
+/* ── Fields ──────────────────────────────────── */
+.cf-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.cf-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.cf-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.cf-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6b7280;
+  transition: color 0.2s ease;
+}
+
+.cf-field--focus .cf-label {
+  color: #4f46e5;
+}
+
+.cf-field--error .cf-label {
+  color: #ef4444;
+}
+
+.cf-input {
+  height: 50px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 0 14px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.cf-input:focus-within {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3.5px rgba(99, 102, 241, 0.1);
+}
+
+.cf-field--error .cf-input {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3.5px rgba(239, 68, 68, 0.08);
+}
+
+.cf-input-icon {
+  flex-shrink: 0;
+  color: #9ca3af;
+  transition: color 0.2s ease;
+}
+
+.cf-field--focus .cf-input-icon {
+  color: #6366f1;
+}
+
+.cf-input .StripeElement {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.cf-text-input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+  letter-spacing: 0.08em;
+  color: #1a1a1a;
+}
+
+.cf-text-input::placeholder {
+  color: #9ca3af;
+  letter-spacing: 0.12em;
+}
+
+.cf-error {
+  font-size: 11.5px;
+  color: #ef4444;
+  font-weight: 500;
+}
+
+.cf-hint {
+  font-size: 11px;
+  color: #9ca3af;
+  margin: 16px 0 0;
+  line-height: 1.7;
+}
+
+.cf-hint code {
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 10.5px;
+  font-family: 'SF Mono', monospace;
+}
+
+/* ── Responsive ──────────────────────────────── */
+@media (max-width: 480px) {
+  .cf-card {
+    padding: 20px;
+    min-height: 180px;
+  }
+
+  .cf-card-number {
+    font-size: 19px;
+    letter-spacing: 2.5px;
+  }
+
+  .cf-row {
+    grid-template-columns: 1fr;
+  }
+}

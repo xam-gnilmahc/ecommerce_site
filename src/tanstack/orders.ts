@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../supaBaseClient';
-import { sendOrderEmail, sendNotification } from '../services/emailService.ts';
+import { sendOrderEmail, sendNotification } from '../services/emailService';
 import toast from 'react-hot-toast';
 
 function generateTrackingCode(): string {

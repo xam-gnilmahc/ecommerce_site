@@ -1,4 +1,4 @@
-import { shippingOptionParameters } from './ShippingOptions.ts';
+import { shippingOptionParameters } from './ShippingOptions';
 import { STRIPE_URL, GOOGLE_PAY_MERCHANT_ID } from './env';
 
 /** Allowed payment method configuration for Google Pay (card via Stripe gateway) */

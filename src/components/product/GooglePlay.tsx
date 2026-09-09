@@ -1,5 +1,5 @@
-import { paymentRequest, GooglePayPaymentRequest } from '../../config/GooglePay.ts';
-import { shippingOptions } from '../../config/ShippingOptions.ts';
+import { paymentRequest, GooglePayPaymentRequest } from '../../config/GooglePay';
+import { shippingOptions } from '../../config/ShippingOptions';
 
 export interface DisplayItem {
   label: string;
