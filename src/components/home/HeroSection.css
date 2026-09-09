@@ -578,6 +578,8 @@
 @media (max-width: 768px) {
   .hp-hero {
     padding: 60px 16px 52px;
+    min-height: 400px;
+    height: 55vh;
   }
   .hp-perk {
     font-size: 11.5px;
@@ -608,6 +610,10 @@
 }
 
 @media (max-width: 500px) {
+  .hp-hero {
+    min-height: 350px;
+    height: 50vh;
+  }
   .hp-cat-grid {
     grid-template-columns: repeat(2, 1fr);
   }

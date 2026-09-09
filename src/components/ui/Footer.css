@@ -205,7 +205,7 @@
     padding: 50px 60px;
   }
   .footer__container {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
   .footer_left {
     gap: 10px;
@@ -218,6 +218,16 @@
   }
   .paymentIconContainer {
     width: 200px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .footer {
+    padding: 40px 24px;
+  }
+  .footer__container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
   }
 }
 
@@ -240,11 +250,12 @@
     gap: 20px;
   }
   .paymentIconContainer {
-    width: 150px;
+    width: 100%;
+    max-width: 200px;
   }
   .paymentIconContainer img {
     height: 40px;
-    width: 320px;
+    width: 100%;
   }
   .footerLangCurrency {
     gap: 10px;

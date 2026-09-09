@@ -77,9 +77,11 @@ export const useRecentlyViewedProducts = (productIds: string[] | undefined) => {
     queryKey: ['products', 'recently-viewed', productIds],
     queryFn: async () => {
       if (!productIds || productIds.length === 0) return [];
-      const { data, error } = await supabase.from('products').select('*').in('id', productIds);
+      const numericIds = productIds.map(Number).filter((id) => !isNaN(id));
+      if (numericIds.length === 0) return [];
+      const { data, error } = await supabase.from('products').select('*').in('id', numericIds);
       if (error) throw error;
-      const reversed = [...productIds].reverse();
+      const reversed = [...numericIds].reverse();
       return reversed.map((id) => data.find((p) => p.id === id)).filter(Boolean);
     },
     enabled: !!productIds && productIds.length > 0,

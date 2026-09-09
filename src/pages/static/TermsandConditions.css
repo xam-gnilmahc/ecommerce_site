@@ -1,7 +1,7 @@
 .termsContainer {
   display: flex;
   flex-direction: column;
-  padding: 50px 270px;
+  padding: 50px clamp(16px, 10vw, 270px);
   gap: 50px;
 }
 
@@ -30,6 +30,12 @@
 @media screen and (max-width: 1210px) {
   .termsContainer {
     padding: 30px 60px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .termsContainer {
+    padding: 24px 24px;
   }
 }
 
