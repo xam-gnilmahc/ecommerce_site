@@ -123,6 +123,13 @@
   }
 }
 
+@media screen and (max-width: 768px) {
+  .collection {
+    padding: 0 24px;
+    grid-auto-rows: 20rem;
+  }
+}
+
 @media screen and (max-width: 450px) {
   .collection {
     padding: 0 15px;

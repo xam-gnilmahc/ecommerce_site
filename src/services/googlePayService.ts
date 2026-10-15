@@ -35,7 +35,7 @@ export interface CardPaymentOptions {
   amount?: number;
   name?: string;
   email?: string;
-  address?: string;
+  address?: string | PaymentAddress;
   comment?: string;
 }
 

@@ -55,7 +55,7 @@ export async function trackAddToCart(
 
 export async function trackPurchase(
   userId: string | undefined | null,
-  order: { id?: string | number }
+  order: { id?: string | number; items?: unknown }
 ): Promise<void> {
   if (!userId) return;
   const keyword = order?.id != null ? String(order.id) : undefined;

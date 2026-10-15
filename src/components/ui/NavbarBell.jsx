@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { FiBell } from 'react-icons/fi';
+import { FiBell, FiSettings } from 'react-icons/fi';
 import { IoMdCheckmark } from 'react-icons/io';
 import { useAuth } from '../../context/authContext';
 import { supabase } from '../../supaBaseClient';
@@ -164,6 +164,23 @@ const NavbarBell = () => {
 
       {open && (
         <div className="notification-dropdown">
+          {/* HEADER */}
+          <div className="notification-header">
+            <h4>Notifications</h4>
+
+            <button
+              type="button"
+              className="notification-settings-btn"
+              onClick={() => {
+                closePopup();
+                navigate('/settings');
+              }}
+              aria-label="Notification settings"
+            >
+              <FiSettings size={17} />
+            </button>
+          </div>
+
           {/* LIST — infinite scroll */}
           <div className="notification-list" onScroll={onListScroll}>
             {loading ? (

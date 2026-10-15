@@ -176,6 +176,8 @@
 
   overflow-y: auto;
 
+  overscroll-behavior: contain;
+
   scrollbar-width: thin;
   scrollbar-color: #d3d7df transparent;
 }
@@ -363,6 +365,14 @@
     right: 0;
 
     width: auto;
+  }
+}
+
+/* keep the bell panel above the cart drawer (z 5000) so it stays clickable —
+   desktop only; the mobile full-width drawer must keep its close button visible */
+@media (min-width: 641px) {
+  body.cart-open .navBar {
+    z-index: 5100;
   }
 }
 

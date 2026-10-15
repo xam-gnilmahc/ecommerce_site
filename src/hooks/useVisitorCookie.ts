@@ -16,11 +16,11 @@ export interface VisitorData {
   product_ids: string[];
 }
 
-/** Cookie set/get options */
-interface CookieOptions {
+/** Options for setting cookies (compatible with react-cookie's SetCookieOptions) */
+interface SetCookieOptions {
   path: string;
   maxAge: number;
-  sameSite: 'lax' | 'strict' | 'none';
+  sameSite: 'strict' | 'lax' | 'none';
   secure: boolean;
 }
 
@@ -49,7 +49,7 @@ function slidingWindow(list: string[], newValue: string, max: number): string[] 
 }
 
 /** Returns cookie configuration with 1-year expiry, secure, sameSite lax */
-function getCookieOptions(): CookieOptions {
+function getCookieOptions(): SetCookieOptions {
   return {
     path: '/',
     maxAge: COOKIE_MAX_AGE_DAYS * 24 * 60 * 60,
