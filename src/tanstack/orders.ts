@@ -6,7 +6,10 @@ import toast from 'react-hot-toast';
 function generateTrackingCode(): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   const time = Date.now().toString(36).toUpperCase();
-  const rand = Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+  const rand = Array.from(
+    { length: 4 },
+    () => chars[Math.floor(Math.random() * chars.length)]
+  ).join('');
   return `ORD-${time}-${rand}`;
 }
 

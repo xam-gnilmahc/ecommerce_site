@@ -1,173 +1,222 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Filter.css';
 
-import {
-  IoIosArrowForward,
-  IoIosLaptop,
-  IoIosWatch,
-  IoIosHeadset,
-  IoIosPhonePortrait,
-  IoIosTabletLandscape,
-  IoIosDesktop,
-  IoIosOptions,
-  IoIosRadio,
-  IoIosMenu,
-} from 'react-icons/io';
-import { FiMousePointer } from 'react-icons/fi';
+const AVAILABILITY = [
+  { value: 'in', label: 'In stock' },
+  { value: 'out', label: 'Out of stock' },
+];
 
-const Filter = ({ onApplyFilters }) => {
-  const [hoveredCategory, setHoveredCategory] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [selectedBrand, setSelectedBrand] = useState(null);
-  const [isOpen, setIsOpen] = useState(false);
-  const wrapRef = useRef(null);
-  const timeoutRef = useRef(null);
+const EMPTY_FILTERS = {
+  priceRange: null,
+  availability: [],
+};
+
+const Check = ({ checked, onChange, label }) => (
+  <label className="facet-check">
+    <input type="checkbox" checked={checked} onChange={onChange} />
+    <span className="facet-check__box" aria-hidden="true" />
+    <span className="facet-check__label">{label}</span>
+  </label>
+);
+
+const Filters = ({ filters, onChange, resultCount, maxPrice, minPrice, sort }) => {
+  const [openPanel, setOpenPanel] = useState('sort');
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [priceMin, setPriceMin] = useState('');
+  const [priceMax, setPriceMax] = useState('');
+
+  const drawerRef = useRef(null);
+
+  const current = { ...EMPTY_FILTERS, ...(filters || {}) };
 
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (wrapRef.current && !wrapRef.current.contains(e.target)) {
-        setIsOpen(false);
-        setHoveredCategory(null);
-      }
+    if (current.priceRange) {
+      setPriceMin(String(current.priceRange[0]));
+      setPriceMax(String(current.priceRange[1]));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [current.priceRange?.[0], current.priceRange?.[1]]);
+
+  // close open panel on outside click
+  useEffect(() => {
+    const onDown = (e) => {
+      const inDrawer = drawerRef.current && drawerRef.current.contains(e.target);
+      if (!inDrawer) setOpenPanel(null);
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('mousedown', onDown);
+    return () => document.removeEventListener('mousedown', onDown);
   }, []);
 
-  const categoriesData = {
-    Mobile: {
-      icon: <IoIosPhonePortrait />,
-      brands: ['Apple', 'Samsung', 'Google', 'Redmi', 'Oneplus', 'Nothing', 'Vivo'],
-    },
-    Laptop: {
-      icon: <IoIosLaptop />,
-      brands: ['Apple', 'Dell', 'HP', 'Lenovo', 'Asus', 'Acer', 'MSI'],
-    },
-    Watch: {
-      icon: <IoIosWatch />,
-      brands: ['Samsung', 'Apple', 'Google', 'Redmi', 'Huawei'],
-    },
-    Earbuds: {
-      icon: <IoIosHeadset />,
-      brands: [
-        'Google',
-        'Samsung',
-        'Apple',
-        'Oneplus',
-        'Redmi',
-        'Huawei',
-        'Bose',
-        'Sony',
-        'Nothing',
-        'Beats',
-      ],
-    },
-    Tablet: {
-      icon: <IoIosTabletLandscape />,
-      brands: ['Apple', 'Samsung', 'Redmi', 'Google', 'Huawei', 'Vivo'],
-    },
-    Monitor: {
-      icon: <IoIosDesktop />,
-      brands: ['Apple'],
-    },
-    Keyboard: {
-      icon: <IoIosOptions />,
-      brands: ['Apple', 'Redmi', 'Huawei', 'Google'],
-    },
-    Drones: {
-      icon: <IoIosRadio />,
-      brands: ['Antman'],
-    },
+  // lock body scroll while drawer is open
+  useEffect(() => {
+    document.body.style.overflow = drawerOpen ? 'hidden' : 'auto';
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [drawerOpen]);
+
+  const activeCount = current.availability.length + (current.priceRange ? 1 : 0);
+
+  const toggleValue = (key, value) => {
+    const list = current[key];
+    const next = list.includes(value) ? list.filter((v) => v !== value) : [...list, value];
+    onChange({ ...current, [key]: next });
   };
 
-  const handleCategoryHover = (category) => {
-    clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => {
-      setHoveredCategory(category);
-    }, 80);
+  const applyPrice = () => {
+    if (priceMin === '' && priceMax === '') {
+      onChange({ ...current, priceRange: null });
+      return;
+    }
+    const min = priceMin === '' ? minPrice || 0 : Number(priceMin);
+    const max = priceMax === '' ? maxPrice || 999999 : Number(priceMax);
+    if (Number.isNaN(min) || Number.isNaN(max)) return;
+    onChange({ ...current, priceRange: [min, max] });
   };
 
-  const handleCategoryLeave = () => {
-    clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => {
-      setHoveredCategory(null);
-    }, 150);
+  const clearPrice = () => {
+    setPriceMin('');
+    setPriceMax('');
+    onChange({ ...current, priceRange: null });
   };
 
-  const handleBrandsEnter = () => {
-    clearTimeout(timeoutRef.current);
+  const clearAll = () => {
+    setPriceMin('');
+    setPriceMax('');
+    onChange({ ...EMPTY_FILTERS });
   };
 
-  const handleBrandsLeave = () => {
-    timeoutRef.current = setTimeout(() => {
-      setHoveredCategory(null);
-    }, 150);
-  };
+  const renderPanel = (id, label, content) => (
+    <details
+      key={id}
+      className={`facet ${openPanel === id ? 'is-open' : ''}`}
+      open={openPanel === id}
+      onToggle={(e) => {
+        if (e.target.open) setOpenPanel(id);
+        else setOpenPanel((prev) => (prev === id ? null : prev));
+      }}
+    >
+      <summary className="facet__summary">
+        <span className="facet__label">{label}</span>
+        <span className="facet__caret" aria-hidden="true" />
+      </summary>
+      <div className="facet__panel">{content}</div>
+    </details>
+  );
 
-  const handleBrandClick = (brand) => {
-    setSelectedCategory(hoveredCategory);
-    setSelectedBrand(brand);
-    onApplyFilters({
-      brands: [brand],
-      category: [hoveredCategory],
-      priceRange: null,
-    });
-  };
+  const pricePanel = (
+    <div className="facet-price">
+      <div className="facet-price__inputs">
+        <label className="facet-price__field">
+          <span>$</span>
+          <input
+            type="number"
+            min="0"
+            placeholder={String(minPrice || 0)}
+            value={priceMin}
+            onChange={(e) => setPriceMin(e.target.value)}
+            onBlur={applyPrice}
+            onKeyDown={(e) => e.key === 'Enter' && applyPrice()}
+            aria-label="Low price"
+          />
+        </label>
+        <span className="facet-price__dash">–</span>
+        <label className="facet-price__field">
+          <span>$</span>
+          <input
+            type="number"
+            min="0"
+            placeholder={maxPrice ? String(maxPrice) : 'Max'}
+            value={priceMax}
+            onChange={(e) => setPriceMax(e.target.value)}
+            onBlur={applyPrice}
+            onKeyDown={(e) => e.key === 'Enter' && applyPrice()}
+            aria-label="High price"
+          />
+        </label>
+      </div>
+      <div className="facet-price__foot">
+        <p className="facet-price__hint">
+          {maxPrice ? `The highest price is $${maxPrice}` : 'Enter a price range'}
+        </p>
+        <button type="button" className="facet__clear" onClick={clearPrice}>
+          Clear
+        </button>
+      </div>
+    </div>
+  );
 
-  const brands = hoveredCategory ? categoriesData[hoveredCategory]?.brands || [] : [];
-  const activeCount = selectedCategory ? 1 : 0;
+  const availabilityPanel = (
+    <div className="facet__list">
+      {AVAILABILITY.map((opt) => (
+        <Check
+          key={opt.value}
+          label={opt.label}
+          checked={current.availability.includes(opt.value)}
+          onChange={() => toggleValue('availability', opt.value)}
+        />
+      ))}
+    </div>
+  );
+
+  const panels = (
+    <>
+      {renderPanel('sort', 'Sort', sort)}
+      {renderPanel('price', 'Price', pricePanel)}
+      {renderPanel('availability', 'Availability', availabilityPanel)}
+    </>
+  );
 
   return (
-    <div className="filterContainer" ref={wrapRef}>
-      <button
-        className={`filterMenuButton ${isOpen ? 'active' : ''}`}
-        onClick={() => setIsOpen(!isOpen)}
-        onMouseEnter={() => setIsOpen(true)}
-      >
-        <IoIosMenu className="filterMenuIcon" />
-        <span className="filterMenuLabel">Categories</span>
-        {activeCount > 0 && <span className="filterMenuCount">{activeCount}</span>}
-      </button>
+    <div className="facets-block">
+      {/* shop products / filter toggle */}
+      <div className="facets-toggle">
+        <p className="facets-toggle__title">Shop Products</p>
+        <button type="button" className="facets-toggle__button" onClick={() => setDrawerOpen(true)}>
+          Filter
+          {activeCount > 0 && <span className="facets-toggle__count">({activeCount})</span>}
+        </button>
+      </div>
 
-      {isOpen && (
-        <div className="filterSidebar">
-          <div className="filterCategoryColumn">
-            {Object.entries(categoriesData).map(([category, data]) => (
-              <div
-                key={category}
-                className={`filterCategoryRow ${hoveredCategory === category ? 'hovered' : ''} ${selectedCategory === category ? 'selected' : ''}`}
-                onMouseEnter={() => handleCategoryHover(category)}
-                onMouseLeave={handleCategoryLeave}
+      {/* filter drawer */}
+      {drawerOpen && (
+        <div className="facets-drawer" role="dialog" aria-modal="true">
+          <div className="facets-drawer__overlay" onClick={() => setDrawerOpen(false)} />
+          <div className="facets-drawer__dialog" ref={drawerRef}>
+            <div className="facets-drawer__header">
+              <p className="facets-drawer__title">
+                Filter {activeCount > 0 && <span>({activeCount})</span>}
+              </p>
+              <button
+                type="button"
+                className="facets-drawer__close"
+                onClick={() => setDrawerOpen(false)}
               >
-                <span className="filterCatIcon">{data.icon}</span>
-                <span className="filterCatName">{category}</span>
-                <IoIosArrowForward className="filterCatArrow" />
-              </div>
-            ))}
-          </div>
-
-          {hoveredCategory && (
-            <div
-              className="filterBrandColumn"
-              onMouseEnter={handleBrandsEnter}
-              onMouseLeave={handleBrandsLeave}
-            >
-              {brands.map((brand) => (
-                <div
-                  key={brand}
-                  className={`filterBrandRow ${selectedBrand === brand && selectedCategory === hoveredCategory ? 'selected' : ''}`}
-                  onClick={() => handleBrandClick(brand)}
-                >
-                  <span className="filterBrandName">{brand}</span>
-                  <FiMousePointer className="filterBrandCursor" />
-                </div>
-              ))}
+                Close
+              </button>
             </div>
-          )}
+
+            <div className="facets-drawer__body">
+              {panels}
+            </div>
+
+            <div className="facets-drawer__actions">
+              <button type="button" className="facets-drawer__clear" onClick={clearAll}>
+                Clear all
+              </button>
+              <button
+                type="button"
+                className="facets-drawer__see"
+                onClick={() => setDrawerOpen(false)}
+              >
+                See {resultCount} items
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
   );
 };
 
-export default Filter;
+export default Filters;

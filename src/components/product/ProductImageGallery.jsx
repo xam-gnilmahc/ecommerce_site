@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import './ProductImageGallery.css';
 import { SUPABASE_STORAGE_URL } from '../../utils/supabaseStorage';
 
@@ -6,10 +6,6 @@ const SUPABASE_IMG_BASE = `${SUPABASE_STORAGE_URL}productimages/`;
 
 const ProductImageGallery = ({ images = [], productName = '', bannerUrl = '' }) => {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isZoomed, setIsZoomed] = useState(false);
-  const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
-  const thumbListRef = useRef(null);
-  const mainImageRef = useRef(null);
 
   const getUrl = (img) => {
     if (!img) return '';
@@ -46,10 +42,6 @@ const ProductImageGallery = ({ images = [], productName = '', bannerUrl = '' }) 
     }
   }, [allImages]);
 
-  const handleThumbClick = (index) => {
-    setActiveIndex(index);
-  };
-
   const handlePrev = () => {
     setActiveIndex((prev) => (prev === 0 ? allImages.length - 1 : prev - 1));
   };
@@ -58,91 +50,16 @@ const ProductImageGallery = ({ images = [], productName = '', bannerUrl = '' }) 
     setActiveIndex((prev) => (prev === allImages.length - 1 ? 0 : prev + 1));
   };
 
-  const handleMouseMove = (e) => {
-    if (!mainImageRef.current) return;
-    const rect = mainImageRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    setZoomPos({ x, y });
-  };
-
-  const handleMouseEnter = () => setIsZoomed(true);
-  const handleMouseLeave = () => setIsZoomed(false);
-
-  useEffect(() => {
-    if (thumbListRef.current) {
-      const activeThumb = thumbListRef.current.children[activeIndex];
-      if (activeThumb) {
-        activeThumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-      }
-    }
-  }, [activeIndex]);
-
   if (allImages.length === 0) return null;
 
   const currentSrc = getUrl(allImages[activeIndex]);
 
   return (
     <div className="pig-gallery">
-      {/* Thumbnails */}
-      {allImages.length > 1 && (
-        <div className="pig-thumbs" ref={thumbListRef}>
-          {allImages.map((img, idx) => (
-            <button
-              key={getImageKey(img, idx)}
-              className={`pig-thumb ${idx === activeIndex ? 'pig-thumb--active' : ''}`}
-              onClick={() => handleThumbClick(idx)}
-              aria-label={`View image ${idx + 1}`}
-            >
-              <img
-                src={getUrl(img)}
-                alt={`${productName} thumbnail ${idx + 1}`}
-                draggable={false}
-              />
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* Main Image with Zoom */}
+      {/* Main Image */}
       <div className={`pig-main ${allImages.length <= 1 ? 'pig-main--full' : ''}`}>
-        <div
-          className="pig-main-image"
-          ref={mainImageRef}
-          onMouseMove={handleMouseMove}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          <img
-            className={`pig-zoom-img ${isZoomed ? 'pig-zoom-img--zoomed' : ''}`}
-            src={currentSrc}
-            alt={productName}
-            draggable={false}
-            style={{
-              '--zoom-x': `${zoomPos.x}%`,
-              '--zoom-y': `${zoomPos.y}%`,
-            }}
-          />
-          {!isZoomed && (
-            <div className="pig-zoom-hint">
-              <svg
-                width="22"
-                height="22"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <circle cx="11" cy="11" r="8" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                <line x1="11" y1="8" x2="11" y2="14" />
-                <line x1="8" y1="11" x2="14" y2="11" />
-              </svg>
-              <span>Hover to zoom</span>
-            </div>
-          )}
+        <div className="pig-main-image">
+          <img src={currentSrc} alt={productName} draggable={false} className="pig-img" />
         </div>
 
         {/* Nav Arrows */}
@@ -154,42 +71,51 @@ const ProductImageGallery = ({ images = [], productName = '', bannerUrl = '' }) 
               aria-label="Previous image"
             >
               <svg
-                width="20"
-                height="20"
+                width="22"
+                height="22"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2.5"
+                strokeWidth="1.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
-                <polyline points="15 18 9 12 15 6" />
+                <line x1="19" y1="12" x2="5" y2="12" />
+                <polyline points="11 18 5 12 11 6" />
               </svg>
             </button>
             <button className="pig-nav pig-nav--next" onClick={handleNext} aria-label="Next image">
               <svg
-                width="20"
-                height="20"
+                width="22"
+                height="22"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2.5"
+                strokeWidth="1.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
-                <polyline points="9 18 15 12 9 6" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="13 18 19 12 13 6" />
               </svg>
             </button>
           </>
         )}
-
-        {/* Image Counter */}
-        {allImages.length > 1 && (
-          <div className="pig-counter">
-            {activeIndex + 1} / {allImages.length}
-          </div>
-        )}
       </div>
+
+      {/* Dot indicators */}
+      {allImages.length > 1 && (
+        <div className="pig-dots">
+          {allImages.map((img, idx) => (
+            <button
+              key={getImageKey(img, idx)}
+              className={`pig-dot ${idx === activeIndex ? 'pig-dot--active' : ''}`}
+              onClick={() => setActiveIndex(idx)}
+              aria-label={`Go to image ${idx + 1}`}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

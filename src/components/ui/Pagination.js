@@ -1,4 +1,5 @@
 import React from 'react';
+import './Pagination.css';
 
 const Pagination = ({ postsPerPage, totalPosts, paginate, currentPage }) => {
   const totalPages = Math.ceil(totalPosts / postsPerPage);
@@ -12,58 +13,44 @@ const Pagination = ({ postsPerPage, totalPosts, paginate, currentPage }) => {
     pageNumbers.push(i);
   }
 
-  const baseButtonStyle = {
-    minWidth: '40px',
-    backgroundColor: '#fff',
-    color: '#343a40',
-    cursor: 'pointer',
-  };
-
-  const activeButtonStyle = {
-    ...baseButtonStyle,
-    backgroundColor: '#343a40',
-    color: '#fff',
-  };
+  if (totalPages <= 1) return null;
 
   return (
-    <nav aria-label="Page navigation" className="mt-3">
-      <ul className="pagination justify-content-center flex-wrap" style={{ padding: 0 }}>
-        {/* Previous Button */}
+    <nav aria-label="Page navigation" className="plp-pagination">
+      <ul className="plp-pagination__list">
         {currentPage > 1 && (
-          <li className="page-item">
-            <a
+          <li>
+            <button
+              type="button"
+              className="plp-pagination__btn"
               onClick={() => paginate(currentPage - 1)}
-              className="page-link"
-              style={baseButtonStyle}
             >
               Previous
-            </a>
+            </button>
           </li>
         )}
 
-        {/* Page Number Buttons */}
         {pageNumbers.map((number) => (
-          <li key={number} className="page-item">
-            <a
+          <li key={number}>
+            <button
+              type="button"
+              className={`plp-pagination__btn ${number === currentPage ? 'is-active' : ''}`}
               onClick={() => paginate(number)}
-              className="page-link"
-              style={number === currentPage ? activeButtonStyle : baseButtonStyle}
             >
               {number}
-            </a>
+            </button>
           </li>
         ))}
 
-        {/* Next Button */}
         {currentPage < totalPages && (
-          <li className="page-item">
-            <a
+          <li>
+            <button
+              type="button"
+              className="plp-pagination__btn"
               onClick={() => paginate(currentPage + 1)}
-              className="page-link"
-              style={baseButtonStyle}
             >
               Next
-            </a>
+            </button>
           </li>
         )}
       </ul>

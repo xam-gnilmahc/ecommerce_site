@@ -1,19 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import Skeleton from 'react-loading-skeleton';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { supabase } from '../../supaBaseClient';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/authContext';
 import { useNavigate } from 'react-router-dom';
 import './Product.css';
-import Tooltip from '@mui/material/Tooltip';
-import Zoom from '@mui/material/Zoom';
-import { FiHeart } from 'react-icons/fi';
-import { PiShareNetworkLight } from 'react-icons/pi';
-import AdditionalInfo from '../../components/product/AdditionalInfo';
 import ProductImageGallery from '../../components/product/ProductImageGallery';
-import RelatedProducts from '../../components/product/RelatedProducts';
 import { useAddToCart } from '../../tanstack/cart.ts';
 import { usePlaceOrderSingle } from '../../tanstack/orders.ts';
 import { trackProductPreview, trackAddToCart, trackPurchase } from '../../tanstack/tracking.ts';
@@ -30,7 +24,7 @@ const Product = () => {
   const [orderLoading, setOrderLoading] = useState(false);
   const { user } = useAuth();
   const [paymentRequest, setPaymentRequest] = useState(null);
-  const [quantity, setQuantity] = useState(1);
+  const [quantity] = useState(1);
   const placeOrderSingleMutation = usePlaceOrderSingle();
 
   // ── Fetch product (TanStack Query) ───────────────────────────────────────
@@ -85,7 +79,7 @@ const Product = () => {
         .single();
 
       const latestStock = inventoryError || !inventoryCheck ? 0 : inventoryCheck.stock_quantity;
-      setStockQty(latestStock); // update badge UI too
+      setStockQty(latestStock);
 
       if (latestStock === 0) {
         toast.error('Sorry, this product is out of stock.');
@@ -166,97 +160,6 @@ const Product = () => {
     getInventory();
   }, [id]);
 
-  const [clicked, setClicked] = useState(false);
-
-  // ── Sizes: real sizes from this product's items, brand-aware fallback ────
-  const DEFAULT_SIZES = ['XS', 'S', 'M', 'L', 'XL'];
-  // footwear/sports brands use numeric scales instead of XS–XL
-  const SHOE_BRANDS = ['nike shoes', 'adidas shoes', 'bata', 'campus', 'woodland', 'red tape'];
-
-  const availableSizes = (() => {
-    const fromItems = (product?.product_items || [])
-      .map((it) => it.size)
-      .filter(Boolean)
-      .map(String);
-    const unique = [...new Set(fromItems)];
-    if (unique.length > 0) return unique;
-
-    const brand = String(product?.brand || '')
-      .toLowerCase()
-      .trim();
-    const isShoe = SHOE_BRANDS.some((b) => brand.includes(b));
-    if (isShoe) return ['6', '7', '8', '9', '10', '11'];
-
-    return DEFAULT_SIZES;
-  })();
-
-  useEffect(() => {
-    if (availableSizes.length > 0 && !availableSizes.includes(selectSize)) {
-      setSelectSize(availableSizes[0]);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [product?.id]);
-
-  const sizesFullName = {
-    XS: 'Extra Small',
-    S: 'Small',
-    M: 'Medium',
-    L: 'Large',
-    XL: 'Extra Large',
-    XXL: 'Double Extra Large',
-  };
-
-  const [selectSize, setSelectSize] = useState('S');
-
-  const [highlightedColor, setHighlightedColor] = useState('#C8393D');
-  const colors = ['#222222', '#C8393D', '#E4E4E4'];
-  const colorsName = ['Black', 'Red', 'Grey'];
-
-  const increment = () => setQuantity(quantity + 1);
-  const decrement = () => {
-    if (quantity > 1) setQuantity(quantity - 1);
-  };
-  const handleInputChange = (event) => {
-    const value = parseInt(event.target.value);
-    if (!isNaN(value) && value > 0) setQuantity(value);
-  };
-  const handleWishClick = () => setClicked(!clicked);
-
-  // ── Stock badge helper ───────────────────────────────────────────────────
-  const StockBadge = () => {
-    if (stockQty === null) {
-      // still loading
-      return (
-        <div className="stockBadge stockLoading">
-          <span className="stockDot" />
-          Checking stock...
-        </div>
-      );
-    }
-    if (stockQty === 0) {
-      return (
-        <div className="stockBadge stockOut">
-          <span className="stockDot" />
-          Out of Stock
-        </div>
-      );
-    }
-    if (stockQty <= 10) {
-      return (
-        <div className="stockBadge stockLow">
-          <span className="stockDot" />
-          Only {stockQty} left in stock
-        </div>
-      );
-    }
-    return (
-      <div className="stockBadge stockIn">
-        <span className="stockDot" />
-        In Stock ({stockQty} available)
-      </div>
-    );
-  };
-
   const Loading = () => (
     <div className="container my-5 py-2">
       <div className="row">
@@ -278,124 +181,17 @@ const Product = () => {
 
   const ShowProduct = () => (
     <>
-      {/* Product Image + Thumbnails — Flipkart-style Gallery */}
-      <div className="productGallery">
-        <ProductImageGallery
-          images={product.product_images || []}
-          productName={product.name || ''}
-          bannerUrl={product.banner_url || ''}
-        />
-      </div>
-
-      {/* Product Details */}
+      {/* Product Details — LEFT column */}
       <div className="productDetails">
-        <div className="productBreadcrumb">
-          <div className="breadcrumbLink">
-            <Link to="/">Home</Link>&nbsp;/&nbsp;
-            <Link to="/product">The Shop</Link>
-          </div>
-        </div>
-
         <div className="productName">
           <div className="product-page-title">{product.name}</div>
         </div>
 
         <div className="priceRow">
-          <h2 className="productPrice">
-            ${product.amount}
-            <span className="priceNote">incl. all taxes</span>
-          </h2>
-          <p className="productRating">
-            {Array.from({ length: 5 }, (_, i) => {
-              const rating = product?.rating || 0;
-              if (rating >= i + 1) return <i key={i} className="fa fa-star text-warning"></i>;
-              if (rating >= i + 0.5)
-                return <i key={i} className="fa fa-star-half-o text-warning"></i>;
-              return <i key={i} className="fa fa-star-o text-warning"></i>;
-            })}
-            <span>({Number(product?.rating || 0).toFixed(1)} / 5)</span>
-          </p>
+          <h2 className="productPrice">${product.amount}</h2>
         </div>
 
-        {/* ── Stock Status Badge ── */}
-        <StockBadge />
-
-        <h3 className="product-section-title">Description</h3>
-        <p className="productDescription">{product.description?.substring(0, 200)}</p>
-
-        <div className="productSizeColor">
-          <div className="productSize">
-            <p className="optionLabel">Sizes</p>
-            <div className="sizeBtn">
-              {availableSizes.map((size) => (
-                <Tooltip
-                  key={size}
-                  title={sizesFullName[size] || `Size ${size}`}
-                  placement="top"
-                  TransitionComponent={Zoom}
-                  enterTouchDelay={0}
-                  arrow
-                >
-                  <button
-                    className={selectSize === size ? 'selected' : ''}
-                    onClick={() => setSelectSize(size)}
-                  >
-                    {size}
-                  </button>
-                </Tooltip>
-              ))}
-            </div>
-          </div>
-          <div className="productColor">
-            <p className="optionLabel">Color</p>
-            <div className="colorBtn">
-              {colors.map((color, index) => (
-                <Tooltip
-                  key={color}
-                  title={colorsName[index]}
-                  placement="top"
-                  enterTouchDelay={0}
-                  TransitionComponent={Zoom}
-                  arrow
-                >
-                  <button
-                    className={highlightedColor === color ? 'highlighted' : ''}
-                    style={{
-                      backgroundColor: color.toLowerCase(),
-                      border: highlightedColor === color ? '0px solid #000' : '0px solid white',
-                      padding: '8px',
-                      margin: '5px',
-                      cursor: 'pointer',
-                    }}
-                    onClick={() => setHighlightedColor(color)}
-                  />
-                </Tooltip>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="productCartQuantity">
-          <div className="productQuantity">
-            <button onClick={decrement}>-</button>
-            <input type="text" value={quantity} onChange={handleInputChange} />
-            <button onClick={increment}>+</button>
-          </div>
-        </div>
-
-        {paymentRequest && user && stockQty !== 0 && (
-          <GooglePayButton
-            environment="TEST"
-            buttonSizeMode="fill"
-            paymentRequest={paymentRequest}
-            onLoadPaymentData={handleLoadPaymentData}
-            onError={(error) => console.error(error)}
-            onPaymentDataChanged={(paymentData) =>
-              getUpdatedPaymentData(paymentRequest, paymentData)
-            }
-          />
-        )}
-
+        {/* ADD TO CART — big black CTA */}
         <div className="productCartBtn">
           <button
             disabled={stockQty === 0}
@@ -412,30 +208,28 @@ const Product = () => {
           </button>
         </div>
 
-        <div className="productWishShare">
-          <div className="productWishList">
-            <button onClick={handleWishClick}>
-              <FiHeart color={clicked ? 'red' : ''} size={17} />
-              <span>Add to Wishlist</span>
-            </button>
-          </div>
-          <div className="productShare">
-            <PiShareNetworkLight size={18} />
-            <span>Share</span>
-          </div>
-        </div>
+        {/* Google Pay — single button */}
+        {paymentRequest && user && stockQty !== 0 && (
+          <GooglePayButton
+            environment="TEST"
+            buttonSizeMode="fill"
+            paymentRequest={paymentRequest}
+            onLoadPaymentData={handleLoadPaymentData}
+            onError={(error) => console.error(error)}
+            onPaymentDataChanged={(paymentData) =>
+              getUpdatedPaymentData(paymentRequest, paymentData)
+            }
+          />
+        )}
+      </div>
 
-        <div className="productTags">
-          <p>
-            <span>SKU: </span>N/A
-          </p>
-          <p>
-            <span>CATEGORIES: </span>Mobile , Tablet , Laptop
-          </p>
-          <p>
-            <span>TAGS: </span>Electronics, Gadgets, Smartphone
-          </p>
-        </div>
+      {/* Product Gallery — RIGHT column */}
+      <div className="productGallery">
+        <ProductImageGallery
+          images={product.product_images || []}
+          productName={product.name || ''}
+          bannerUrl={product.banner_url || ''}
+        />
       </div>
     </>
   );
@@ -453,10 +247,6 @@ const Product = () => {
       )}
       <div className="productSection">
         <div className="productShowCase">{loading ? <Loading /> : <ShowProduct />}</div>
-        <div className="row">
-          <AdditionalInfo product_reviews={product?.product_reviews} />
-        </div>
-        <RelatedProducts brand={product?.brand} category={product?.category} />
       </div>
     </>
   );

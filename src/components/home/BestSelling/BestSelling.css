@@ -12,14 +12,16 @@
 ========================= */
 
 .limitedProductSection h5 {
-  font-size: 34px;
-  font-weight: 700;
-  margin-bottom: 35px;
-  color: #111827;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  color: #000;
 }
 
 .limitedProductSection h5 span {
-  color: #c19a6b;
+  color: #000;
 }
 
 /* =========================

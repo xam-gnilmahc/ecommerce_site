@@ -1,17 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import toast from 'react-hot-toast';
 import { useAuth } from '../../context/authContext';
 import Filters from './Filter';
 import SortBar from './SortBar';
-import Pagination from '../ui/Pagination.js';
-import { IoClose } from 'react-icons/io5';
-import { FaStar } from 'react-icons/fa';
-import { FiHeart } from 'react-icons/fi';
-import { trackAddToCart, trackSearch } from '../../tanstack/tracking.ts';
-import { useAddToCart } from '../../tanstack/cart.ts';
+import { trackSearch } from '../../tanstack/tracking.ts';
 import { useProducts } from '../../tanstack/products.ts';
 import { useSearchProducts } from '../../tanstack/search.ts';
 import { useFilteredProducts } from '../../tanstack/filters.ts';
@@ -20,12 +14,24 @@ import { SUPABASE_STORAGE_URL } from '../../utils/supabaseStorage';
 import { supabase } from '../../supaBaseClient';
 import './Products.css';
 
+const EMPTY_FILTERS = {
+  categories: [],
+  brands: [],
+  priceRange: null,
+  availability: [],
+};
+
+const formatPrice = (amount) => {
+  const value = Number(amount);
+  if (Number.isNaN(value)) return '';
+  return `$${value.toFixed(2)} USD`;
+};
+
 const Products = () => {
-  const [displayProducts, setDisplayProducts] = useState([]);
+  const [baseProducts, setBaseProducts] = useState([]);
   const [outOfStockMap, setOutOfStockMap] = useState({});
-  const [wishList, setWishList] = useState([]);
+  const [stockLoaded, setStockLoaded] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [sortBy, setSortBy] = useState('default');
   const [activeFilters, setActiveFilters] = useState(null);
   const postsPerPage = 20;
@@ -33,48 +39,86 @@ const Products = () => {
   const { user, trackProduct } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const addCartMutation = useAddToCart();
 
-  const searchQuery = new URLSearchParams(location.search).get('q')?.toLowerCase().trim();
+  const urlParams = new URLSearchParams(location.search);
+  const searchQuery = urlParams.get('q')?.toLowerCase().trim();
+
+  // filters passed in the URL (e.g. navbar category hover popup → Apply)
+  const urlBrands = (urlParams.get('brand') || '').split(',').filter(Boolean);
+  const urlMin = urlParams.get('min');
+  const urlMax = urlParams.get('max');
+  const urlAvailability = (urlParams.get('avail') || '').split(',').filter(Boolean);
+  const urlPriceRange =
+    urlMin !== null || urlMax !== null
+      ? [Number(urlMin || 0), Number(urlMax || 999999)]
+      : null;
+  const hasApiFilters = urlBrands.length > 0 || urlPriceRange !== null;
+
+  // term sent to the API — first letter of each word capitalized
+  const apiSearchTerm = hasApiFilters
+    ? (searchQuery || '').replace(/\b\w/g, (c) => c.toUpperCase())
+    : '';
+
+  // RESET everything (filters, sort, page) on any navigation — e.g. navbar links
+  useEffect(() => {
+    setActiveFilters(null);
+    setSortBy('default');
+    setCurrentPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.key]);
 
   // TanStack Query hooks
   const { data: products = [], isLoading: productsLoading } = useProducts();
   const { data: recommendations = [], isLoading: recLoading } = useUserRecommendations(user?.id);
   const { data: searchResults, status: searchStatus } = useSearchProducts(searchQuery || '');
-  const { data: filteredProducts, status: filterStatus } = useFilteredProducts(
-    activeFilters || { brands: [], category: [], priceRange: null }
-  );
+  // navbar popup filters → hit the API with search + brand + price in one query
+  const { data: apiFilteredResults, status: apiFilteredStatus } = useFilteredProducts({
+    searchTerm: apiSearchTerm,
+    brands: urlBrands,
+    category: [],
+    priceRange: urlPriceRange,
+  });
 
-  // Set default products
+  const filters = {
+    ...EMPTY_FILTERS,
+    ...(activeFilters || {}),
+    // URL-seeded availability (from the navbar popup) applies until the drawer sets its own
+    availability: activeFilters ? activeFilters.availability : urlAvailability,
+  };
+
+  // Base feed: search results, recommendations, or all products
   useEffect(() => {
-    if (!searchQuery && !activeFilters) {
-      if (recommendations.length > 0) {
-        setDisplayProducts(recommendations);
-      } else if (!productsLoading && products.length > 0) {
-        setDisplayProducts(products);
-      }
+    if (searchQuery || hasApiFilters) return;
+    if (recommendations.length > 0) {
+      setBaseProducts(recommendations);
+    } else if (!productsLoading && products.length > 0) {
+      setBaseProducts(products);
     }
-  }, [recommendations, products, productsLoading, searchQuery, activeFilters]);
+  }, [recommendations, products, productsLoading, searchQuery, hasApiFilters]);
 
-  // Set filtered products
+  // Search feed
   useEffect(() => {
-    if (activeFilters && filterStatus === 'success') {
-      setDisplayProducts(filteredProducts || []);
-      setCurrentPage(1);
-    }
-  }, [filteredProducts, filterStatus, activeFilters]);
-
-  // Set search results
-  useEffect(() => {
-    if (!searchQuery) return;
+    if (!searchQuery || hasApiFilters) return;
     if (searchStatus === 'success') {
-      setDisplayProducts(searchResults || []);
+      setBaseProducts(searchResults || []);
       setCurrentPage(1);
     }
     if (searchStatus === 'error') {
-      setDisplayProducts([]);
+      setBaseProducts([]);
     }
-  }, [searchResults, searchStatus, searchQuery]);
+  }, [searchResults, searchStatus, searchQuery, hasApiFilters]);
+
+  // API-filtered feed (navbar popup: category + brand + price → server-side query)
+  useEffect(() => {
+    if (!hasApiFilters) return;
+    if (apiFilteredStatus === 'success') {
+      setBaseProducts(apiFilteredResults || []);
+      setCurrentPage(1);
+    }
+    if (apiFilteredStatus === 'error') {
+      setBaseProducts([]);
+    }
+  }, [apiFilteredResults, apiFilteredStatus, hasApiFilters]);
 
   // Track search
   useEffect(() => {
@@ -83,11 +127,84 @@ const Products = () => {
     }
   }, [searchQuery, user?.id]);
 
-  // SORT
-  const sortProducts = (items, sortKey) => {
-    if (sortKey === 'default') return items;
-    const sorted = [...items];
-    switch (sortKey) {
+  // ── INVENTORY CHECK ──────────────────────────────────────────────────────
+  useEffect(() => {
+    const ids = baseProducts.map((p) => p.id);
+    if (ids.length === 0) {
+      setOutOfStockMap({});
+      setStockLoaded(true);
+      return;
+    }
+
+    let cancelled = false;
+    setStockLoaded(false);
+    setOutOfStockMap({});
+
+    const checkStock = async () => {
+      const { data } = await supabase
+        .from('inventory')
+        .select('product_id, stock_quantity')
+        .in('product_id', ids);
+
+      if (cancelled) return;
+
+      if (!data) {
+        setOutOfStockMap(Object.fromEntries(ids.map((pid) => [pid, true])));
+        setStockLoaded(true);
+        return;
+      }
+
+      const map = {};
+      ids.forEach((pid) => {
+        const row = data.find((d) => d.product_id === pid);
+        map[pid] = !row || Number(row.stock_quantity) === 0;
+      });
+      setOutOfStockMap(map);
+      setStockLoaded(true);
+    };
+
+    checkStock();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [baseProducts]);
+
+  const isOutOfStock = (productId) => outOfStockMap[productId] === true;
+
+  // ── FILTERS — applied to the CURRENT product list ────────────────────────
+  const filteredProducts = useMemo(() => {
+    let list = baseProducts;
+
+    if (filters.categories.length) {
+      list = list.filter((p) => filters.categories.includes(p.category));
+    }
+    if (filters.brands.length) {
+      list = list.filter((p) => filters.brands.includes(p.brand));
+    }
+    if (filters.priceRange) {
+      const [min, max] = filters.priceRange;
+      list = list.filter((p) => {
+        const amount = Number(p.amount);
+        return amount >= Number(min) && amount <= Number(max);
+      });
+    }
+    if (filters.availability.length) {
+      list = list.filter((p) => {
+        const out = outOfStockMap[p.id] === true;
+        return filters.availability.includes(out ? 'out' : 'in');
+      });
+    }
+
+    return list;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [baseProducts, filters.categories.join(), filters.brands.join(), filters.priceRange?.join(), filters.availability.join(), outOfStockMap]);
+
+  // ── SORT ─────────────────────────────────────────────────────────────────
+  const sortedProducts = useMemo(() => {
+    if (sortBy === 'default') return filteredProducts;
+    const sorted = [...filteredProducts];
+    switch (sortBy) {
       case 'price-low':
         return sorted.sort((a, b) => Number(a.amount) - Number(b.amount));
       case 'price-high':
@@ -107,78 +224,24 @@ const Products = () => {
       default:
         return sorted;
     }
-  };
-
-  const sortedProducts = sortProducts(displayProducts, sortBy);
-
-  // PAGINATION
-  const indexOfLastPost = currentPage * postsPerPage;
-  const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = sortedProducts.slice(indexOfFirstPost, indexOfLastPost);
-
-  // ── INVENTORY CHECK ──────────────────────────────────────────────────────
-  useEffect(() => {
-    const ids = currentPosts.map((p) => p.id);
-    if (ids.length === 0) return;
-
-    let cancelled = false;
-    const checkStock = async () => {
-      const { data } = await supabase
-        .from('inventory')
-        .select('product_id, stock_quantity')
-        .in('product_id', ids);
-
-      if (cancelled || !data) {
-        if (!cancelled && !data) {
-          setOutOfStockMap(Object.fromEntries(ids.map((pid) => [pid, true])));
-        }
-        return;
-      }
-
-      const map = {};
-      ids.forEach((pid) => {
-        const row = data.find((d) => d.product_id === pid);
-        map[pid] = !row || Number(row.stock_quantity) === 0;
-      });
-      setOutOfStockMap(map);
-    };
-
-    setOutOfStockMap({});
-    checkStock();
-    return () => {
-      cancelled = true;
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [displayProducts, sortBy, currentPage]);
+  }, [filteredProducts, sortBy]);
 
-  const isOutOfStock = (productId) => outOfStockMap[productId] === true;
-
-  // CART
-  const handleAddToCart = async (product) => {
-    if (!user) {
-      toast.error('Please login to add products to cart.');
-      navigate('/login');
-      return;
-    }
-    addCartMutation.mutate({ userId: user.id, product });
-    await trackAddToCart(user?.id, product);
-  };
-
-  // WISHLIST
-  const handleWishlistToggle = (productId) => {
-    setWishList((prev) => ({
-      ...prev,
-      [productId]: !prev[productId],
-    }));
-  };
+  // PAGINATION → infinite scroll
+  const visiblePosts = sortedProducts.slice(0, currentPage * postsPerPage);
+  const hasMore = visiblePosts.length < sortedProducts.length;
+  const sentinelRef = useRef(null);
 
   // FILTER
-  const handleFilterChange = (filters) => {
-    if (searchQuery) {
-      navigate('/search', { replace: true });
-    }
-    setDisplayProducts([]);
-    setActiveFilters(filters);
+  const handleFilterChange = (next) => {
+    const nextFilters = { ...EMPTY_FILTERS, ...next };
+    const nextHasAny =
+      nextFilters.brands.length > 0 ||
+      nextFilters.categories.length > 0 ||
+      nextFilters.priceRange !== null ||
+      nextFilters.availability.length > 0;
+
+    setActiveFilters(nextHasAny ? nextFilters : null);
     setCurrentPage(1);
   };
 
@@ -188,104 +251,110 @@ const Products = () => {
     setCurrentPage(1);
   };
 
+  const awaitingStock = filters.availability.length > 0 && !stockLoaded && baseProducts.length > 0;
+
   const isLoading =
-    (searchQuery && searchStatus === 'pending') ||
-    (!searchQuery && !activeFilters && (productsLoading || recLoading)) ||
-    (activeFilters && filterStatus === 'pending');
+    (hasApiFilters && apiFilteredStatus === 'pending') ||
+    (!hasApiFilters &&
+      ((searchQuery && searchStatus === 'pending') ||
+        (!searchQuery && (productsLoading || recLoading)))) ||
+    awaitingStock;
 
-  const LoadingSkeleton = () => {
-    return (
-      <div className="shopDetailsProducts">
-        <div className="shopDetailsProductsContainer">
-          {Array.from({ length: postsPerPage }).map((_, idx) => (
-            <div key={idx} className="sdProductContainer skeletonCard">
-              {/* IMAGE */}
-              <div className="sdProductImages">
-                <Skeleton height="100%" width="100%" />
-              </div>
+  // infinite scroll — load next batch when sentinel nears viewport
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el || isLoading || !hasMore) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) setCurrentPage((p) => p + 1);
+      },
+      { rootMargin: '600px 0px' }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading, hasMore]);
 
-              {/* INFO */}
-              <div className="sdProductInfo">
-                <div className="sdProductCategoryWishlist">
-                  <Skeleton width={60} height={10} />
-                  <Skeleton circle width={18} height={18} />
-                </div>
+  const priceBounds = useMemo(() => {
+    const amounts = baseProducts.map((p) => Number(p.amount)).filter((n) => !Number.isNaN(n));
+    if (!amounts.length) return { min: 0, max: 0 };
+    return { min: Math.min(...amounts), max: Math.ceil(Math.max(...amounts)) };
+  }, [baseProducts]);
 
-                <div className="product-title">
-                  <Skeleton width="90%" />
-                  <Skeleton width="70%" />
-                </div>
-
-                <div className="product-price">
-                  <Skeleton width={80} />
-                </div>
-
-                <div className="sdProductRatingStar">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Skeleton key={i} width={10} height={10} />
-                  ))}
-                  <Skeleton width={40} />
-                </div>
-              </div>
+  const LoadingSkeleton = () => (
+    <div className="shopDetailsProductsContainer">
+      {Array.from({ length: postsPerPage }).map((_, idx) => (
+        <div key={idx} className="sdProductContainer skeletonCard">
+          <div className="sdProductImages">
+            <Skeleton height="100%" width="100%" />
+          </div>
+          <div className="sdProductInfo">
+            <div className="product-price">
+              <Skeleton width={80} />
             </div>
-          ))}
+            <div className="product-title">
+              <Skeleton width="90%" />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  const renderCard = (product) => {
+    const out = isOutOfStock(product.id);
+    const primary = `${SUPABASE_STORAGE_URL}productimages/${product.banner_url}`;
+    const secondary = product.details_banner
+      ? `${SUPABASE_STORAGE_URL}productimages/${product.details_banner}`
+      : null;
+
+    return (
+      <div key={product.id} className="sdProductContainer">
+        <div className={`sdProductImages ${out ? 'out-of-stock' : ''}`}>
+          <Link
+            to={`/product/${product.id}`}
+            rel="noopener noreferrer"
+            onClick={() => trackProduct(product.id)}
+          >
+            <img
+              className="sdProductImg sdProductImg--primary"
+              src={primary}
+              alt={product.name}
+              loading="lazy"
+            />
+            {secondary && (
+              <img
+                className="sdProductImg sdProductImg--secondary"
+                src={secondary}
+                alt=""
+                loading="lazy"
+              />
+            )}
+          </Link>
+
+          {out && <span className="sdOutOfStockBadge">Sold out</span>}
+        </div>
+
+        <div className="sdProductInfo">
+          <p className="product-price">{formatPrice(product.amount)}</p>
+          <Link className="product-title" to={`/product/${product.id}`}>
+            {product.name}
+          </Link>
         </div>
       </div>
     );
   };
 
-  // PRODUCTS
   const ProductList = () => (
     <div className="shopDetailsProducts">
       <div className="shopDetailsProductsContainer">
-        {currentPosts.length === 0 ? (
+        {visiblePosts.length === 0 ? (
           <div className="no-products">
-            <h3>No Products Found</h3>
-            <p>Try another search or filter</p>
+            <p className="no-products__title">No products found</p>
+            <p className="no-products__hint">Try another search or filter</p>
           </div>
         ) : (
-          currentPosts.map((product) => (
-            <div key={product.id} className="sdProductContainer">
-              <div className={`sdProductImages ${isOutOfStock(product.id) ? 'out-of-stock' : ''}`}>
-                <Link
-                  to={`/product/${product.id}`}
-                  rel="noopener noreferrer"
-                  onClick={() => trackProduct(product.id)}
-                >
-                  <img
-                    src={`${SUPABASE_STORAGE_URL}productimages/${product.banner_url}`}
-                    alt={product.name}
-                  />
-                </Link>
-
-                {isOutOfStock(product.id) && (
-                  <span className="sdOutOfStockBadge">Currently Out of Stock</span>
-                )}
-              </div>
-
-              <div className="sdProductInfo">
-                <div className="sdProductCategoryWishlist">
-                  <p>{product.category}</p>
-                  <FiHeart
-                    onClick={() => handleWishlistToggle(product.id)}
-                    style={{
-                      color: wishList[product.id] ? 'red' : '#767676',
-                    }}
-                  />
-                </div>
-
-                <div className="product-title">{product.name}</div>
-                <p className="product-price">${product.amount}</p>
-
-                <div className="sdProductRatingStar">
-                  {[...Array(5)].map((_, i) => (
-                    <FaStar key={i} color="#FEC78A" size={10} />
-                  ))}
-                  <span>({product.reviews_count})</span>
-                </div>
-              </div>
-            </div>
-          ))
+          visiblePosts.map((product) => renderCard(product))
         )}
       </div>
     </div>
@@ -293,26 +362,19 @@ const Products = () => {
 
   return (
     <div className="shopDetails">
-      <div className="shopDetailMain">
-        <div className="shopDetails__right">
-          <div className="shopToolbar">
-            <Filters onApplyFilters={handleFilterChange} searchQuery={searchQuery} />
-            <SortBar
-              sortBy={sortBy}
-              onSortChange={handleSortChange}
-              totalProducts={displayProducts.length}
-            />
-          </div>
-          <div className="row">{isLoading ? <LoadingSkeleton /> : <ProductList />}</div>
+      <Filters
+        key={location.key}
+        filters={filters}
+        onChange={handleFilterChange}
+        resultCount={sortedProducts.length}
+        minPrice={priceBounds.min}
+        maxPrice={priceBounds.max}
+        sort={<SortBar sortBy={sortBy} onSortChange={handleSortChange} />}
+      />
 
-          <Pagination
-            postsPerPage={postsPerPage}
-            totalPosts={sortedProducts.length}
-            paginate={setCurrentPage}
-            currentPage={currentPage}
-          />
-        </div>
-      </div>
+      <div className="plp-grid">{isLoading ? <LoadingSkeleton /> : <ProductList />}</div>
+
+      {!isLoading && hasMore && <div ref={sentinelRef} className="plp-sentinel" />}
     </div>
   );
 };

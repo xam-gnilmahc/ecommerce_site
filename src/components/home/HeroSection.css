@@ -21,7 +21,7 @@
 }
 
 /* ═══════════════════════════════════════════════
-   HERO
+   HERO — full-viewport video, runs under the navbar
 ═══════════════════════════════════════════════ */
 .hp-hero {
   position: relative;
@@ -30,10 +30,13 @@
   align-items: center;
   justify-content: center;
   text-align: center;
+
+  /* pull up so the video starts behind the (sticky) navbar */
+  margin-top: -64px;
+
   min-height: 600px;
-  height: 65vh;
+  height: 100vh;
   background: #ffffff;
-  gap: 18px;
   overflow: hidden;
 }
 
@@ -313,9 +316,10 @@
 }
 
 .hp-section-title {
-  font-size: 20px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: var(--hp-ink);
   margin: 0;
   white-space: nowrap;

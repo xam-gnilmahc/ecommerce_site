@@ -16,7 +16,6 @@ import { SUPABASE_STORAGE_URL } from '../../utils/supabaseStorage';
 import { STRIPE_URL } from '../../config/env';
 import './Animation.css';
 import './checkout.css';
-import Navbar from '../../components/ui/Navbar';
 import { useCartItems } from '../../tanstack/cart.ts';
 import { usePlaceOrder } from '../../tanstack/orders.ts';
 import { trackPurchase } from '../../tanstack/tracking.ts';
@@ -25,6 +24,7 @@ import { processCardPayment, processGooglePay } from '../../services/googlePaySe
 const stripePromise = loadStripe(STRIPE_URL);
 
 const CARD_STYLE = {
+  disableAutofill: true,
   style: {
     base: {
       fontSize: '15px',
@@ -45,35 +45,35 @@ const Checkout = () => {
 
   const { data: cart = [], isLoading: loading } = useCartItems(user?.id);
 
-  const [email, setEmail] = useState(user?.email || '');
-  const [name, setName] = useState(user?.full_name || '');
+  const email = user?.email || '';
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [addressLine1, setAddressLine1] = useState('');
   const [addressLine2, setAddressLine2] = useState('');
+  const [city, setCity] = useState('');
   const [zipCode, setZipCode] = useState('');
+  const [phone, setPhone] = useState('');
   const [selectedCountry, setSelectedCountry] = useState('');
   const [selectedState, setSelectedState] = useState('');
   const [states, setStates] = useState([]);
   const [paymentLoading, setPaymentLoading] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState('googlePay');
   const [paymentRequest, setPaymentRequest] = useState(null);
   const [show, setShow] = useState(false);
   const [shippingMethod, setShippingMethod] = useState('free');
+  const [discountOpen, setDiscountOpen] = useState(false);
+  const [discountCode, setDiscountCode] = useState('');
 
-  /* ── SAVED ADDRESSES ── */
-  const [addresses, setAddresses] = useState([]);
-  const [selectedAddressId, setSelectedAddressId] = useState(null);
-  const [showAllAddresses, setShowAllAddresses] = useState(false);
-  const [showAddressForm, setShowAddressForm] = useState(false);
-  const [savingAddress, setSavingAddress] = useState(false);
-  const [newAddress, setNewAddress] = useState({
-    label: 'Home',
-    addressLine1: '',
-    addressLine2: '',
-    zipCode: '',
-    country: '',
-    state: '',
-  });
-  const [newAddressStates, setNewAddressStates] = useState([]);
+  /* ── Prefill from user + default saved address ── */
+  useEffect(() => {
+    if (!user) return;
+    const fullName = user.full_name || user.name || '';
+    if (fullName && !firstName && !lastName) {
+      const parts = fullName.split(' ');
+      setFirstName(parts[0] || '');
+      setLastName(parts.slice(1).join(' ') || '');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   useEffect(() => {
     if (!user?.id) return;
@@ -85,79 +85,34 @@ const Checkout = () => {
         .order('is_default', { ascending: false })
         .order('created_at', { ascending: false });
       if (error) return;
-      setAddresses(data || []);
       const def = data?.find((a) => a.is_default) || data?.[0];
-      if (def) setSelectedAddressId(def.id);
+      if (def) {
+        setAddressLine1((prev) => prev || def.address_line1 || '');
+        setAddressLine2((prev) => prev || def.address_line2 || '');
+        if (def.country) {
+          setSelectedCountry(def.country);
+          setStates(State.getStatesOfCountry(def.country));
+        }
+        setSelectedState((prev) => prev || def.state || '');
+        setZipCode((prev) => prev || def.zip_code || '');
+      }
     })();
   }, [user?.id]);
 
   const getSubtotal = () => cart.reduce((s, i) => s + i.amount * i.quantity, 0);
   const getShipping = () => (shippingMethod === 'free' ? 0 : 3);
-  const getSelectedAddress = () => addresses.find((a) => a.id === selectedAddressId);
-  const getAddress = () => {
-    const saved = getSelectedAddress();
-    if (saved) {
-      return {
-        addressLine1: saved.address_line1,
-        addressLine2: saved.address_line2,
-        country: saved.country,
-        state: saved.state,
-        zipCode: saved.zip_code,
-      };
-    }
-    return {
-      addressLine1,
-      addressLine2,
-      country: selectedCountry,
-      state: selectedState,
-      zipCode,
-    };
-  };
-
-  const handleNewAddressCountryChange = (c) => {
-    setNewAddress((p) => ({ ...p, country: c, state: '' }));
-    setNewAddressStates(State.getStatesOfCountry(c));
-  };
-
-  const handleSaveNewAddress = async (e) => {
-    e.preventDefault();
-    if (!user?.id) return;
-    setSavingAddress(true);
-    const { data, error } = await supabase
-      .from('shipping_addresses')
-      .insert({
-        user_id: user.id,
-        label: newAddress.label,
-        address_line1: newAddress.addressLine1,
-        address_line2: newAddress.addressLine2,
-        country: newAddress.country,
-        state: newAddress.state,
-        zip_code: newAddress.zipCode,
-        is_default: addresses.length === 0,
-      })
-      .select()
-      .single();
-    setSavingAddress(false);
-
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-
-    setAddresses((prev) => [data, ...prev]);
-    setSelectedAddressId(data.id);
-    setShowAddressForm(false);
-    setNewAddress({
-      label: 'Home',
-      addressLine1: '',
-      addressLine2: '',
-      zipCode: '',
-      country: '',
-      state: '',
-    });
-    setNewAddressStates([]);
-    toast.success('Address saved!');
-  };
+  const getAddress = () => ({
+    addressLine1,
+    addressLine2,
+    country: selectedCountry,
+    state: selectedState,
+    zipCode,
+    city,
+    phone,
+  });
+  const fullName = [firstName, lastName].filter(Boolean).join(' ');
+  const totalItems = cart.reduce((s, i) => s + i.quantity, 0);
+  const hasAddress = Boolean(addressLine1 && selectedCountry);
 
   const handleOrderSuccess = async (orderId) => {
     if (!orderId) return;
@@ -176,6 +131,7 @@ const Checkout = () => {
   const handleCountryChange = (c) => {
     setSelectedCountry(c);
     setStates(State.getStatesOfCountry(c));
+    setSelectedState('');
   };
 
   const handleSubmit = async (e) => {
@@ -185,7 +141,7 @@ const Checkout = () => {
       const totalAmount = Math.round(getSubtotal() + getShipping());
       const { finalData, result } = await processCardPayment(stripe, elements, {
         amount: totalAmount,
-        name,
+        name: fullName || user?.full_name || user?.name,
         email,
         address: getAddress(),
       });
@@ -263,29 +219,25 @@ const Checkout = () => {
           /* ── SKELETON ── */
           <div className="ck-layout">
             <div className="ck-left">
-              <Skeleton height={28} width={180} style={{ marginBottom: 24 }} />
-              {[1, 2, 3].map((i) => (
-                <Skeleton key={i} height={52} style={{ marginBottom: 12, borderRadius: 10 }} />
-              ))}
-              <Skeleton height={28} width={160} style={{ margin: '24px 0 12px' }} />
-              {[1, 2].map((i) => (
-                <Skeleton key={i} height={72} style={{ marginBottom: 12, borderRadius: 12 }} />
-              ))}
+              <div className="ck-col">
+                {[1, 2, 3, 4].map((i) => (
+                  <Skeleton key={i} height={48} style={{ marginBottom: 12, borderRadius: 8 }} />
+                ))}
+              </div>
             </div>
             <div className="ck-right">
-              <Skeleton height={28} width={140} style={{ marginBottom: 20 }} />
               {[1, 2].map((i) => (
-                <div key={i} style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
-                  <Skeleton width={56} height={56} borderRadius={10} />
+                <div key={i} style={{ display: 'flex', gap: 14, marginBottom: 18 }}>
+                  <Skeleton width={64} height={64} borderRadius={8} />
                   <div style={{ flex: 1 }}>
                     <Skeleton height={14} style={{ marginBottom: 6 }} />
-                    <Skeleton height={12} width="60%" />
+                    <Skeleton height={12} width="50%" />
                   </div>
                 </div>
               ))}
-              <Skeleton height={1} style={{ margin: '16px 0' }} />
+              <Skeleton height={48} borderRadius={8} style={{ margin: '20px 0' }} />
               {[1, 2, 3].map((i) => (
-                <Skeleton key={i} height={18} style={{ marginBottom: 8 }} />
+                <Skeleton key={i} height={18} style={{ marginBottom: 10 }} />
               ))}
             </div>
           </div>
@@ -294,379 +246,13 @@ const Checkout = () => {
           <div className="ck-layout">
             {/* ── LEFT FORM ─────────────────────────── */}
             <div className="ck-left">
-              {/* step label */}
-              {/* <p className="ck-step-label">Checkout</p> */}
-              <h1 className="ck-page-title">
-                Complete your
-                <br />
-                <em>order</em>
-              </h1>
-
-              <form onSubmit={handleSubmit} className="ck-form">
-                {/* DELIVERY INFO — only if card */}
-                {paymentMethod === 'card' && (
-                  <div className="ck-block">
-                    <h2 className="ck-block-title">
-                      <span className="ck-num">01</span> Delivery info
-                    </h2>
-
-                    {addresses.length > 0 ? (
-                      <>
-                        <div className="ck-addr-list">
-                          {(showAllAddresses ? addresses : addresses.slice(0, 2)).map((a) => (
-                            <label
-                              key={a.id}
-                              className={`ck-ship-card ck-addr-card ${
-                                selectedAddressId === a.id ? 'active' : ''
-                              }`}
-                            >
-                              <input
-                                type="radio"
-                                name="saved-address"
-                                checked={selectedAddressId === a.id}
-                                onChange={() => setSelectedAddressId(a.id)}
-                                hidden
-                              />
-                              <div className="ck-addr-info">
-                                <div className="ck-addr-label">
-                                  {a.label}
-                                  {a.is_default && <span className="ck-addr-badge">Default</span>}
-                                </div>
-                                <div className="ck-addr-text">
-                                  {a.address_line1}
-                                  {a.address_line2 ? `, ${a.address_line2}` : ''}, {a.state},{' '}
-                                  {a.country} {a.zip_code}
-                                </div>
-                              </div>
-                              {selectedAddressId === a.id && (
-                                <span className="ck-pay-check">✓</span>
-                              )}
-                            </label>
-                          ))}
-                        </div>
-
-                        <div className="ck-addr-actions">
-                          {addresses.length > 2 && (
-                            <button
-                              type="button"
-                              className="ck-addr-more"
-                              onClick={() => setShowAllAddresses((v) => !v)}
-                            >
-                              {showAllAddresses
-                                ? 'Show less'
-                                : `View more (${addresses.length - 2})`}
-                            </button>
-                          )}
-                          {!showAddressForm && (
-                            <button
-                              type="button"
-                              className="ck-addr-add-btn"
-                              onClick={() => setShowAddressForm(true)}
-                            >
-                              + Add new address
-                            </button>
-                          )}
-                        </div>
-
-                        {showAddressForm && (
-                          <div className="ck-addr-form">
-                            <div className="ck-fields">
-                              <div className="ck-field ck-field--full">
-                                <label className="ck-label">Address line 1</label>
-                                <input
-                                  className="ck-input"
-                                  type="text"
-                                  value={newAddress.addressLine1}
-                                  onChange={(e) =>
-                                    setNewAddress((p) => ({ ...p, addressLine1: e.target.value }))
-                                  }
-                                  required
-                                />
-                              </div>
-                              <div className="ck-field ck-field--full">
-                                <label className="ck-label">
-                                  Address line 2 <span className="ck-opt">(optional)</span>
-                                </label>
-                                <input
-                                  className="ck-input"
-                                  type="text"
-                                  value={newAddress.addressLine2}
-                                  onChange={(e) =>
-                                    setNewAddress((p) => ({ ...p, addressLine2: e.target.value }))
-                                  }
-                                />
-                              </div>
-                              <div className="ck-field">
-                                <label className="ck-label">Country</label>
-                                <select
-                                  className="ck-input"
-                                  value={newAddress.country}
-                                  onChange={(e) => handleNewAddressCountryChange(e.target.value)}
-                                  required
-                                >
-                                  <option value="">Select country</option>
-                                  {Country.getAllCountries().map((c) => (
-                                    <option key={c.isoCode} value={c.isoCode}>
-                                      {c.name}
-                                    </option>
-                                  ))}
-                                </select>
-                              </div>
-                              <div className="ck-field">
-                                <label className="ck-label">State</label>
-                                <select
-                                  className="ck-input"
-                                  value={newAddress.state}
-                                  onChange={(e) =>
-                                    setNewAddress((p) => ({ ...p, state: e.target.value }))
-                                  }
-                                  required
-                                >
-                                  <option value="">Select state</option>
-                                  {newAddressStates.map((s) => (
-                                    <option key={s.isoCode} value={s.isoCode}>
-                                      {s.name}
-                                    </option>
-                                  ))}
-                                </select>
-                              </div>
-                              <div className="ck-field">
-                                <label className="ck-label">Zip code</label>
-                                <input
-                                  className="ck-input"
-                                  type="text"
-                                  value={newAddress.zipCode}
-                                  onChange={(e) =>
-                                    setNewAddress((p) => ({ ...p, zipCode: e.target.value }))
-                                  }
-                                  required
-                                />
-                              </div>
-                            </div>
-                            <div className="ck-addr-form-actions">
-                              <button
-                                type="button"
-                                className="ck-addr-cancel"
-                                onClick={() => setShowAddressForm(false)}
-                              >
-                                Cancel
-                              </button>
-                              <button
-                                type="button"
-                                className="ck-addr-save"
-                                disabled={savingAddress}
-                                onClick={handleSaveNewAddress}
-                              >
-                                {savingAddress ? 'Saving…' : 'Save address'}
-                              </button>
-                            </div>
-                          </div>
-                        )}
-                      </>
-                    ) : (
-                      <div className="ck-fields">
-                        <div className="ck-field">
-                          <label className="ck-label">Email</label>
-                          <input
-                            className="ck-input"
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                          />
-                        </div>
-                        <div className="ck-field">
-                          <label className="ck-label">Full name</label>
-                          <input
-                            className="ck-input"
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            required
-                          />
-                        </div>
-                        <div className="ck-field ck-field--full">
-                          <label className="ck-label">Address line 1</label>
-                          <input
-                            className="ck-input"
-                            type="text"
-                            value={addressLine1}
-                            onChange={(e) => setAddressLine1(e.target.value)}
-                            required
-                          />
-                        </div>
-                        <div className="ck-field ck-field--full">
-                          <label className="ck-label">
-                            Address line 2 <span className="ck-opt">(optional)</span>
-                          </label>
-                          <input
-                            className="ck-input"
-                            type="text"
-                            value={addressLine2}
-                            onChange={(e) => setAddressLine2(e.target.value)}
-                          />
-                        </div>
-                        <div className="ck-field">
-                          <label className="ck-label">Zip code</label>
-                          <input
-                            className="ck-input"
-                            type="text"
-                            value={zipCode}
-                            onChange={(e) => setZipCode(e.target.value)}
-                            required
-                          />
-                        </div>
-                        <div className="ck-field">
-                          <label className="ck-label">Country</label>
-                          <select
-                            className="ck-input"
-                            value={selectedCountry}
-                            onChange={(e) => handleCountryChange(e.target.value)}
-                            required
-                          >
-                            <option value="">Select country</option>
-                            {Country.getAllCountries().map((c) => (
-                              <option key={c.isoCode} value={c.isoCode}>
-                                {c.name}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                        <div className="ck-field">
-                          <label className="ck-label">State</label>
-                          <select
-                            className="ck-input"
-                            value={selectedState}
-                            onChange={(e) => setSelectedState(e.target.value)}
-                            required
-                          >
-                            <option value="">Select state</option>
-                            {states.map((s) => (
-                              <option key={s.isoCode} value={s.isoCode}>
-                                {s.name}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* SHIPPING — only if card */}
-                {paymentMethod === 'card' && (
-                  <div className="ck-block">
-                    <h2 className="ck-block-title">Shipping method</h2>
-                    <div className="ck-shipping-row">
-                      <label
-                        className={`ck-ship-card ${shippingMethod === 'free' ? 'active' : ''}`}
-                      >
-                        <input
-                          type="radio"
-                          name="shipping"
-                          value="free"
-                          checked={shippingMethod === 'free'}
-                          onChange={() => setShippingMethod('free')}
-                          hidden
-                        />
-                        <span className="ck-ship-radio" aria-hidden="true">
-                          <span className="ck-ship-radio-dot" />
-                        </span>
-                        <div className="ck-ship-left">
-                          <span className="ck-ship-icon">📦</span>
-                          <div>
-                            <div className="ck-ship-name">Free shipping</div>
-                            <div className="ck-ship-eta">7–20 business days</div>
-                          </div>
-                        </div>
-                        <div className="ck-ship-price">$0</div>
-                      </label>
-                      <label
-                        className={`ck-ship-card ${shippingMethod === 'express' ? 'active' : ''}`}
-                      >
-                        <input
-                          type="radio"
-                          name="shipping"
-                          value="express"
-                          checked={shippingMethod === 'express'}
-                          onChange={() => setShippingMethod('express')}
-                          hidden
-                        />
-                        <span className="ck-ship-radio" aria-hidden="true">
-                          <span className="ck-ship-radio-dot" />
-                        </span>
-                        <div className="ck-ship-left">
-                          <span className="ck-ship-icon">⚡</span>
-                          <div>
-                            <div className="ck-ship-name">Express shipping</div>
-                            <div className="ck-ship-eta">1–3 business days</div>
-                          </div>
-                        </div>
-                        <div className="ck-ship-price">$3</div>
-                      </label>
-                    </div>
-                  </div>
-                )}
-
-                {/* PAYMENT */}
-                <div className="ck-block">
-                  <div className="ck-pay-head">
-                    <h2 className="ck-block-title">
-                      <span className="ck-num">{paymentMethod === 'card' ? '03' : '01'}</span>{' '}
-                      Payment method
-                    </h2>
-
-                    {/* segmented toggle */}
-                    <div className="ck-seg" role="radiogroup" aria-label="Payment method">
-                      <span
-                        className={`ck-seg-slider ${
-                          paymentMethod === 'googlePay' ? 'ck-seg-slider--right' : ''
-                        }`}
-                        aria-hidden="true"
-                      />
-                      <button
-                        type="button"
-                        role="radio"
-                        aria-checked={paymentMethod === 'card'}
-                        className={`ck-seg-btn ${paymentMethod === 'card' ? 'active' : ''}`}
-                        onClick={() => setPaymentMethod('card')}
-                      >
-                        <img src="https://cdn-icons-png.flaticon.com/512/179/179457.png" alt="" />
-                        Card
-                      </button>
-                      <button
-                        type="button"
-                        role="radio"
-                        aria-checked={paymentMethod === 'googlePay'}
-                        className={`ck-seg-btn ${paymentMethod === 'googlePay' ? 'active' : ''}`}
-                        onClick={() => setPaymentMethod('googlePay')}
-                      >
-                        <img
-                          src="https://toppng.com/uploads/preview/google-pay-gpay-logo-11530962961mwws81tde9.png"
-                          alt=""
-                        />
-                        Google Pay
-                      </button>
-                    </div>
-                  </div>
-
-                  {!paymentMethod && (
-                    <p className="ck-pay-prompt">Select a payment method to continue.</p>
-                  )}
-
-                  {paymentMethod === 'card' && (
-                    <div className="ck-stripe-box">
-                      <CardElement options={CARD_STYLE} />
-                      <p className="ck-test-cards">
-                        Test cards: <code>4242 4242 4242 4242</code> ·{' '}
-                        <code>5555 5555 5555 4444</code>
-                      </p>
-                    </div>
-                  )}
-
-                  {paymentMethod === 'googlePay' && (
-                    <div className="ck-gpay-box">
-                      {paymentRequest && user ? (
+              <div className="ck-col">
+                <form onSubmit={handleSubmit} className="ck-form">
+                  {/* EXPRESS CHECKOUT */}
+                  {paymentRequest && user && (
+                    <>
+                      <p className="ck-express-label">Express checkout</p>
+                      <div className="ck-express-btns">
                         <GooglePayButton
                           environment="TEST"
                           buttonSizeMode="fill"
@@ -675,92 +261,295 @@ const Checkout = () => {
                           onError={console.error}
                           onPaymentDataChanged={(d) => getUpdatedPaymentData(paymentRequest, d)}
                         />
-                      ) : (
-                        <p className="ck-pay-prompt">
-                          {user ? 'Preparing payment…' : 'Please log in to use Google Pay.'}
-                        </p>
-                      )}
-                    </div>
+                      </div>
+                      <div className="ck-or">
+                        <span>OR</span>
+                      </div>
+                    </>
                   )}
-                </div>
 
-                {/* SUBMIT */}
-                {paymentMethod === 'card' && (
+                  {/* DELIVERY */}
+                  <div className="ck-section">
+                    <h2 className="ck-section-title">Delivery</h2>
+
+                    <div className="ck-select">
+                      <select
+                        value={selectedCountry}
+                        onChange={(e) => handleCountryChange(e.target.value)}
+                        required
+                      >
+                        <option value="" disabled>
+                          Country/Region
+                        </option>
+                        {Country.getAllCountries().map((c) => (
+                          <option key={c.isoCode} value={c.isoCode}>
+                            {c.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="ck-row ck-row--2">
+                      <input
+                        className="ck-input"
+                        type="text"
+                        placeholder="First name"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        required
+                      />
+                      <input
+                        className="ck-input"
+                        type="text"
+                        placeholder="Last name"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    <input
+                      className="ck-input"
+                      type="text"
+                      placeholder="Address"
+                      value={addressLine1}
+                      onChange={(e) => setAddressLine1(e.target.value)}
+                      required
+                    />
+
+                    <input
+                      className="ck-input"
+                      type="text"
+                      placeholder="Apartment, suite, etc. (optional)"
+                      value={addressLine2}
+                      onChange={(e) => setAddressLine2(e.target.value)}
+                    />
+
+                    <div className="ck-row ck-row--3">
+                      <input
+                        className="ck-input"
+                        type="text"
+                        placeholder="City"
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                      />
+                      <div className="ck-select">
+                        <select
+                          value={selectedState}
+                          onChange={(e) => setSelectedState(e.target.value)}
+                          required
+                        >
+                          <option value="" disabled>
+                            State
+                          </option>
+                          {states.map((s) => (
+                            <option key={s.isoCode} value={s.isoCode}>
+                              {s.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <input
+                        className="ck-input"
+                        type="text"
+                        placeholder="ZIP code"
+                        value={zipCode}
+                        onChange={(e) => setZipCode(e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    <input
+                      className="ck-input"
+                      type="tel"
+                      placeholder="Phone"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                    />
+
+                    <label className="ck-check">
+                      <input type="checkbox" />
+                      <span>Text me with news and offers</span>
+                    </label>
+                  </div>
+
+                  {/* SHIPPING METHOD */}
+                  <div className="ck-section">
+                    <h2 className="ck-section-title ck-section-title--sm">Shipping method</h2>
+                    {!hasAddress ? (
+                      <div className="ck-ship-placeholder">
+                        Enter your shipping address to view available shipping methods.
+                      </div>
+                    ) : (
+                      <div className="ck-ship-options">
+                        <label
+                          className={`ck-ship-option ${shippingMethod === 'free' ? 'active' : ''}`}
+                        >
+                          <input
+                            type="radio"
+                            name="shipping"
+                            checked={shippingMethod === 'free'}
+                            onChange={() => setShippingMethod('free')}
+                          />
+                          <span>Free shipping · 7–20 business days</span>
+                          <span className="ck-ship-option-price">Free</span>
+                        </label>
+                        <label
+                          className={`ck-ship-option ${shippingMethod === 'express' ? 'active' : ''}`}
+                        >
+                          <input
+                            type="radio"
+                            name="shipping"
+                            checked={shippingMethod === 'express'}
+                            onChange={() => setShippingMethod('express')}
+                          />
+                          <span>Express shipping · 1–3 business days</span>
+                          <span className="ck-ship-option-price">$3</span>
+                        </label>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* PAYMENT */}
+                  <div className="ck-section">
+                    <h2 className="ck-section-title">Payment</h2>
+                    <p className="ck-section-sub">All transactions are secure and encrypted.</p>
+
+                    <div className="ck-pay-box">
+                      <div className="ck-pay-row ck-pay-row--active">
+                        <span className="ck-radio ck-radio--on" />
+                        <span className="ck-pay-row-label">Credit card</span>
+                        <span className="ck-card-badges">
+                          <span className="ck-card-badge">VISA</span>
+                          <span className="ck-card-badge">MC</span>
+                          <span className="ck-card-badge">AMEX</span>
+                        </span>
+                      </div>
+
+                      <div className="ck-pay-body">
+                        <div className="ck-stripe-box">
+                          <CardElement options={CARD_STYLE} />
+                        </div>
+                        <label className="ck-check ck-check--tight">
+                          <input type="checkbox" checked readOnly />
+                          <span>Use shipping address as billing address</span>
+                        </label>
+                        <p className="ck-test-cards">
+                          Test cards: <code>4242 4242 4242 4242</code> ·{' '}
+                          <code>5555 5555 5555 4444</code>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* DISCLAIMER */}
+                  <div className="ck-disclaimer">
+                    <span className="ck-disclaimer-icon">ⓘ</span>
+                    <div>
+                      <strong>Disclaimer</strong>
+                      <p>
+                        Please review your order carefully before placing it. Once an order is
+                        submitted order details can't be changed, including shipping address, size,
+                        color, or items.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* SUBMIT */}
                   <button type="submit" className="ck-submit" disabled={!stripe || paymentLoading}>
-                    {paymentLoading
-                      ? 'Processing…'
-                      : `Pay $${Math.round(getSubtotal() + getShipping())}`}
+                    {paymentLoading ? 'Processing…' : 'Pay now'}
                   </button>
-                )}
-              </form>
+
+                  {/* FOOTER LINKS */}
+                  <div className="ck-footer-links">
+                    <Link to="/terms">Refund policy</Link>
+                    <Link to="/contact">Shipping</Link>
+                    <Link to="/terms">Privacy policy</Link>
+                    <Link to="/terms">Terms of service</Link>
+                    <Link to="/contact">Contact</Link>
+                  </div>
+                </form>
+              </div>
             </div>
 
             {/* ── RIGHT SUMMARY ─────────────────────── */}
             <aside className="ck-right">
-              <div className="ck-summary">
-                <div className="ck-summary-head">
-                  <h2 className="ck-summary-title">Order summary</h2>
-                  <span className="ck-summary-count">
-                    {cart.reduce((s, i) => s + i.quantity, 0)} items
+              <div className="ck-items">
+                {cart.map((item) => (
+                  <div key={item.id} className="ck-item">
+                    <div className="ck-item-img">
+                      <img
+                        src={`${SUPABASE_STORAGE_URL}productimages/${item.products.banner_url}`}
+                        alt={item.products.name}
+                      />
+                      <span className="ck-item-qty">{item.quantity}</span>
+                    </div>
+                    <div className="ck-item-info">
+                      <div className="ck-item-name">{item.products.name}</div>
+                      <div className="ck-item-unit">${Number(item.amount).toFixed(2)}</div>
+                    </div>
+                    <div className="ck-item-price">${(item.amount * item.quantity).toFixed(2)}</div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="ck-discount">
+                <input
+                  type="text"
+                  placeholder="Discount code"
+                  value={discountCode}
+                  onChange={(e) => setDiscountCode(e.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    toast.error('Invalid discount code');
+                    setDiscountCode('');
+                  }}
+                >
+                  Apply
+                </button>
+              </div>
+
+              <div className="ck-totals">
+                <div className="ck-total-row">
+                  <span>
+                    Subtotal · {totalItems} item{totalItems === 1 ? '' : 's'}
+                  </span>
+                  <span>${getSubtotal().toFixed(2)}</span>
+                </div>
+                <div className="ck-total-row">
+                  <span className="ck-ship-label">
+                    Shipping <span className="ck-help">?</span>
+                  </span>
+                  <span className="ck-muted">
+                    {!hasAddress
+                      ? 'Enter shipping address'
+                      : getShipping() === 0
+                        ? 'Free'
+                        : `$${getShipping().toFixed(2)}`}
                   </span>
                 </div>
-
-                <div className="ck-items">
-                  {cart.map((item, i) => (
-                    <div key={i} className="ck-item">
-                      <div className="ck-item-img">
-                        <img
-                          src={`${SUPABASE_STORAGE_URL}productimages/${item.products.banner_url}`}
-                          alt={item.products.name}
-                        />
-                        <span className="ck-item-qty">{item.quantity}</span>
-                      </div>
-                      <div className="ck-item-info">
-                        <div className="ck-item-name">{item.products.name}</div>
-                        <div className="ck-item-unit">${item.amount.toFixed(2)} each</div>
-                      </div>
-                      <div className="ck-item-price">
-                        ${(item.amount * item.quantity).toFixed(2)}
-                      </div>
-                    </div>
-                  ))}
+                <div className="ck-total-final">
+                  <span>Total</span>
+                  <span className="ck-total-amount">
+                    <span className="ck-cur">USD</span> ${' '}
+                    {(getSubtotal() + getShipping()).toFixed(2)}
+                  </span>
                 </div>
-
-                <div className="ck-totals">
-                  <div className="ck-total-row">
-                    <span>Subtotal</span>
-                    <span>${Math.round(getSubtotal())}</span>
-                  </div>
-                  <div className="ck-total-row">
-                    <span>Shipping</span>
-                    <span>
-                      {getShipping() === 0 ? (
-                        <span className="ck-free">Free</span>
-                      ) : (
-                        `$${getShipping()}`
-                      )}
-                    </span>
-                  </div>
-                  <div className="ck-total-final">
-                    <span>Total</span>
-                    <span className="ck-total-amount">
-                      ${Math.round(getSubtotal() + getShipping())}
-                    </span>
-                  </div>
-                </div>
-
-                <p className="ck-secure-note">
-                  <span className="ck-lock">🔒</span> Payments secured by Stripe
-                </p>
               </div>
             </aside>
           </div>
         ) : (
-          /* ── EMPTY CART ── */
+          /* ── EMPTY CART / SUCCESS ── */
           <div className="ck-empty">
             <div className="ck-empty-icon">🛒</div>
-            <h2 className="ck-empty-title">Your cart is empty</h2>
-            <p className="ck-empty-sub">Add some items before checking out</p>
+            <h2 className="ck-empty-title">
+              {show ? 'Thank you! Your order was placed.' : 'Your cart is empty'}
+            </h2>
+            <p className="ck-empty-sub">
+              {show ? 'A confirmation email is on its way.' : 'Add some items before checking out'}
+            </p>
             <Link to="/" className="ck-empty-btn">
               Continue shopping
             </Link>

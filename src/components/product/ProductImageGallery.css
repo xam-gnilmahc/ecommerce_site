@@ -1,92 +1,32 @@
 /* =========================
    PRODUCT IMAGE GALLERY
-   Flipkart-style vertical thumbs + hover zoom
+   big centered image + side arrows + dots (reference layout)
 ========================= */
 
 .pig-gallery {
   display: flex;
-  gap: 16px;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
   width: 100%;
   max-width: 100%;
-}
-
-/* ── Thumbnails (vertical left strip) ── */
-
-.pig-thumbs {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  max-height: 480px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  scrollbar-width: thin;
-  scrollbar-color: var(--border) transparent;
-  flex-shrink: 0;
-  padding: 4px 0;
-}
-
-.pig-thumbs::-webkit-scrollbar {
-  width: 4px;
-}
-
-.pig-thumbs::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 4px;
-}
-
-.pig-thumb {
-  width: 68px;
-  height: 68px;
-  flex-shrink: 0;
-  border: 2px solid transparent;
-  border-radius: 8px;
-  padding: 4px;
-  cursor: pointer;
-  background: var(--card-bg, #fff);
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.pig-thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  border-radius: 4px;
-  pointer-events: none;
-  user-select: none;
-}
-
-.pig-thumb:hover {
-  border-color: #c2c2c2;
-}
-
-.pig-thumb--active {
-  border-color: var(--primary, #1e88ff);
-  box-shadow: 0 0 0 1px var(--primary, #1e88ff);
 }
 
 /* ── Main Image Area ── */
 
 .pig-main {
-  flex: 1;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 420px;
-  background: var(--card-bg, #fff);
-  border-radius: 12px;
-  overflow: hidden;
+  width: 100%;
+  min-height: clamp(360px, 62vh, 680px);
+  background: #ffffff;
+  overflow: visible;
 }
 
 .pig-main--full {
-  width: 100%;
-  max-width: 600px;
+  max-width: 760px;
 }
 
 .pig-main-image {
@@ -96,106 +36,73 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  cursor: crosshair;
 }
 
-/* ── Main Image with CSS Zoom ── */
+/* ── Main Image ── */
 
-.pig-zoom-img {
+.pig-img {
   max-width: 100%;
-  max-height: 480px;
+  max-height: clamp(360px, 62vh, 680px);
   object-fit: contain;
-  border-radius: 8px;
-  transition: transform 0.25s ease;
-  transform-origin: var(--zoom-x, 50%) var(--zoom-y, 50%);
   display: block;
 }
 
-.pig-zoom-img--zoomed {
-  transform: scale(2.2);
-  cursor: zoom-out;
-}
-
-/* ── Zoom Hint ── */
-
-.pig-zoom-hint {
-  position: absolute;
-  bottom: 16px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(0, 0, 0, 0.6);
-  color: #fff;
-  font-size: 12px;
-  font-weight: 500;
-  padding: 6px 14px;
-  border-radius: 999px;
-  pointer-events: none;
-  opacity: 0.85;
-  transition: opacity 0.2s ease;
-  white-space: nowrap;
-}
-
-.pig-zoom-hint svg {
-  flex-shrink: 0;
-}
-
-.pig-main-image:hover .pig-zoom-hint {
-  opacity: 0;
-}
-
-/* ── Navigation Arrows ── */
+/* ── Navigation Arrows — plain, no circles ── */
 
 .pig-nav {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+  width: 48px;
+  height: 48px;
   border: none;
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #333;
-  transition:
-    background 0.15s ease,
-    box-shadow 0.15s ease;
+  color: #111111;
+  transition: opacity 0.15s ease;
   z-index: 10;
 }
 
 .pig-nav:hover {
-  background: #fff;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16);
+  background: transparent;
+  box-shadow: none;
+  opacity: 0.55;
 }
 
 .pig-nav--prev {
-  left: 12px;
+  left: 0;
 }
 
 .pig-nav--next {
-  right: 12px;
+  right: 0;
 }
 
-/* ── Image Counter ── */
+/* ── Dot indicators ── */
 
-.pig-counter {
-  position: absolute;
-  bottom: 12px;
-  right: 14px;
-  background: rgba(0, 0, 0, 0.55);
-  color: #fff;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 3px 10px;
-  border-radius: 999px;
-  letter-spacing: 0.3px;
-  pointer-events: none;
+.pig-dots {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pig-dot {
+  width: 9px;
+  height: 9px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: #d4d4d4;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.pig-dot--active {
+  background: #111111;
 }
 
 /* =========================
@@ -203,39 +110,17 @@
 ========================= */
 
 @media (max-width: 991px) {
-  .pig-gallery {
-    flex-direction: column-reverse;
-    gap: 12px;
-    align-items: center;
-  }
-
-  .pig-thumbs {
-    flex-direction: row;
-    max-height: none;
-    overflow-y: hidden;
-    overflow-x: auto;
-    max-width: 100%;
-    justify-content: center;
-    gap: 8px;
-    padding-bottom: 4px;
-  }
-
-  .pig-thumb {
-    width: 60px;
-    height: 60px;
-  }
-
   .pig-main {
     min-height: 360px;
-    width: 100%;
   }
 
-  .pig-zoom-img {
+  .pig-img {
     max-height: 400px;
   }
 
-  .pig-zoom-img--zoomed {
-    transform: scale(2);
+  .pig-nav {
+    width: 40px;
+    height: 40px;
   }
 }
 
@@ -244,31 +129,12 @@
 ========================= */
 
 @media (max-width: 480px) {
-  .pig-gallery {
-    gap: 8px;
-  }
-
-  .pig-thumbs {
-    gap: 6px;
-  }
-
-  .pig-thumb {
-    width: 52px;
-    height: 52px;
-    padding: 3px;
-  }
-
   .pig-main {
     min-height: 280px;
-    border-radius: 8px;
   }
 
-  .pig-zoom-img {
+  .pig-img {
     max-height: 320px;
-  }
-
-  .pig-zoom-img--zoomed {
-    transform: scale(1.8);
   }
 
   .pig-nav {
@@ -277,23 +143,10 @@
   }
 
   .pig-nav--prev {
-    left: 8px;
+    left: -4px;
   }
 
   .pig-nav--next {
-    right: 8px;
-  }
-
-  .pig-counter {
-    font-size: 11px;
-    padding: 2px 8px;
-    bottom: 8px;
-    right: 10px;
-  }
-
-  .pig-zoom-hint {
-    font-size: 11px;
-    padding: 5px 10px;
-    bottom: 10px;
+    right: -4px;
   }
 }

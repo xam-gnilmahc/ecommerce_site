@@ -1,75 +1,73 @@
 /* ═══════════════════════════════════════════════
-   SORT BAR
-═══════════════════════════════════════════════ */
-.sort-bar {
+   SORT — radio option list (drawer facet)
+   ═══════════════════════════════════════════════ */
+.sort-options {
+  display: flex;
+  flex-direction: column;
+}
+
+.sort-option {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 14px;
-  padding: 0 0 12px;
-  margin-bottom: 0;
-  border-bottom: 1px solid #e8e8e8;
-}
+  gap: 10px;
 
-.sort-bar-left {
-  display: flex;
-  align-items: center;
-}
+  min-height: 38px;
+  padding: 4px 0;
 
-.sort-bar-count {
-  font-size: 13px;
-  color: #6b7280;
-  white-space: nowrap;
-}
+  color: var(--muted, #757575);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 
-.sort-bar-right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.sort-bar-label {
-  font-size: 13px;
-  font-weight: 600;
-  color: #111827;
-  white-space: nowrap;
-}
-
-.sort-bar-select {
-  padding: 6px 12px;
-  border: 1.5px solid #e8e8e8;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 500;
-  color: #111827;
-  background: #fff;
   cursor: pointer;
-  outline: none;
-  transition: border-color 0.2s;
-  font-family: var(--font-main);
-  min-width: 170px;
+  user-select: none;
+
+  transition: color 0.15s ease;
 }
 
-.sort-bar-select:focus {
-  border-color: #111827;
+.sort-option:hover {
+  color: var(--ink, #000);
 }
 
-.sort-bar-select:hover {
-  border-color: #999;
+.sort-option input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
 }
 
-/* ═══════════════════════════════════════════════
-   RESPONSIVE
-═══════════════════════════════════════════════ */
-@media (max-width: 640px) {
-  .sort-bar {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    gap: 10px;
-  }
+.sort-option__radio {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
 
-  .sort-bar-select {
-    min-width: 0;
-  }
+  border: 1px solid var(--ink, #000);
+  border-radius: 50%;
+  background: #ffffff;
+
+  position: relative;
+
+  transition: background 0.12s ease;
+}
+
+.sort-option input:checked + .sort-option__radio {
+  background: var(--ink, #000);
+}
+
+.sort-option input:checked + .sort-option__radio::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  background: #ffffff;
+}
+
+.sort-option input:checked ~ .sort-option__label {
+  color: var(--ink, #000);
+  font-weight: 500;
+}
+
+.sort-option input:focus-visible + .sort-option__radio {
+  outline: 2px solid var(--ink, #000);
+  outline-offset: 2px;
 }

@@ -1,14 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-
 /* ═══════════════════════════════════════════════
-   GLOBAL DESIGN TOKENS — Gadget Store
-   Modern clean tech palette
+   GLOBAL DESIGN TOKENS — minimal monochrome
+   white ground / black type / zero radius / small type
 ═══════════════════════════════════════════════ */
 :root {
   /* ── TYPOGRAPHY ── */
-  --font-main:
-    'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue',
-    Helvetica, Arial, sans-serif;
+  --font-main: 'Helvetica Now Text', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 
   --text-xs: 12px;
   --text-sm: 14px;
@@ -18,37 +14,42 @@
   --text-2xl: 28px;
 
   /* ── NEUTRALS ── */
-  --ink: #0f1115; /* primary text / headings */
-  --ink-secondary: #3f4550; /* body text */
-  --muted: #878d99; /* secondary text */
+  --ink: #000000; /* primary text / headings */
+  --ink-secondary: #000000; /* body text */
+  --muted: #757575; /* secondary text */
   --bg: #ffffff; /* page background */
   --surface: #ffffff; /* cards */
-  --surface-tint: #fafafb; /* subtle fills */
-  --border: #e6e8ee;
-  --border-strong: #d3d7df;
+  --surface-tint: #fafafa; /* subtle fills */
+  --border: #dfdfdf;
+  --border-strong: #000000;
 
   /* ── BRAND ACCENT ── */
-  --accent: #2563eb; /* electric blue — buttons, links, highlights */
-  --accent-hover: #1d4ed8;
-  --accent-soft: #eff4ff; /* tinted backgrounds */
+  --accent: #000000; /* primary buttons, links, highlights */
+  --accent-hover: #262626;
+  --accent-soft: #f2f2f2; /* tinted backgrounds */
 
   /* ── SEMANTIC ── */
-  --success: #16a34a;
-  --danger: #dc2626;
-  --warning: #f59e0b;
+  --success: #006400;
+  --danger: #8b0000;
+  --warning: #ee9441;
+  --sold-out: #eef1ea;
 
   /* legacy aliases (used by checkout/cart/orders css) */
-  --ck-black: #0f1115;
-  --ck-off: #fafafb;
-  --ck-muted: #878d99;
+  --ck-black: #000000;
+  --ck-off: #fafafa;
+  --ck-muted: #757575;
 
   /* ── SHAPE & DEPTH ── */
-  --radius-sm: 8px;
-  --radius: 12px;
-  --radius-lg: 16px;
-  --shadow-xs: 0 1px 2px rgba(15, 17, 21, 0.05);
-  --shadow-sm: 0 2px 8px rgba(15, 17, 21, 0.06);
-  --shadow-md: 0 8px 24px rgba(15, 17, 21, 0.1);
+  --radius-sm: 0px;
+  --radius: 0px;
+  --radius-lg: 0px;
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.1);
+  --shadow-popover: 0 4px 20px rgba(0, 0, 0, 0.15);
+
+  /* ── LAYOUT ── */
+  --page-pad: clamp(16px, 2vw, 40px);
 }
 
 /* apply globally */
@@ -76,7 +77,17 @@ a {
   color: inherit;
 }
 
-/* headings refined */
+/* no underline on hover anywhere (overrides bootstrap reboot) */
+a:hover,
+a:focus,
+a:active,
+a:hover *,
+button:hover,
+button:hover * {
+  text-decoration: none;
+}
+
+/* headings — large, light weight, no tracking */
 h1,
 h2,
 h3,
@@ -84,22 +95,93 @@ h4,
 h5,
 h6 {
   font-family: var(--font-main);
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-weight: 400;
+  letter-spacing: 0;
   color: var(--ink);
 }
 
-/* paragraph consistency */
-p {
-  font-size: var(--text-md);
-  line-height: 1.6;
-  color: var(--ink-secondary);
+h1 {
+  font-size: clamp(2.5rem, 6.4vw, 4rem);
+  line-height: 1;
+}
+h2 {
+  font-size: clamp(2rem, 4.8vw, 3rem);
+  line-height: 1;
+}
+h3 {
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  line-height: 1.1;
+}
+h4 {
+  font-size: 2rem;
+  line-height: 1;
+}
+h5 {
+  font-size: 1.5rem;
+  line-height: 1.25;
+}
+h6 {
+  font-size: 1.125rem;
+  line-height: 1.25;
 }
 
-/* buttons */
+/* paragraph consistency — small editorial baseline */
+p {
+  font-size: 0.75rem;
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+/* buttons / inputs — sharp, uppercase labels */
 button,
 input,
 select,
 textarea {
   font-family: var(--font-main);
+}
+
+button {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+input,
+select,
+textarea {
+  border-radius: 0;
+}
+
+/* primary / secondary button primitives */
+.btn-vivet,
+.btn-primary-vivet {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 24px;
+  background: var(--accent);
+  color: #ffffff;
+  border: 1px solid var(--accent);
+  border-radius: 0;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn-vivet:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+  color: #ffffff;
+}
+
+.btn-secondary-vivet {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--ink);
+}
+
+.btn-secondary-vivet:hover {
+  background: rgba(0, 0, 0, 0.15);
+  color: var(--ink);
 }
