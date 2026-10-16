@@ -91,6 +91,8 @@
   align-items: center;
   gap: 10px;
 
+  min-height: 28px;
+
   cursor: pointer;
 
   color: var(--ink, #000);
@@ -348,6 +350,13 @@
 }
 
 .facets-drawer__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  min-height: 44px;
+  padding-inline: 4px;
+
   background: transparent;
   border: none;
 

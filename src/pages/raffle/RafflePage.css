@@ -757,6 +757,13 @@
   .raffle-hero-title {
     font-size: 44px;
   }
+
+  /* long card titles must wrap on narrow screens instead of being ellipsised */
+  .raffle-title {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
   .raffle-filter-btn {
     padding: 7px 14px;
     font-size: 12px;

@@ -1556,6 +1556,13 @@ body.cart-open .navBar.fixed {
 }
 
 .mobile-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  min-width: 44px;
+  min-height: 44px;
+
   background: transparent;
   border: none;
 
@@ -1576,6 +1583,10 @@ body.cart-open .navBar.fixed {
 }
 
 .mobile-menu__nav a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+
   color: var(--ink, #000);
   font-size: 1.75rem;
   line-height: 1.1;
@@ -1679,6 +1690,12 @@ body.cart-open .navBar.fixed {
   .mobile-nav__menu {
     justify-self: start;
 
+    /* comfortable tap target on touch devices */
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 10px 0 0;
+
     background: transparent;
     border: none;
 
@@ -1718,6 +1735,10 @@ body.cart-open .navBar.fixed {
 
     display: flex;
     align-items: center;
+    justify-content: center;
+
+    min-width: 44px;
+    min-height: 44px;
 
     cursor: pointer;
   }
@@ -1727,9 +1748,11 @@ body.cart-open .navBar.fixed {
     align-items: center;
     gap: 6px;
 
+    min-height: 44px;
+    padding: 0 4px;
+
     background: transparent;
     border: none;
-    padding: 0;
 
     color: var(--ink, #000);
     font-size: 12px;

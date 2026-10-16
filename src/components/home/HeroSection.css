@@ -17,7 +17,9 @@
 ═══════════════════════════════════════════════ */
 .hp-root {
   background: var(--surface, #fff);
-  min-height: 100vh;
+  /* hero fills the viewport itself — no min-height here, otherwise a dead
+     white band is left under the hero on short/mobile viewports */
+  min-height: 0;
 }
 
 /* ═══════════════════════════════════════════════
@@ -592,8 +594,8 @@
 @media (max-width: 768px) {
   .hp-hero {
     padding: 60px 16px 52px;
-    min-height: 400px;
-    height: 55vh;
+    min-height: 440px;
+    height: 100vh;
   }
   .hp-perk {
     font-size: 11.5px;
@@ -625,8 +627,8 @@
 
 @media (max-width: 500px) {
   .hp-hero {
-    min-height: 350px;
-    height: 50vh;
+    min-height: 420px;
+    height: 100vh;
   }
   .hp-cat-grid {
     grid-template-columns: repeat(2, 1fr);
