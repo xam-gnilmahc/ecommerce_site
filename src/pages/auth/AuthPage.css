@@ -1,0 +1,267 @@
+/* ── Auth (sign in / create account) — borderless, full-screen, centered ── */
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+
+/* logo pinned to top like the reference */
+.auth-logo {
+  display: flex;
+  justify-content: center;
+  padding: 24px 20px 0;
+}
+
+.auth-logo img {
+  height: 16px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
+/* centered content column */
+.auth-main {
+  flex: 1;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 36px 20px 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.auth-heading {
+  text-align: center;
+  margin-bottom: 34px;
+}
+
+.auth-title {
+  font-size: clamp(26px, 5vw, 32px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin: 0 0 10px;
+  text-transform: none;
+}
+
+.auth-sub {
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--muted);
+  margin: 0;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* react-facebook-login wraps its button in a <span> */
+.auth-form > span {
+  display: contents;
+}
+
+/* ── social buttons (big, rounded) ── */
+.social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 17px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none !important;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.social-btn i {
+  font-size: 15px;
+}
+
+.social-btn.google-btn {
+  background: var(--accent);
+  color: #ffffff !important;
+  border-color: var(--accent);
+}
+
+.social-btn.google-btn:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+  color: #ffffff !important;
+}
+
+.social-btn.fb-btn {
+  margin-top: 12px;
+  background: var(--surface);
+  color: var(--ink) !important;
+  border-color: var(--border);
+}
+
+.social-btn.fb-btn:hover {
+  background: var(--surface-tint);
+  border-color: var(--muted);
+}
+
+/* ── "or" divider ── */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 22px 0;
+  color: var(--muted);
+  font-size: 13px;
+  text-transform: lowercase;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── inputs ── */
+.auth-field {
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.auth-field input {
+  width: 100%;
+  padding: 17px 52px 17px 18px;
+  font-size: 15px;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  outline: none;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.auth-field input::placeholder {
+  color: var(--muted);
+}
+
+.auth-field input:focus {
+  border-color: var(--border-strong);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+/* arrow submit inside the last field */
+.auth-arrow {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  font-size: 17px;
+  color: var(--ink);
+  cursor: pointer;
+  text-transform: none;
+  transition:
+    background 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.auth-arrow:hover:not(:disabled) {
+  background: var(--accent-soft);
+}
+
+.auth-arrow:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── small centered texts ── */
+.auth-help {
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+  margin: 6px 0 0;
+}
+
+.auth-help a {
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.auth-help a:hover {
+  color: var(--ink);
+}
+
+.auth-switch {
+  text-align: center;
+  font-size: 14px;
+  color: var(--muted);
+  margin: 26px 0 0;
+}
+
+.auth-switch a {
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.auth-terms {
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 14px 0 0;
+}
+
+.auth-terms a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ── bottom privacy link ── */
+.auth-footer {
+  padding: 24px 20px 40px;
+  text-align: center;
+}
+
+.auth-footer a {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.auth-footer a:hover {
+  color: var(--muted);
+}
+
+@media screen and (max-width: 480px) {
+  .auth-logo {
+    padding-top: 20px;
+  }
+
+  .auth-main {
+    padding-top: 28px;
+  }
+}

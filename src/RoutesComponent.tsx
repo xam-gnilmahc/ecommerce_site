@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 
 // Pages
 import Home from './pages/home/Home';
@@ -8,8 +8,7 @@ import Products from './pages/products/Products';
 import AboutPage from './pages/static/AboutPage';
 import ContactPage from './pages/static/ContactPage';
 import Cart from './pages/cart/Cart';
-import Login from './pages/auth/Login';
-import Register from './pages/auth/Register';
+import AuthPage from './pages/auth/AuthPage';
 import Checkout from './pages/checkout/Checkout';
 import PageNotFound from './pages/static/PageNotFound';
 
@@ -33,45 +32,50 @@ import Footer from './components/ui/Footer';
 import GuestLayout from './components/layout/layouts/GuestLayout';
 import AuthLayout from './components/layout/layouts/AuthLayout';
 
-const RoutesComponent = () => (
-  <>
-    <Navbar />
+const RoutesComponent = () => {
+  const { pathname } = useLocation();
+  const isAuthScreen = pathname === '/login' || pathname === '/register';
 
-    <Routes>
-      {/* Public/Guest Layout */}
-      <Route element={<GuestLayout />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/search" element={<Products />} />
-        <Route path="/product/:id" element={<Product />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/update-password" element={<UpdatePassword />} />
-        <Route path="/order-details" element={<OrderDetailsSheet />} />
-        <Route path="/terms" element={<TermsandConditions />} />
-        <Route path="*" element={<PageNotFound />} />
-        <Route path="/raffles" element={<RafflePage />} />
-      </Route>
+  return (
+    <>
+      {!isAuthScreen && <Navbar />}
 
-      {/* Authenticated Layout */}
-      <Route element={<AuthLayout />}>
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/checkout" element={<Checkout />} />
-        <Route path="/order" element={<OrdersPage />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/payments" element={<PaymentsPage />} />
-        <Route path="/return-cancel" element={<CancelledOrderPage />} />
-        <Route path="/orders/:orderId" element={<OrderDetailsPage />} />
-        <Route path="/notification" element={<NotificationPage />} />
-        <Route path="/settings" element={<NotificationSettings />} />
-        <Route path="/add-address" element={<AddAddress />} />
-      </Route>
-    </Routes>
+      <Routes>
+        {/* Public/Guest Layout */}
+        <Route element={<GuestLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/search" element={<Products />} />
+          <Route path="/product/:id" element={<Product />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/login" element={<AuthPage />} />
+          <Route path="/register" element={<AuthPage />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/update-password" element={<UpdatePassword />} />
+          <Route path="/order-details" element={<OrderDetailsSheet />} />
+          <Route path="/terms" element={<TermsandConditions />} />
+          <Route path="*" element={<PageNotFound />} />
+          <Route path="/raffles" element={<RafflePage />} />
+        </Route>
 
-    <Footer />
-  </>
-);
+        {/* Authenticated Layout */}
+        <Route element={<AuthLayout />}>
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/order" element={<OrdersPage />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/payments" element={<PaymentsPage />} />
+          <Route path="/return-cancel" element={<CancelledOrderPage />} />
+          <Route path="/orders/:orderId" element={<OrderDetailsPage />} />
+          <Route path="/notification" element={<NotificationPage />} />
+          <Route path="/settings" element={<NotificationSettings />} />
+          <Route path="/add-address" element={<AddAddress />} />
+        </Route>
+      </Routes>
+
+      {!isAuthScreen && <Footer />}
+    </>
+  );
+};
 
 export default RoutesComponent;
