@@ -375,11 +375,7 @@ const Navbar = () => {
   // left-side filter popup — brand / price / availability (like the filter drawer)
   const renderCatPopup = (item) => (
     <>
-      <div
-        className="nav-filterpop-overlay"
-        style={{ top: navHeight || 59 }}
-        onClick={closeCatPopup}
-      />
+      <div className="nav-filterpop-overlay" onClick={closeCatPopup} />
       <div
         className="nav-filterpop"
         style={{ top: navHeight || 59, height: `calc(100dvh - ${navHeight || 59}px)` }}
@@ -521,7 +517,9 @@ const Navbar = () => {
     <>
       <div
         ref={navRef}
-        className={`navBar ${isSticky ? 'fixed' : ''} ${isHome ? 'navBar--overlay' : ''}`}
+        className={`navBar ${isSticky ? 'fixed' : ''} ${isHome ? 'navBar--overlay' : ''} ${
+          catPopup ? 'navBar--catopen' : ''
+        }`}
       >
         <div className="nav-inner">
           {/* LEFT — primary navigation */}

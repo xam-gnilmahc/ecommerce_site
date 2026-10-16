@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, type FC } from 'react';
 import { IoClose } from 'react-icons/io5';
 import './DemoBanner.css';
 
-const DemoBanner: React.FC = () => {
+const DemoBanner: FC = () => {
   const [visible, setVisible] = useState<boolean>(true);
 
   if (!visible) return null;
