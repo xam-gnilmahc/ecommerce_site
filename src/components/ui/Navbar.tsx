@@ -112,7 +112,6 @@ const Navbar = () => {
   const [cartOpen, setCartOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [isSticky, setIsSticky] = useState(false);
   const [navHeight, setNavHeight] = useState(0);
 
   // navbar category hover → left-side filter popup
@@ -192,13 +191,6 @@ const Navbar = () => {
     if (navRef.current) {
       setNavHeight(navRef.current.offsetHeight);
     }
-
-    const onScroll = () => {
-      setIsSticky(window.scrollY > 40);
-    };
-
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   useEffect(() => {
@@ -517,7 +509,7 @@ const Navbar = () => {
     <>
       <div
         ref={navRef}
-        className={`navBar ${isSticky ? 'fixed' : ''} ${isHome ? 'navBar--overlay' : ''} ${
+        className={`navBar ${isHome ? 'navBar--overlay' : ''} ${
           catPopup ? 'navBar--catopen' : ''
         }`}
       >
@@ -626,8 +618,6 @@ const Navbar = () => {
           </div>
         </div>
       </div>
-
-      {isSticky && <div style={{ height: navHeight }} />}
 
       {/* SEARCH MODAL (works on desktop + mobile) */}
       {searchOpen && (
@@ -824,7 +814,7 @@ const Navbar = () => {
       {/* MOBILE BAR */}
       <nav>
         <div
-          className={`mobile-nav ${isSticky ? 'is-stuck' : ''} ${isHome ? 'navBar--overlay' : ''}`}
+          className={`mobile-nav ${isHome ? 'navBar--overlay' : ''}`}
         >
           <button className="mobile-nav__menu" onClick={toggleMobileMenu}>
             {mobileMenuOpen ? 'Close' : 'Menu'}

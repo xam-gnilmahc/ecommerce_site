@@ -386,8 +386,7 @@
 
   background: #ffffff;
   border-bottom: none;
-  position: sticky;
-  top: 0;
+  position: relative;
   z-index: 1000;
 }
 
@@ -1677,8 +1676,7 @@ body.cart-open .navBar.fixed {
 
     background: white;
 
-    position: sticky;
-    top: 0;
+    position: relative;
 
     z-index: 3000;
   }

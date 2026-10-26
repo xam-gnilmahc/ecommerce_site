@@ -69,8 +69,9 @@
   z-index: 1;
 }
 
-/* keep hero content above the video */
-.hp-hero > *:not(.hp-hero-video):not(.hp-hero-overlay) {
+/* keep hero content above the video (but not the poster — it must stay
+   absolutely positioned and cover the full hero, padding included) */
+.hp-hero > *:not(.hp-hero-video):not(.hp-hero-overlay):not(.hp-hero-poster) {
   position: relative;
   z-index: 2;
 }

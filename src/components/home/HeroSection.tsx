@@ -1,11 +1,24 @@
 import { useState, type SyntheticEvent } from 'react';
 import './HeroSection.css';
 
-const VIDEO_SRC = `${process.env.PUBLIC_URL}/assests/iphone-duo.mp4`;
-const POSTER_SRC = `${process.env.PUBLIC_URL}/assests/iphone-duo-poster.jpg`;
 const START_AT = 1; // seconds — matches the poster frame
 
+// background hero clips — one is picked at random on every page load
+const HERO_CLIPS = [
+  {
+    video: `${process.env.PUBLIC_URL}/assests/iphone-duo.mp4`,
+    poster: `${process.env.PUBLIC_URL}/assests/iphone-duo-poster.jpg`,
+  },
+  {
+    video: `${process.env.PUBLIC_URL}/assests/apple-homeview.mp4`,
+    poster: `${process.env.PUBLIC_URL}/assests/apple-homeview-poster.jpg`,
+  },
+];
+
+const randomClip = () => HERO_CLIPS[Math.floor(Math.random() * HERO_CLIPS.length)];
+
 export default function Hero() {
+  const [clip] = useState(randomClip); // stable across re-renders, fresh per mount
   const [videoReady, setVideoReady] = useState(false);
 
   const handleLoadedMetadata = (e: SyntheticEvent<HTMLVideoElement>) => {
@@ -18,11 +31,12 @@ export default function Hero() {
   return (
     <div className="hp-root">
       <section className="hp-hero">
-        {!videoReady && <img className="hp-hero-poster" src={POSTER_SRC} alt="" />}
+        {!videoReady && <img className="hp-hero-poster" src={clip.poster} alt="" />}
         <video
+          key={clip.video}
           className="hp-hero-video"
-          src={VIDEO_SRC}
-          poster={POSTER_SRC}
+          src={clip.video}
+          poster={clip.poster}
           autoPlay
           loop
           muted
