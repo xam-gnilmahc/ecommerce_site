@@ -82,6 +82,7 @@
   border: 1px solid var(--border, #dfdfdf);
   padding: 3px;
   gap: 2px;
+  flex-wrap: wrap;
 }
 
 .filter-btn {
@@ -137,6 +138,14 @@
   border-color: var(--ck-black);
 }
 
+.order-card:hover .order-card-head {
+  background: #f4f5f7;
+}
+
+.order-card--skeleton {
+  cursor: default;
+}
+
 /* top strip: order no + date / status */
 .order-card-head {
   display: flex;
@@ -163,7 +172,12 @@
   font-weight: 400;
   letter-spacing: 0.04em;
   color: var(--ck-muted);
-  margin-left: 10px;
+}
+
+.order-card-date::before {
+  content: '·';
+  margin-right: 8px;
+  color: var(--ck-border-strong);
 }
 
 .order-status {
@@ -177,6 +191,18 @@
   color: var(--ck-black);
   white-space: nowrap;
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+}
+
+.order-status::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  margin-right: 7px;
+  opacity: 0.85;
 }
 
 .order-status--delivered {
@@ -222,6 +248,14 @@
 
 .ship-headline.cancelled {
   color: var(--ck-muted);
+}
+
+.ship-headline.delivered {
+  color: var(--ck-black);
+}
+
+.ship-headline.delivered strong {
+  font-weight: 800;
 }
 
 /* view order link */
@@ -357,8 +391,62 @@
   text-align: center;
   color: var(--ck-muted);
   font-size: 13px;
-  padding: 60px 20px;
+  padding: 64px 20px;
   border: 1px dashed var(--border, #dfdfdf);
+}
+
+.orders-empty__icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 14px;
+
+  border: 1px solid var(--border, #dfdfdf);
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--ck-black);
+}
+
+.orders-empty__title {
+  margin: 0 0 4px;
+
+  font-size: 14px;
+  color: var(--ck-black);
+}
+
+.orders-empty__hint {
+  margin: 0 0 20px;
+
+  font-size: 12.5px;
+  color: var(--ck-muted);
+}
+
+.orders-empty__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 14px 30px;
+
+  background: var(--ck-black);
+  border: 1px solid var(--ck-black);
+
+  color: var(--ck-white);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.orders-empty__btn:hover {
+  background: #262626;
+  border-color: #262626;
 }
 
 /* DETAIL PANEL */

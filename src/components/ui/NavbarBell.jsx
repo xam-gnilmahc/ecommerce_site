@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { FiBell, FiSettings } from 'react-icons/fi';
-import { IoMdCheckmark } from 'react-icons/io';
+import { FiBell, FiSettings, FiShoppingBag, FiTruck, FiRefreshCw } from 'react-icons/fi';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 import { useAuth } from '../../context/authContext';
 import { supabase } from '../../supaBaseClient';
 import { fetchNotifications } from '../../tanstack/notifications.ts';
@@ -13,6 +14,12 @@ dayjs.extend(relativeTime);
 
 const PAGE_SIZE = 10;
 const REFRESH_INTERVAL = 15000;
+
+const TYPE_META = [
+  { label: 'New Order', Icon: FiShoppingBag },
+  { label: 'Out for delivery', Icon: FiTruck },
+  { label: 'Order update', Icon: FiRefreshCw },
+];
 
 const NavbarBell = () => {
   const { user } = useAuth();
@@ -168,52 +175,73 @@ const NavbarBell = () => {
           <div className="notification-header">
             <h4>Notifications</h4>
 
-            <button
-              type="button"
-              className="notification-settings-btn"
-              onClick={() => {
-                closePopup();
-                navigate('/settings');
-              }}
-              aria-label="Notification settings"
-            >
-              <FiSettings size={17} />
-            </button>
+            <div className="notification-header__actions">
+              {items.length > 0 && (
+                <button type="button" className="notification-mark" onClick={markAllRead}>
+                  Mark all read
+                </button>
+              )}
+
+              <button
+                type="button"
+                className="notification-settings-btn"
+                onClick={() => {
+                  closePopup();
+                  navigate('/settings');
+                }}
+                aria-label="Notification settings"
+              >
+                <FiSettings size={17} />
+              </button>
+            </div>
           </div>
 
           {/* LIST — infinite scroll */}
           <div className="notification-list" onScroll={onListScroll}>
             {loading ? (
-              <div className="notification-loading">Loading...</div>
-            ) : items.length === 0 ? (
-              <div className="notification-empty">
-                <div style={{ fontSize: 34, marginBottom: 8 }}>🔔</div>
-                No notifications yet
-              </div>
-            ) : (
-              items.map(({ id, order_id, message, created_at, type }) => (
-                <div key={id} className="notification-item" onClick={() => openItem(order_id)}>
-                  <div className="notification-icon">
-                    <IoMdCheckmark />
-                  </div>
-
-                  <div className="notification-content">
-                    <div className="notification-top">
-                      <h5>
-                        {type === 0
-                          ? 'New Order'
-                          : type === 1
-                            ? 'Out for delivery'
-                            : 'Order update'}
-                      </h5>
-
-                      <span>{dayjs(created_at).fromNow()}</span>
-                    </div>
-
-                    <p dangerouslySetInnerHTML={{ __html: message }} />
+              Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="notification-item notification-item--skeleton">
+                  <Skeleton width={40} height={40} style={{ flexShrink: 0 }} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <Skeleton
+                      width="45%"
+                      height={12}
+                      style={{ display: 'block', marginBottom: 8 }}
+                    />
+                    <Skeleton width="85%" height={11} style={{ display: 'block' }} />
                   </div>
                 </div>
               ))
+            ) : items.length === 0 ? (
+              <div className="notification-empty">
+                <div className="notification-empty__icon">
+                  <FiBell size={22} />
+                </div>
+                <p className="notification-empty__title">No notifications yet</p>
+                <p className="notification-empty__hint">Order updates will appear here</p>
+              </div>
+            ) : (
+              items.map(({ id, order_id, message, created_at, type }) => {
+                const meta = TYPE_META[type] || TYPE_META[0];
+                const TypeIcon = meta.Icon;
+                return (
+                  <div key={id} className="notification-item" onClick={() => openItem(order_id)}>
+                    <div className="notification-icon">
+                      <TypeIcon size={17} />
+                    </div>
+
+                    <div className="notification-content">
+                      <div className="notification-top">
+                        <h5>{meta.label}</h5>
+
+                        <span>{dayjs(created_at).fromNow()}</span>
+                      </div>
+
+                      <p dangerouslySetInnerHTML={{ __html: message }} />
+                    </div>
+                  </div>
+                );
+              })
             )}
 
             {loadingMore && <div className="notification-loading">Loading...</div>}

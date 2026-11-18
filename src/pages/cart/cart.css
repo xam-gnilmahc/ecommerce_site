@@ -20,7 +20,6 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(380px, 540px);
   gap: 24px;
-  align-items: start;
 }
 
 /* ─── LEFT ───────────────────────────────────── */
@@ -72,6 +71,7 @@
 .cart-item-img {
   width: 110px;
   height: 110px;
+  padding: 8px;
   border: 1px solid #ececec;
   background: #ffffff;
   display: flex;
@@ -176,9 +176,6 @@
 /* ─── RIGHT: summary panel ───────────────────── */
 
 .cart-right {
-  position: sticky;
-  top: 88px;
-
   background: #e6e6e6;
   padding: 28px clamp(20px, 2.5vw, 36px) 40px;
 
@@ -358,7 +355,8 @@
 
 .cart-also-img {
   width: 100%;
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 1 / 1;
+  padding: 18px;
   border: 1px solid #ececec;
   background: #ffffff;
   display: flex;

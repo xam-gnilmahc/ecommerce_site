@@ -2,10 +2,9 @@ import React, { useEffect, useState, useRef } from 'react';
 import Pusher from 'pusher-js';
 import { useAuth } from '../../context/authContext';
 import { PUSHER_APP_KEY, PUSHER_CLUSTER } from '../../config/env';
-import { FaCheckCircle } from 'react-icons/fa';
-import { FiBell, FiSettings } from 'react-icons/fi';
-import { IoMdCheckmark } from 'react-icons/io';
-import { IoIosNotifications } from 'react-icons/io';
+import { FiBell, FiSettings, FiShoppingBag, FiTruck, FiRefreshCw } from 'react-icons/fi';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 import { supabase } from '../../supaBaseClient';
 import { fetchNotifications } from '../../tanstack/notifications';
 import dayjs from 'dayjs';
@@ -23,16 +22,21 @@ interface Notification {
   created_at: string;
 }
 
+const TYPE_META = [
+  { label: 'New Order', Icon: FiShoppingBag },
+  { label: 'Out for delivery', Icon: FiTruck },
+  { label: 'Order update', Icon: FiRefreshCw },
+];
+
 const NotificationPage: React.FC = () => {
   const { user } = useAuth();
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [open, setOpen] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
   const [unreadCount, setUnreadCount] = useState(0);
 
-  const containerRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
   const fetchUnreadCount = async () => {
@@ -54,6 +58,7 @@ const NotificationPage: React.FC = () => {
 
   const fetchNotificationsPage = async (pageNum: number) => {
     try {
+      if (pageNum === 1) setInitialLoading(true);
       setLoadingMore(true);
 
       const start = (pageNum - 1) * PAGE_SIZE;
@@ -64,11 +69,29 @@ const NotificationPage: React.FC = () => {
       setNotifications((prev) => (pageNum === 1 ? newItems : [...prev, ...newItems]));
 
       setHasMore(newItems.length === PAGE_SIZE);
-
-      setLoadingMore(false);
     } catch (error) {
       console.error('Failed to load notifications:', error);
+    } finally {
       setLoadingMore(false);
+      setInitialLoading(false);
+    }
+  };
+
+  const markAllRead = async () => {
+    if (!user?.id) return;
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .update({ read: true })
+        .eq('user_id', user.id)
+        .eq('read', false);
+
+      if (error) throw error;
+
+      fetchUnreadCount();
+      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    } catch (err) {
+      console.error('Failed to mark all as read:', (err as Error).message);
     }
   };
 
@@ -107,25 +130,6 @@ const NotificationPage: React.FC = () => {
     };
   }, [user?.id]);
 
-  // Handle clicks outside dropdown to close
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    }
-
-    if (open) {
-      document.addEventListener('mousedown', handleClickOutside);
-    } else {
-      document.removeEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [open]);
-
   // Infinite scroll handler
   const onScroll = () => {
     if (!listRef.current || loadingMore || !hasMore) return;
@@ -143,44 +147,20 @@ const NotificationPage: React.FC = () => {
     fetchNotificationsPage(page);
   }, [page]);
 
-  const handleBellClick = async () => {
-    const wasOpen = open;
-    setOpen((prev) => !prev);
-
-    if (!wasOpen) {
-      try {
-        const { error } = await supabase
-          .from('notifications')
-          .update({ read: true })
-          .eq('user_id', user!.id)
-          .eq('read', false);
-
-        if (error) throw error;
-
-        fetchUnreadCount();
-        setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-      } catch (err) {
-        console.error('Failed to mark all as read:', (err as Error).message);
-      }
-    }
-  };
-
   return (
-    <div className="notification-wrapper" ref={containerRef}>
-      {/* BELL */}
-      <button className="notification-bell" onClick={handleBellClick}>
-        {open ? <IoIosNotifications size={22} /> : <FiBell size={20} />}
-        {unreadCount > 0 && (
-          <span className="notification-count">{unreadCount > 9 ? '9+' : unreadCount}</span>
-        )}
-      </button>
+    <div className="notif-page">
+      <div className="notification-dropdown notif-page__card">
+        {/* HEADER */}
+        <div className="notification-header">
+          <h4>Notifications</h4>
 
-      {/* DROPDOWN */}
-      {open && (
-        <div className="notification-dropdown">
-          {/* HEADER */}
-          <div className="notification-header">
-            <h4>Notifications</h4>
+          <div className="notification-header__actions">
+            {unreadCount > 0 && (
+              <button type="button" className="notification-mark" onClick={markAllRead}>
+                Mark all read
+              </button>
+            )}
+
             <button
               type="button"
               className="notification-settings-btn"
@@ -190,33 +170,44 @@ const NotificationPage: React.FC = () => {
               <FiSettings size={17} />
             </button>
           </div>
+        </div>
 
-          {/* LIST */}
-          <div className="notification-list" ref={listRef} onScroll={onScroll}>
-            {notifications.length === 0 ? (
-              <div className="notification-empty">
-                <div style={{ fontSize: 34, marginBottom: 8 }}>🔔</div>
-                No notifications yet
+        {/* LIST */}
+        <div className="notification-list" ref={listRef} onScroll={onScroll}>
+          {initialLoading ? (
+            Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="notification-item notification-item--skeleton">
+                <Skeleton width={40} height={40} style={{ flexShrink: 0 }} />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <Skeleton width="45%" height={12} style={{ display: 'block', marginBottom: 8 }} />
+                  <Skeleton width="85%" height={11} style={{ display: 'block' }} />
+                </div>
               </div>
-            ) : (
-              notifications.map(({ id, order_id, message, created_at, type }) => (
+            ))
+          ) : notifications.length === 0 ? (
+            <div className="notification-empty">
+              <div className="notification-empty__icon">
+                <FiBell size={22} />
+              </div>
+              <p className="notification-empty__title">No notifications yet</p>
+              <p className="notification-empty__hint">Order updates will appear here</p>
+            </div>
+          ) : (
+            notifications.map(({ id, order_id, message, created_at, type }) => {
+              const meta = TYPE_META[type] || TYPE_META[0];
+              const TypeIcon = meta.Icon;
+              return (
                 <div
                   key={id}
                   className="notification-item"
-                  onClick={() => window.open(`/orders/${order_id}`, '_blank')}
+                  onClick={() => order_id && window.open(`/orders/${order_id}`, '_blank')}
                 >
                   <div className="notification-icon">
-                    <IoMdCheckmark />
+                    <TypeIcon size={17} />
                   </div>
                   <div className="notification-content">
                     <div className="notification-top">
-                      <h5>
-                        {type === 0
-                          ? 'New Order'
-                          : type === 1
-                            ? 'Out for delivery'
-                            : 'Order update'}
-                      </h5>
+                      <h5>{meta.label}</h5>
                       <span>{dayjs(created_at).fromNow()}</span>
                     </div>
                     <p
@@ -226,12 +217,12 @@ const NotificationPage: React.FC = () => {
                     />
                   </div>
                 </div>
-              ))
-            )}
-            {loadingMore && <div className="notification-loading">Loading...</div>}
-          </div>
+              );
+            })
+          )}
+          {loadingMore && !initialLoading && <div className="notification-loading">Loading...</div>}
         </div>
-      )}
+      </div>
     </div>
   );
 };

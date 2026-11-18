@@ -161,22 +161,40 @@ const Product = () => {
   }, [id]);
 
   const Loading = () => (
-    <div className="container my-5 py-2">
-      <div className="row">
-        <div className="col-md-6 py-3">
-          <Skeleton height={400} width={400} />
+    <>
+      {/* Details — LEFT column */}
+      <div className="productDetails">
+        <div className="productName">
+          <Skeleton height={26} width="75%" />
         </div>
-        <div className="col-md-6 py-5">
-          <Skeleton height={30} width={250} />
-          <Skeleton height={90} />
-          <Skeleton height={40} width={70} />
-          <Skeleton height={50} width={110} />
-          <Skeleton height={120} />
-          <Skeleton height={40} width={110} inline={true} />
-          <Skeleton className="mx-3" height={40} width={110} />
+
+        <div className="priceRow">
+          <Skeleton height={26} width={110} />
+        </div>
+
+        <div className="productCartBtn">
+          <Skeleton height={64} />
+        </div>
+
+        <Skeleton height={48} />
+      </div>
+
+      {/* Gallery — RIGHT column */}
+      <div className="productGallery">
+        <div className="pig-gallery">
+          <div className="pig-main">
+            <div className="pig-main-image">
+              <Skeleton width="100%" height="clamp(360px, 62vh, 680px)" />
+            </div>
+          </div>
+          <div className="pig-dots">
+            <Skeleton width={9} height={9} borderRadius="50%" />
+            <Skeleton width={9} height={9} borderRadius="50%" />
+            <Skeleton width={9} height={9} borderRadius="50%" />
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 
   const ShowProduct = () => (

@@ -13,7 +13,6 @@
 .ck-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(380px, 46%);
-  align-items: start;
 }
 
 /* ─── LEFT ───────────────────────────────────── */
@@ -416,9 +415,6 @@
 /* ─── RIGHT: summary panel ───────────────────── */
 
 .ck-right {
-  position: sticky;
-  top: 0;
-
   background: #f6f6f7;
   padding: 40px clamp(40px, 8vw, 120px);
 
@@ -442,6 +438,7 @@
   position: relative;
   width: 64px;
   height: 64px;
+  padding: 6px;
   flex-shrink: 0;
 
   background: #ffffff;

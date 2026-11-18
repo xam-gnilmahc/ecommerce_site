@@ -71,6 +71,18 @@ body {
   box-sizing: border-box;
 }
 
+/* hide all scrollbars — areas stay scrollable, just no visible bar */
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
 /* links clean */
 a {
   text-decoration: none;

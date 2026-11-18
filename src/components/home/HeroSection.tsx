@@ -13,6 +13,10 @@ const HERO_CLIPS = [
     video: `${process.env.PUBLIC_URL}/assests/apple-homeview.mp4`,
     poster: `${process.env.PUBLIC_URL}/assests/apple-homeview-poster.jpg`,
   },
+  {
+    video: `${process.env.PUBLIC_URL}/assests/iphone-air.mp4`,
+    poster: `${process.env.PUBLIC_URL}/assests/iphone-air-poster.jpg`,
+  },
 ];
 
 const randomClip = () => HERO_CLIPS[Math.floor(Math.random() * HERO_CLIPS.length)];

@@ -1,8 +1,10 @@
 import React, { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/authContext';
 import { useUserOrders } from '../../tanstack/orders.ts';
 import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
+import { FiPackage } from 'react-icons/fi';
 import { SUPABASE_STORAGE_URL } from '../../utils/supabaseStorage';
 import './ordersPage.css';
 
@@ -64,17 +66,21 @@ const OrdersPage = () => {
   };
 
   const renderHeadline = (order) => {
-    if (order.status === 'Cancelled') return <span className="ship-headline">Order cancelled</span>;
+    // order_date holds the estimated delivery date (set on insert)
+    const eta = formatDate(order.order_date || order.created_at);
+    if (order.status === 'Cancelled') {
+      return <span className="ship-headline cancelled">Order cancelled</span>;
+    }
     if (order.status === 'Delivered') {
       return (
         <span className="ship-headline delivered">
-          Delivered <strong>{formatDate(order.estimated_date || order.updated_at)}</strong>
+          Delivered <strong>{eta}</strong>
         </span>
       );
     }
     return (
       <span className="ship-headline">
-        Arriving <strong>{formatDate(order.estimated_date)}</strong>
+        Arriving <strong>{eta}</strong>
       </span>
     );
   };
@@ -106,10 +112,22 @@ const OrdersPage = () => {
           {loading ? (
             <div className="order-list">
               {Array.from({ length: 5 }).map((_, i) => (
-                <div className="order-card" key={i}>
-                  <Skeleton height={16} width={180} style={{ marginBottom: 12 }} />
-                  <Skeleton height={72} style={{ marginBottom: 8 }} />
-                  <Skeleton height={16} width="60%" />
+                <div className="order-card order-card--skeleton" key={i}>
+                  <div className="order-card-head">
+                    <Skeleton width={180} height={11} />
+                    <Skeleton width={92} height={20} />
+                  </div>
+                  <div className="order-card-body">
+                    <div className="product-list">
+                      <Skeleton width={72} height={72} />
+                      <Skeleton width={72} height={72} />
+                    </div>
+                    <div className="order-card-info">
+                      <Skeleton width="55%" height={14} />
+                      <Skeleton width="75%" height={12} />
+                    </div>
+                    <Skeleton width={90} height={12} />
+                  </div>
                 </div>
               ))}
             </div>
@@ -210,9 +228,22 @@ const OrdersPage = () => {
               })}
               {visibleOrders().length === 0 && !loading && (
                 <div className="orders-empty">
-                  {statusFilter === 'cancelled'
-                    ? 'No cancelled orders'
-                    : 'No orders yet — start shopping!'}
+                  <div className="orders-empty__icon">
+                    <FiPackage size={22} />
+                  </div>
+                  <p className="orders-empty__title">
+                    {statusFilter === 'cancelled' ? 'No cancelled orders' : 'No orders yet'}
+                  </p>
+                  <p className="orders-empty__hint">
+                    {statusFilter === 'cancelled'
+                      ? 'Cancelled orders will appear here'
+                      : 'Orders you place will show up here'}
+                  </p>
+                  {statusFilter !== 'cancelled' && (
+                    <Link to="/search" className="orders-empty__btn">
+                      Start shopping
+                    </Link>
+                  )}
                 </div>
               )}
             </div>

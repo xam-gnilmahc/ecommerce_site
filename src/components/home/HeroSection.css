@@ -598,6 +598,12 @@
     min-height: 440px;
     height: 100vh;
   }
+  /* on small screens cover zooms a 16:9 clip until only a narrow center
+     slice of its width is visible — fit the full width instead */
+  .hp-hero-video,
+  .hp-hero-poster {
+    object-fit: contain;
+  }
   .hp-perk {
     font-size: 11.5px;
     padding: 7px 12px;

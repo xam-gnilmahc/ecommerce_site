@@ -67,37 +67,6 @@ const FILTER_CATEGORIES = [
   'Gpu',
 ];
 
-// fallback brand list until the API returns the real distinct brands
-const FALLBACK_BRANDS = [
-  'Acer',
-  'Amazon',
-  'Antman',
-  'Apple',
-  'Asus',
-  'Beats',
-  'Bose',
-  'Cannon',
-  'Dell',
-  'Google',
-  'HP',
-  'Honner',
-  'Huawei',
-  'Lenovo',
-  'MSI',
-  'Microsoft',
-  'Nikon',
-  'Nothing',
-  'Nvidia',
-  'One Plus',
-  'Oneplus',
-  'Redmi',
-  'Samsung',
-  'Sony',
-  'Vivo',
-  'Xiaomi',
-  'xbox',
-];
-
 const Navbar = () => {
   const { user, visitor, trackProduct, logout } = useAuth();
   const [cookies, setCookie] = useCookies(['visitor_tracking']);
@@ -119,16 +88,15 @@ const Navbar = () => {
   const [catFacets, setCatFacets] = useState({ cat: '', brands: [], min: '', max: '', avail: [] });
   const catCloseTimer = useRef(null);
 
-  // brands for the hovered category (or the radio-chosen one in Shop All) —
-  // only brands that really have products in it
-  const activeBrandTerm =
-    catPopup && catPopup !== 'Shop All'
+  // brands for the chosen category — updates when the user picks a different
+  // category in the popup; falls back to the hovered nav item
+  const activeBrandTerm = catFacets.cat
+    ? catFacets.cat.toLowerCase()
+    : catPopup && catPopup !== 'Shop All'
       ? catPopup.toLowerCase()
-      : catFacets.cat
-        ? catFacets.cat.toLowerCase()
-        : '';
-  const { data: apiBrands, isPending: brandsPending } = useBrandOptions(activeBrandTerm);
-  const brandOptions = brandsPending ? FALLBACK_BRANDS : apiBrands || [];
+      : '';
+  const { data: apiBrands = [], isPending: brandsPending } = useBrandOptions(activeBrandTerm);
+  const brandOptions = apiBrands;
 
   // search modal data — all products grid + recently viewed + live results
   const { data: allProducts = [] } = useProducts();
@@ -349,6 +317,8 @@ const Navbar = () => {
   };
 
   const isTyping = search.trim().length > 0;
+  // true while the 250ms debounce hasn't caught up — don't show stale results
+  const isDebouncing = search.trim() !== debouncedSearch;
 
   const ProductCard = ({ product }) => (
     <button type="button" className="search-modal__card" onClick={() => openProduct(product)}>
@@ -391,7 +361,9 @@ const Navbar = () => {
                     type="radio"
                     name="navfilter-category"
                     checked={catFacets.cat === c}
-                    onChange={() => setCatFacets((f) => ({ ...f, cat: c }))}
+                    onChange={() =>
+                      setCatFacets((f) => (f.cat === c ? f : { ...f, cat: c, brands: [] }))
+                    }
                   />
                   <span className="facet-check__box" aria-hidden="true" />
                   <span className="facet-check__label">{c}</span>
@@ -402,7 +374,9 @@ const Navbar = () => {
 
           <div className="nav-filterpop__group">
             <span className="nav-filterpop__label">Brand</span>
-            {brandOptions.length === 0 ? (
+            {brandsPending ? (
+              <p className="nav-filterpop__hint">Loading brands…</p>
+            ) : brandOptions.length === 0 ? (
               <p className="nav-filterpop__hint">No brands for this category</p>
             ) : (
               <div className="facet__list">
@@ -683,7 +657,7 @@ const Navbar = () => {
                     ))}
                   </div>
                 </section>
-              ) : liveStatus === 'pending' ? (
+              ) : isDebouncing || liveStatus === 'pending' ? (
                 <p className="search-modal__hint">Searching…</p>
               ) : liveResults.length > 0 ? (
                 <section className="search-modal__section">

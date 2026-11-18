@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
@@ -58,7 +58,8 @@ const Products = () => {
     : '';
 
   // RESET everything (filters, sort, page) on any navigation — e.g. navbar links
-  useEffect(() => {
+  // useLayoutEffect → applied before paint, no flash of the previous list
+  useLayoutEffect(() => {
     setActiveFilters(null);
     setSortBy('default');
     setCurrentPage(1);
@@ -85,7 +86,7 @@ const Products = () => {
   };
 
   // Base feed: search results, recommendations, or all products
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (searchQuery || hasApiFilters) return;
     if (recommendations.length > 0) {
       setBaseProducts(recommendations);
@@ -95,7 +96,7 @@ const Products = () => {
   }, [recommendations, products, productsLoading, searchQuery, hasApiFilters]);
 
   // Search feed
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!searchQuery || hasApiFilters) return;
     if (searchStatus === 'success') {
       setBaseProducts(searchResults || []);
@@ -107,7 +108,7 @@ const Products = () => {
   }, [searchResults, searchStatus, searchQuery, hasApiFilters]);
 
   // API-filtered feed (navbar popup: category + brand + price → server-side query)
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!hasApiFilters) return;
     if (apiFilteredStatus === 'success') {
       setBaseProducts(apiFilteredResults || []);

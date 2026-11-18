@@ -220,25 +220,62 @@ const Checkout = () => {
           <div className="ck-layout">
             <div className="ck-left">
               <div className="ck-col">
-                {[1, 2, 3, 4].map((i) => (
-                  <Skeleton key={i} height={48} style={{ marginBottom: 12, borderRadius: 8 }} />
-                ))}
+                <div className="ck-form">
+                  <div className="ck-section">
+                    <Skeleton height={19} width={110} />
+                    <Skeleton height={48} borderRadius={8} />
+                    <div className="ck-row ck-row--2">
+                      <Skeleton height={48} borderRadius={8} />
+                      <Skeleton height={48} borderRadius={8} />
+                    </div>
+                    <Skeleton height={48} borderRadius={8} />
+                    <Skeleton height={48} borderRadius={8} />
+                    <div className="ck-row ck-row--3">
+                      <Skeleton height={48} borderRadius={8} />
+                      <Skeleton height={48} borderRadius={8} />
+                      <Skeleton height={48} borderRadius={8} />
+                    </div>
+                  </div>
+                  <div className="ck-section">
+                    <Skeleton height={16} width={140} />
+                    <Skeleton height={56} borderRadius={8} />
+                  </div>
+                  <div className="ck-section">
+                    <Skeleton height={19} width={90} />
+                    <Skeleton height={130} borderRadius={8} />
+                  </div>
+                  <Skeleton height={54} borderRadius={8} />
+                </div>
               </div>
             </div>
             <div className="ck-right">
-              {[1, 2].map((i) => (
-                <div key={i} style={{ display: 'flex', gap: 14, marginBottom: 18 }}>
-                  <Skeleton width={64} height={64} borderRadius={8} />
-                  <div style={{ flex: 1 }}>
-                    <Skeleton height={14} style={{ marginBottom: 6 }} />
-                    <Skeleton height={12} width="50%" />
+              <div className="ck-items">
+                {[1, 2].map((i) => (
+                  <div key={i} className="ck-item">
+                    <div className="ck-item-img">
+                      <Skeleton width="100%" height="100%" />
+                    </div>
+                    <div className="ck-item-info">
+                      <Skeleton height={14} style={{ marginBottom: 6 }} />
+                      <Skeleton height={12} width="40%" />
+                    </div>
+                    <Skeleton height={14} width={54} />
                   </div>
+                ))}
+              </div>
+              <Skeleton height={48} borderRadius={8} style={{ marginBottom: 28 }} />
+              <div className="ck-totals">
+                {[1, 2].map((i) => (
+                  <div key={i} className="ck-total-row">
+                    <Skeleton height={14} width="40%" />
+                    <Skeleton height={14} width={70} />
+                  </div>
+                ))}
+                <div className="ck-total-final">
+                  <Skeleton height={16} width={70} />
+                  <Skeleton height={16} width={110} />
                 </div>
-              ))}
-              <Skeleton height={48} borderRadius={8} style={{ margin: '20px 0' }} />
-              {[1, 2, 3].map((i) => (
-                <Skeleton key={i} height={18} style={{ marginBottom: 10 }} />
-              ))}
+              </div>
             </div>
           </div>
         ) : cart.length && !show ? (
