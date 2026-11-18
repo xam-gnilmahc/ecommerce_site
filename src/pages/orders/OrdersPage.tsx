@@ -12,11 +12,30 @@ const FILTERS = [
   { key: 'all', label: 'All' },
   { key: 'pending', label: 'Pending' },
   { key: 'confirmed', label: 'Confirmed' },
-  { key: 'shipped', label: 'Shipped Out' },
-  { key: 'out-for-delivery', label: 'Out for Delivery' },
+  { key: 'shipped', label: 'Shipped' },
+  { key: 'out-for-delivery', label: 'Out for delivery' },
   { key: 'delivered', label: 'Delivered' },
   { key: 'cancelled', label: 'Cancelled' },
 ];
+
+const matchesFilter = (order, key) => {
+  switch (key) {
+    case 'pending':
+      return order.status === 'Pending';
+    case 'confirmed':
+      return order.status === 'Confirmed' || order.status === 'Packed';
+    case 'shipped':
+      return order.status === 'Shipped Out';
+    case 'out-for-delivery':
+      return order.status === 'Out for Delivery';
+    case 'delivered':
+      return order.status === 'Delivered';
+    case 'cancelled':
+      return order.status === 'Cancelled';
+    default:
+      return true;
+  }
+};
 
 const OrdersPage = () => {
   const { user } = useAuth();
@@ -24,12 +43,21 @@ const OrdersPage = () => {
 
   const { data: allOrders = [], isLoading: loading } = useUserOrders(user?.id);
 
+  const [statusFilter, setStatusFilter] = useState('all');
+
   const orders = useMemo(() => allOrders.filter((o) => o.status !== 'Cancelled'), [allOrders]);
   const cancelledOrders = useMemo(
     () => allOrders.filter((o) => o.status === 'Cancelled'),
     [allOrders]
   );
-  const [statusFilter, setStatusFilter] = useState('all');
+
+  const filterCounts = useMemo(() => {
+    const counts = {};
+    FILTERS.forEach((f) => {
+      counts[f.key] = allOrders.filter((o) => matchesFilter(o, f.key)).length;
+    });
+    return counts;
+  }, [allOrders]);
 
   const handleOrderClick = (orderId) => {
     navigate(`/orders/${orderId}`);
@@ -47,205 +75,182 @@ const OrdersPage = () => {
   const statusSlug = (status = '') => status.toLowerCase().replace(/\s+/g, '-');
 
   const visibleOrders = () => {
-    switch (statusFilter) {
-      case 'pending':
-        return orders.filter((o) => o.status === 'Pending');
-      case 'confirmed':
-        return orders.filter((o) => o.status === 'Confirmed' || o.status === 'Packed');
-      case 'shipped':
-        return orders.filter((o) => o.status === 'Shipped Out');
-      case 'out-for-delivery':
-        return orders.filter((o) => o.status === 'Out for Delivery');
-      case 'delivered':
-        return orders.filter((o) => o.status === 'Delivered');
-      case 'cancelled':
-        return cancelledOrders;
-      default:
-        return orders;
-    }
+    if (statusFilter === 'cancelled') return cancelledOrders;
+    if (statusFilter === 'all') return orders;
+    return orders.filter((o) => matchesFilter(o, statusFilter));
   };
 
   const renderHeadline = (order) => {
     // order_date holds the estimated delivery date (set on insert)
     const eta = formatDate(order.order_date || order.created_at);
     if (order.status === 'Cancelled') {
-      return <span className="ship-headline cancelled">Order cancelled</span>;
+      return <span className="order-headline is-cancelled">Order cancelled</span>;
     }
     if (order.status === 'Delivered') {
       return (
-        <span className="ship-headline delivered">
+        <span className="order-headline">
           Delivered <strong>{eta}</strong>
         </span>
       );
     }
     return (
-      <span className="ship-headline">
+      <span className="order-headline">
         Arriving <strong>{eta}</strong>
       </span>
     );
   };
 
+  const shown = visibleOrders();
+
   return (
     <div className="orders-layout">
       <main className="orders-main">
         <div className="orders-list-col">
-          {/* Page heading */}
-          <div className="orders-header">
-            <h1 className="orders-page-title">My orders</h1>
-
-            {/* Filters */}
-            <div className="order-filters">
-              <div className="filter-group">
-                {FILTERS.map((f) => (
-                  <button
-                    key={f.key}
-                    className={`filter-btn ${statusFilter === f.key ? 'active' : ''}`}
-                    onClick={() => setStatusFilter(f.key)}
-                  >
-                    {f.label}
-                  </button>
-                ))}
-              </div>
+          <header className="orders-header">
+            <p className="orders-eyebrow">Account</p>
+            <div className="orders-title-row">
+              <h1 className="orders-page-title">My orders</h1>
+              {!loading && !!allOrders.length && (
+                <span className="orders-count">
+                  {allOrders.length} order{allOrders.length > 1 ? 's' : ''}
+                </span>
+              )}
             </div>
+          </header>
+
+          <div className="order-filters" role="tablist" aria-label="Filter orders">
+            {FILTERS.map((f) => (
+              <button
+                key={f.key}
+                type="button"
+                role="tab"
+                aria-selected={statusFilter === f.key}
+                className={`filter-btn ${statusFilter === f.key ? 'active' : ''}`}
+                onClick={() => setStatusFilter(f.key)}
+              >
+                {f.label}
+                {!loading && !!filterCounts[f.key] && (
+                  <span className="filter-count">{filterCounts[f.key]}</span>
+                )}
+              </button>
+            ))}
           </div>
 
           {loading ? (
             <div className="order-list">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div className="order-card order-card--skeleton" key={i}>
-                  <div className="order-card-head">
-                    <Skeleton width={180} height={11} />
-                    <Skeleton width={92} height={20} />
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div className="order-row order-row--skeleton" key={i}>
+                  <div className="order-thumbs">
+                    <Skeleton width={88} height={88} />
+                    <Skeleton width={88} height={88} />
                   </div>
-                  <div className="order-card-body">
-                    <div className="product-list">
-                      <Skeleton width={72} height={72} />
-                      <Skeleton width={72} height={72} />
-                    </div>
-                    <div className="order-card-info">
-                      <Skeleton width="55%" height={14} />
-                      <Skeleton width="75%" height={12} />
-                    </div>
-                    <Skeleton width={90} height={12} />
+                  <div className="order-summary">
+                    <Skeleton width={140} height={11} />
+                    <Skeleton width="60%" height={16} />
+                    <Skeleton width="40%" height={12} />
                   </div>
+                  <Skeleton width={92} height={26} />
                 </div>
               ))}
             </div>
+          ) : shown.length === 0 ? (
+            <div className="orders-empty">
+              <div className="orders-empty__icon">
+                <FiPackage size={22} />
+              </div>
+              <p className="orders-empty__title">
+                {statusFilter === 'cancelled' ? 'No cancelled orders' : 'No orders yet'}
+              </p>
+              <p className="orders-empty__hint">
+                {statusFilter === 'cancelled'
+                  ? 'Cancelled orders will appear here'
+                  : 'Orders you place will show up here'}
+              </p>
+              {statusFilter !== 'cancelled' && (
+                <Link to="/search" className="orders-empty__btn">
+                  Start shopping
+                </Link>
+              )}
+            </div>
           ) : (
             <div className="order-list">
-              {visibleOrders().map((order) => {
-                const itemCount = order.order_items?.length || 0;
+              {shown.map((order) => {
+                const items = order.order_items || [];
+                const itemCount = items.length;
+                const totalQty = items.reduce((sum, it) => sum + (Number(it.quantity) || 0), 0);
                 const slug = statusSlug(order.status);
                 return (
-                  <div
-                    className="order-card"
+                  <article
+                    className="order-row"
                     key={order.id}
+                    tabIndex={0}
+                    role="link"
                     onClick={() => handleOrderClick(order.id)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleOrderClick(order.id);
+                      }
+                    }}
                   >
-                    {/* top strip: order no + date / status */}
-                    <div className="order-card-head">
-                      <span className="order-card-no">
-                        Order #{order.tracking_number || order.id}
-                        <span className="order-card-date">{formatDate(order.created_at)}</span>
-                      </span>
-                      <span className={`order-status order-status--${slug}`}>{order.status}</span>
+                    <div className="order-thumbs">
+                      {items.slice(0, 2).map((item, i) => {
+                        const product: any = item.products;
+                        return (
+                          <div className="order-thumb" key={i}>
+                            <img
+                              src={`${SUPABASE_STORAGE_URL}productimages/${product?.banner_url}`}
+                              alt={product?.name || 'Product'}
+                              loading="lazy"
+                            />
+                            {item.quantity > 1 && (
+                              <span className="order-thumb-qty">×{item.quantity}</span>
+                            )}
+                          </div>
+                        );
+                      })}
+                      {itemCount > 2 && (
+                        <span className="order-thumb-more" aria-hidden="true">
+                          +{itemCount - 2}
+                        </span>
+                      )}
                     </div>
 
-                    <div className="order-card-body">
-                      {/* product thumbnails */}
-                      <div className="product-list">
-                        {order.order_items?.slice(0, 2).map((item, i) => {
-                          const product: any = item.products;
-                          return (
-                            <div className="product-thumb" key={i}>
-                              <img
-                                src={`${SUPABASE_STORAGE_URL}productimages/${product?.banner_url}`}
-                                alt={product?.name}
-                              />
-                              {item.quantity > 1 && (
-                                <span className="thumb-qty-badge">×{item.quantity}</span>
-                              )}
-                            </div>
-                          );
-                        })}
-                        {itemCount > 2 && (
-                          <button
-                            type="button"
-                            className="product-more-tile"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleOrderClick(order.id);
-                            }}
-                          >
-                            +{itemCount - 2}
-                            <small>more</small>
-                          </button>
-                        )}
-                      </div>
+                    <div className="order-summary">
+                      <p className="order-ref">
+                        <span>Order</span> {order.tracking_number || order.id}
+                        <span className="order-ref-date">{formatDate(order.created_at)}</span>
+                      </p>
+                      {renderHeadline(order)}
+                      <p className="order-meta">
+                        {totalQty} item{totalQty !== 1 ? 's' : ''}
+                        <span className="order-meta-dot">·</span>${' '}
+                        {Number(order.total_amount).toFixed(2)}
+                      </p>
+                    </div>
 
-                      {/* info */}
-                      <div className="order-card-info">
-                        {renderHeadline(order)}
-                        <div className="order-meta-line">
-                          <span>
-                            {itemCount} item{itemCount > 1 ? 's' : ''}
-                          </span>
-                          <i>·</i>
-                          <span>Sold by UOM</span>
-                          <i>·</i>
-                          <span className="meta-paid">
-                            Paid ${Number(order.total_amount).toFixed(2)}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* view link */}
-                      <button
-                        type="button"
-                        className="order-card-link"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleOrderClick(order.id);
-                        }}
-                      >
+                    <div className="order-side">
+                      <span className={`order-status order-status--${slug}`}>{order.status}</span>
+                      <span className="order-open">
                         View order
                         <svg
-                          width="10"
-                          height="10"
+                          width="12"
+                          height="12"
                           viewBox="0 0 24 24"
                           fill="none"
                           stroke="currentColor"
-                          strokeWidth="3"
+                          strokeWidth="2"
                           strokeLinecap="round"
                           strokeLinejoin="round"
+                          aria-hidden="true"
                         >
                           <path d="M9 18l6-6-6-6" />
                         </svg>
-                      </button>
+                      </span>
                     </div>
-                  </div>
+                  </article>
                 );
               })}
-              {visibleOrders().length === 0 && !loading && (
-                <div className="orders-empty">
-                  <div className="orders-empty__icon">
-                    <FiPackage size={22} />
-                  </div>
-                  <p className="orders-empty__title">
-                    {statusFilter === 'cancelled' ? 'No cancelled orders' : 'No orders yet'}
-                  </p>
-                  <p className="orders-empty__hint">
-                    {statusFilter === 'cancelled'
-                      ? 'Cancelled orders will appear here'
-                      : 'Orders you place will show up here'}
-                  </p>
-                  {statusFilter !== 'cancelled' && (
-                    <Link to="/search" className="orders-empty__btn">
-                      Start shopping
-                    </Link>
-                  )}
-                </div>
-              )}
             </div>
           )}
         </div>

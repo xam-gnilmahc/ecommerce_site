@@ -375,34 +375,6 @@
 }
 
 /* ═══════════════════════════════════
-   STANDALONE PAGE — /notification
-   the dropdown becomes a centered card
-═══════════════════════════════════ */
-
-.notif-page {
-  min-height: calc(100vh - 73px);
-
-  padding: 40px 16px 72px;
-
-  display: flex;
-  justify-content: center;
-
-  background: #ffffff;
-}
-
-.notif-page__card {
-  position: static;
-
-  width: min(640px, 100%);
-  height: auto;
-  max-height: calc(100vh - 160px);
-
-  border: 1px solid var(--border, #dfdfdf);
-
-  box-shadow: none;
-}
-
-/* ═══════════════════════════════════
    NAVBAR BELL — hover popup in nav-right
 ═══════════════════════════════════ */
 

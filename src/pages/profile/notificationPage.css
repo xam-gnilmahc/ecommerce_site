@@ -1,0 +1,360 @@
+/* ═══════════════════════════════════════════════
+   NOTIFICATIONS PAGE — minimal editorial list
+   matches the orders pages
+═══════════════════════════════════════════════ */
+
+.np-page {
+  min-height: 100vh;
+  background: #ffffff;
+  font-family: var(--font-main);
+}
+
+.np-container {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 32px var(--page-pad) 96px;
+}
+
+/* ── HEADER ──────────────────────────────────── */
+
+.np-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+}
+
+.np-eyebrow {
+  margin: 0 0 10px;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.np-title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.np-title {
+  margin: 0;
+  font-family: var(--font-main);
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.np-unread-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.np-unread-count::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ink);
+}
+
+.np-subtitle {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.np-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 2px;
+}
+
+.np-mark {
+  padding: 4px 0;
+  background: none;
+  border: none;
+  font-family: var(--font-main);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.np-mark:hover {
+  color: var(--ink);
+  text-decoration: underline;
+}
+
+.np-settings {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.np-settings:hover {
+  border-color: var(--ink);
+}
+
+/* ── LIST ────────────────────────────────────── */
+
+.np-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.np-item {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 22px 8px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.18s ease;
+}
+
+.np-item.is-link {
+  cursor: pointer;
+  outline: none;
+}
+
+.np-item.is-link:hover,
+.np-item.is-link:focus-visible {
+  background: var(--surface-tint);
+}
+
+.np-item--skeleton {
+  cursor: default;
+  pointer-events: none;
+}
+
+/* unread marker on the left edge */
+.np-item.is-unread::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 22px;
+  bottom: 22px;
+  width: 2px;
+  background: var(--ink);
+}
+
+.np-item.is-unread {
+  padding-left: 18px;
+}
+
+.np-icon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  background: #ffffff;
+  color: var(--ink);
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease;
+}
+
+.np-item.is-link:hover .np-icon {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #ffffff;
+}
+
+/* content */
+
+.np-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.np-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.np-item-title {
+  margin: 0;
+  font-family: var(--font-main);
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.np-item.is-unread .np-item-title {
+  color: var(--ink);
+}
+
+.np-time {
+  flex-shrink: 0;
+  font-size: 11.5px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.np-message {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--muted);
+  word-break: break-word;
+}
+
+.np-item.is-unread .np-message {
+  color: var(--ink);
+}
+
+.np-message a {
+  color: var(--ink);
+  text-decoration: underline;
+}
+
+.np-message strong,
+.np-message b {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.np-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  opacity: 0.65;
+  transition: opacity 0.18s ease;
+}
+
+.np-item:hover .np-link {
+  opacity: 1;
+}
+
+.np-link svg {
+  transition: transform 0.18s ease;
+}
+
+.np-item:hover .np-link svg {
+  transform: translateX(3px);
+}
+
+.np-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ink);
+  margin-top: 8px;
+  flex-shrink: 0;
+}
+
+/* ── EMPTY / LOADING ─────────────────────────── */
+
+.np-empty {
+  text-align: center;
+  padding: 72px 20px 64px;
+  color: var(--muted);
+}
+
+.np-empty__icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 16px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink);
+}
+
+.np-empty__title {
+  margin: 0 0 4px;
+  font-size: 16px;
+  color: var(--ink);
+}
+
+.np-empty__hint {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.np-loading {
+  margin: 24px 0 0;
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ── RESPONSIVE ──────────────────────────────── */
+
+@media (max-width: 560px) {
+  .np-container {
+    padding: 24px 16px 72px;
+  }
+
+  .np-head {
+    align-items: flex-start;
+    padding-bottom: 18px;
+  }
+
+  .np-actions {
+    gap: 12px;
+  }
+
+  .np-item {
+    padding: 18px 4px;
+    gap: 12px;
+  }
+
+  .np-item.is-unread {
+    padding-left: 14px;
+  }
+
+  .np-item.is-unread::before {
+    top: 18px;
+    bottom: 18px;
+  }
+
+  .np-dot {
+    display: none;
+  }
+}

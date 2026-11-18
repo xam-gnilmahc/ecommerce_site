@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import Pusher from 'pusher-js';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/authContext';
 import { PUSHER_APP_KEY, PUSHER_CLUSTER } from '../../config/env';
 import { FiBell, FiSettings, FiShoppingBag, FiTruck, FiRefreshCw } from 'react-icons/fi';
@@ -9,6 +10,7 @@ import { supabase } from '../../supaBaseClient';
 import { fetchNotifications } from '../../tanstack/notifications';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import './notificationPage.css';
 dayjs.extend(relativeTime);
 
 const PAGE_SIZE = 10;
@@ -23,21 +25,21 @@ interface Notification {
 }
 
 const TYPE_META = [
-  { label: 'New Order', Icon: FiShoppingBag },
+  { label: 'New order', Icon: FiShoppingBag },
   { label: 'Out for delivery', Icon: FiTruck },
   { label: 'Order update', Icon: FiRefreshCw },
 ];
 
 const NotificationPage: React.FC = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [initialLoading, setInitialLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
   const [unreadCount, setUnreadCount] = useState(0);
-
-  const listRef = useRef<HTMLDivElement>(null);
+  const fetchingRef = useRef(false);
 
   const fetchUnreadCount = async () => {
     if (!user?.id) return;
@@ -57,6 +59,7 @@ const NotificationPage: React.FC = () => {
   };
 
   const fetchNotificationsPage = async (pageNum: number) => {
+    fetchingRef.current = true;
     try {
       if (pageNum === 1) setInitialLoading(true);
       setLoadingMore(true);
@@ -72,6 +75,7 @@ const NotificationPage: React.FC = () => {
     } catch (error) {
       console.error('Failed to load notifications:', error);
     } finally {
+      fetchingRef.current = false;
       setLoadingMore(false);
       setInitialLoading(false);
     }
@@ -130,98 +134,145 @@ const NotificationPage: React.FC = () => {
     };
   }, [user?.id]);
 
-  // Infinite scroll handler
-  const onScroll = () => {
-    if (!listRef.current || loadingMore || !hasMore) return;
-
-    const { scrollTop, scrollHeight, clientHeight } = listRef.current;
-
-    if (scrollHeight - scrollTop - clientHeight < 100) {
-      setPage((prevPage) => prevPage + 1);
-    }
-  };
-
   // Fetch more when page changes (except first load)
   useEffect(() => {
     if (page === 1) return;
     fetchNotificationsPage(page);
   }, [page]);
 
-  return (
-    <div className="notif-page">
-      <div className="notification-dropdown notif-page__card">
-        {/* HEADER */}
-        <div className="notification-header">
-          <h4>Notifications</h4>
+  // Infinite scroll on the document
+  useEffect(() => {
+    if (initialLoading || loadingMore || !hasMore) return;
 
-          <div className="notification-header__actions">
+    const onScroll = () => {
+      if (fetchingRef.current) return;
+      const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+      if (scrollHeight - scrollTop - clientHeight < 320) {
+        fetchingRef.current = true;
+        setPage((prevPage) => prevPage + 1);
+      }
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [initialLoading, loadingMore, hasMore]);
+
+  return (
+    <div className="np-page">
+      <div className="np-container">
+        <header className="np-head">
+          <div>
+            <p className="np-eyebrow">Account</p>
+            <div className="np-title-row">
+              <h1 className="np-title">Notifications</h1>
+              {!initialLoading && unreadCount > 0 && (
+                <span className="np-unread-count">
+                  {unreadCount} unread
+                </span>
+              )}
+            </div>
+            <p className="np-subtitle">Order updates and delivery alerts</p>
+          </div>
+
+          <div className="np-actions">
             {unreadCount > 0 && (
-              <button type="button" className="notification-mark" onClick={markAllRead}>
+              <button type="button" className="np-mark" onClick={markAllRead}>
                 Mark all read
               </button>
             )}
-
             <button
               type="button"
-              className="notification-settings-btn"
-              onClick={() => window.open('/settings', '_self')}
+              className="np-settings"
+              onClick={() => navigate('/settings')}
               aria-label="Notification settings"
             >
-              <FiSettings size={17} />
+              <FiSettings size={16} />
             </button>
           </div>
-        </div>
+        </header>
 
-        {/* LIST */}
-        <div className="notification-list" ref={listRef} onScroll={onScroll}>
-          {initialLoading ? (
-            Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="notification-item notification-item--skeleton">
+        {initialLoading ? (
+          <div className="np-list">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="np-item np-item--skeleton">
                 <Skeleton width={40} height={40} style={{ flexShrink: 0 }} />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <Skeleton width="45%" height={12} style={{ display: 'block', marginBottom: 8 }} />
-                  <Skeleton width="85%" height={11} style={{ display: 'block' }} />
+                <div className="np-content">
+                  <Skeleton width={140} height={12} style={{ display: 'block', marginBottom: 8 }} />
+                  <Skeleton width="80%" height={11} style={{ display: 'block' }} />
                 </div>
               </div>
-            ))
-          ) : notifications.length === 0 ? (
-            <div className="notification-empty">
-              <div className="notification-empty__icon">
-                <FiBell size={22} />
-              </div>
-              <p className="notification-empty__title">No notifications yet</p>
-              <p className="notification-empty__hint">Order updates will appear here</p>
+            ))}
+          </div>
+        ) : notifications.length === 0 ? (
+          <div className="np-empty">
+            <div className="np-empty__icon">
+              <FiBell size={22} />
             </div>
-          ) : (
-            notifications.map(({ id, order_id, message, created_at, type }) => {
+            <p className="np-empty__title">No notifications yet</p>
+            <p className="np-empty__hint">Order updates will appear here</p>
+          </div>
+        ) : (
+          <div className="np-list">
+            {notifications.map(({ id, order_id, message, created_at, type, read }) => {
               const meta = TYPE_META[type] || TYPE_META[0];
               const TypeIcon = meta.Icon;
               return (
-                <div
+                <article
                   key={id}
-                  className="notification-item"
-                  onClick={() => order_id && window.open(`/orders/${order_id}`, '_blank')}
+                  className={`np-item ${!read ? 'is-unread' : ''} ${order_id ? 'is-link' : ''}`}
+                  onClick={() => order_id && navigate(`/orders/${order_id}`)}
+                  role={order_id ? 'link' : undefined}
+                  tabIndex={order_id ? 0 : undefined}
+                  onKeyDown={(e) => {
+                    if (order_id && (e.key === 'Enter' || e.key === ' ')) {
+                      e.preventDefault();
+                      navigate(`/orders/${order_id}`);
+                    }
+                  }}
                 >
-                  <div className="notification-icon">
+                  <span className="np-icon">
                     <TypeIcon size={17} />
-                  </div>
-                  <div className="notification-content">
-                    <div className="notification-top">
-                      <h5>{meta.label}</h5>
-                      <span>{dayjs(created_at).fromNow()}</span>
+                  </span>
+
+                  <div className="np-content">
+                    <div className="np-top">
+                      <h2 className="np-item-title">{meta.label}</h2>
+                      <time className="np-time">{dayjs(created_at).fromNow()}</time>
                     </div>
                     <p
+                      className="np-message"
                       dangerouslySetInnerHTML={{
                         __html: message,
                       }}
                     />
+                    {order_id && (
+                      <span className="np-link">
+                        View order
+                        <svg
+                          width="11"
+                          height="11"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          aria-hidden="true"
+                        >
+                          <path d="M9 18l6-6-6-6" />
+                        </svg>
+                      </span>
+                    )}
                   </div>
-                </div>
+
+                  {!read && <span className="np-dot" aria-label="Unread" />}
+                </article>
               );
-            })
-          )}
-          {loadingMore && !initialLoading && <div className="notification-loading">Loading...</div>}
-        </div>
+            })}
+          </div>
+        )}
+
+        {loadingMore && !initialLoading && <p className="np-loading">Loading more…</p>}
       </div>
     </div>
   );

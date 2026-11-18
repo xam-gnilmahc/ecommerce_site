@@ -5,6 +5,7 @@ import { useOrderDetails } from '../../tanstack/orders';
 import Skeleton from 'react-loading-skeleton';
 
 import { FaMoneyBillWave, FaCcVisa, FaGooglePay, FaApplePay, FaArrowLeft } from 'react-icons/fa';
+import { SUPABASE_STORAGE_URL } from '../../utils/supabaseStorage';
 
 import './orderDetails.css';
 
@@ -192,109 +193,95 @@ const OrderDetailsPage: React.FC = () => {
     setTimeout(() => printWindow.print(), 400);
   };
 
+  const formatDate = (d?: string) => {
+    if (!d) return '—';
+    return new Date(d).toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    });
+  };
+
+  const paymentLabel = (m: number) => {
+    if (m === 0) return 'Card';
+    if (m === 1) return 'Google Pay';
+    if (m === 2) return 'Apple Pay';
+    return 'Cash on delivery';
+  };
+
   if (loading) {
     return (
       <div className="od-page">
         <div className="od-container">
-          <Skeleton height={160} borderRadius={0} style={{ marginBottom: 16 }} />
-          <Skeleton height={320} borderRadius={0} style={{ marginBottom: 16 }} />
-          <Skeleton height={200} borderRadius={0} />
+          <Skeleton height={28} width={120} borderRadius={0} style={{ marginBottom: 28 }} />
+          <Skeleton height={44} width={280} borderRadius={0} style={{ marginBottom: 28 }} />
+          <Skeleton height={120} borderRadius={0} style={{ marginBottom: 24 }} />
+          <Skeleton height={280} borderRadius={0} />
         </div>
       </div>
     );
   }
 
   const address = parseAddress(order?.shipping_address);
+  const items = order?.order_items ?? [];
   const total =
     order?.order_items?.reduce((a: number, b: any) => a + b.price_each * b.quantity, 0) ?? 0;
+  const itemQty = items.reduce((sum: number, it: any) => sum + (Number(it.quantity) || 0), 0);
+  const totalPaid = Number(order?.total_amount ?? total);
+  const shipping = Math.max(0, totalPaid - total);
   const doneCount = TRACK_STEPS.filter((s) => STATUS_DONE_MAP[s]?.(order?.status)).length;
   const progressPct = doneCount <= 1 ? 0 : ((doneCount - 1) / (TRACK_STEPS.length - 1)) * 80;
   const statusKey = (order?.status ?? '').toLowerCase().replace(/ /g, '-');
+  const eta = formatDate(order?.order_date || order?.created_at);
+  const isCancelled = order?.status === 'Cancelled';
 
   return (
     <div className="od-page">
       <div className="od-container">
-        <div className="od-receipt">
-          {/* ── TOP ACTION BAR (BACK + PRINT) ──────────── */}
-          <div className="od-print-top">
-            <button className="od-back-btn" onClick={() => navigate('/order')}>
-              <FaArrowLeft /> Back to Orders
-            </button>
-            <button className="od-print-btn" onClick={handlePrint}>
-              Print Invoice
-            </button>
-          </div>
+        {/* ── TOOLBAR ────────────────────────────────── */}
+        <div className="od-toolbar">
+          <button className="od-back-btn" onClick={() => navigate('/order')}>
+            <FaArrowLeft size={11} /> My orders
+          </button>
+          <button className="od-print-btn" onClick={handlePrint}>
+            Print invoice
+          </button>
+        </div>
 
-          {/* ── HEADER ─────────────────────────────────── */}
-          <div className="od-header">
-            <div className="od-header-left">
-              <span className="od-brand-name">UOM</span>
-              <span className="od-brand-tagline">Premium Tech Store</span>
-            </div>
-            <div className="od-header-right">
-              <h1 className="od-invoice-title">INVOICE</h1>
-              <div className="od-invoice-meta">
-                <span>
-                  <strong>Invoice #</strong> INV-{order?.id}
-                </span>
-                <span>
-                  <strong>Order #</strong> {order?.id}
-                </span>
-                <span>
-                  <strong>Date:</strong>{' '}
-                  {new Date(order?.created_at || '').toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
-                </span>
-                {order?.tracking_number && (
-                  <span>
-                    <strong>Tracking:</strong> {order?.tracking_number}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* ── BILL TO / PAYMENT ──────────────────────── */}
-          <div className="od-parties">
-            <div className="od-party">
-              <p className="od-party-label">Bill To</p>
-              <p className="od-party-name">{user?.full_name || user?.name}</p>
-              {address && (
-                <p className="od-party-detail">
-                  {address.addressLine1}
-                  {address.state ? `, ${address.state}` : ''}
-                </p>
-              )}
-            </div>
-            <div className="od-party">
-              <p className="od-party-label">Payment</p>
-              {order?.orderpayments_logs?.map((l: any, i: number) => (
-                <p className="od-party-detail" key={i}>
-                  {getPaymentIcon(l.payment_method)} ${l.amount} — {l.status}
-                </p>
-              ))}
-            </div>
-          </div>
-
-          {/* ── STATUS ─────────────────────────────────── */}
-          <div className="od-status-row">
+        {/* ── HEADER ─────────────────────────────────── */}
+        <header className="od-head">
+          <p className="od-eyebrow">{isCancelled ? 'Cancelled order' : 'Order details'}</p>
+          <div className="od-head-row">
+            <h1 className="od-title">#{order?.tracking_number || order?.id}</h1>
             <span className={`od-status-pill ${statusKey}`}>{order?.status}</span>
-            <span className="od-status-desc">{STATUS_DESC[order?.status] ?? ''}</span>
           </div>
+          <p className="od-head-meta">
+            Placed {formatDate(order?.created_at)}
+            <span className="od-meta-dot">·</span>
+            {itemQty} item{itemQty !== 1 ? 's' : ''}
+            <span className="od-meta-dot">·</span>${totalPaid.toFixed(2)}
+          </p>
+          <p className="od-head-desc">
+            {isCancelled
+              ? 'This order was cancelled and will not be delivered.'
+              : `${STATUS_DESC[order?.status] ?? ''}. Estimated delivery ${eta}.`}
+          </p>
+        </header>
 
-          {order?.status === 'Cancelled' && order?.Reason && (
-            <div className="od-cancel-reason">
-              <span className="od-cancel-label">Cancellation Reason</span>
-              <p className="od-cancel-text">{order.Reason}</p>
+        {isCancelled && order?.Reason && (
+          <div className="od-cancel-reason">
+            <span className="od-cancel-label">Cancellation reason</span>
+            <p className="od-cancel-text">{order.Reason}</p>
+          </div>
+        )}
+
+        {/* ── TRACKING ───────────────────────────────── */}
+        {!isCancelled && (
+          <section className="od-panel od-track-section">
+            <div className="od-panel-head">
+              <h2 className="od-panel-title">Tracking</h2>
+              <span className="od-panel-note">{TRACK_STEPS[Math.max(doneCount - 1, 0)]}</span>
             </div>
-          )}
-
-          {/* ── TRACKING ───────────────────────────────── */}
-          <div className="od-track-section">
-            <p className="od-section-label">Tracking</p>
             <div className="od-track-wrapper">
               <div className="od-track-line-bg" />
               <div className="od-track-line-fill" style={{ width: `${progressPct}%` }} />
@@ -302,56 +289,126 @@ const OrderDetailsPage: React.FC = () => {
                 const done = STATUS_DONE_MAP[step]?.(order?.status);
                 return (
                   <div key={i} className={`od-track-step ${done ? 'done' : ''}`}>
-                    <div className="od-track-circle">{done ? '✓' : i + 1}</div>
+                    <div className="od-track-circle">
+                      {step === 'Delivered' && done ? '✓' : i + 1}
+                    </div>
                     <div className="od-track-label">{step}</div>
                   </div>
                 );
               })}
             </div>
-          </div>
+          </section>
+        )}
 
-          <hr className="od-divider" />
+        {/* ── BODY: ITEMS + SUMMARY ──────────────────── */}
+        <div className="od-body">
+          <section className="od-panel od-items-section">
+            <div className="od-panel-head">
+              <h2 className="od-panel-title">Items</h2>
+              <span className="od-panel-note">
+                {itemQty} item{itemQty !== 1 ? 's' : ''}
+              </span>
+            </div>
 
-          {/* ── ITEMS TABLE ────────────────────────────── */}
-          <div className="od-items-section">
-            <table className="od-table">
-              <thead>
-                <tr>
-                  <th className="od-th-num">#</th>
-                  <th className="od-th-item">Item</th>
-                  <th className="od-th-qty">Qty</th>
-                  <th className="od-th-price">Unit Price</th>
-                  <th className="od-th-total">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {order?.order_items?.map((item: any, i: number) => (
-                  <tr key={i}>
-                    <td className="od-td-num">{i + 1}</td>
-                    <td className="od-td-item">{item.products?.name}</td>
-                    <td className="od-td-qty">{item.quantity}</td>
-                    <td className="od-td-price">${item.price_each?.toFixed(2)}</td>
-                    <td className="od-td-total">${(item.price_each * item.quantity).toFixed(2)}</td>
-                  </tr>
-                ))}
-              </tbody>
-              <tfoot>
-                <tr className="od-total-row">
-                  <td colSpan={4} className="od-total-label">
-                    Total Paid
-                  </td>
-                  <td className="od-total-value">${total.toFixed(2)}</td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
+            <ul className="od-item-list">
+              {items.map((item: any, i: number) => (
+                <li className="od-item" key={i}>
+                  <div className="od-item-thumb">
+                    {item.products?.banner_url ? (
+                      <img
+                        src={`${SUPABASE_STORAGE_URL}productimages/${item.products.banner_url}`}
+                        alt={item.products?.name || 'Product'}
+                        loading="lazy"
+                      />
+                    ) : null}
+                  </div>
+                  <div className="od-item-info">
+                    <p className="od-item-name">{item.products?.name}</p>
+                    <p className="od-item-qty">
+                      ${item.price_each?.toFixed(2)} × {item.quantity}
+                    </p>
+                  </div>
+                  <p className="od-item-total">
+                    ${(item.price_each * item.quantity).toFixed(2)}
+                  </p>
+                </li>
+              ))}
+            </ul>
 
-          {/* ── FOOTER ─────────────────────────────────── */}
-          <div className="od-footer">
-            <p className="od-thankyou">Thank you for your purchase!</p>
-            <p className="od-contact">Questions? Contact us at maxrai788@gmail.com</p>
-          </div>
+            <div className="od-totals">
+              <div className="od-total-line">
+                <span>Subtotal</span>
+                <span>${total.toFixed(2)}</span>
+              </div>
+              <div className="od-total-line">
+                <span>Shipping</span>
+                <span>{shipping > 0 ? `$${shipping.toFixed(2)}` : 'Free'}</span>
+              </div>
+              <div className="od-total-line od-total-line--grand">
+                <span>Total paid</span>
+                <span>${totalPaid.toFixed(2)}</span>
+              </div>
+            </div>
+          </section>
+
+          <aside className="od-summary">
+            <div className="od-summary-block">
+              <p className="od-summary-label">Delivery</p>
+              <p className="od-summary-strong">{user?.full_name || user?.name}</p>
+              {address ? (
+                <p className="od-summary-text">
+                  {address.addressLine1}
+                  {address.addressLine2 ? `, ${address.addressLine2}` : ''}
+                  <br />
+                  {[address.state, address.zipCode].filter(Boolean).join(', ')}
+                  {address.country ? <>
+                    <br />
+                    {address.country}
+                  </> : null}
+                </p>
+              ) : (
+                <p className="od-summary-text">No address on file</p>
+              )}
+              {!isCancelled && (
+                <p className="od-summary-text od-summary-eta">
+                  {order?.status === 'Delivered' ? 'Delivered' : 'Arriving'} <strong>{eta}</strong>
+                </p>
+              )}
+            </div>
+
+            <div className="od-summary-block">
+              <p className="od-summary-label">Payment</p>
+              {order?.orderpayments_logs?.length ? (
+                order.orderpayments_logs.map((l: any, i: number) => (
+                  <div className="od-pay-row" key={i}>
+                    <span className="od-pay-icon">{getPaymentIcon(l.payment_method)}</span>
+                    <div>
+                      <p className="od-summary-strong">{paymentLabel(l.payment_method)}</p>
+                      <p className="od-summary-text">
+                        ${Number(l.amount).toFixed(2)} · {l.status}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="od-summary-text">No payment recorded</p>
+              )}
+            </div>
+
+            {order?.tracking_number && (
+              <div className="od-summary-block">
+                <p className="od-summary-label">Tracking number</p>
+                <p className="od-summary-mono">{order.tracking_number}</p>
+              </div>
+            )}
+          </aside>
         </div>
+
+        {/* ── FOOTER ─────────────────────────────────── */}
+        <footer className="od-footer">
+          <p className="od-thankyou">Thank you for your purchase.</p>
+          <p className="od-contact">Questions? Contact us at maxrai788@gmail.com</p>
+        </footer>
       </div>
     </div>
   );

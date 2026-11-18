@@ -18,6 +18,8 @@ import {
 } from '../../components/product/GooglePlay.tsx';
 import { processGooglePay } from '../../services/googlePayService.ts';
 import { shippingOptions } from '../../config/ShippingOptions.ts';
+import { FaStar } from 'react-icons/fa';
+import { FiTruck, FiCheck } from 'react-icons/fi';
 
 const Product = () => {
   const { id } = useParams();
@@ -164,19 +166,24 @@ const Product = () => {
     <>
       {/* Details — LEFT column */}
       <div className="productDetails">
+        <Skeleton height={12} width={120} style={{ marginBottom: 18 }} />
+
         <div className="productName">
-          <Skeleton height={26} width="75%" />
+          <Skeleton height={38} width="85%" />
         </div>
 
         <div className="priceRow">
+          <Skeleton height={32} width={130} />
           <Skeleton height={26} width={110} />
         </div>
 
-        <div className="productCartBtn">
-          <Skeleton height={64} />
-        </div>
+        <Skeleton height={72} count={2} />
 
-        <Skeleton height={48} />
+        <Skeleton height={150} />
+
+        <div className="productCartBtn">
+          <Skeleton height={60} />
+        </div>
       </div>
 
       {/* Gallery — RIGHT column */}
@@ -197,60 +204,159 @@ const Product = () => {
     </>
   );
 
-  const ShowProduct = () => (
-    <>
-      {/* Product Details — LEFT column */}
-      <div className="productDetails">
-        <div className="productName">
-          <div className="product-page-title">{product.name}</div>
-        </div>
+  const ShowProduct = () => {
+    const reviews: any[] = product.product_reviews || [];
+    const reviewCount = reviews.length;
+    const avgRating = reviewCount
+      ? (reviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0) / reviewCount).toFixed(1)
+      : null;
 
-        <div className="priceRow">
-          <h2 className="productPrice">${product.amount}</h2>
-        </div>
+    const variants: { size?: string; color?: string; sku_number?: string }[] =
+      product.product_items || [];
+    const sizes = Array.from(new Set(variants.map((v) => v.size).filter(Boolean)));
+    const colors = Array.from(new Set(variants.map((v) => v.color).filter(Boolean)));
+    const sku = variants.find((v) => v.sku_number)?.sku_number;
 
-        {/* ADD TO CART — big black CTA */}
-        <div className="productCartBtn">
-          <button
-            disabled={stockQty === 0}
-            onClick={() => {
-              if (!user) {
-                toast.error('Please login to add products to cart.');
-                navigate('/login');
-                return;
+    const stockLabel =
+      stockQty === null
+        ? 'Checking stock…'
+        : stockQty === 0
+          ? 'Out of stock'
+          : stockQty <= 10
+            ? `Only ${stockQty} left in stock`
+            : 'In stock';
+
+    const stockClass =
+      stockQty === null
+        ? 'is-checking'
+        : stockQty === 0
+          ? 'is-out'
+          : stockQty <= 10
+            ? 'is-low'
+            : 'is-in';
+
+    const specs = [
+      { label: 'Category', value: product.category },
+      { label: 'Available sizes', value: sizes.join(', ') },
+      { label: 'Colours', value: colors.join(', ') },
+      { label: 'SKU', value: sku },
+    ].filter((s) => !!s.value);
+
+    const freeShipping = shippingOptions.find((o) => o.id === 'free');
+    const expressShipping = shippingOptions.find((o) => o.id === 'express');
+
+    return (
+      <>
+        {/* Product Details — LEFT column */}
+        <div className="productDetails">
+          <div className="productMetaTop">
+            {product.category && <span className="productCategory">{product.category}</span>}
+            {avgRating && (
+              <span className="productRating">
+                <FaStar size={11} />
+                <strong>{avgRating}</strong>
+                <i>
+                  ({reviewCount} review{reviewCount > 1 ? 's' : ''})
+                </i>
+              </span>
+            )}
+          </div>
+
+          <div className="productName">
+            <h1 className="product-page-title">{product.name}</h1>
+          </div>
+
+          <div className="priceRow">
+            <h2 className="productPrice">${Number(product.amount).toFixed(2)}</h2>
+            <span className={`productStock ${stockClass}`}>{stockLabel}</span>
+          </div>
+
+          {product.description && (
+            <p className="productDesc">{product.description}</p>
+          )}
+
+          {specs.length > 0 && (
+            <dl className="productSpecs">
+              {specs.map((s) => (
+                <div className="productSpecRow" key={s.label}>
+                  <dt>{s.label}</dt>
+                  <dd>{s.value}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
+
+          <div className="productShip">
+            <FiTruck size={16} />
+            <div>
+              {freeShipping && (
+                <p>
+                  <strong>{freeShipping.label}</strong> — {freeShipping.description}
+                </p>
+              )}
+              {expressShipping && (
+                <p className="productShipAlt">
+                  {expressShipping.label} — {expressShipping.description}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* ADD TO CART — big black CTA */}
+          <div className="productCartBtn">
+            <button
+              disabled={stockQty === 0}
+              onClick={() => {
+                if (!user) {
+                  toast.error('Please login to add products to cart.');
+                  navigate('/login');
+                  return;
+                }
+                addProduct(product);
+              }}
+            >
+              {stockQty === 0 ? 'Out of Stock' : 'Add to Cart'}
+            </button>
+          </div>
+
+          {/* Google Pay — single button */}
+          {paymentRequest && user && stockQty !== 0 && (
+            <GooglePayButton
+              environment="TEST"
+              buttonSizeMode="fill"
+              paymentRequest={paymentRequest}
+              onLoadPaymentData={handleLoadPaymentData}
+              onError={(error) => console.error(error)}
+              onPaymentDataChanged={
+                ((paymentData: any) => getUpdatedPaymentData(paymentRequest, paymentData)) as any
               }
-              addProduct(product);
-            }}
-          >
-            {stockQty === 0 ? 'Out of Stock' : 'Add to Cart'}
-          </button>
+            />
+          )}
+
+          <ul className="productPerks">
+            <li>
+              <FiCheck size={13} /> Secure checkout
+            </li>
+            <li>
+              <FiCheck size={13} /> Order tracking on every order
+            </li>
+            <li>
+              <FiCheck size={13} /> Sold and shipped by UOM
+            </li>
+          </ul>
         </div>
 
-        {/* Google Pay — single button */}
-        {paymentRequest && user && stockQty !== 0 && (
-          <GooglePayButton
-            environment="TEST"
-            buttonSizeMode="fill"
-            paymentRequest={paymentRequest}
-            onLoadPaymentData={handleLoadPaymentData}
-            onError={(error) => console.error(error)}
-            onPaymentDataChanged={
-              ((paymentData: any) => getUpdatedPaymentData(paymentRequest, paymentData)) as any
-            }
+        {/* Product Gallery — RIGHT column */}
+        <div className="productGallery">
+          <ProductImageGallery
+            images={product.product_images || []}
+            productName={product.name || ''}
+            bannerUrl={product.banner_url || ''}
           />
-        )}
-      </div>
-
-      {/* Product Gallery — RIGHT column */}
-      <div className="productGallery">
-        <ProductImageGallery
-          images={product.product_images || []}
-          productName={product.name || ''}
-          bannerUrl={product.banner_url || ''}
-        />
-      </div>
-    </>
-  );
+        </div>
+      </>
+    );
+  };
 
   return (
     <>
