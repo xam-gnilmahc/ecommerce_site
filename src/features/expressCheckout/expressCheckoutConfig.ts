@@ -50,7 +50,7 @@ export const buildElementsOptions = (subtotalCents: number): StripeElementsOptio
       colorPrimary: '#111111',
       colorText: '#111111',
       colorDanger: '#b91c1c',
-      borderRadius: '0px',
+      borderRadius: '8px',
       fontFamily:
         "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Helvetica, Arial, sans-serif",
     },

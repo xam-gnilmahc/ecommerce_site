@@ -232,6 +232,7 @@ const ExpressCheckout: React.FC<ExpressCheckoutProps> = ({
       <div
         ref={containerRef}
         className={`ec-element${mounted ? ' is-ready' : ''}${busy ? ' is-busy' : ''}`}
+        style={mounted ? undefined : { minHeight: 0 }}
       />
 
       <p className="ec-note">
