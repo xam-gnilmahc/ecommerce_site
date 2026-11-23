@@ -1,0 +1,117 @@
+/* ═══════════════════════════════════════════════
+   EXPRESS CHECKOUT (Stripe Express Checkout Element)
+   Matches the checkout page: white form column,
+   hairline borders, 8px radii, muted micro-copy.
+═══════════════════════════════════════════════ */
+
+.ec {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Header ───────────────────────────────────── */
+
+.ec-head {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ec-title {
+  margin: 0;
+  font-family: var(--font-main);
+  font-size: 19px;
+  font-weight: 700;
+  color: #111111;
+}
+
+.ec-hint {
+  margin: 4px 0 0;
+  font-family: var(--font-main);
+  font-size: 13px;
+  color: #616161;
+}
+
+/* ── Stripe element slot ──────────────────────── */
+
+.ec-element {
+  min-height: 48px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.ec-element.is-ready {
+  opacity: 1;
+}
+
+.ec-element.is-busy {
+  pointer-events: none;
+  opacity: 0.55;
+}
+
+/* Button skeletons while Stripe.js mounts the wallet buttons */
+
+.ec-buttons-skeleton {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.ec-button-skeleton {
+  position: relative;
+  height: 48px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f0f0f1;
+}
+
+.ec-button-skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, #e2e2e4 45%, #f7f7f8 55%, transparent 100%);
+  transform: translateX(-100%);
+  animation: ec-shimmer 1.25s ease-in-out infinite;
+}
+
+.ec-button-skeleton:nth-child(2)::after {
+  animation-delay: 0.12s;
+}
+
+.ec-button-skeleton:nth-child(3)::after {
+  animation-delay: 0.24s;
+}
+
+.ec-button-skeleton:nth-child(4)::after {
+  animation-delay: 0.36s;
+}
+
+@keyframes ec-shimmer {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}
+
+/* ── Message ─────────────────────────────────── */
+
+.ec-note {
+  margin: 0;
+  font-family: var(--font-main);
+  font-size: 12px;
+  line-height: 1.5;
+  color: #616161;
+}
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════ */
+
+@media (max-width: 479px) {
+  .ec-buttons-skeleton {
+    grid-template-columns: 1fr;
+  }
+}

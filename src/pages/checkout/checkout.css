@@ -34,134 +34,12 @@
   gap: 28px;
 }
 
-/* Express checkout */
-
-.ck-express-label {
-  margin: 0 0 12px;
-  text-align: center;
-  font-size: 13px;
-  color: #616161;
-}
-
-.ck-express-btns {
-  display: flex;
-  justify-content: center;
-}
-
-.ck-express-btns > * {
-  width: 100%;
-  max-width: 360px;
-}
-
-.ck-or {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  color: #616161;
-  font-size: 13px;
-  margin-top: 4px;
-}
-
-.ck-or::before,
-.ck-or::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: #e3e3e3;
-}
-
 /* Sections */
 
 .ck-section {
   display: flex;
   flex-direction: column;
   gap: 12px;
-}
-
-.ck-section-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.ck-section-title {
-  margin: 0;
-  font-size: 19px;
-  font-weight: 700;
-  color: #111111;
-}
-
-.ck-section-title--sm {
-  font-size: 16px;
-}
-
-.ck-section-sub {
-  margin: -6px 0 4px;
-  font-size: 13px;
-  color: #616161;
-}
-
-/* Inputs */
-
-.ck-input {
-  width: 100%;
-  height: 48px;
-  padding: 0 16px;
-
-  background: #ffffff;
-  border: 1px solid #b3b3b3;
-  border-radius: 8px;
-
-  font-family: var(--font-main);
-  font-size: 15px;
-  color: #111111;
-  outline: none;
-}
-
-.ck-input:focus {
-  border-color: #111111;
-  box-shadow: 0 0 0 1px #111111;
-}
-
-.ck-input::placeholder {
-  color: #616161;
-}
-
-.ck-select {
-  position: relative;
-}
-
-.ck-select::after {
-  content: '▾';
-  position: absolute;
-  right: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 12px;
-  color: #616161;
-  pointer-events: none;
-}
-
-.ck-select select {
-  width: 100%;
-  height: 48px;
-  padding: 0 40px 0 16px;
-
-  background: #ffffff;
-  border: 1px solid #b3b3b3;
-  border-radius: 8px;
-
-  font-family: var(--font-main);
-  font-size: 15px;
-  color: #111111;
-  outline: none;
-  appearance: none;
-}
-
-.ck-select select:focus {
-  border-color: #111111;
-  box-shadow: 0 0 0 1px #111111;
 }
 
 .ck-row {
@@ -175,241 +53,6 @@
 
 .ck-row--3 {
   grid-template-columns: 1.2fr 1fr 0.9fr;
-}
-
-/* Checkbox */
-
-.ck-check {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  font-size: 14px;
-  color: #111111;
-
-  cursor: pointer;
-}
-
-.ck-check input {
-  width: 18px;
-  height: 18px;
-  accent-color: #000000;
-  cursor: pointer;
-}
-
-.ck-check--tight {
-  font-size: 13px;
-  margin-top: 12px;
-}
-
-/* Shipping method */
-
-.ck-ship-placeholder {
-  padding: 18px 16px;
-
-  background: #f6f6f7;
-  border-radius: 8px;
-
-  font-size: 13px;
-  color: #616161;
-  text-align: center;
-}
-
-.ck-ship-options {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.ck-ship-option {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-
-  padding: 16px;
-
-  background: #ffffff;
-  border: 1px solid #b3b3b3;
-  border-radius: 8px;
-
-  font-size: 14px;
-  color: #111111;
-
-  cursor: pointer;
-}
-
-.ck-ship-option.active {
-  border-color: #111111;
-  box-shadow: 0 0 0 1px #111111;
-}
-
-.ck-ship-option input {
-  accent-color: #000000;
-}
-
-.ck-ship-option-price {
-  margin-left: auto;
-  font-weight: 500;
-}
-
-/* Payment box */
-
-.ck-pay-box {
-  border: 1px solid #b3b3b3;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.ck-pay-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-
-  padding: 16px;
-
-  background: #ffffff;
-  border-bottom: 1px solid #b3b3b3;
-
-  font-size: 14px;
-}
-
-.ck-pay-row--active {
-  background: #f6f6f7;
-}
-
-.ck-radio {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  border: 1px solid #b3b3b3;
-  background: #ffffff;
-  flex-shrink: 0;
-}
-
-.ck-radio--on {
-  border: 5px solid #000000;
-}
-
-.ck-pay-row-label {
-  font-weight: 500;
-}
-
-.ck-card-badges {
-  margin-left: auto;
-  display: flex;
-  gap: 6px;
-}
-
-.ck-card-badge {
-  padding: 3px 6px;
-
-  background: #ffffff;
-  border: 1px solid #d9d9d9;
-  border-radius: 4px;
-
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  color: #111111;
-}
-
-.ck-pay-body {
-  padding: 16px;
-  background: #f6f6f7;
-}
-
-.ck-stripe-box {
-  background: #ffffff;
-  border: 1px solid #b3b3b3;
-  border-radius: 8px;
-  padding: 16px;
-}
-
-.ck-test-cards {
-  margin: 12px 0 0;
-  font-size: 11px;
-  color: #616161;
-}
-
-.ck-test-cards code {
-  background: #ffffff;
-  border: 1px solid #e3e3e3;
-  border-radius: 4px;
-  padding: 1px 5px;
-}
-
-/* Disclaimer */
-
-.ck-disclaimer {
-  display: flex;
-  gap: 12px;
-
-  padding: 16px;
-
-  background: #f6f6f7;
-  border-radius: 8px;
-
-  font-size: 13px;
-  color: #333333;
-}
-
-.ck-disclaimer-icon {
-  font-size: 15px;
-  color: #616161;
-  line-height: 1.4;
-}
-
-.ck-disclaimer strong {
-  display: block;
-  margin-bottom: 4px;
-  color: #111111;
-}
-
-.ck-disclaimer p {
-  margin: 0;
-  line-height: 1.55;
-}
-
-/* Submit */
-
-.ck-submit {
-  width: 100%;
-  height: 54px;
-
-  background: #000000;
-  border: none;
-  border-radius: 8px;
-
-  font-family: var(--font-main);
-  font-size: 15px;
-  font-weight: 600;
-  color: #ffffff;
-
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-
-.ck-submit:hover:not(:disabled) {
-  background: #262626;
-}
-
-.ck-submit:disabled {
-  background: #9a9a9a;
-  cursor: not-allowed;
-}
-
-/* Footer links */
-
-.ck-footer-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 18px;
-}
-
-.ck-footer-links a {
-  font-size: 12px;
-  color: #111111;
-  text-decoration: underline;
 }
 
 /* ─── RIGHT: summary panel ───────────────────── */
@@ -631,12 +274,24 @@
 .ck-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(250, 250, 252, 0.85);
-  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   z-index: 99999;
   display: flex;
   align-items: center;
   justify-content: center;
+  /* Fade in instead of popping a blurred white sheet over the page. */
+  animation: ck-overlay-in 0.2s ease-out both;
+}
+
+@keyframes ck-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .ck-overlay-box {
@@ -756,9 +411,5 @@
 
   .ck-row--2 {
     grid-template-columns: 1fr;
-  }
-
-  .ck-footer-links {
-    gap: 12px;
   }
 }

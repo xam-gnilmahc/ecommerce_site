@@ -168,12 +168,20 @@ export const usePlaceOrder = () => {
 
       return orderId;
     },
-    onSuccess: async (_, { userId }) => {
-      await supabase.from('cart').delete().eq('user_id', userId);
-      queryClient.invalidateQueries({ queryKey: ['cart', userId] });
-      queryClient.invalidateQueries({ queryKey: ['cart', 'total', userId] });
+    onSuccess: (_, { userId }) => {
+      // The order row is already committed here. Cart cleanup and the cart
+      // refreshes are not worth blocking the success screen for, so let them
+      // finish in the background.
+      void supabase
+        .from('cart')
+        .delete()
+        .eq('user_id', userId)
+        .then(() => {
+          queryClient.invalidateQueries({ queryKey: ['cart', userId] });
+          queryClient.invalidateQueries({ queryKey: ['cart', 'total', userId] });
+        });
       queryClient.invalidateQueries({ queryKey: ['orders', userId] });
-      toast.success('Payment successful!');
+      toast.success('Order placed!');
     },
   });
 };

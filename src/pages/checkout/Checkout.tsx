@@ -1,46 +1,20 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Country, State } from 'country-state-city';
 import Skeleton from 'react-loading-skeleton';
-import { useStripe, useElements, CardElement, Elements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
-import GooglePayButton from '@google-pay/button-react';
-import {
-  buildPaymentRequest,
-  getUpdatedPaymentData,
-} from '../../components/product/GooglePlay.tsx';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/authContext';
 import { supabase } from '../../supaBaseClient';
 import { SUPABASE_STORAGE_URL } from '../../utils/supabaseStorage';
-import { STRIPE_URL } from '../../config/env';
 import './Animation.css';
 import './checkout.css';
 import { useCartItems } from '../../tanstack/cart.ts';
 import { usePlaceOrder } from '../../tanstack/orders.ts';
 import { trackPurchase } from '../../tanstack/tracking.ts';
-import { processCardPayment, processGooglePay } from '../../services/googlePayService.ts';
-
-const stripePromise = loadStripe(STRIPE_URL);
-
-const CARD_STYLE = {
-  disableAutofill: true,
-  style: {
-    base: {
-      fontSize: '15px',
-      fontFamily:
-        "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif",
-      color: '#0a0a0a',
-      '::placeholder': { color: '#bbb' },
-    },
-    invalid: { color: '#ef4444' },
-  },
-};
+import { ExpressCheckout } from '../../features/expressCheckout';
+import type { ExpressAuthorization } from '../../features/expressCheckout';
 
 const Checkout = () => {
   const { user } = useAuth();
-  const stripe = useStripe();
-  const elements = useElements();
   const placeOrderMutation = usePlaceOrder();
 
   const { data: cart = [], isLoading: loading } = useCartItems(user?.id);
@@ -50,19 +24,16 @@ const Checkout = () => {
   const [lastName, setLastName] = useState('');
   const [addressLine1, setAddressLine1] = useState('');
   const [addressLine2, setAddressLine2] = useState('');
-  const [city, setCity] = useState('');
+  const [city] = useState('');
   const [zipCode, setZipCode] = useState('');
-  const [phone, setPhone] = useState('');
+  const [phone] = useState('');
   const [selectedCountry, setSelectedCountry] = useState('');
   const [selectedState, setSelectedState] = useState('');
-  const [states, setStates] = useState([]);
   const [paymentLoading, setPaymentLoading] = useState(false);
-  const [paymentRequest, setPaymentRequest] = useState(null);
   const [show, setShow] = useState(false);
-  const [shippingMethod, setShippingMethod] = useState('free');
+  const [shippingMethod] = useState('free');
   const [discountOpen, setDiscountOpen] = useState(false);
   const [discountCode, setDiscountCode] = useState('');
-
   /* ── Prefill from user + default saved address ── */
   useEffect(() => {
     if (!user) return;
@@ -91,7 +62,6 @@ const Checkout = () => {
         setAddressLine2((prev) => prev || def.address_line2 || '');
         if (def.country) {
           setSelectedCountry(def.country);
-          setStates(State.getStatesOfCountry(def.country));
         }
         setSelectedState((prev) => prev || def.state || '');
         setZipCode((prev) => prev || def.zip_code || '');
@@ -120,86 +90,23 @@ const Checkout = () => {
     setShow(true);
   };
 
-  const handlePaymentError = (result) => {
-    if (result.message !== 'Payment successful') {
-      toast.error(result?.error || 'Payment processing failed.');
-      return true;
+  const handleExpressAuthorized = async ({
+    finalData,
+    result,
+    shippingMethod: walletShippingMethod,
+  }: ExpressAuthorization) => {
+    if (result.status !== 'succeeded' || result.error) {
+      throw new Error(result?.error || 'Payment could not be completed.');
     }
-    return false;
+    const orderId = await placeOrderMutation.mutateAsync({
+      userId: user.id,
+      userName: user.full_name || user.name,
+      userEmail: user.email || email,
+      data: { ...finalData, payment_status: 'success', shippingMethod: walletShippingMethod },
+      stripe: result,
+    });
+    await handleOrderSuccess(orderId);
   };
-
-  const handleCountryChange = (c) => {
-    setSelectedCountry(c);
-    setStates(State.getStatesOfCountry(c));
-    setSelectedState('');
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setPaymentLoading(true);
-    try {
-      const totalAmount = Math.round(getSubtotal() + getShipping());
-      const { finalData, result } = await processCardPayment(stripe, elements, {
-        amount: totalAmount,
-        name: fullName || user?.full_name || user?.name,
-        email,
-        address: getAddress(),
-      });
-      if (handlePaymentError(result)) return;
-      const orderId = await placeOrderMutation.mutateAsync({
-        userId: user.id,
-        userName: user.full_name || user.name,
-        userEmail: user.email || email,
-        data: { ...finalData, payment_status: 'success', shippingMethod },
-        stripe: result,
-      });
-      await handleOrderSuccess(orderId);
-    } catch (err) {
-      toast.error(err.message || 'Something went wrong.');
-    } finally {
-      setPaymentLoading(false);
-    }
-  };
-
-  const handleLoadPaymentData = async (paymentData) => {
-    setPaymentLoading(true);
-    try {
-      const gpayId = paymentData.shippingOptionData?.id;
-      const totalAmount = Math.round(getSubtotal() + (gpayId === 'free' ? 0 : 3));
-      const { finalData, result } = await processGooglePay(paymentData, {
-        amount: totalAmount,
-        name: user?.name || user?.full_name,
-        email: user?.email || email,
-      });
-      if (handlePaymentError(result)) return;
-      const orderId = await placeOrderMutation.mutateAsync({
-        userId: user.id,
-        userName: user.full_name || user.name,
-        userEmail: user.email || email,
-        data: {
-          ...finalData,
-          payment_status: 'success',
-          shippingMethod: gpayId === 'free' ? 'free' : 'express',
-        },
-        stripe: result,
-      });
-      await handleOrderSuccess(orderId);
-    } catch (err) {
-      toast.error(err.message || 'Something went wrong.');
-    } finally {
-      setPaymentLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (!cart?.length) return;
-    const displayItems = cart.map((i) => ({
-      label: i.products.name,
-      price: (i.amount * i.quantity).toFixed(2),
-      type: 'LINE_ITEM',
-    }));
-    setPaymentRequest(buildPaymentRequest(displayItems));
-  }, [cart]);
 
   /* ── RENDER ── */
   return (
@@ -284,230 +191,22 @@ const Checkout = () => {
             {/* ── LEFT FORM ─────────────────────────── */}
             <div className="ck-left">
               <div className="ck-col">
-                <form onSubmit={handleSubmit} className="ck-form">
-                  {/* EXPRESS CHECKOUT */}
-                  {paymentRequest && user && (
-                    <>
-                      <p className="ck-express-label">Express checkout</p>
-                      <div className="ck-express-btns">
-                        <GooglePayButton
-                          environment="TEST"
-                          buttonSizeMode="fill"
-                          paymentRequest={paymentRequest}
-                          onLoadPaymentData={handleLoadPaymentData}
-                          onError={console.error}
-                          onPaymentDataChanged={
-                            ((d: any) => getUpdatedPaymentData(paymentRequest, d)) as any
-                          }
-                        />
-                      </div>
-                      <div className="ck-or">
-                        <span>OR</span>
-                      </div>
-                    </>
+                <div className="ck-form">
+                  {/* EXPRESS CHECKOUT — the only payment method */}
+                  {user && (
+                    <ExpressCheckout
+                      subtotalCents={Math.round(getSubtotal() * 100)}
+                      lineItems={cart.map((item) => ({
+                        name: item.products.name,
+                        amount: Math.round(item.amount * item.quantity * 100),
+                      }))}
+                      buyer={{ name: fullName || user.full_name || user.name, email, phone }}
+                      fallbackAddress={getAddress()}
+                      onProcessingChange={setPaymentLoading}
+                      onAuthorized={handleExpressAuthorized}
+                    />
                   )}
-
-                  {/* DELIVERY */}
-                  <div className="ck-section">
-                    <h2 className="ck-section-title">Delivery</h2>
-
-                    <div className="ck-select">
-                      <select
-                        value={selectedCountry}
-                        onChange={(e) => handleCountryChange(e.target.value)}
-                        required
-                      >
-                        <option value="" disabled>
-                          Country/Region
-                        </option>
-                        {Country.getAllCountries().map((c) => (
-                          <option key={c.isoCode} value={c.isoCode}>
-                            {c.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="ck-row ck-row--2">
-                      <input
-                        className="ck-input"
-                        type="text"
-                        placeholder="First name"
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                        required
-                      />
-                      <input
-                        className="ck-input"
-                        type="text"
-                        placeholder="Last name"
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                        required
-                      />
-                    </div>
-
-                    <input
-                      className="ck-input"
-                      type="text"
-                      placeholder="Address"
-                      value={addressLine1}
-                      onChange={(e) => setAddressLine1(e.target.value)}
-                      required
-                    />
-
-                    <input
-                      className="ck-input"
-                      type="text"
-                      placeholder="Apartment, suite, etc. (optional)"
-                      value={addressLine2}
-                      onChange={(e) => setAddressLine2(e.target.value)}
-                    />
-
-                    <div className="ck-row ck-row--3">
-                      <input
-                        className="ck-input"
-                        type="text"
-                        placeholder="City"
-                        value={city}
-                        onChange={(e) => setCity(e.target.value)}
-                      />
-                      <div className="ck-select">
-                        <select
-                          value={selectedState}
-                          onChange={(e) => setSelectedState(e.target.value)}
-                          required
-                        >
-                          <option value="" disabled>
-                            State
-                          </option>
-                          {states.map((s) => (
-                            <option key={s.isoCode} value={s.isoCode}>
-                              {s.name}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                      <input
-                        className="ck-input"
-                        type="text"
-                        placeholder="ZIP code"
-                        value={zipCode}
-                        onChange={(e) => setZipCode(e.target.value)}
-                        required
-                      />
-                    </div>
-
-                    <input
-                      className="ck-input"
-                      type="tel"
-                      placeholder="Phone"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                    />
-
-                    <label className="ck-check">
-                      <input type="checkbox" />
-                      <span>Text me with news and offers</span>
-                    </label>
-                  </div>
-
-                  {/* SHIPPING METHOD */}
-                  <div className="ck-section">
-                    <h2 className="ck-section-title ck-section-title--sm">Shipping method</h2>
-                    {!hasAddress ? (
-                      <div className="ck-ship-placeholder">
-                        Enter your shipping address to view available shipping methods.
-                      </div>
-                    ) : (
-                      <div className="ck-ship-options">
-                        <label
-                          className={`ck-ship-option ${shippingMethod === 'free' ? 'active' : ''}`}
-                        >
-                          <input
-                            type="radio"
-                            name="shipping"
-                            checked={shippingMethod === 'free'}
-                            onChange={() => setShippingMethod('free')}
-                          />
-                          <span>Free shipping · 7–20 business days</span>
-                          <span className="ck-ship-option-price">Free</span>
-                        </label>
-                        <label
-                          className={`ck-ship-option ${shippingMethod === 'express' ? 'active' : ''}`}
-                        >
-                          <input
-                            type="radio"
-                            name="shipping"
-                            checked={shippingMethod === 'express'}
-                            onChange={() => setShippingMethod('express')}
-                          />
-                          <span>Express shipping · 1–3 business days</span>
-                          <span className="ck-ship-option-price">$3</span>
-                        </label>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* PAYMENT */}
-                  <div className="ck-section">
-                    <h2 className="ck-section-title">Payment</h2>
-                    <p className="ck-section-sub">All transactions are secure and encrypted.</p>
-
-                    <div className="ck-pay-box">
-                      <div className="ck-pay-row ck-pay-row--active">
-                        <span className="ck-radio ck-radio--on" />
-                        <span className="ck-pay-row-label">Credit card</span>
-                        <span className="ck-card-badges">
-                          <span className="ck-card-badge">VISA</span>
-                          <span className="ck-card-badge">MC</span>
-                          <span className="ck-card-badge">AMEX</span>
-                        </span>
-                      </div>
-
-                      <div className="ck-pay-body">
-                        <div className="ck-stripe-box">
-                          <CardElement options={CARD_STYLE} />
-                        </div>
-                        <label className="ck-check ck-check--tight">
-                          <input type="checkbox" checked readOnly />
-                          <span>Use shipping address as billing address</span>
-                        </label>
-                        <p className="ck-test-cards">
-                          Test cards: <code>4242 4242 4242 4242</code> ·{' '}
-                          <code>5555 5555 5555 4444</code>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* DISCLAIMER */}
-                  <div className="ck-disclaimer">
-                    <span className="ck-disclaimer-icon">ⓘ</span>
-                    <div>
-                      <strong>Disclaimer</strong>
-                      <p>
-                        Please review your order carefully before placing it. Once an order is
-                        submitted order details can't be changed, including shipping address, size,
-                        color, or items.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* SUBMIT */}
-                  <button type="submit" className="ck-submit" disabled={!stripe || paymentLoading}>
-                    {paymentLoading ? 'Processing…' : 'Pay now'}
-                  </button>
-
-                  {/* FOOTER LINKS */}
-                  <div className="ck-footer-links">
-                    <Link to="/terms">Refund policy</Link>
-                    <Link to="/contact">Shipping</Link>
-                    <Link to="/terms">Privacy policy</Link>
-                    <Link to="/terms">Terms of service</Link>
-                    <Link to="/contact">Contact</Link>
-                  </div>
-                </form>
+                </div>
               </div>
             </div>
 
@@ -599,8 +298,4 @@ const Checkout = () => {
   );
 };
 
-export default () => (
-  <Elements stripe={stripePromise}>
-    <Checkout />
-  </Elements>
-);
+export default Checkout;

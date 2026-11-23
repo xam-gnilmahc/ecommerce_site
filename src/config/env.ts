@@ -1,6 +1,8 @@
 export const SUPABASE_URL: string = process.env.REACT_APP_SUPABASE_URL || '';
 export const SUPABASE_ANON_KEY: string = process.env.REACT_APP_SUPABASE_ANON_KEY || '';
 export const STRIPE_URL: string = process.env.REACT_APP_STRIPE_URL || '';
+/** Server endpoint that creates the PaymentIntent for express checkout. */
+export const STRIPE_INTENT_URL: string = process.env.REACT_APP_PAYMENT_INTENT;
 export const SMART_HANDLER_TOKEN: string = process.env.REACT_APP_SMART_HANDLER_TOKEN || '';
 export const SMART_HANDLER_URL: string = process.env.REACT_APP_SMART_HANDLER_URL || '';
 export const FACEBOOK_APP_ID: string = process.env.REACT_APP_FACEBOOK_APP_ID || '';

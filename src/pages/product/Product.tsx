@@ -9,25 +9,19 @@ import { useNavigate } from 'react-router-dom';
 import './Product.css';
 import ProductImageGallery from '../../components/product/ProductImageGallery';
 import { useAddToCart } from '../../tanstack/cart.ts';
-import { usePlaceOrderSingle } from '../../tanstack/orders.ts';
-import { trackProductPreview, trackAddToCart, trackPurchase } from '../../tanstack/tracking.ts';
-import GooglePayButton from '@google-pay/button-react';
-import {
-  buildPaymentRequest,
-  getUpdatedPaymentData,
-} from '../../components/product/GooglePlay.tsx';
-import { processGooglePay } from '../../services/googlePayService.ts';
-import { shippingOptions } from '../../config/ShippingOptions.ts';
+import { trackProductPreview, trackAddToCart } from '../../tanstack/tracking.ts';
 import { FaStar } from 'react-icons/fa';
 import { FiTruck, FiCheck } from 'react-icons/fi';
 
+/** Shipping lines shown on the product page. */
+const SHIPPING_LINES = [
+  { label: 'Free shipping', description: 'Arrives in 7 to 20 business days' },
+  { label: 'Express shipping', description: '$3.00 — arrives in 1 to 3 business days' },
+];
+
 const Product = () => {
   const { id } = useParams();
-  const [orderLoading, setOrderLoading] = useState(false);
   const { user } = useAuth();
-  const [paymentRequest, setPaymentRequest] = useState(null);
-  const [quantity] = useState(1);
-  const placeOrderSingleMutation = usePlaceOrderSingle();
 
   // ── Fetch product (TanStack Query) ───────────────────────────────────────
   const { data: product, isLoading: loading } = useQuery({
@@ -69,72 +63,6 @@ const Product = () => {
     addCartMutation.mutate({ userId: user?.id, product });
     await trackAddToCart(user?.id, product);
   };
-
-  async function handleLoadPaymentData(paymentData) {
-    setOrderLoading(true);
-    try {
-      // ── Re-check stock live before processing payment ──────────────────
-      const { data: inventoryCheck, error: inventoryError } = await supabase
-        .from('inventory')
-        .select('stock_quantity')
-        .eq('product_id', id)
-        .single();
-
-      const latestStock = inventoryError || !inventoryCheck ? 0 : inventoryCheck.stock_quantity;
-      setStockQty(latestStock);
-
-      if (latestStock === 0) {
-        toast.error('Sorry, this product is out of stock.');
-        setOrderLoading(false);
-        return;
-      }
-
-      const gpayShippingId = paymentData.shippingOptionData?.id;
-      let shippingPrice = 0;
-      let shippingMethodSelected = 'free';
-      if (gpayShippingId) {
-        const opt = shippingOptions.find((o) => o.id === gpayShippingId);
-        if (opt) {
-          shippingPrice = opt.price;
-          shippingMethodSelected = gpayShippingId;
-        }
-      }
-      const totalAmount = Number(product.amount) + shippingPrice;
-      const { finalData, result } = await processGooglePay(paymentData, {
-        amount: totalAmount,
-        name: user?.name || user?.full_name,
-        email: user?.email,
-      });
-      if (result.message != 'Payment successful') {
-        toast.error(result?.error || 'Payment processing failed.');
-        return;
-      }
-      const orderId = await placeOrderSingleMutation.mutateAsync({
-        userId: user.id,
-        userName: user.full_name || user.name,
-        userEmail: user.email,
-        data: { ...finalData, payment_status: 'success', shippingMethod: shippingMethodSelected },
-        stripe: result,
-        product,
-        quantity,
-      });
-      if (orderId) {
-        trackPurchase(user?.id, { id: orderId }).catch(() => {});
-      }
-    } catch (err) {
-      toast.error(err.message || 'Something went wrong.');
-    } finally {
-      setOrderLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    if (!product || !product.amount) return;
-    const newRequest = buildPaymentRequest([
-      { label: product.name, price: product.amount.toString(), type: 'LINE_ITEM' },
-    ]);
-    setPaymentRequest(newRequest);
-  }, [product]);
 
   // ── Track product preview after data loads ───────────────────────────────
   useEffect(() => {
@@ -242,8 +170,7 @@ const Product = () => {
       { label: 'SKU', value: sku },
     ].filter((s) => !!s.value);
 
-    const freeShipping = shippingOptions.find((o) => o.id === 'free');
-    const expressShipping = shippingOptions.find((o) => o.id === 'express');
+    const [freeShipping, expressShipping] = SHIPPING_LINES;
 
     return (
       <>
@@ -319,20 +246,6 @@ const Product = () => {
             </button>
           </div>
 
-          {/* Google Pay — single button */}
-          {paymentRequest && user && stockQty !== 0 && (
-            <GooglePayButton
-              environment="TEST"
-              buttonSizeMode="fill"
-              paymentRequest={paymentRequest}
-              onLoadPaymentData={handleLoadPaymentData}
-              onError={(error) => console.error(error)}
-              onPaymentDataChanged={
-                ((paymentData: any) => getUpdatedPaymentData(paymentRequest, paymentData)) as any
-              }
-            />
-          )}
-
           <ul className="productPerks">
             <li>
               <FiCheck size={13} /> Secure checkout
@@ -359,20 +272,9 @@ const Product = () => {
   };
 
   return (
-    <>
-      {orderLoading && (
-        <div className="payment-overlay">
-          <div className="payment-loader-box">
-            <div className="payment-spinner"></div>
-            <h3>Processing Payment...</h3>
-            <p>Please do not refresh or click anything</p>
-          </div>
-        </div>
-      )}
-      <div className="productSection">
-        <div className="productShowCase">{loading ? <Loading /> : <ShowProduct />}</div>
-      </div>
-    </>
+    <div className="productSection">
+      <div className="productShowCase">{loading ? <Loading /> : <ShowProduct />}</div>
+    </div>
   );
 };
 
