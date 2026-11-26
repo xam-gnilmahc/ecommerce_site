@@ -260,4 +260,4 @@ REACT_APP_PUSHER_CLUSTER=your_pusher_cluster
 - **Stripe**: Configure webhook endpoint for payment confirmation
 - **Google Pay**: Register merchant ID, configure allowed domains
 - **Pusher**: Create channels for `user.{userId}` private channels
-- **Environment**: Set all `REACT_APP_*` vars in hosting platform
+- **Environment**: Set all `REACT_APP_*` vars in hosting platforms
