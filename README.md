@@ -150,7 +150,7 @@ src/
 - **Order list** with toggle between active and cancelled orders
 - **Status filters**: All, Pending, Confirmed, Shipped Out, Out for Delivery, Delivered, Cancelled
 - **Slide-in detail panel** with tracking timeline, shipping address, and payment info
-- **Print invoice** support with print-optimized CSS
+- **Invoice PDFs** generated after checkout (`src/services/invoiceService.ts`), stored in the `invoices` storage bucket and linked from `orders.invoice_url`
 - **Tracking numbers** with carrier integration ready
 
 ### User Account
@@ -234,8 +234,9 @@ REACT_APP_PUSHER_CLUSTER=your_pusher_cluster
 - **inventory** — stock_quantity per product_id
 - **users** — extended profile (name, avatar, created_at)
 - **shipping_addresses** — user addresses with is_default flag
-- **cart_items** — user cart with quantity
-- **orders** — order header (total, status, tracking_number, shipping_method)
+- **cart** — one cart per user (header row)
+- **cart_items** — products inside a cart, one row per product with quantity
+- **orders** — order header (total, status, tracking_number, shipping_method, invoice_url)
 - **order_items** — line items per order
 - **user_interest** — computed interest scores per user/category
 - **user_recommendations** — personalized product recommendations
@@ -259,4 +260,4 @@ REACT_APP_PUSHER_CLUSTER=your_pusher_cluster
 - **Stripe**: Configure webhook endpoint for payment confirmation
 - **Google Pay**: Register merchant ID, configure allowed domains
 - **Pusher**: Create channels for `user.{userId}` private channels
-- **Environment**: Set all `REACT_APP_*` vars in hosting platform
+- **Environment**: Set all `REACT_APP_*` vars in hosting platforms

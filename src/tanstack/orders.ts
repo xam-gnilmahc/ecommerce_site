@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../supaBaseClient';
+import { fetchCartItems } from './cart';
 import { sendOrderEmail, sendNotification } from '../services/emailService';
+import { createInvoiceForOrder } from '../services/invoiceService';
 import toast from 'react-hot-toast';
 
 function generateTrackingCode(): string {
@@ -137,14 +139,8 @@ export const usePlaceOrder = () => {
       data: any;
       stripe: any;
     }) => {
-      const { data: carts, error: cartError } = await supabase
-        .from('cart')
-        .select(`*, products:product_id (id, name, banner_url, amount, description, rating)`)
-        .eq('user_id', userId)
-        .order('id', { ascending: true });
-
-      if (cartError) throw cartError;
-      if (!carts || carts.length === 0) throw new Error('Cart is empty');
+      const carts = await fetchCartItems(userId);
+      if (carts.length === 0) throw new Error('Cart is empty');
 
       const orderItems = carts.map((item) => ({
         product_id: item.product_id,
@@ -172,14 +168,18 @@ export const usePlaceOrder = () => {
       // The order row is already committed here. Cart cleanup and the cart
       // refreshes are not worth blocking the success screen for, so let them
       // finish in the background.
-      void supabase
-        .from('cart')
-        .delete()
-        .eq('user_id', userId)
-        .then(() => {
-          queryClient.invalidateQueries({ queryKey: ['cart', userId] });
-          queryClient.invalidateQueries({ queryKey: ['cart', 'total', userId] });
-        });
+      void (async () => {
+        const { data: cartRow } = await supabase
+          .from('cart')
+          .select('id')
+          .eq('user_id', userId)
+          .maybeSingle();
+        if (cartRow?.id) {
+          await supabase.from('cart_items').delete().eq('cart_id', cartRow.id);
+        }
+        queryClient.invalidateQueries({ queryKey: ['cart', userId] });
+        queryClient.invalidateQueries({ queryKey: ['cart', 'total', userId] });
+      })();
       queryClient.invalidateQueries({ queryKey: ['orders', userId] });
       toast.success('Order placed!');
     },

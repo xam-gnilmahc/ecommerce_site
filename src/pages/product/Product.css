@@ -144,7 +144,8 @@
 .productName .product-page-title,
 .product-page-title {
   font-family: var(--font-main);
-  font-size: clamp(26px, 2.8vw, 38px);
+  /* cqw, not vw: the cart drawer narrows the column without changing the window */
+  font-size: clamp(21px, 2.6cqw, 33px);
   margin: 0;
   color: #000000;
   font-weight: 400;
@@ -172,7 +173,7 @@
   gap: 10px;
   margin: 0;
   font-family: var(--font-main);
-  font-size: clamp(26px, 2.4vw, 34px);
+  font-size: clamp(19px, 2.2cqw, 29px);
   font-weight: 300;
   letter-spacing: -0.01em;
   color: #000000;
@@ -332,6 +333,157 @@
 .productCartBtn button:hover {
   background: var(--primary-600);
   transform: none;
+}
+
+/* tick shown briefly after adding to cart */
+.productCartBtnTick {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  animation: productCartTickIn 0.25s cubic-bezier(0.2, 0, 0.2, 1) both;
+}
+
+@keyframes productCartTickIn {
+  from {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Busy state: keep the CTA dark while the request is in flight. */
+.productCartBtn button.is-adding:disabled {
+  background: var(--primary);
+  cursor: progress;
+  opacity: 1;
+}
+
+.productCartBtnLoading {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.productCartBtnSpinner {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+
+  animation: productCartSpin 0.7s linear infinite;
+}
+
+@keyframes productCartSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Confirmed state: success green + tick, still locked for a beat. */
+.productCartBtn button.is-added:disabled {
+  background: var(--success, #15803d);
+  color: #ffffff;
+  cursor: default;
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .productCartBtnSpinner,
+  .productCartBtnTick {
+    animation: none;
+  }
+}
+
+/* =========================
+   CONTAINER QUERIES
+   The cart drawer narrows #root without changing the viewport width, so the
+   viewport media queries below never fire and the two columns stay squeezed.
+   These rules react to the width the page actually has. They are placed before
+   the media queries so real small screens still win.
+========================= */
+
+.productSection {
+  container-type: inline-size;
+}
+
+/* Narrow desktop (e.g. a 1440px laptop with the cart drawer open) */
+@container (max-width: 1180px) {
+  /* near half-and-half once the page narrows, text only a little wider */
+  .productShowCase {
+    grid-template-columns: minmax(0, 53%) minmax(240px, 43%);
+    gap: 28px;
+  }
+  .productGallery {
+    padding-top: 32px;
+  }
+  .productDetails {
+    gap: 18px;
+    padding-left: 0;
+  }
+  .productDesc {
+    font-size: 14px;
+  }
+  .productSpecRow {
+    grid-template-columns: 118px minmax(0, 1fr);
+  }
+  .pig-gallery {
+    gap: 20px;
+  }
+  /* the gallery has to shrink with its column, not just with the window.
+     .productGallery is prefixed because ProductImageGallery.css is imported
+     after this file and its base sizes would otherwise win. */
+  .productGallery .pig-main {
+    min-height: clamp(220px, 32cqw, 420px);
+  }
+  .productGallery .pig-img {
+    max-height: clamp(220px, 32cqw, 420px);
+  }
+}
+
+/* Single column: gallery on top, details underneath.
+   Two columns still work down to ~760px of page width, so a laptop with the
+   cart drawer open keeps the side-by-side layout instead of stacking. */
+@container (max-width: 760px) {
+  .productShowCase {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .productGallery {
+    order: -1;
+    padding-top: 4px;
+  }
+  .productDetails {
+    padding: 8px 0 32px;
+    gap: 18px;
+  }
+  .productMetaTop {
+    margin-bottom: 0;
+  }
+  .productName .product-page-title {
+    font-size: clamp(19px, 4cqw, 25px);
+  }
+  .productPrice {
+    font-size: clamp(18px, 3.6cqw, 23px);
+  }
+  .productGallery .pig-main {
+    min-height: 0;
+  }
+  .productGallery .pig-img {
+    max-height: min(46vh, 360px);
+  }
+  .productShip {
+    padding: 14px;
+  }
+  .productCartBtn button {
+    padding: 18px 20px;
+  }
 }
 
 /* =========================

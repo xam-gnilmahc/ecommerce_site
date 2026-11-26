@@ -100,11 +100,6 @@
 .filter-btn:first-child {
   padding-left: 2px;
 }
-
-.filter-btn:hover {
-  color: var(--ink);
-}
-
 .filter-btn::after {
   content: '';
   position: absolute;

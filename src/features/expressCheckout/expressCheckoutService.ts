@@ -112,9 +112,9 @@ const createPaymentIntent = async ({
     response = await fetch(STRIPE_INTENT_URL, {
       method: 'POST',
       headers: {
-              Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-              'Content-Type': 'application/json',
-            },
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({
         amount: Math.round(amount),
         currency: EXPRESS_CURRENCY,

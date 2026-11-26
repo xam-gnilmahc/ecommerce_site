@@ -263,7 +263,6 @@
 
 .hp-perk:hover {
   border-color: var(--hp-accent);
-  color: var(--hp-ink);
   transform: translateY(-2px);
 }
 
@@ -304,7 +303,6 @@
 .hp-hot-chip:hover {
   background: var(--hp-accent-soft);
   border-color: #c9d6f7;
-  color: var(--hp-accent);
 }
 
 /* ═══════════════════════════════════════════════

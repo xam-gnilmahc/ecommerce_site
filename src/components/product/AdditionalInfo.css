@@ -53,11 +53,6 @@
   text-decoration: none;
   padding: 8px 0;
 }
-
-.aiTabs p:hover {
-  color: var(--primary);
-}
-
 .aiTabs p.aiActive {
   color: var(--primary);
 }
@@ -363,7 +358,6 @@
 
 .review-action-btn:hover {
   border-color: var(--primary);
-  color: var(--primary);
   background-color: var(--primary-light);
 }
 

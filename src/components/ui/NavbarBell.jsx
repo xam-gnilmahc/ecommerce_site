@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { FiBell, FiSettings, FiShoppingBag, FiTruck, FiRefreshCw } from 'react-icons/fi';
+import { FiBell, FiX, FiShoppingBag, FiTruck, FiRefreshCw } from 'react-icons/fi';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import { useAuth } from '../../context/authContext';
@@ -97,6 +97,10 @@ const NavbarBell = () => {
 
   const markAllRead = async () => {
     if (!user?.id) return;
+    // Drop the badge and the "Mark all read" button immediately — waiting for the
+    // round trip left them on screen after the user had already clicked.
+    queryClient.setQueryData(['notifications-unread', user.id], 0);
+    setItems((prev) => prev.map((n) => ({ ...n, read: true })));
     try {
       const { error } = await supabase
         .from('notifications')
@@ -104,15 +108,18 @@ const NavbarBell = () => {
         .eq('user_id', user.id)
         .eq('read', false);
       if (error) throw error;
-      setItems((prev) => prev.map((n) => ({ ...n, read: true })));
-      queryClient.invalidateQueries({ queryKey: ['notifications-unread', user.id] });
     } catch (err) {
       console.error('Failed to mark all as read:', err);
+      // Put the real unread state back when the write was rejected.
+      queryClient.invalidateQueries({ queryKey: ['notifications-unread', user.id] });
+      load(Math.max(pageRef.current, 1) * PAGE_SIZE);
     }
   };
 
   const openPopup = () => {
     if (openRef.current) return;
+    // Only one right-hand panel at a time — close the bag if it is showing.
+    window.dispatchEvent(new CustomEvent('close-cart-drawer'));
     openRef.current = true;
     setOpen(true);
     if (!loadedRef.current) {
@@ -134,14 +141,29 @@ const NavbarBell = () => {
     else openPopup();
   };
 
-  /* close when clicking outside */
+  /* panel is a right-side drawer now: push the page, close on Escape,
+     and step aside when the cart drawer opens */
   useEffect(() => {
     if (!open) return;
-    const onDocDown = (e) => {
+
+    document.body.classList.add('notif-open');
+
+    // `click`, not `mousedown`: closing on mousedown shifted the narrow page
+    // before the click landed, so the bag button moved out from under the
+    // cursor and the cart never opened.
+    const onDocClick = (e) => {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) closePopup();
     };
-    document.addEventListener('mousedown', onDocDown);
-    return () => document.removeEventListener('mousedown', onDocDown);
+    const onClose = () => closePopup();
+
+    document.addEventListener('click', onDocClick);
+    window.addEventListener('close-notifications', onClose);
+
+    return () => {
+      document.body.classList.remove('notif-open');
+      document.removeEventListener('click', onDocClick);
+      window.removeEventListener('close-notifications', onClose);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
@@ -176,7 +198,7 @@ const NavbarBell = () => {
             <h4>Notifications</h4>
 
             <div className="notification-header__actions">
-              {items.length > 0 && (
+              {items.some((n) => !n.read) && (
                 <button type="button" className="notification-mark" onClick={markAllRead}>
                   Mark all read
                 </button>
@@ -184,14 +206,11 @@ const NavbarBell = () => {
 
               <button
                 type="button"
-                className="notification-settings-btn"
-                onClick={() => {
-                  closePopup();
-                  navigate('/settings');
-                }}
-                aria-label="Notification settings"
+                className="notification-close"
+                onClick={closePopup}
+                aria-label="Close notifications"
               >
-                <FiSettings size={17} />
+                <FiX size={16} />
               </button>
             </div>
           </div>

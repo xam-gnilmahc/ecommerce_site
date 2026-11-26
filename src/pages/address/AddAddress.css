@@ -26,11 +26,6 @@
   font-family: var(--font-main);
   transition: color 0.15s;
 }
-
-.addr-back:hover {
-  color: #0a0a0a;
-}
-
 /* header */
 .addr-header {
   display: flex;

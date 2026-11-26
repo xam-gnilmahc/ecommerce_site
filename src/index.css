@@ -99,6 +99,32 @@ button:hover * {
   text-decoration: none;
 }
 
+/*
+ * Bootstrap ships `a:hover { color: #0056b3 }`, which turns every link-styled
+ * button blue on hover (the checkout CTA is a react-router <Link>). Keep the
+ * element's own text colour instead, so hover never recolours text.
+ */
+a:hover,
+a:focus,
+a:active {
+  color: inherit;
+}
+
+/* …except the button-styled links that sit on a dark background,
+ * and bootstrap's own .text-primary link, which is blue by design. */
+a.text-primary:hover {
+  color: #007bff !important;
+}
+
+a.about-cta:hover,
+a.cart-checkout-btn:hover,
+a.cart-drawer__checkout:hover,
+a.ck-empty-btn:hover,
+a.empty-cart-btn:hover,
+a.orders-empty__btn:hover {
+  color: #ffffff;
+}
+
 /* headings — large, light weight, no tracking */
 h1,
 h2,
@@ -195,5 +221,4 @@ textarea {
 
 .btn-secondary-vivet:hover {
   background: rgba(0, 0, 0, 0.15);
-  color: var(--ink);
 }
