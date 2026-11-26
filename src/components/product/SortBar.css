@@ -24,11 +24,6 @@
 
   transition: color 0.15s ease;
 }
-
-.sort-option:hover {
-  color: var(--ink, #000);
-}
-
 .sort-option input {
   position: absolute;
   opacity: 0;

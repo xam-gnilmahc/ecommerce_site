@@ -21,6 +21,8 @@
     "dayjs": "^1.11.13",
     "font-awesome": "^4.7.0",
     "framer-motion": "^12.38.0",
+    "jsbarcode": "^3.12.3",
+    "jspdf": "^4.2.1",
     "mdb-react-ui-kit": "^9.0.0",
     "pusher-js": "^8.4.0",
     "react": "^19.1.0",
@@ -67,6 +69,7 @@
     ]
   },
   "devDependencies": {
+    "@types/jsbarcode": "^3.11.4",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@typescript-eslint/eslint-plugin": "^8.35.0",

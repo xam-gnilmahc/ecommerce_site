@@ -83,6 +83,9 @@ const NotificationPage: React.FC = () => {
 
   const markAllRead = async () => {
     if (!user?.id) return;
+    // Hide the button right away instead of after the round trip.
+    setUnreadCount(0);
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
     try {
       const { error } = await supabase
         .from('notifications')
@@ -93,9 +96,9 @@ const NotificationPage: React.FC = () => {
       if (error) throw error;
 
       fetchUnreadCount();
-      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
     } catch (err) {
       console.error('Failed to mark all as read:', (err as Error).message);
+      fetchUnreadCount();
     }
   };
 

@@ -194,11 +194,6 @@
 
   cursor: pointer;
 }
-
-.ck-discount button:hover {
-  color: #111111;
-}
-
 /* Totals */
 
 .ck-totals {

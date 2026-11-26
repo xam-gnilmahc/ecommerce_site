@@ -207,11 +207,6 @@
   text-decoration: underline;
   text-underline-offset: 2px;
 }
-
-.auth-help a:hover {
-  color: var(--ink);
-}
-
 .auth-switch {
   text-align: center;
   font-size: 14px;
@@ -251,11 +246,6 @@
   font-weight: 600;
   color: var(--ink);
 }
-
-.auth-footer a:hover {
-  color: var(--muted);
-}
-
 @media screen and (max-width: 480px) {
   .auth-logo {
     padding-top: 20px;

@@ -42,6 +42,7 @@ const ProductQuickView: React.FC<ProductQuickViewProps> = ({ productId, onClose 
   const [quantity, setQuantity] = useState<number>(1);
   const [stockQty, setStockQty] = useState<number | null>(null);
   const [wishClicked, setWishClicked] = useState<boolean>(false);
+  const [showTick, setShowTick] = useState<boolean>(false);
 
   const { user, trackProduct } = useAuth();
   const navigate = useNavigate();
@@ -103,6 +104,8 @@ const ProductQuickView: React.FC<ProductQuickViewProps> = ({ productId, onClose 
       return;
     }
     addCartMutation.mutate({ userId: user.id, product: product as Product });
+    setShowTick(true);
+    setTimeout(() => setShowTick(false), 1500);
     await trackAddToCart(user?.id, product as Product);
   };
 
@@ -310,7 +313,31 @@ const ProductQuickView: React.FC<ProductQuickViewProps> = ({ productId, onClose 
                   className="w-full mt-8 py-[15px] bg-[#0a0a0a] text-white border-0 text-[14px] font-bold cursor-pointer transition-all duration-150 hover:opacity-85 disabled:opacity-35 disabled:cursor-not-allowed uppercase tracking-wider"
                   onClick={handleAddToCart}
                 >
-                  {stockQty === 0 ? 'Out of Stock' : `Add to Cart — $${product.amount}`}
+                  {stockQty === 0 ? (
+                    'Out of Stock'
+                  ) : showTick ? (
+                    <span
+                      className="inline-flex items-center justify-center animate-in fade-in-0 zoom-in-95"
+                      role="img"
+                      aria-label="Added"
+                    >
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="M5 13l5 5L19 7" />
+                      </svg>
+                    </span>
+                  ) : (
+                    `Add to Cart — $${product.amount}`
+                  )}
                 </button>
               </div>
             </div>

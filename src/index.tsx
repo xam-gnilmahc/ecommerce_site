@@ -35,7 +35,9 @@ root.render(
           <AuthProvider>
             <PageHeaderProvider>
               <RoutesComponent />
-              <Toaster />
+              {/* right inset follows --toast-right so toasts stay centered over the
+                  page content when the cart drawer narrows it */}
+              <Toaster containerStyle={{ right: 'var(--toast-right, 16px)' }} />
             </PageHeaderProvider>
           </AuthProvider>
         </ScrollToTop>

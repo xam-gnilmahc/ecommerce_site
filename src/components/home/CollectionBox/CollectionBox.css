@@ -94,10 +94,6 @@
   transition: 0.3s ease;
 }
 
-.shop-link:hover {
-  color: #00e5ff;
-}
-
 /* underline */
 .col-link a::after {
   content: '';

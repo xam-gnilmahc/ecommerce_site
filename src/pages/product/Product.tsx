@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import Skeleton from 'react-loading-skeleton';
 import { useParams } from 'react-router-dom';
@@ -58,9 +58,37 @@ const Product = () => {
 
   const navigate = useNavigate();
   const addCartMutation = useAddToCart();
+  const [showTick, setShowTick] = useState(false);
+  const tickTimer = useRef<number | null>(null);
+  const addBusyRef = useRef(false);
 
+  useEffect(
+    () => () => {
+      if (tickTimer.current) window.clearTimeout(tickTimer.current);
+    },
+    []
+  );
+
+  // Button stays busy until the request answers, then holds a tick for a beat
+  // so the same click can't be fired twice.
   const addProduct = async (product) => {
-    addCartMutation.mutate({ userId: user?.id, product });
+    // ref guard covers the gap before isPending re-renders, so a fast
+    // double-click can't queue two adds.
+    if (addBusyRef.current || addCartMutation.isPending || showTick) return;
+    addBusyRef.current = true;
+
+    try {
+      await addCartMutation.mutateAsync({ userId: user?.id, product });
+    } catch {
+      addBusyRef.current = false;
+      return; // the mutation already surfaced the error
+    }
+
+    addBusyRef.current = false;
+    setShowTick(true);
+    if (tickTimer.current) window.clearTimeout(tickTimer.current);
+    tickTimer.current = window.setTimeout(() => setShowTick(false), 1600);
+
     await trackAddToCart(user?.id, product);
   };
 
@@ -198,9 +226,7 @@ const Product = () => {
             <span className={`productStock ${stockClass}`}>{stockLabel}</span>
           </div>
 
-          {product.description && (
-            <p className="productDesc">{product.description}</p>
-          )}
+          {product.description && <p className="productDesc">{product.description}</p>}
 
           {specs.length > 0 && (
             <dl className="productSpecs">
@@ -232,7 +258,12 @@ const Product = () => {
           {/* ADD TO CART — big black CTA */}
           <div className="productCartBtn">
             <button
-              disabled={stockQty === 0}
+              type="button"
+              className={
+                addCartMutation.isPending ? 'is-adding' : showTick ? 'is-added' : undefined
+              }
+              disabled={stockQty === 0 || addCartMutation.isPending || showTick}
+              aria-busy={addCartMutation.isPending}
               onClick={() => {
                 if (!user) {
                   toast.error('Please login to add products to cart.');
@@ -242,7 +273,32 @@ const Product = () => {
                 addProduct(product);
               }}
             >
-              {stockQty === 0 ? 'Out of Stock' : 'Add to Cart'}
+              {stockQty === 0 ? (
+                'Out of Stock'
+              ) : addCartMutation.isPending ? (
+                <span className="productCartBtnLoading">
+                  <span className="productCartBtnSpinner" aria-hidden="true" />
+                  Adding…
+                </span>
+              ) : showTick ? (
+                <span className="productCartBtnTick" role="img" aria-label="Added">
+                  <svg
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M5 13l5 5L19 7" />
+                  </svg>
+                </span>
+              ) : (
+                'Add to Cart'
+              )}
             </button>
           </div>
 

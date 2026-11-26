@@ -182,7 +182,6 @@
 
 .raffle-filter-btn:hover {
   border-color: var(--ck-black);
-  color: var(--ck-black);
 }
 
 .raffle-filter-btn.active {

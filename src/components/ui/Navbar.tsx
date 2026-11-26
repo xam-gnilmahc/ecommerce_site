@@ -108,6 +108,14 @@ const Navbar = () => {
   const removeCartMutation = useRemoveFromCart();
   const updateQtyMutation = useUpdateCartQuantity();
 
+  // The drawer shares one remove mutation, so track which row it is working on:
+  // that row dims and locks until the request answers, and every other Remove
+  // waits too, so the same item can't be deleted twice.
+  const removingProductId = removeCartMutation.isPending
+    ? ((removeCartMutation.variables as { productId?: string | number } | undefined)?.productId ??
+      null)
+    : null;
+
   const changeQty = (item, delta) => {
     const newQty = (item.quantity || 1) + delta;
     updateQtyMutation.mutate({
@@ -190,6 +198,13 @@ const Navbar = () => {
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
   }, [cartOpen]);
+
+  // the notification drawer asks the bag to step aside when it opens
+  useEffect(() => {
+    const closeCart = () => setCartOpen(false);
+    window.addEventListener('close-cart-drawer', closeCart);
+    return () => window.removeEventListener('close-cart-drawer', closeCart);
+  }, []);
 
   // clear hover popup timer on unmount
   useEffect(() => {
@@ -291,6 +306,8 @@ const Navbar = () => {
 
   const openCartDrawer = () => {
     if (location.pathname === '/cart') return;
+    // Only one right-hand panel at a time — close the bell panel if it is open.
+    window.dispatchEvent(new CustomEvent('close-notifications'));
     if (!user) {
       navigate('/cart');
       return;
@@ -483,9 +500,7 @@ const Navbar = () => {
     <>
       <div
         ref={navRef}
-        className={`navBar ${isHome ? 'navBar--overlay' : ''} ${
-          catPopup ? 'navBar--catopen' : ''
-        }`}
+        className={`navBar ${isHome ? 'navBar--overlay' : ''} ${catPopup ? 'navBar--catopen' : ''}`}
       >
         <div className="nav-inner">
           {/* LEFT — primary navigation */}
@@ -678,118 +693,127 @@ const Navbar = () => {
         </div>
       )}
 
-      {/* CART DRAWER (right-side push panel) */}
+      {/* CART DRAWER (overlay on mobile/tablet, push panel on desktop) */}
       {cartOpen && (
-        <div className="cart-drawer" role="dialog" aria-modal="true" aria-label="Cart">
-          <div className="cart-drawer__bar">
-            <span className="cart-drawer__title">
-              Bag {totalCart > 0 && <span className="cart-drawer__count">{totalCart}</span>}
-            </span>
-            <button
-              type="button"
-              className="cart-drawer__close"
-              onClick={closeCartDrawer}
-              aria-label="Close cart"
-            >
-              <FiX size={16} />
-            </button>
-          </div>
-          <div className="cart-drawer__body">
-            {cartLoading ? (
-              <p className="cart-drawer__hint">Loading…</p>
-            ) : cartItems.length === 0 ? (
-              <div className="cart-drawer__empty">
-                <p className="cart-drawer__hint">Your cart is empty</p>
-                <button type="button" className="cart-drawer__continue" onClick={closeCartDrawer}>
-                  Continue shopping
-                </button>
-              </div>
-            ) : (
-              <ul className="cart-drawer__list">
-                {cartItems.map((item) => {
-                  const product: any = item.products || {};
-                  const img = product.banner_url
-                    ? `${SUPABASE_STORAGE_URL}productimages/${product.banner_url}`
-                    : null;
-                  return (
-                    <li key={item.id} className="cart-drawer__item">
-                      <Link
-                        className="cart-drawer__item-img"
-                        to={`/product/${item.product_id}`}
-                        onClick={closeCartDrawer}
+        <>
+          <div className="cart-drawer__backdrop" onClick={closeCartDrawer} aria-hidden="true" />
+          <div className="cart-drawer" role="dialog" aria-modal="true" aria-label="Cart">
+            <div className="cart-drawer__bar">
+              <span className="cart-drawer__title">
+                Bag {totalCart > 0 && <span className="cart-drawer__count">{totalCart}</span>}
+              </span>
+              <button
+                type="button"
+                className="cart-drawer__close"
+                onClick={closeCartDrawer}
+                aria-label="Close cart"
+              >
+                <FiX size={16} />
+              </button>
+            </div>
+            <div className="cart-drawer__body">
+              {cartLoading ? (
+                <p className="cart-drawer__hint">Loading…</p>
+              ) : cartItems.length === 0 ? (
+                <div className="cart-drawer__empty">
+                  <p className="cart-drawer__hint">Your cart is empty</p>
+                  <button type="button" className="cart-drawer__continue" onClick={closeCartDrawer}>
+                    Continue shopping
+                  </button>
+                </div>
+              ) : (
+                <ul className="cart-drawer__list">
+                  {cartItems.map((item) => {
+                    const product: any = item.products || {};
+                    const img = product.banner_url
+                      ? `${SUPABASE_STORAGE_URL}productimages/${product.banner_url}`
+                      : null;
+                    return (
+                      <li
+                        key={item.id}
+                        className={`cart-drawer__item${removingProductId === item.product_id ? ' is-removing' : ''}`}
                       >
-                        {img ? <img src={img} alt={product.name || ''} /> : null}
-                      </Link>
-
-                      <div className="cart-drawer__item-info">
                         <Link
-                          className="cart-drawer__item-name"
+                          className="cart-drawer__item-img"
                           to={`/product/${item.product_id}`}
                           onClick={closeCartDrawer}
                         >
-                          {product.name}
+                          {img ? <img src={img} alt={product.name || ''} /> : null}
                         </Link>
-                        <p className="cart-drawer__item-price">{formatUsd(item.amount)}</p>
 
-                        <div className="cart-drawer__item-foot">
-                          <div className="cart-drawer__qty">
+                        <div className="cart-drawer__item-info">
+                          <Link
+                            className="cart-drawer__item-name"
+                            to={`/product/${item.product_id}`}
+                            onClick={closeCartDrawer}
+                          >
+                            {product.name}
+                          </Link>
+                          <p className="cart-drawer__item-price">{formatUsd(item.amount)}</p>
+
+                          <div className="cart-drawer__item-foot">
+                            <div className="cart-drawer__qty">
+                              <button
+                                type="button"
+                                onClick={() => changeQty(item, -1)}
+                                aria-label="Decrease quantity"
+                              >
+                                <FiMinus size={12} />
+                              </button>
+                              <span key={item.quantity} className="cart-drawer__qty-num">
+                                {item.quantity}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => changeQty(item, 1)}
+                                aria-label="Increase quantity"
+                              >
+                                <FiPlus size={12} />
+                              </button>
+                            </div>
+
                             <button
                               type="button"
-                              onClick={() => changeQty(item, -1)}
-                              aria-label="Decrease quantity"
+                              className="cart-drawer__remove"
+                              disabled={!!removingProductId}
+                              onClick={() =>
+                                removeCartMutation.mutate({
+                                  userId: user.id as any,
+                                  productId: item.product_id as any,
+                                })
+                              }
                             >
-                              <FiMinus size={12} />
-                            </button>
-                            <span>{item.quantity}</span>
-                            <button
-                              type="button"
-                              onClick={() => changeQty(item, 1)}
-                              aria-label="Increase quantity"
-                            >
-                              <FiPlus size={12} />
+                              {removingProductId === item.product_id ? 'Removing…' : 'Remove'}
                             </button>
                           </div>
-
-                          <button
-                            type="button"
-                            className="cart-drawer__remove"
-                            onClick={() =>
-                              removeCartMutation.mutate({
-                                userId: user.id as any,
-                                productId: item.product_id as any,
-                              })
-                            }
-                          >
-                            Remove
-                          </button>
                         </div>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </div>{' '}
-          {cartItems.length > 0 && (
-            <div className="cart-drawer__foot">
-              <div className="cart-drawer__subtotal">
-                <span>Estimated total</span>
-                <span>{formatUsd(cartSubtotal)}</span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>{' '}
+            {cartItems.length > 0 && (
+              <div className="cart-drawer__foot">
+                <div className="cart-drawer__subtotal">
+                  <span>Estimated total</span>
+                  <span key={cartSubtotal} className="cart-drawer__subtotal-value">
+                    {formatUsd(cartSubtotal)}
+                  </span>
+                </div>
+                <p className="cart-drawer__note">Taxes and shipping calculated at checkout.</p>
+                <Link className="cart-drawer__checkout" to="/cart" onClick={closeCartDrawer}>
+                  View cart &amp; checkout
+                </Link>
               </div>
-              <p className="cart-drawer__note">Taxes and shipping calculated at checkout.</p>
-              <Link className="cart-drawer__checkout" to="/cart" onClick={closeCartDrawer}>
-                View cart &amp; checkout
-              </Link>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        </>
       )}
 
       {/* MOBILE BAR */}
       <nav>
-        <div
-          className={`mobile-nav ${isHome ? 'navBar--overlay' : ''}`}
-        >
+        <div className={`mobile-nav ${isHome ? 'navBar--overlay' : ''}`}>
           <button className="mobile-nav__menu" onClick={toggleMobileMenu}>
             {mobileMenuOpen ? 'Close' : 'Menu'}
           </button>

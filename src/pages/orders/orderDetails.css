@@ -45,11 +45,6 @@
 .od-back-btn {
   color: var(--muted);
 }
-
-.od-back-btn:hover {
-  color: var(--ink);
-}
-
 .od-back-btn svg {
   transition: transform 0.18s ease;
 }
@@ -66,6 +61,15 @@
 .od-print-btn:hover {
   background: var(--ink);
   color: #ffffff;
+}
+
+.od-print-btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.od-print-btn:disabled:hover {
+  background: transparent;
 }
 
 /* ── HEADER ──────────────────────────────────── */

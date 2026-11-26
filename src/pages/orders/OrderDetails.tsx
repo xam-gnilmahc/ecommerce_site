@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { useAuth } from '../../context/authContext';
 import { useOrderDetails } from '../../tanstack/orders';
+import { createInvoiceForOrder } from '../../services/invoiceService';
 import Skeleton from 'react-loading-skeleton';
 
 import { FaMoneyBillWave, FaCcVisa, FaGooglePay, FaApplePay, FaArrowLeft } from 'react-icons/fa';
@@ -40,6 +42,8 @@ const OrderDetailsPage: React.FC = () => {
   const { orderId } = useParams<{ orderId: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [invoiceBusy, setInvoiceBusy] = useState(false);
+  const [freshInvoiceUrl, setFreshInvoiceUrl] = useState<string | null>(null);
 
   const { data: order, isLoading: loading } = useOrderDetails(orderId);
 
@@ -58,139 +62,38 @@ const OrderDetailsPage: React.FC = () => {
     return <FaMoneyBillWave />;
   };
 
-  const handlePrint = () => {
+  /**
+   * Opens the order's invoice, building and uploading the PDF first when the
+   * order has no link yet. The tab is opened on the click itself, because a
+   * window opened after the async build looks like a popup and gets blocked.
+   */
+  const openInvoice = async () => {
     if (!order) return;
-    const address = parseAddress(order?.shipping_address);
-    const total =
-      order?.order_items?.reduce((a: number, b: any) => a + b.price_each * b.quantity, 0) ?? 0;
 
-    const itemsHtml =
-      order?.order_items
-        ?.map(
-          (item: any, i: number) => `
-      <tr>
-        <td style="text-align:center;color:#999">${i + 1}</td>
-        <td>${item.products?.name}</td>
-        <td style="text-align:center;font-weight:600">${item.quantity}</td>
-        <td style="text-align:right">$${item.price_each?.toFixed(2)}</td>
-        <td style="text-align:right;font-weight:700">$${(item.price_each * item.quantity).toFixed(2)}</td>
-      </tr>
-    `
-        )
-        .join('') || '';
+    const tab = window.open('', '_blank');
+    const show = (url: string) => {
+      if (tab) tab.location.href = url;
+      else window.open(url, '_blank', 'noopener,noreferrer');
+    };
 
-    const cancelReasonHtml =
-      order?.status === 'Cancelled' && order?.Reason
-        ? `<div class="inv-cancel-reason"><p class="inv-cancel-label">Cancellation Reason</p><p>${order.Reason}</p></div>`
-        : '';
+    const link = freshInvoiceUrl || order.invoice_url;
+    if (link) {
+      show(link);
+      return;
+    }
 
-    const paymentHtml =
-      order?.orderpayments_logs
-        ?.map(
-          (l: any) => `
-      <p style="font-size:12.5px;color:#555;margin:0 0 4px;font-family:'Courier New',monospace">
-        $${l.amount} — ${l.status}
-      </p>
-    `
-        )
-        .join('') || '';
-
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) return;
-    printWindow.document.write(`
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>Invoice #${order?.id}</title>
-        <style>
-          * { margin: 0; padding: 0; box-sizing: border-box; }
-          body { font-family: 'Georgia', serif; padding: 48px; color: #000; }
-          .inv-header { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 24px; border-bottom: 3px solid #000; margin-bottom: 32px; }
-          .inv-brand-name { font-size: 48px; font-weight: 900; letter-spacing: 0.08em; color: #000; display: block; line-height: 1; }
-          .inv-brand-tagline { font-size: 11px; font-weight: 400; color: #888; letter-spacing: 0.15em; text-transform: uppercase; margin-top: 6px; display: block; }
-          .inv-title { font-size: 52px; font-weight: 400; letter-spacing: 0.12em; color: #000; margin: 0 0 16px; text-align: right; text-transform: uppercase; }
-          .inv-meta { display: flex; flex-direction: column; gap: 6px; text-align: right; font-size: 12px; color: #555; font-family: 'Courier New', monospace; }
-          .inv-meta strong { color: #000; font-weight: 700; }
-          .inv-parties { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 36px; padding: 24px; background: #fafafa; border: 1px solid #e0e0e0; }
-          .inv-party-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.18em; color: #999; margin: 0 0 10px; padding-bottom: 6px; border-bottom: 1px solid #ddd; }
-          .inv-party-name { font-size: 15px; font-weight: 700; color: #000; margin: 0 0 6px; }
-          .inv-party-detail { font-size: 12.5px; color: #555; margin: 0 0 4px; font-family: 'Courier New', monospace; }
-          .inv-table { width: 100%; border-collapse: collapse; margin-bottom: 32px; font-size: 12.5px; font-family: 'Courier New', monospace; }
-          .inv-table thead { background: #000; color: #fff; }
-          .inv-table th { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; padding: 14px 16px; text-align: left; }
-          .inv-table td { padding: 14px 16px; border-bottom: 1px solid #eee; color: #333; }
-          .inv-table tbody tr:nth-child(even) { background: #fafafa; }
-          .inv-total-row td { border-bottom: none; border-top: 3px solid #000; padding-top: 16px; background: transparent !important; }
-          .inv-total-label { text-align: right; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #555; }
-          .inv-total-value { text-align: right; font-size: 24px; font-weight: 900; color: #000; }
-          .inv-footer { text-align: center; padding-top: 32px; border-top: 1px solid #ddd; margin-top: 8px; }
-          .inv-thankyou { font-family: 'Georgia', serif; font-size: 16px; font-style: italic; color: #000; margin: 0 0 6px; }
-          .inv-contact { font-size: 11px; color: #999; margin: 0; font-family: 'Courier New', monospace; }
-          .inv-cancel-reason { margin: 16px 0 24px; padding: 16px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 4px; }
-          .inv-cancel-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #dc2626; margin: 0 0 6px; }
-          .inv-cancel-text { font-size: 12px; color: #7f1d1d; margin: 0; font-family: 'Courier New', monospace; }
-          @media print { body { padding: 24px; } }
-        </style>
-      </head>
-      <body>
-        <div class="inv-header">
-          <div>
-            <span class="inv-brand-name">UOM</span>
-            <span class="inv-brand-tagline">Premium Tech Store</span>
-          </div>
-          <div>
-            <h1 class="inv-title">INVOICE</h1>
-            <div class="inv-meta">
-              <span><strong>Invoice #</strong> INV-${order?.id}</span>
-              <span><strong>Order #</strong> ${order?.id}</span>
-              <span><strong>Date:</strong> ${new Date(order?.created_at || '').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
-              ${order?.tracking_number ? `<span><strong>Tracking:</strong> ${order?.tracking_number}</span>` : ''}
-            </div>
-          </div>
-        </div>
-
-        <div class="inv-parties">
-          <div>
-            <p class="inv-party-label">Bill To</p>
-            <p class="inv-party-name">${user?.full_name || user?.name || ''}</p>
-            ${address ? `<p class="inv-party-detail">${address.addressLine1}${address.state ? `, ${address.state}` : ''}</p>` : ''}
-          </div>
-          <div>
-            <p class="inv-party-label">Payment Method</p>
-            ${paymentHtml}
-          </div>
-        </div>
-
-        ${cancelReasonHtml}
-
-        <table class="inv-table">
-          <thead>
-            <tr>
-              <th style="width:40px;text-align:center">#</th>
-              <th>Item</th>
-              <th style="width:60px;text-align:center">Qty</th>
-              <th style="width:100px;text-align:right">Unit Price</th>
-              <th style="width:100px;text-align:right">Total</th>
-            </tr>
-          </thead>
-          <tbody>${itemsHtml}</tbody>
-          <tfoot>
-            <tr class="inv-total-row">
-              <td colSpan="4" class="inv-total-label">Total Paid</td>
-              <td class="inv-total-value">$${total.toFixed(2)}</td>
-            </tr>
-          </tfoot>
-        </table>
-
-        <div class="inv-footer">
-          <p class="inv-thankyou">Thank you for your purchase!</p>
-          <p class="inv-contact">Questions? Contact us at maxrai788@gmail.com</p>
-        </div>
-      </body>
-      </html>
-    `);
-    printWindow.document.close();
-    setTimeout(() => printWindow.print(), 400);
+    setInvoiceBusy(true);
+    try {
+      const url = await createInvoiceForOrder(order.id);
+      if (!url) throw new Error('Order not found');
+      setFreshInvoiceUrl(url);
+      show(url);
+    } catch {
+      tab?.close();
+      toast.error('Could not prepare the invoice. Please try again.');
+    } finally {
+      setInvoiceBusy(false);
+    }
   };
 
   const formatDate = (d?: string) => {
@@ -234,6 +137,8 @@ const OrderDetailsPage: React.FC = () => {
   const statusKey = (order?.status ?? '').toLowerCase().replace(/ /g, '-');
   const eta = formatDate(order?.order_date || order?.created_at);
   const isCancelled = order?.status === 'Cancelled';
+  // An invoice only exists once the parcel has left the warehouse.
+  const canInvoice = ['Shipped Out', 'Out for Delivery', 'Delivered'].includes(order?.status ?? '');
 
   return (
     <div className="od-page">
@@ -243,9 +148,16 @@ const OrderDetailsPage: React.FC = () => {
           <button className="od-back-btn" onClick={() => navigate('/order')}>
             <FaArrowLeft size={11} /> My orders
           </button>
-          <button className="od-print-btn" onClick={handlePrint}>
-            Print invoice
-          </button>
+          {canInvoice && (
+            <button
+              className="od-print-btn"
+              onClick={openInvoice}
+              disabled={invoiceBusy}
+              aria-busy={invoiceBusy}
+            >
+              {invoiceBusy ? 'Preparing invoice…' : 'Invoice PDF'}
+            </button>
+          )}
         </div>
 
         {/* ── HEADER ─────────────────────────────────── */}
@@ -328,9 +240,7 @@ const OrderDetailsPage: React.FC = () => {
                       ${item.price_each?.toFixed(2)} × {item.quantity}
                     </p>
                   </div>
-                  <p className="od-item-total">
-                    ${(item.price_each * item.quantity).toFixed(2)}
-                  </p>
+                  <p className="od-item-total">${(item.price_each * item.quantity).toFixed(2)}</p>
                 </li>
               ))}
             </ul>
@@ -361,10 +271,12 @@ const OrderDetailsPage: React.FC = () => {
                   {address.addressLine2 ? `, ${address.addressLine2}` : ''}
                   <br />
                   {[address.state, address.zipCode].filter(Boolean).join(', ')}
-                  {address.country ? <>
-                    <br />
-                    {address.country}
-                  </> : null}
+                  {address.country ? (
+                    <>
+                      <br />
+                      {address.country}
+                    </>
+                  ) : null}
                 </p>
               ) : (
                 <p className="od-summary-text">No address on file</p>
