@@ -169,9 +169,7 @@ const NotificationPage: React.FC = () => {
             <div className="np-title-row">
               <h1 className="np-title">Notifications</h1>
               {!initialLoading && unreadCount > 0 && (
-                <span className="np-unread-count">
-                  {unreadCount} unread
-                </span>
+                <span className="np-unread-count">{unreadCount} unread</span>
               )}
             </div>
             <p className="np-subtitle">Order updates and delivery alerts</p>

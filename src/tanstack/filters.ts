@@ -17,9 +17,7 @@ export const useBrandOptions = (searchTerm?: string) => {
       const { data, error } = await query;
       if (error) throw error;
       const set = new Set(
-        (data || [])
-          .map((r: { brand?: string | null }) => (r.brand || '').trim())
-          .filter(Boolean)
+        (data || []).map((r: { brand?: string | null }) => (r.brand || '').trim()).filter(Boolean)
       );
       return Array.from(set).sort((a, b) => a.localeCompare(b));
     },
